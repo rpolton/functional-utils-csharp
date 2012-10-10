@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Utils
 {
@@ -11,9 +10,11 @@ namespace Utils
     /// </summary>
     public static class Functional
     {
+        public delegate bool filter2_fn<A, B>(A i, B j);
+
         /// <summary> partition: (A -> bool) -> A list -> A list * A list</summary>
         /// <returns> (list * list). The first list contains all items for which f(a) is true. The second list contains the remainder.</returns>
-        public static Tuple<List<A>, List<A>> partition<A>(Predicate<A> pred, IEnumerable<A> input)
+        public static Tuple<List<A>, List<A>> partition<A>(System.Func<A,bool> pred, IEnumerable<A> input)
         {
             var left = new List<A>();
             var right = new List<A>();
@@ -102,14 +103,14 @@ namespace Utils
             return new Trier<A,B>(input,tryClause);
         }
 
-        public static B If<A, B>(A a, Predicate<A> predicate, System.Func<A, B> thenClause, System.Func<A, B> elseClause)
+        public static B If<A, B>(A a, System.Func<A,bool> predicate, System.Func<A, B> thenClause, System.Func<A, B> elseClause)
         {
             return predicate(a) ? thenClause(a) : elseClause(a);
         }
 
         public class Case<A, B>
         {
-            public Predicate<A> check { get; internal set; }
+            public System.Func<A,bool> check { get; internal set; }
             public System.Func<A, B> results { get; internal set; }
         }
 
@@ -137,7 +138,7 @@ namespace Utils
         }
 
         /// <summary> not: (A -> bool) -> (A -> bool)</summary>
-        public static Predicate<A> not<A>(Predicate<A> f)
+        public static System.Func<A, bool> not<A>(System.Func<A, bool> f)
         {
             return a => !f(a);
         }
@@ -279,8 +280,15 @@ namespace Utils
         }
 
         /// <summary> init: int -> (int -> A) -> A list</summary>
+        public static IEnumerable<T> Repeat<T>(int howMany, System.Func<int, T> f)
+        {
+            for (int i = 0; i<howMany; ++i)
+                yield return f(i);
+        }
+
+        /// <summary> init: int -> (int -> A) -> A list</summary>
         // ReSharper disable FunctionNeverReturns
-        public static IEnumerable<T> init<T>(System.Func<int,T> f)
+        public static IEnumerable<T> Repeat<T>(System.Func<int,T> f)
         {
             for(int i = 0; ; ++i)
                 yield return f(i);
@@ -290,7 +298,7 @@ namespace Utils
 
     public static class Case
     {
-        public static Functional.Case<A, B> ToCase<A, B>(Predicate<A> pred, Func<A, B> res)
+        public static Functional.Case<A, B> ToCase<A, B>(System.Func<A,bool> pred, Func<A, B> res)
         {
             return new Functional.Case<A, B> { check = pred, results = res };
         }
@@ -312,6 +320,27 @@ namespace Utils
             if(input!=null)
                 foreach (var i in input)
                     i.Ignore();
+        }
+    }
+
+    public static class ToFunc
+    {
+        public static B In<A, B>(this A a, Func<A, B> f)
+        {
+            return f(a);
+        }
+
+        public static Func<A, C> Then<A, B, C>(this Func<A, B> f, Func<B, C> g)
+        {
+            return a => g(f(a));
+        }
+    }
+
+    public static class Convert
+    {
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> input)
+        {
+            return new HashSet<T>(input);
         }
     }
 }

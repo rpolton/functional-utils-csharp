@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
-using Utils;
 
-namespace UnitTests
+namespace Utils.Test
 {
     [TestFixture]
     public class OptionTest
