@@ -1044,6 +1044,27 @@ namespace Utils.Test
             HashSet<int> output = input.ToHashSet();
             CollectionAssert.AreEquivalent(expected, output);
         }
+
+        [Test]
+        public void ParseCommandLineArgsTest1()
+        {
+            var input = new[] { "arg1", "val1", "arg2", "val2", "arg3", "arg4", }.ToList();
+            var mandatory = new [] {new Argument() { Name="arg1",ExpectsValue=true}, new Argument() {Name="arg3",ExpectsValue=false} };
+            var optional = new[] { new Argument() { Name = "arg2", ExpectsValue = true }, new Argument() { Name = "arg4", ExpectsValue = false } };
+
+            var expectedMandatory = new List<Argument> { new Argument() { Name = "arg1", ExpectsValue = true, Value = "val1" }, new Argument() { Name = "arg3", ExpectsValue = false} };
+            var expectedOptional = new List<Argument> { new Argument() { Name = "arg2", ExpectsValue = true, Value = "val2" }, new Argument() { Name = "arg4", ExpectsValue = false } };
+            var expectedUnrecognised = Enumerable.Empty<string>().ToHashSet();
+            var expectedMandatoryMissing = Enumerable.Empty<string>().ToHashSet();
+            var expected = Tuple.Create(expectedMandatory, expectedOptional, expectedUnrecognised, expectedMandatoryMissing);
+
+            var output = input.SplitArgsInto(mandatory, optional);
+//            TupleAssert.AreEquivalent(expected, output);
+            CollectionAssert.AreEquivalent(expected.Item1, output.Item1);
+            CollectionAssert.AreEquivalent(expected.Item2, output.Item2);
+            CollectionAssert.AreEquivalent(expected.Item3, output.Item3);
+            CollectionAssert.AreEquivalent(expected.Item4, output.Item4);
+        }
     }
 }
 // ReSharper restore InconsistentNaming
