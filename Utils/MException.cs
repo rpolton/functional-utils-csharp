@@ -42,9 +42,13 @@ namespace Utils
                 return new MException<B>(input.ShowException);
             }
             try
-            {return tfm(input.Value);}
+            {
+                return tfm(input.Value);
+            }
             catch(Exception ex)
-            {return new MException<B>(ex);}
+            {
+                return new MException<B>(ex);
+            }
         }
 
         public static MException<C> SelectMany<A, B, C>(this MException<A> a, Func<A, MException<B>> tfm, Func<A, B, C> select)

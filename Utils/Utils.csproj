@@ -44,6 +44,7 @@
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="Enumerators.cs" />
     <Compile Include="EnumUtils.cs" />
+    <Compile Include="FieldMarshal.cs" />
     <Compile Include="FunctionalHelpers.cs">
       <SubType>Code</SubType>
     </Compile>

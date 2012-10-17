@@ -280,7 +280,7 @@ namespace Utils
         }
 
         /// <summary> init: int -> (int -> A) -> A list</summary>
-        public static IEnumerable<T> Repeat<T>(int howMany, System.Func<int, T> f)
+        public static IEnumerable<T> Repeat<T>(this System.Func<int, T> f, int howMany)
         {
             for (int i = 0; i<howMany; ++i)
                 yield return f(i);
@@ -288,12 +288,52 @@ namespace Utils
 
         /// <summary> init: int -> (int -> A) -> A list</summary>
         // ReSharper disable FunctionNeverReturns
-        public static IEnumerable<T> Repeat<T>(System.Func<int,T> f)
+        public static IEnumerable<T> Repeat<T>(this System.Func<int,T> f)
         {
             for(int i = 0; ; ++i)
                 yield return f(i);
         }
         // ReSharper restore FunctionNeverReturns
+    
+        public class Enumerate<A>:IEnumerable<A>
+        {
+            private readonly IEnumerator<A> enumerator;
+            public Enumerate(IEnumerator<A> en)
+            {
+                enumerator = en;
+            }
+            #region Implementation of IEnumerable
+
+            public IEnumerator<A> GetEnumerator()
+            {
+                return enumerator;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            #endregion
+        }
+
+        public static Tuple<List<A>,IEnumerable<A>> TakeNAndYield<A>(this IEnumerable<A> input, int howMany)
+        {
+            int counter = 0;
+            var output = new List<A>();
+            var enumerator = input.GetEnumerator();
+            if(howMany>0&&enumerator.MoveNext())
+            {
+                while(counter<howMany)
+                {
+                    output.Add(enumerator.Current);
+                    counter++;
+                    if (counter < howMany && !enumerator.MoveNext()) break;
+                }
+                return Tuple.Create(output, new Enumerate<A>(enumerator).AsEnumerable());
+            }
+            return Tuple.Create(output, new A[] {}.AsEnumerable());
+        }
     }
 
     public static class Case

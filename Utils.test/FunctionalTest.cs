@@ -9,106 +9,54 @@ namespace Utils.Test
     [TestFixture]
     public class FunctionalTest
     {
-        private static int DoublingGenerator(int a)
-        {
-            return 2*(a + 1);
-        }
+        private static readonly Func<int,int> DoublingGenerator = a=>2*(a + 1);
 
         [Test]
         public void InitTest1()
         {
-            List<int> output = Functional.Repeat(5, DoublingGenerator).ToList();
-
-            IEnumerator<int> e = output.GetEnumerator();
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 2);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 4);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 6);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 8);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 10);
+            var output = DoublingGenerator.Repeat(5).ToList();
+            CollectionAssert.AreEquivalent(new[]{2,4,6,8,10},output);
         }
 
         [Test]
         public void MapTest1()
         {
-            var input = new List<int>();
-            for (int i = 1; i < 6; ++i)
-                input.Add(i);
-
-            IEnumerable<string> output = input.Select(Functional.dStringify);
-
-            IEnumerator<string> e = output.GetEnumerator();
-            Assert.IsNotNull(e.MoveNext());
-            // ReSharper disable PossibleNullReferenceException
-            Assert.IsTrue(e.Current.Equals("1"));
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current.Equals("2"));
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current.Equals("3"));
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current.Equals("4"));
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current.Equals("5"));
-            // ReSharper restore PossibleNullReferenceException
+            var input = Enumerable.Range(1, 5).ToList();
+            var output = input.Select(Functional.dStringify);
+            CollectionAssert.AreEquivalent(new[]{"1","2","3","4","5"},output);
         }
 
         [Test]
         public void SortWithTest1()
         {
-            int[] ia = {1, 6, 23, 7, 4};
-            var i = new List<int>(ia);
+            var i = new[] { 1, 6, 23, 7, 4 }.ToList();
             List<int> j = Functional.sortWith(delegate(int a, int b)
                                                   {
                                                       if (a < b) return -1;
                                                       if (a == b) return 0;
                                                       return 1;
                                                   }, i);
-            Assert.IsTrue(j[0] == 1);
-            Assert.IsTrue(j[1] == 4);
-            Assert.IsTrue(j[2] == 6);
-            Assert.IsTrue(j[3] == 7);
-            Assert.IsTrue(j[4] == 23);
+            CollectionAssert.AreEquivalent(new[]{1,4,6,7,23},j);
         }
 
         [Test]
         public void SortWithTest2()
         {
-            int[] ia = {1, 6, 23, 7, 4};
-            var i = new List<int>(ia);
-            List<int> j = Functional.sortWith((a, b) => a - b, i);
-            Assert.IsTrue(j[0] == 1);
-            Assert.IsTrue(j[1] == 4);
-            Assert.IsTrue(j[2] == 6);
-            Assert.IsTrue(j[3] == 7);
-            Assert.IsTrue(j[4] == 23);
+            var i = new[] { 1, 6, 23, 7, 4 }.ToList();
+            var j = Functional.sortWith((a, b) => a - b, i);
+            CollectionAssert.AreEquivalent(new[] { 1, 4, 6, 7, 23 }, j);
         }
 
         [Test]
         public void SortWithTest3()
         {
-            int[] ia = {1, 6, 23, 7, 4};
-            var i = new List<int>(ia);
-            List<int> j = Functional.sortWith(Functional.Sorter, i);
-            Assert.IsTrue(j[0] == 1);
-            Assert.IsTrue(j[1] == 4);
-            Assert.IsTrue(j[2] == 6);
-            Assert.IsTrue(j[3] == 7);
-            Assert.IsTrue(j[4] == 23);
+            var i = new[] { 1, 6, 23, 7, 4 }.ToList();
+            var j = Functional.sortWith(Functional.Sorter, i);
+            CollectionAssert.AreEquivalent(new[] { 1, 4, 6, 7, 23 }, j);
         }
 
-        private static int TriplingGenerator(int a)
-        {
-            return 3*(a + 1);
-        }
-
-        private static int QuadruplingGenerator(int a)
-        {
-            return 4*(a + 1);
-        }
+        private static readonly Func<int, int> TriplingGenerator = a => 3 * (a + 1);
+        private static readonly Func<int,int> QuadruplingGenerator= a=>4*(a + 1);
 
         private static bool BothAreEven(int a, int b)
         {
@@ -118,8 +66,8 @@ namespace Utils.Test
         [Test]
         public void ForAll2Test1()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
-            List<int> m = Functional.Repeat(5, QuadruplingGenerator).ToList();
+            var l = DoublingGenerator.Repeat(5).ToList();
+            var m = QuadruplingGenerator.Repeat(5).ToList();
             Assert.IsTrue(Functional.forAll2(BothAreEven, l, m));
         }
 
@@ -131,8 +79,8 @@ namespace Utils.Test
         [Test]
         public void ForAll2Test2()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
-            List<int> m = Functional.Repeat(5, TriplingGenerator).ToList();
+            var l = DoublingGenerator.Repeat(5).ToList();
+            var m = TriplingGenerator.Repeat(5).ToList();
             Assert.IsFalse(Functional.forAll2(BothAreLessThan10, l, m));
         }
 
@@ -140,8 +88,8 @@ namespace Utils.Test
         [Test]
         public void ForAll2Test3()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
-            List<int> m = Functional.Repeat(7, QuadruplingGenerator).ToList();
+            var l = DoublingGenerator.Repeat(5).ToList();
+            var m = QuadruplingGenerator.Repeat(7).ToList();
             Assert.IsTrue(Functional.forAll2(BothAreEven, l, m));
         }
 
@@ -161,8 +109,8 @@ namespace Utils.Test
         public void CompositionTest2()
         {
             Func<int, int, bool> dBothAreLessThan10 = BothAreLessThan10;
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
-            List<int> m = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> l = DoublingGenerator.Repeat(5).ToList();
+            List<int> m = TriplingGenerator.Repeat(5).ToList();
             Assert.IsFalse(Functional.forAll2(Functional.not2(dBothAreLessThan10), l, m));
                 // equivalent to BothAreGreaterThanOrEqualTo10
 
@@ -179,7 +127,7 @@ namespace Utils.Test
         [Test]
         public void PartitionTest1()
         {
-            List<int> m = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> m = TriplingGenerator.Repeat(5).ToList();
             Tuple<List<int>, List<int>> r = Functional.partition(Functional.dIsOdd, m);
 
             int[] left = {3, 9, 15};
@@ -191,7 +139,7 @@ namespace Utils.Test
         [Test]
         public void PartitionTest2()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> l = DoublingGenerator.Repeat(5).ToList();
             Tuple<List<int>, List<int>> r = Functional.partition(Functional.dIsEven, l);
             CollectionAssert.AreEquivalent(l, r.Item1);
             CollectionAssert.AreEquivalent(new List<int>(), r.Item2);
@@ -200,7 +148,7 @@ namespace Utils.Test
         [Test]
         public void PartitionTest3()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> l = DoublingGenerator.Repeat(5).ToList();
             Tuple<List<int>, List<int>> r = Functional.partition(Functional.dIsEven, l);
             CollectionAssert.AreEquivalent(l.Where(Functional.dIsEven), r.Item1);
         }
@@ -208,7 +156,7 @@ namespace Utils.Test
         [Test]
         public void ToStringTest1()
         {
-            List<int> li = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> li = DoublingGenerator.Repeat(5).ToList();
             List<string> ls = li.Select(Functional.dStringify).ToList();
             string s = string.Join(",", ls);
             Assert.AreEqual("2,4,6,8,10", s);
@@ -217,7 +165,7 @@ namespace Utils.Test
         [Test]
         public void ChooseTest1B()
         {
-            List<int> li = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> li = TriplingGenerator.Repeat(5).ToList();
             List<string> o = li.Choose(i => i%2 == 0 ? i.ToString().ToOption() : Option<string>.None).ToList();
             string[] expected = {"6", "12"};
             CollectionAssert.AreEquivalent(o, new List<string>(expected));
@@ -226,7 +174,7 @@ namespace Utils.Test
         [Test]
         public void ChooseTest2A()
         {
-            List<int> li = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> li = TriplingGenerator.Repeat(5).ToList();
             var o = li.Choose( i => i%2 == 0 ? i.ToOption() : Option<int>.None).ToDictionary(i => i, i => i.ToString());
             var expected = new Dictionary<int, string>();
             expected[6] = "6";
@@ -274,7 +222,7 @@ namespace Utils.Test
         [Test]
         public void FoldvsMapTest1()
         {
-            List<int> li = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> li = DoublingGenerator.Repeat(5).ToList();
             string s1 = string.Join(",", li.Select(Functional.dStringify));
             Assert.AreEqual("2,4,6,8,10", s1);
             string s2 = li.Aggregate(string.Empty, csv);
@@ -287,7 +235,7 @@ namespace Utils.Test
         [Test]
         public void FwdPipelineTest1()
         {
-            List<int> li = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> li = DoublingGenerator.Repeat(5).ToList();
             string s1 = li > concatenate;
             Assert.AreEqual("2,4,6,8,10", s1);
         }
@@ -298,7 +246,7 @@ namespace Utils.Test
         [Test]
         public void FwdPipelineTest2()
         {
-            List<int> li = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> li = TriplingGenerator.Repeat(5).ToList();
             List<int> evens = li > evens_f;
             string s1 = evens > concatenate;
             string s2 = li > evens_f > concatenate;
@@ -309,7 +257,7 @@ namespace Utils.Test
         [Test]
         public void CompositionTest3()
         {
-            List<int> li = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> li = TriplingGenerator.Repeat(5).ToList();
             string s = li > evens_f.Then(concatenate);
             Assert.AreEqual("6,12", s);
         }
@@ -317,7 +265,7 @@ namespace Utils.Test
         [Test]
         public void CompositionTest4()
         {
-            List<int> li = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> li = TriplingGenerator.Repeat(5).ToList();
             string s = evens_f.Then(concatenate).act(li);
             Assert.AreEqual("6,12", s);
         }
@@ -336,7 +284,7 @@ namespace Utils.Test
             Assert.AreEqual(indentedName, expectedResult);
 
 
-            List<string> indentation = Functional.Repeat(level, delegate { return " "; }).ToList();
+            List<string> indentation = Functional.Repeat(a => " ",level).ToList();
             Assert.AreEqual(string.Join(string.Empty, indentation.ToArray()), "     ");
 
             string s = indentation.Aggregate(string.Empty, (state, str) => state + str);
@@ -359,7 +307,7 @@ namespace Utils.Test
         [Test]
         public void ChooseTest3A()
         {
-            List<int> li = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> li = TriplingGenerator.Repeat(5).ToList();
             List<int> o = li.Choose(i => i%2 == 0 ? i.ToOption() : Option<int>.None).ToList();
             Assert.AreEqual(o[0], 6);
             Assert.AreEqual(o[1], 12);
@@ -418,7 +366,7 @@ namespace Utils.Test
         public void find_noExceptTest1()
         {
             const string trueMatch = "6";
-            List<int> li = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> li = DoublingGenerator.Repeat(5).ToList();
             List<string> ls = li.Select(Functional.dStringify).ToList();
             Assert.IsTrue(FunctionalHelpers.find_noExcept(a => a == trueMatch, ls).Some == trueMatch);
         }
@@ -427,7 +375,7 @@ namespace Utils.Test
         public void find_noExceptTest2()
         {
             const string falseMatch = "7";
-            List<int> li = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> li = DoublingGenerator.Repeat(5).ToList();
             List<string> ls = li.Select(Functional.dStringify).ToList();
             Assert.IsTrue(FunctionalHelpers.find_noExcept(a => a == falseMatch, ls).None);
         }
@@ -436,7 +384,7 @@ namespace Utils.Test
         public void pick_noExceptTest1()
         {
             const string trueMatch = "6";
-            List<int> li = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> li = DoublingGenerator.Repeat(5).ToList();
             List<string> ls = li.Select(Functional.dStringify).ToList();
             Assert.IsTrue(
                 FunctionalHelpers.pick_noExcept(
@@ -447,7 +395,7 @@ namespace Utils.Test
         public void pick_noExceptTest2()
         {
             const string falseMatch = "7";
-            List<int> li = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> li = DoublingGenerator.Repeat(5).ToList();
             List<string> ls = li.Select(Functional.dStringify).ToList();
             Assert.IsTrue(
                 FunctionalHelpers.pick_noExcept(
@@ -473,7 +421,7 @@ namespace Utils.Test
         public void foldAndChooseTest1()
         {
             var missingPricesPerDate = new SortedList<int, double>();
-            List<int> openedDays = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> openedDays = TriplingGenerator.Repeat(5).ToList();
             double last = 10.0;
             foreach (int day in openedDays)
             {
@@ -484,7 +432,7 @@ namespace Utils.Test
                     missingPricesPerDate.Add(day, last);
             }
 
-            List<myInt> openedDays2 = Functional.Repeat(5, a => new myInt(3*(a + 1))).ToList();
+            List<myInt> openedDays2 = Functional.Repeat(a => new myInt(3*(a + 1)), 5).ToList();
             Tuple<double, List<myInt>> output = FunctionalHelpers.foldAndChoose(delegate(double state, myInt day)
                                                                                     {
                                                                                         double? value = day.i%2 == 0
@@ -514,7 +462,7 @@ namespace Utils.Test
         [Test]
         public void joinTest1()
         {
-            List<int> ids = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> ids = TriplingGenerator.Repeat(5).ToList();
             const string expected = "3,6,9,12,15";
             Assert.AreEqual(expected, string.Join(",", ids.Select(id => id.ToString()).ToArray()));
             Assert.AreEqual(expected, FunctionalHelpers.join(",", ids));
@@ -523,7 +471,7 @@ namespace Utils.Test
         [Test]
         public void joinTest2()
         {
-            List<int> ids = Functional.Repeat(5, TriplingGenerator).ToList();
+            List<int> ids = TriplingGenerator.Repeat(5).ToList();
             const string expected = "'3','6','9','12','15'";
             Func<int, string> f = id => "'" + id + "'";
             Assert.AreEqual(expected, string.Join(",", ids.Select(f).ToArray()));
@@ -554,7 +502,7 @@ namespace Utils.Test
         [Test]
         public void seqFilterTest1()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> l = DoublingGenerator.Repeat(5).ToList();
             IEnumerable<int> oddElems = l.Where(Functional.IsOdd);
             Assert.AreEqual(0, oddElems.Aggregate(0, Functional.dCount));
         }
@@ -562,7 +510,7 @@ namespace Utils.Test
         [Test]
         public void seqFilterTest2()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> l = DoublingGenerator.Repeat(5).ToList();
             IEnumerable<int> oddElems = l.Where(Functional.IsEven);
             Assert.AreEqual(5, oddElems.Aggregate(0, Functional.dCount));
         }
@@ -570,7 +518,7 @@ namespace Utils.Test
         [Test]
         public void seqFilterTest3()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> l = DoublingGenerator.Repeat(5).ToList();
             const int limit = 5;
             IEnumerable<int> highElems = l.Where(a => a > limit);
             Assert.AreEqual(3, highElems.Aggregate(0, Functional.dCount));
@@ -580,77 +528,46 @@ namespace Utils.Test
         [Test]
         public void findLastTest1()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> l = DoublingGenerator.Repeat(5).ToList();
             Assert.AreEqual(5, FunctionalHelpers.findLast(Functional.IsOdd, l));
         }
 
         [Test]
         public void findLastTest2()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
+            var l = DoublingGenerator.Repeat(5).ToList();
             Assert.AreEqual(10, FunctionalHelpers.findLast(Functional.IsEven, l));
         }
 
         [Test]
         public void seqMapTest1()
         {
-            var input = new List<int>();
-            for (int i = 1; i < 6; ++i)
-                input.Add(i);
-
-            IEnumerable<string> output = input.Select(Functional.dStringify);
-
-            IEnumerator<string> e = output.GetEnumerator();
-            Assert.IsTrue(e.MoveNext());
-            // ReSharper disable PossibleNullReferenceException
-            Assert.IsTrue(e.Current.Equals("1"));
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current.Equals("2"));
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current.Equals("3"));
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current.Equals("4"));
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current.Equals("5"));
-            // ReSharper restore PossibleNullReferenceException
+            var input = Enumerable.Range(1, 5).ToList();
+            var expected = new[] {"1", "2", "3", "4", "5"};
+            var output = input.Select(Functional.dStringify);
+            CollectionAssert.AreEquivalent(expected, output);
         }
 
         [Test]
         public void seqChooseTest1()
         {
-            List<int> li = Functional.Repeat(5, TriplingGenerator).ToList();
-            IEnumerable<string> o = li.Choose(i => i%2 == 0 ? i.ToString().ToOption() : Option<string>.None);
-            IEnumerator<string> oe = o.GetEnumerator();
+            var li = TriplingGenerator.Repeat(5).ToList();
+            var o = li.Choose(i => i%2 == 0 ? i.ToString().ToOption() : Option<string>.None).ToList();
             string[] expected = {"6", "12"};
-
-            Assert.IsTrue(oe.MoveNext());
-            Assert.AreEqual(expected[0], oe.Current);
-            Assert.IsTrue(oe.MoveNext());
-            Assert.AreEqual(expected[1], oe.Current);
+            CollectionAssert.AreEquivalent(expected,o);
         }
 
         [Test]
         public void seqInitTest1()
         {
-            IEnumerable<int> output = Functional.Repeat(5, DoublingGenerator);
-
-            IEnumerator<int> e = output.GetEnumerator();
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 2);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 4);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 6);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 8);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 10);
+            var output = DoublingGenerator.Repeat(5).ToList();
+            CollectionAssert.AreEquivalent(new[]{2,4,6,8,10},output);
         }
 
         [Test]
         public void FwdPipelineTest3()
         {
-            var input = Functional.Repeat(5, DoublingGenerator).ToList();
+            var input = DoublingGenerator.Repeat(5).ToList();
             var output = input > Functional.map(Functional.dStringify);
             var expected = new List<string>(new[] {"2", "4", "6", "8", "10"});
             CollectionAssert.AreEquivalent(expected, output.ToList());
@@ -659,7 +576,7 @@ namespace Utils.Test
         [Test]
         public void FwdPipelineTest4()
         {
-            var input = Functional.Repeat(5, DoublingGenerator);
+            var input = DoublingGenerator.Repeat(5);
             var output = input > Functional.map(Functional.dStringify);
             var expected = new List<string>(new[] {"2", "4", "6", "8", "10"});
             CollectionAssert.AreEquivalent(expected, output.ToList());
@@ -668,7 +585,7 @@ namespace Utils.Test
         [Test]
         public void FwdPipelineTest5()
         {
-            IEnumerable<int> l = Functional.Repeat(5, DoublingGenerator);
+            IEnumerable<int> l = DoublingGenerator.Repeat(5);
             var oddElems = l > Functional.filter<int>(Functional.IsOdd);
             Assert.IsTrue(oddElems.ToList().Count == 0);
         }
@@ -718,22 +635,8 @@ namespace Utils.Test
         [Test]
         public void seqInitTest2()
         {
-            IEnumerable<int> output = Functional.Repeat(DoublingGenerator);
-
-            IEnumerator<int> e = output.GetEnumerator();
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 2);
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.MoveNext());
-            Assert.IsTrue(e.Current == 22);
+            var output = DoublingGenerator.Repeat();
+            CollectionAssert.AreEquivalent(new[]{2,4,6,8,10,12,14,16,18,20,22},output.Take(11));
         }
 
         [Test]
@@ -741,7 +644,7 @@ namespace Utils.Test
         {
             const int howMany = 6;
             const int initValue = -1;
-            List<int> l = Functional.Repeat(howMany, Functional.Constant(initValue)).ToList();
+            List<int> l = Functional.Constant(initValue).Repeat(howMany).ToList();
             Assert.AreEqual(howMany, l.Count);
             foreach (int i in l)
                 Assert.AreEqual(initValue, i);
@@ -766,7 +669,7 @@ namespace Utils.Test
         [Test]
         public void filtering()
         {
-            List<int> l = Functional.Repeat(5, DoublingGenerator).ToList();
+            List<int> l = DoublingGenerator.Repeat(5).ToList();
             IEnumerable<int> l1 = l.Where(i => i%2 == 0);
             Func<IEnumerable<int>, IEnumerable<int>> f = i => i.Where(j => j%2 == 0);
             IEnumerable<int> l2 = f(l);
@@ -1044,7 +947,7 @@ namespace Utils.Test
             HashSet<int> output = input.ToHashSet();
             CollectionAssert.AreEquivalent(expected, output);
         }
-
+        [Ignore]
         [Test]
         public void ParseCommandLineArgsTest1()
         {

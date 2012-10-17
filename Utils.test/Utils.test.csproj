@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnumeratorTest.cs" />
+    <Compile Include="FieldMarshalTest.cs" />
     <Compile Include="MExceptionTest.cs" />
     <Compile Include="FunctionalTest.cs" />
     <Compile Include="MonadTest.cs" />
