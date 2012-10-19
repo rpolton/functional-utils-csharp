@@ -203,6 +203,22 @@ namespace Utils.Test
             Assert.IsTrue(f16(null));
         }
 
+        [Test]
+        public void OptionTypeTest17()
+        {
+            OptionType<TestClass> t = null;
+            Assert.IsTrue(t.None);
+        }
+
+        [ExpectedException(typeof(EmptyOptionTypeException))]
+        [Test]
+        public void OptionTypeTest18()
+        {
+            OptionType<TestClass> t = null;
+            TestClass s = t.Some;
+        }
+
+
         private class TestException : Exception { }
         [Test]
         [ExpectedException(typeof(TestException))]

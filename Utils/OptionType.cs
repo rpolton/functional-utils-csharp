@@ -10,31 +10,21 @@ namespace Utils
     /// If you want to use this for Value Types, use System.Nullable&lt;T&gt; instead. Also, OptionType&lt;string&gt; behaves slightly
     /// differently, in that the empty string is also considered as an empty OptionType, ie OptionType&lt;string&gt;(string.Empty).None is true.
     /// </summary>
-    public class OptionType<T> : IDisposable where T:class
+    public struct OptionType<T> : IDisposable where T:class
     {
-        private readonly bool _isEmpty = true;
-        protected T _t;
-        public OptionType() {}
+        private readonly T _t;
         public OptionType(T t)
         {
-            try
-            {
-                if ((typeof(T) == typeof(string) && Check.IsNotNullString(t as string)) || (typeof(T) != typeof(string) && Check.IsNotNull(t)))
-                {
-                    _t = t;
-                    _isEmpty = false;
-                }
-            }
-            catch // typically this will be an InvalidCastException
-            {
-                _isEmpty = true;
-            }
+            _t = ((typeof (T) == typeof (string) && Check.IsNotNullString(t as string)) ||
+                  (typeof (T) != typeof (string) && Check.IsNotNull(t)))
+                     ? t
+                     : null;
         }
-        public T Some { get { if (!_isEmpty) return _t; else throw new EmptyOptionTypeException(); } }
-        public bool None { get { return _isEmpty; } }
+        public T Some { get { if (_t!=null) return _t; else throw new EmptyOptionTypeException(); } }
+        public bool None { get { return _t==null; } }
         public static OptionType<T> Null { get { return new OptionType<T>(); } }
         public static implicit operator OptionType<T>(T t) { return new OptionType<T>(t);}
         // We do not have an implicit operator T because we want to be explicit about checking for null
-        public void Dispose() { if (typeof(T) is IDisposable) ((IDisposable)_t).Dispose(); }
+        public void Dispose() { if (typeof(T) is IDisposable && !None) ((IDisposable)_t).Dispose(); }
     }
 }

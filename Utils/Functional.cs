@@ -282,8 +282,7 @@ namespace Utils
         /// <summary> init: int -> (int -> A) -> A list</summary>
         public static IEnumerable<T> Repeat<T>(this System.Func<int, T> f, int howMany)
         {
-            for (int i = 0; i<howMany; ++i)
-                yield return f(i);
+            return Enumerable.Range(0, howMany).Select(f);
         }
 
         /// <summary> init: int -> (int -> A) -> A list</summary>
@@ -376,7 +375,7 @@ namespace Utils
         }
     }
 
-    public static class Convert
+    public static class Converter
     {
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> input)
         {

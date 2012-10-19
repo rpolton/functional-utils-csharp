@@ -21,7 +21,8 @@ namespace Utils
         /// which additional fields are present, if any.
         /// </summary>
         /// <typeparam name="A"></typeparam>
-        /// <param name="input"></param>
+        /// <param name="input">A collection of input parameters in which we expect to find the mandatory and optional arguments specified in MajorFields and MinorFields. 
+        /// This collection must be multiply traversable.</param>
         /// <param name="MajorFields">A concrete collection containing those fields which must be present in the input</param>
         /// <param name="MinorFields">A concrete collection containing those fields which can optionally be present in the input</param>
         /// <returns></returns>
