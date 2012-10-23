@@ -2,9 +2,9 @@
 
 namespace Utils
 {
-    public class Option<T>
-    {
-        private static readonly Func<T, Maybe<T>> tfm;
+    public struct Option<T>
+    { // ReSharper disable InconsistentNaming
+        private static readonly Func<T, Tuple<T, bool>> tfm; // ReSharper restore InconsistentNaming
         static Option()
         {
             var typeCode = Type.GetTypeCode(typeof(T));
@@ -14,38 +14,37 @@ namespace Utils
                 case TypeCode.Object:
                     // ReSharper disable CompareNonConstrainedGenericWithNull
                     // because we know that T is either an Object or a String
-                    tfm = t => t == null ? (Maybe<T>)new Nothing<T>() : new Something<T>(t);
-                    // ReSharper restore CompareNonConstrainedGenericWithNull
+                    tfm = t => t == null ? Tuple.Create(t, false) : Tuple.Create(t, true);
+                    // ReSharper restore CompareNonConstrainedGenericWithNull))
                     break;
                 default:
-                    tfm = t => new Something<T>(t);
+                    tfm = t => Tuple.Create(t, true);
                     break;
             }
         }
 
-        private readonly Maybe<T> _t;
+        private readonly Tuple<T, bool> _t;
 
         public Option(T t)
         {
             _t = tfm(t);
         }
 
-        public bool IsNone { get { return _t is Nothing<T>; } }
-        public bool IsSome { get { return _t is Something<T>; } }
+        public bool IsNone { get { return !IsSome; } }
+        public bool IsSome { get { return _t.Item2; } }
 
         public T Some
         {
             get
             {
-                var tmp = _t as Something<T>;
-                if (tmp == null) throw new OptionValueAccessException();
-                return tmp.Value;
+                if (IsNone) throw new OptionValueAccessException();
+                return _t.Item1;
             }
         }
 
-        public static Option<T> None { get { return new Option<T>(new Nothing<T>()); } }
+        public static Option<T> None { get { return new Option<T>(Tuple.Create(default(T), false)); } }
 
-        private Option(Maybe<T> t)
+        private Option(Tuple<T, bool> t)
         {
             _t = t;
         }

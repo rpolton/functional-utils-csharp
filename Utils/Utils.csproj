@@ -51,6 +51,7 @@
     <Compile Include="MException.cs" />
     <Compile Include="Functional.cs" />
     <Compile Include="Maybe.cs" />
+    <Compile Include="MonadicType.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="OptionType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

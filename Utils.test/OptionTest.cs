@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 
 namespace Utils.Test
 {
@@ -106,5 +107,68 @@ namespace Utils.Test
             Assert.IsFalse(e.IsSome);
             Assert.Throws<OptionValueAccessException>(() => e.Some.Ignore());
         }
+
+        [Test]
+        public void OptionNoneIsNoneTest1()
+        {
+            var none = Option<int>.None;
+            Assert.IsTrue(none.IsNone);
+            Assert.IsFalse(none.IsSome);
+        }
+
+        [Test]
+        public void OptionNoneIsNoneTest2()
+        {
+            var none = Option<string>.None;
+            Assert.IsTrue(none.IsNone);
+            Assert.IsFalse(none.IsSome);
+        }
+
+        [Test]
+        public void OptionNoneIsNoneTest3()
+        {
+            var none = Option<tmp>.None;
+            Assert.IsTrue(none.IsNone);
+            Assert.IsFalse(none.IsSome);
+        }
+
+        struct tmp2{}
+
+        [Test]
+        public void OptionNoneIsNoneTest4()
+        {
+            var none = Option<tmp2>.None;
+            Assert.IsTrue(none.IsNone);
+            Assert.IsFalse(none.IsSome);
+        }
+
+        [Test]
+        public void OptionBindTest1()
+        {
+            var a = 1.ToOption();
+            var b = a.Bind(o => (o*2).ToOption());
+            Assert.IsTrue(b.IsSome);
+            Assert.AreEqual(2,b.Some);
+        }
+
+        [Test]
+        public void OptionBindTest2()
+        {
+            var a = Option<int>.None;
+            var b = a.Bind(o => (o * 2).ToOption());
+            Assert.IsTrue(b.IsNone);
+        }
+
+        [Test]
+        public void OptionBindTest3()
+        {
+            var input = new[] {1, 2, 3, 4, 5, 6};
+            System.Func<int, bool> isEven = i => i%2 == 0;
+            var expected = new[] {2, 4, 6};
+
+            var output = input.Select(i => i.ToOption().Bind(j => isEven(j) ? j.ToOption() : Option<int>.None));
+            CollectionAssert.AreEquivalent(expected, output.Where(o=>o.IsSome).Select(o=>o.Some).ToList());
+        }
+
     }
 }
