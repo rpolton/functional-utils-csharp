@@ -21,11 +21,12 @@ namespace Utils
         }
 
         public Exception ShowException { get { return exception; }}
-        public T Value { get { if (HasException)throw new MExceptionValueAccessException(); else return value; } }
+        public T Value { get { if (HasException)throw new MExceptionValueAccessException(ShowException); else return value; } }
     }
 
     public class MExceptionValueAccessException : Exception
     {
+        public MExceptionValueAccessException(Exception inner):base("Trying to access a MException in error state",inner){}
     }
 
     public static class MException

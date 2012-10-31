@@ -31,12 +31,11 @@ namespace Utils.Test
             Assert.AreEqual(2, (r as Something<int>).Value);
         }
 
-        [Test]
-        public void MonadicTypeTest1()
-        {
-            var monad = MonadicType<Func<int, string>>.Return(i=>i.ToString());
-            var applyIt = monad.Bind(f => Enumerable.Range(0, 5).Select(i => i.In(f)).Return());
-        }
-
+        //[Test]
+        //public void MonadicTypeTest1()
+        //{
+        //    var monad = MonadicType<Func<int, string>>.Return(i=>i.ToString());
+        //    var applyIt = monad.Bind(f => Enumerable.Range(0, 5).Select(i => i.In(f)).Return());
+        //}
     }
 }
