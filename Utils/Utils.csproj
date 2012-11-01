@@ -48,6 +48,7 @@
     <Compile Include="FunctionalHelpers.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MDictionary.cs" />
     <Compile Include="MException.cs" />
     <Compile Include="Functional.cs" />
     <Compile Include="Maybe.cs" />

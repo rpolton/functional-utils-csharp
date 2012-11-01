@@ -52,7 +52,7 @@
     <Compile Include="PermutationsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringUtilsTest.cs" />
-    <Compile Include="ToDictionaryWithDuplicates.cs" />
+    <Compile Include="ToDictionaryReportingDuplicates.cs" />
     <Compile Include="TryCatchFinallyMonadTest.cs">
       <SubType>Code</SubType>
     </Compile>
