@@ -2,39 +2,14 @@
 
 namespace Utils
 {
-    public class ExceptionAccessViolation:Exception { }
-
-    public class TryCatchFinallyMonad<T>
-    {
-        private readonly Tuple<T,Exception> _state;
-        public TryCatchFinallyMonad(T t)
-        {
-            _state = Tuple.Create(t,null as Exception);
-        }
-        public TryCatchFinallyMonad(Exception ex)
-        {
-            _state = Tuple.Create(default(T), ex);
-        }
-        public bool HasException { get { return _state.Item2 != null; } }
-        public Exception ShowException { get { return _state.Item2; } }
-        public T Value 
-        {
-            get 
-            {
-                if (HasException) throw new ExceptionAccessViolation();
-                return _state.Item1;
-            } 
-        }
-    }
-
     public static class TryCatchFinallyMonadBuilder
     {
-        private static TryCatchFinallyMonad<T> Return<T> (this T t)
+        private static MException<T> Return<T>(this T t)
         {
-            return new TryCatchFinallyMonad<T>(t);
+            return new MException<T>(t);
         }
 
-        public static TryCatchFinallyMonad<U> Try</*T,*/U>(Func</*T is void,*/U> tfm)
+        public static MException<U> Try</*T,*/U>(Func</*T is void,*/U> tfm)
         {
             try
             {
@@ -42,24 +17,19 @@ namespace Utils
             }
             catch (Exception ex)
             {
-                return new TryCatchFinallyMonad<U>(ex);
+                return new MException<U>(ex);
             }
         }
 
-        public static TryCatchFinallyMonad<T> Catch<Ex, T>(this TryCatchFinallyMonad<T> tcf, Func<Ex, T> catchClause) where Ex : Exception
+        public static MException<T> Catch<Ex, T>(this MException<T> tcf, Func<Ex, T> catchClause) where Ex : Exception
         {
             return tcf.HasException && ((tcf.ShowException is Ex) || tcf.ShowException.GetType().IsSubclassOf(typeof(Ex)))
                 ? catchClause(tcf.ShowException as Ex).Return() : Return(tcf.Value);
         }
 
-        public static TryCatchFinallyMonad<T> Finally<T>(this TryCatchFinallyMonad<T> t, Action<T> tfm)
+        public static MException<T> Finally<T>(this MException<T> t, Action<T> tfm)
         {
-            if (t.HasException)
-            {
-                tfm(default(T));
-                return t;
-            }
-            //return tfm(t.Value).Return(); // possibly this should combine t with the tfm output
+            tfm(t.HasException ? default(T) : t.Value);
             return t;
         }
     }
