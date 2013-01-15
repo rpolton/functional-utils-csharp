@@ -56,5 +56,20 @@ namespace Utils
         {
             return a.Bind(aval => tfm(aval).Bind(bval => select(aval, bval).ToMException()));
         }
+
+        public static A GetValueOrDefault<A>(this MException<A> a)
+        {
+            return a.HasException ? default(A) : a.Value;
+        }
+
+        public static A GetValueOrDefault<A>(this MException<A> a, A defValue)
+        {
+            return a.HasException ? defValue : a.Value;
+        }
+
+        public static MException<T> Convert<T>(this MException<T> t, Func<Exception,Exception> fn)
+        {
+            return t.HasException ? new MException<T>(fn(t.ShowException)) : t;
+        }
     }
 }
