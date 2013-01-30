@@ -38,23 +38,32 @@ namespace Utils
 
         public static MException<B> Bind<A, B>(this MException<A> input, Func<A, MException<B>> tfm)
         {
-            if(input.HasException)
-            {
-                return new MException<B>(input.ShowException);
-            }
-            try
-            {
-                return tfm(input.Value);
-            }
-            catch(Exception ex)
-            {
-                return new MException<B>(ex);
-            }
+            return input.HasException ? new MException<B>(input.ShowException) : tfm(input.Value);
+        }
+
+        public static Func<A,MException<B>> Protect<A,B>(this Func<A,MException<B>> tfm)
+        {
+            return a =>
+                       {
+                           try
+                           {
+                               return tfm(a);
+                           }
+                           catch(Exception ex)
+                           {
+                               return new MException<B>(ex);
+                           }
+                       };
+        }
+
+        public static MException<B> BindWithProtect<A,B>(this MException<A> input, Func<A,MException<B>> tfm)
+        {
+            return input.Bind(Protect(tfm));
         }
 
         public static MException<C> SelectMany<A, B, C>(this MException<A> a, Func<A, MException<B>> tfm, Func<A, B, C> select)
         {
-            return a.Bind(aval => tfm(aval).Bind(bval => select(aval, bval).ToMException()));
+            return a.BindWithProtect(aval => tfm(aval).Bind(bval => select(aval, bval).ToMException()));
         }
 
         public static A GetValueOrDefault<A>(this MException<A> a)

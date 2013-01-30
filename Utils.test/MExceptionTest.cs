@@ -81,7 +81,7 @@ namespace Utils.Test
             var input = new[] {1,2,5,0};
             var expected3 = new[] {10.0, 5.0, 2.0};
 
-            var output = input.Select(i => i.ToMException().Bind(div(10.0).Then(toEx))).ToList();
+            var output = input.Select(i => i.ToMException().BindWithProtect(div(10.0).Then(toEx))).ToList();
             CollectionAssert.AreEquivalent(expected3,output.Where(o=>!o.HasException).Select(o=>o.Value));
             output[3].Value.Ignore();
         }
@@ -103,7 +103,7 @@ namespace Utils.Test
                                                                   {
                                                                       denominator = i,
                                                                       numerator = j,
-                                                                      result = i.ToMException().Bind(div(j).Then(toEx))
+                                                                      result = i.ToMException().BindWithProtect(div(j).Then(toEx))
                                                                   })).ToList();
             Assert.AreEqual(4,output.Count(o=>o.result.HasException));
         }
