@@ -52,3 +52,6 @@ let capitalise (s:string) =
         let cs = s.ToCharArray()
         let uc = new System.String [|cs.[0]|] |> toUpper
         uc + (new System.String(Array.sub cs 1 (Array.length cs - 1)))
+
+let toDictionary keyFn valueFn =
+    List.fold (fun (st:System.Collections.Generic.Dictionary<_,_>) elem -> st.Add (keyFn elem, valueFn elem) ; st) (new System.Collections.Generic.Dictionary<_,_>())

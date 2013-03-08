@@ -25,7 +25,7 @@ let generate name fields =
         "        {";
     ] @ (fields |> List.map recordEntry) @
     [
-        "        }, []";
+        "        }), []";
         "";
     ]
  
