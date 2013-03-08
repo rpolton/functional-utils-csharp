@@ -1,20 +1,9 @@
 ﻿#load "Utils.fs"
 open Shaftesbury.FSharp.Utils
 
-let (|Empty|) (s:string) = System.String.IsNullOrEmpty(s)
-let toUpper (s:string) = match s with | Empty true -> s | _ as s -> s.ToUpper()
-
-let capitalise (s:string) = 
-    match s with
-    | Empty true -> s
-    | _ as s ->
-        let cs = s.ToCharArray()
-        let uc = new System.String [|cs.[0]|] |> toUpper
-        uc + (new System.String(Array.sub cs 1 (Array.length cs - 1)))
-
-let defaults = ["int","0";"float","0.0";"string","\"\""]
+let defaults = ["int","0";"float","0.0";"string","\"\"";"int64","0L"]
 let initialDictEntry (fieldName, fieldTypeName) = "\""+fieldName+"\"," + (defaults |> List.find (fun (typ,def) -> typ=fieldTypeName) |> second) + ":>obj; "
-let readFn typ = ["int","readAsInt";"float","readAsFloat";"string","readAsString"] |> List.find (fun (t,fn)->t=typ) |> second
+let readFn typ = ["int","readAsInt";"float","readAsFloat";"string","readAsString";"int64","readAsInt64"] |> List.find (fun (t,fn)->t=typ) |> second
 let matchEntry (fieldName, fieldTypeName) = @"        |"+" \""+fieldName+"\" as name -> dict.[name] <- "+(readFn fieldTypeName)+" reader ; read ()"
 let recordEntry (fieldName, fieldTypeName) = "                "+(capitalise fieldName)+" = dict.[\""+fieldName+"\"] :?> "+fieldTypeName
  
@@ -41,7 +30,7 @@ let generate name fields =
     ]
  
 let generateSomeCode (namesAndFields:((string*(string*string) list) list)) =
-    use fs = new System.IO.StreamWriter (@"C:\local\span\generatedCode")
+    use fs = new System.IO.StreamWriter (@"C:\Users\Bob\development\data\generatedCode")
     namesAndFields |> List.map (fun (name,fields) -> generate name fields) |> List.concat |> List.iter fs.WriteLine
     fs.Close()
 
@@ -56,8 +45,8 @@ let generateSomeCode (namesAndFields:((string*(string*string) list) list)) =
 "ScanRate",["r","int";"priceScan","float";"priceScanPct","float";"volScan","float";"volScanPct","float"];
 "PriceScanDef",["mult","float";"numerator","float";"denominator","float"];
 "VolScanDef",["mult","float";"numerator","float";"denominator","float"];
-
-// Some missing here
+"Phy",["cId","int";"pe","string";"p","float";"d","float";"v","float";"cvf","float";"val","float";"sc","float";];
+"Group",["id","int";"aval","string"];
 "Equity",["cId","int";"isin","string";"pe","string";"p","float";"d","float";"v","float";"cvf","float";"val","float";"sc","float";"desc","string";"type","string";"subType","string";];
 "UndPf",["exch","string";"pfId","int";"pfCode","string";"pfType","string";"s","string";"i","float"];
 "Fut",["cId","int";"pe","int";"p","float";"d","float";"v","float";"cvf","float";"val","float";"sc","float";"setlDate","int";"t","float"];
@@ -108,8 +97,4 @@ let generateSomeCode (namesAndFields:((string*(string*string) list) list)) =
 "Level2",["fileFormat","string";"created","int64"];
 ]
 |> generateSomeCode
-
-
-
-
 
