@@ -20,7 +20,9 @@ let generate name fields =
     ]  @ (fields |> List.map matchEntry) @
     [
         "        | _ -> ignore ()";
+        "    reader.ReadStartElement()";
         "    read ()";
+        "    reader.ReadEndElement()";
         "    SpanXML"+name+"(";
         "        {";
     ] @ (fields |> List.map recordEntry) @
