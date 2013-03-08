@@ -63,7 +63,7 @@ let generateSomeCode (namesAndFields:((string*(string*string) list) list)) =
 "EquityPf",["pfId","string";"pfCode","string";"name","string";"currency","string";"cvf","float";"priceDl","int";"priceFmt","string";"valueMeth","string";"priceMeth","string";"setlMeth","string";"country","string"];
 "FutPf",["pfId","string";"pfCode","string";"name","string";"currency","string";"cvf","float";"priceDl","int";
 "priceFmt","string";"valueMeth","string";"priceMeth","string";"setlMeth","string";"positionsAllowed","int"];
-"OopPf",["pfId","string";"pfCode","string";"name","string";"currency","string";"cvf","float";"priceDl","int";
+"OopPf",["pfId","string";"pfCode","string";"name","string";"exercise","string";"currency","string";"cvf","float";"priceDl","int";
         "priceFmt","string";"strikeDl","int";"strikeFmt","string";"cab","float";"valueMeth","string";
         "priceMeth","string";"setlMeth","string";"priceModel","string"];
 "OofPf",["pfId","string";"pfCode","string";"name","string";"exercise","string";

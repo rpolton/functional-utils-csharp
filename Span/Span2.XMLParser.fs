@@ -30,17 +30,17 @@ let readDiv (reader:System.Xml.XmlReader) : nodeType * tree list =
 let readRa (reader:System.Xml.XmlReader) : nodeType * tree list =
     let dict = ["r",0:>obj; "a",0.0:>obj; "d",0.0:>obj; ] |> toDict
 
-    let rec read () =
+    let rec read a =
         match reader.Name with
-        | "r" as name -> dict.[name] <- readAsInt reader ; read ()
-        | "a" as name -> dict.[name] <- readAsFloat reader ; read ()
-        | "d" as name -> dict.[name] <- readAsFloat reader ; read ()
-        | _ -> ignore ()
-    read ()
+        | "r" as name -> dict.[name] <- readAsInt reader ; read a
+        | "a" as name -> read ((readAsFloat reader) :: a)
+        | "d" as name -> dict.[name] <- readAsFloat reader ; read a
+        | _ -> a
+    let a = read []
     SpanXMLRa(
         {
                 R = dict.["r"] :?> int
-                A = dict.["a"] :?> float
+                A = a
                 D = dict.["d"] :?> float
         }), []
 
@@ -1027,7 +1027,7 @@ let readDefinitions (reader:System.Xml.XmlReader) : nodeType * tree list =
         | _ -> currencyDef, acctTypeDef, acctSubTypeDef, groupTypeDef, groupDef
     let currencyDef, acctTypeDef, acctSubTypeDef, groupTypeDef, groupDef = read [] [] [] [] []
 
-    SpanXMLDefinition (), (currencyDef @ acctTypeDef @ acctSubTypeDef @ groupTypeDef @ groupDef)
+    SpanXMLDefinition (new SpanXMLDefinition()), (currencyDef @ acctTypeDef @ acctSubTypeDef @ groupTypeDef @ groupDef)
 
 let readPointInTime (reader:System.Xml.XmlReader) : nodeType * tree list =
     let dict = ["date",0:>obj; "isSetl",0:>obj; "setlQualifier","":>obj; ] |> toDict
