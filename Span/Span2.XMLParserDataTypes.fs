@@ -349,7 +349,7 @@ type SpanXMLExchange = {
 //    PhyPf : SpanXMLPhyPf list;
 //    EquityPf : SpanXMLEquityPf list;
 //    FutPf : SpanXMLFutPf list;
-//    O:Pf : SpanXMLO:Pf list;
+//    OofPf : SpanXMLOofPf list;
 //    OopPf : SpanXMLOopPf list;
 //    OoePf : SpanXMLOoePf list;
     }
@@ -509,7 +509,7 @@ type nodeType =
     | SpanXMLDefinition of SpanXMLDefinition
     | SpanXMLPointInTime of SpanXMLPointInTime
     | SpanXMLLevel2 of SpanXMLLevel2
-    | SpanXMLTopLevel //of SpanXMLTopLevel
+    | SpanXMLTopLevel of SpanXMLTopLevel
 
 type tree =
     | Node of nodeType * tree list

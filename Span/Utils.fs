@@ -24,6 +24,7 @@ let (|Empty|) (s:string) = System.String.IsNullOrEmpty(s)
 let (|FirstNChars|) howMany (input:string) = input.Substring(0,howMany)
 let (|GreaterThan|) n input = input > n
 let (|GreaterThanOrEqualTo|) n input = input >= n
+let (|StartsWith|) str (input:string) = input.StartsWith (str)
 
 let toFloat (str:string) = 
     match System.Double.TryParse str with

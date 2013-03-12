@@ -48,7 +48,7 @@ let generateSomeCode (namesAndFields:((string*(string*string) list) list)) =
 "PriceScanDef",["mult","float";"numerator","float";"denominator","float"];
 "VolScanDef",["mult","float";"numerator","float";"denominator","float"];
 "Phy",["cId","int";"pe","string";"p","float";"d","float";"v","float";"cvf","float";"val","float";"sc","float";];
-"Group",["id","int";"aval","string"];
+"Group",["id","int";"aVal","string"];
 "Equity",["cId","int";"isin","string";"pe","string";"p","float";"d","float";"v","float";"cvf","float";"val","float";"sc","float";"desc","string";"type","string";"subType","string";];
 "UndPf",["exch","string";"pfId","int";"pfCode","string";"pfType","string";"s","string";"i","float"];
 "Fut",["cId","int";"pe","int";"p","float";"d","float";"v","float";"cvf","float";"val","float";"sc","float";"setlDate","int";"t","float"];
@@ -91,7 +91,7 @@ let generateSomeCode (namesAndFields:((string*(string*string) list) list)) =
 "AcctTypeDef",["isCust","int";"acctType","string";"name","string";"isNetMargin","int";"priority","int"];
 "AcctSubTypeDef",["acctSubTypeCode","string";"dataType","string";"description","string"];
 "GroupTypeDef",["id","int";"name","string";];
-"GroupDef",["id","int";"aval","string";"description","string"];
+"GroupDef",["id","int";"aVal","string";"description","string"];
 "ClearingOrg",["ec","string";"name","string";"isContractScale","int";"isNetMargin","int";"finalizeMeth","string";
         "oopDeltaMeth","string";"capAnov","int";"lookAheadYears","float";"daysPerYear","int";
         "limitSubAccountOffset","int";"lookAheadDays","int";];
