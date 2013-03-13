@@ -1,15 +1,9 @@
 ﻿module Shaftesbury.Span.Program
 
+open Shaftesbury.FSharp.Utils
 open Shaftesbury.Span.XMLParser
 open Shaftesbury.Span2.XMLParser
 open Shaftesbury.Span.TextParser
-
-let parseXMLFileIntoTree (filename:string) =
-   let xmlDoc = new System.Xml.XmlDocument ()
-   xmlDoc.Load (filename)
-   let reader = new System.Xml.XmlNodeReader (xmlDoc)
-   reader.MoveToContent() |> ignore
-   reader
 
 let XMLfilenames = 
     [
@@ -24,10 +18,10 @@ let main args =
     if Array.length args <> 0 then
         match args.[0] with
         | "XML" -> 
-            let trees = XMLfilenames |> List.map parseXMLFileIntoTree |> List.map Shaftesbury.Span.XMLParser.readXML
+            let trees = XMLfilenames |> List.map prepareXMLFile |> List.map Shaftesbury.Span.XMLParser.readXML
             0
         | "XML2" ->
-            let trees = XMLfilenames |> List.map parseXMLFileIntoTree |> List.map Shaftesbury.Span2.XMLParser.readXML
+            let trees = XMLfilenames |> List.map prepareXMLFile |> List.map Shaftesbury.Span2.XMLParser.readXML
             0
         | _ -> 1
     else

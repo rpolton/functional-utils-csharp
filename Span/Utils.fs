@@ -5,6 +5,8 @@ let second (a,b) = b
 
 let Identity x = x
 
+let between lower upper n = n>=lower && n<=upper
+
 let (|>>) value (fn1,fn2) = fn1 value, fn2 value
 //let (|>>) value fns = fns |> List.map (fun fn -> fn value)
 
@@ -56,3 +58,10 @@ let capitalise (s:string) =
 
 let toDictionary keyFn valueFn lst =
     lst |> List.fold (fun (st:System.Collections.Generic.Dictionary<_,_>) elem -> st.Add (keyFn elem, valueFn elem) ; st) (new System.Collections.Generic.Dictionary<_,_>())
+
+let prepareXMLFile (filename:string) =
+   let xmlDoc = new System.Xml.XmlDocument ()
+   xmlDoc.Load (filename)
+   let reader = new System.Xml.XmlNodeReader (xmlDoc)
+   reader.MoveToContent() |> ignore
+   reader
