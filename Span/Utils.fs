@@ -38,6 +38,11 @@ let toInt (str:string) =
     | true, value -> Some(value)
     | false, _ -> None
 
+let toInt64 (str:string) = 
+    match System.Int64.TryParse str with
+    | true, value -> Some(value)
+    | false, _ -> None
+
 let stringToListOfString fieldWidth s = 
     let rec toGroups s acc =
         match String.length s with
@@ -65,3 +70,11 @@ let prepareXMLFile (filename:string) =
    let reader = new System.Xml.XmlNodeReader (xmlDoc)
    reader.MoveToContent() |> ignore
    reader
+
+let splitter (row:string, lengths:int list) =
+    match lengths with
+    | [] -> None
+    | hd :: tl -> 
+        let edge = min hd (row.Length)
+        Some (row.Substring(0,edge), // use min a b because sometimes the file seems to have fewer columns that the spec indicates
+                (row.Substring(edge),tl))

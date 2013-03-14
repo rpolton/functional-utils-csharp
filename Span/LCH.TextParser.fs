@@ -1,7 +1,7 @@
-﻿module Shaftesbury.Span.TextParser
+﻿module Shaftesbury.Span.LCH.TextParser
 open Shaftesbury.FSharp.Utils
-open Shaftesbury.Span.Span4RowTypes
-open Shaftesbury.Span.ParserDataTypes
+open Shaftesbury.Span.LCH.Span4RowTypes
+open Shaftesbury.Span.LCH.ParserDataTypes
 
 let classify = function
     | FirstNChars 2 "10" as line -> SPANHeader

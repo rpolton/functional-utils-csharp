@@ -1,6 +1,6 @@
-﻿module Shaftesbury.Span.ParserDataTypes
+﻿module Shaftesbury.Span.LCH.ParserDataTypes
 open Shaftesbury.FSharp.Utils
-open Shaftesbury.Span.Span4RowTypes
+open Shaftesbury.Span.LCH.Span4RowTypes
 
 type ContractExpiryDetailsTree =
     {

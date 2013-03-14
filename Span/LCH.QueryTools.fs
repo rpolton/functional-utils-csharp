@@ -1,6 +1,6 @@
-﻿module Shaftesbury.Span.QueryTools
-open Shaftesbury.Span.ParserDataTypes
-open Shaftesbury.Span.Span4RowTypes
+﻿module Shaftesbury.Span.LCH.QueryTools
+open Shaftesbury.Span.LCH.ParserDataTypes
+open Shaftesbury.Span.LCH.Span4RowTypes
 open Shaftesbury.FSharp.Utils
 
 // Tools for the fixed-format SPAN file

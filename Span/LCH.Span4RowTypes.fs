@@ -1,4 +1,4 @@
-﻿module Shaftesbury.Span.Span4RowTypes
+﻿module Shaftesbury.Span.LCH.Span4RowTypes
 open Shaftesbury.FSharp.Utils
 
 type LineType =
