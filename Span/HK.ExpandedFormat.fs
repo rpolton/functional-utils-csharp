@@ -129,7 +129,7 @@ let convertToCombinedCommodity (fields:string list) =
         LimitOptionValue = fields.[8];
         CombinationMargin = fields.[9];
         Filler2 = fields.[10];
-        Commodities = Seq.skip 11 fields |> groupIn 4 |> Seq.map convertToCommodity |> List.ofSeq;
+        Commodities = Seq.skip 11 fields |> List.ofSeq |> groupInto 4 |> List.map convertToCommodity;
     }
 
 type Tier' =
@@ -159,7 +159,7 @@ let convertToIntraCommoditySpreadCharge (fields:string list) =
         RecordId = fields.[0];
         CombinedCommodityCode = fields.[1];
         IntraCommoditySpreadChargeMethodCode = fields.[2];
-        Tiers = Seq.skip 3 fields |> groupIn 3 |> Seq.map convertToTier |> List.ofSeq;
+        Tiers = Seq.skip 3 fields |> List.ofSeq |> groupInto 3 |> List.map convertToTier;
     }
 
 type DeliveryMonth' =
@@ -259,6 +259,22 @@ type RiskArray81 =
     }
 
 let convertToRiskArray81 (fields:string list) =
+    {
+        RecordId = fields.[0];
+        ExchangeAcronym = fields.[1];
+        CommodityCode = fields.[2];
+        UnderlyingCommodityCode = fields.[3];
+        ProductTypeCode = fields.[4];
+        OptionRightCode = fields.[5];
+        FuturesContractMonth = fields.[6] |> toInt;
+        FuturesContractDayOrWeekCode = fields.[7];
+        Filler = fields.[8];
+        OptionContractMonth = fields.[9] |> toInt;
+        OptionContractDayOrWeekCode = fields.[10];
+        Filler2 = fields.[11];
+        OptionStrikePrice = fields.[12] |> toInt;
+        RiskArray = fields |> Seq.skip 13 |> List.ofSeq |> groupInto 2 |> List.map convertToRisk;
+    }
 
 type RiskArray82 =
     {
@@ -282,3 +298,167 @@ type RiskArray82 =
         SettlementPrice : int option;
         SignForSettlementPrice : string;
     }
+
+let convertToRiskArray82 (fields:string list) =
+    {
+        RecordId = fields.[0];
+        ExchangeAcronym = fields.[1];
+        CommodityCode = fields.[2];
+        UnderlyingCommodityCode = fields.[3];
+        ProductTypeCode = fields.[4];
+        OptionRightCode = fields.[5];
+        FuturesContractMonth = fields.[6] |> toInt;
+        FuturesContractDayOrWeekCode = fields.[7];
+        Filler = fields.[8];
+        OptionContractMonth = fields.[9] |> toInt;
+        OptionContractDayOrWeekCode = fields.[10];
+        Filler2 = fields.[11];
+        OptionStrikePrice = fields.[12] |> toInt;
+        RiskArray = fields |> Seq.skip 13 |> Seq.take 14 |> List.ofSeq |> groupInto 2 |> List.map convertToRisk;
+        CompositeDelta = fields.[27] |> toInt;
+        SignForCompositeDelta = fields.[28];
+        ImpliedVolatility = fields.[29] |> toInt;
+        SettlementPrice = fields.[30] |> toInt;
+        SignForSettlementPrice = fields.[31];
+    }
+
+type ArrayCalculationParameters =
+    {
+        RecordId : string;
+        ExchangeAcronym : string;
+        CommodityCode : string;
+        ProductTypeCode : string;
+        FuturesContractMonth : int option;
+        FuturesContractDayOrWeekCode : string;
+        Filler : string;
+        OptionContractMonth : int option;
+        OptionContractDayOrWeekCode : string;
+        Filler2 : string;
+        BaseVolatility : int option;
+        VolatilityScanRange : int option;
+        FuturesPriceScanRange : int option;
+        ExtremeMoveMultiplier : int option;
+        ExtremeMoveCoveredFraction : int option;
+        InterestRate : int option;
+        TimeToExpiration : int option;
+        LookaheadTime : int option;
+        DeltaScalingFactor : int option;
+        ExpirationDate : int64 option;
+        Blank1 : string;
+        Blank2 : string;
+        CouponOrDivYield : int option;
+    }
+
+let convertToArrayCalculationParameters (fields : string list) =
+    {
+        RecordId = fields.[0];
+        ExchangeAcronym = fields.[1];
+        CommodityCode = fields.[2];
+        ProductTypeCode = fields.[3];
+        FuturesContractMonth = fields.[4] |> toInt;
+        FuturesContractDayOrWeekCode = fields.[5];
+        Filler = fields.[6];
+        OptionContractMonth = fields.[7] |> toInt;
+        OptionContractDayOrWeekCode = fields.[8];
+        Filler2 = fields.[9];
+        BaseVolatility = fields.[10] |> toInt;
+        VolatilityScanRange = fields.[11] |> toInt;
+        FuturesPriceScanRange = fields.[12] |> toInt;
+        ExtremeMoveMultiplier = fields.[13] |> toInt;
+        ExtremeMoveCoveredFraction = fields.[14] |> toInt;
+        InterestRate = fields.[15] |> toInt;
+        TimeToExpiration = fields.[16] |> toInt;
+        LookaheadTime = fields.[17] |> toInt;
+        DeltaScalingFactor = fields.[18] |> toInt;
+        ExpirationDate = fields.[19] |> toInt64;
+        Blank1 = fields.[20];
+        Blank2 = fields.[21];
+        CouponOrDivYield = fields.[22] |> toInt;
+    }
+
+type Leg' = 
+    {
+        LegNumber : int option;
+        TierNumber : int option;
+        DeltaPerSpreadRatio : int option;
+        MarketSide : string;
+    }
+
+let private convertToLeg (fields : string list) =
+    {
+        LegNumber = fields.[0] |> toInt;
+        TierNumber = fields.[1] |> toInt;
+        DeltaPerSpreadRatio = fields.[2] |> toInt;
+        MarketSide = fields.[3];
+    }
+
+type TierToTierIntraCommoditySpread =
+    {
+        RecordId : string;
+        CombinedCommodityCode : string;
+        IntraCommoditySpreadMethodCode : string;
+        SpreadPriority : int option;
+        NumberOfLegs : int option;
+        ChargeRate : int option;
+        Legs : Leg' list;
+    }
+
+let convertToTierToTierIntraCommoditySpread (fields : string list) =
+    {
+        RecordId = fields.[0];
+        CombinedCommodityCode = fields.[1];
+        IntraCommoditySpreadMethodCode = fields.[2];
+        SpreadPriority = fields.[3] |> toInt;
+        NumberOfLegs = fields.[4] |> toInt;
+        ChargeRate = fields.[5] |> toInt;
+        Legs = fields |> Seq.skip 6 |> List.ofSeq |> groupInto 4 |> List.map convertToLeg;
+    }
+
+type CurrencyConversionRate =
+    {
+        RecordId : string;
+        FromCurrencyISOCode : string;
+        FromCurrencyByteCode : string;
+        ToCurrencyISOCode : string;
+        ToCurrencyByteCode : string;
+        ConversionMultiplier : int option;
+    }
+
+let convertToCurrencyConversionRate (fields:string list) =
+    {
+        RecordId = fields.[0];
+        FromCurrencyISOCode = fields.[1];
+        FromCurrencyByteCode = fields.[2];
+        ToCurrencyISOCode = fields.[3];
+        ToCurrencyByteCode = fields.[4];
+        ConversionMultiplier = fields.[5] |> toInt;
+    }
+
+type lineType =
+    | ExchangeComplexHeader of ExchangeComplexHeader
+    | ExchangeHeader of ExchangeHeader
+    | CombinedCommodity of CombinedCommodity
+    | IntraCommoditySpreadCharge of IntraCommoditySpreadCharge
+    | SpotCharge of SpotCharge
+    | CombinedCommodityGroup of CombinedCommodityGroup
+    | RiskArray81 of RiskArray81
+    | RiskArray82 of RiskArray82
+    | ArrayCalculationParameters of ArrayCalculationParameters
+    | TierToTierIntraCommoditySpread of TierToTierIntraCommoditySpread
+    | CurrencyConversionRate of CurrencyConversionRate
+    | Unknown of string
+
+let convert (fields:string list) : lineType =
+    match fields.[0].Trim() with
+    | "0" -> ExchangeComplexHeader (convertToExchangeComplexHeader fields)
+    | "1" -> ExchangeHeader (convertToExchangeHeader fields)
+    | "2" -> CombinedCommodity (convertToCombinedCommodity fields)
+    | "3" -> IntraCommoditySpreadCharge (convertToIntraCommoditySpreadCharge fields)
+    | "4" -> SpotCharge (convertToSpotCharge fields)
+    | "5" -> CombinedCommodityGroup (convertToCombinedCommodityGroup fields)
+    | "81" -> RiskArray81  (convertToRiskArray81 fields)
+    | "82" -> RiskArray82 (convertToRiskArray82 fields)
+    | "B" -> ArrayCalculationParameters (convertToArrayCalculationParameters fields)
+    | "C" -> TierToTierIntraCommoditySpread (convertToTierToTierIntraCommoditySpread fields)
+    | "T" -> CurrencyConversionRate (convertToCurrencyConversionRate fields)
+    | _ as str -> Unknown (str)

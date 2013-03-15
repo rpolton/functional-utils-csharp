@@ -38,4 +38,6 @@ let splitRows =
                         let splitRow = Seq.unfold splitter (row, lengths) |> List.ofSeq
                         splitRow) |> List.ofSeq
 
+let records = splitRows |> List.map convert
+
 fs.Close()

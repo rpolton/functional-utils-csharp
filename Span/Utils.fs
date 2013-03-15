@@ -75,6 +75,23 @@ let splitter (row:string, lengths:int list) =
     match lengths with
     | [] -> None
     | hd :: tl -> 
-        let edge = min hd (row.Length)
-        Some (row.Substring(0,edge), // use min a b because sometimes the file seems to have fewer columns that the spec indicates
-                (row.Substring(edge),tl))
+        if System.String.IsNullOrEmpty row then Some("",("",[])) else
+            let edge = min hd (row.Length)
+            Some (row.Substring(0,edge), // use min a b because sometimes the file seems to have fewer columns that the spec indicates
+                    (row.Substring(edge),tl))
+
+let groupInto howMany l =
+    let rec outerLoop inputlst lstlst =
+        
+        let rec loop lst counter acc =
+            match lst with
+            | [] -> [], acc |> List.rev
+            | hd :: tl -> if counter < howMany then loop tl (counter + 1) (hd :: acc) else lst, acc |> List.rev
+
+        let l'', res = loop inputlst 0 []
+
+        match l'' with
+        | [] -> res :: lstlst |> List.rev |> Seq.skip 1
+        | _ -> outerLoop l'' (res :: lstlst)
+
+    outerLoop l [[]] |> List.ofSeq
