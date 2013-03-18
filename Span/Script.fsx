@@ -13,7 +13,7 @@ let XMLfilenames =
         "CFDEndOfDayRiskParameterFile120720.spn";
         "NZFEndOfDayRiskParameterFile130306.spn";
         "SFEEndOfDayRiskParameterFile130128.spn"
-    ] |> List.map (fun nm -> @"C:\Users\Bob\development\functional-utils-csharp\Span\"+nm)
+    ] |> List.map (fun nm -> @"C:\Users\Bob\development\data\Span\"+nm)
 
 let trees = XMLfilenames |> List.map prepareXMLFile |> List.map readXML
 
