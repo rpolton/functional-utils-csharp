@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\Span.XML</DocumentationFile>
-    <StartArguments>XML2</StartArguments>
+    <StartArguments>CME</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,6 +49,7 @@
     <None Include="CodeGenerator.fsx" />
     <Compile Include="HK.ExpandedFormat.fs" />
     <None Include="ExpandedFormatScript.fsx" />
+    <Compile Include="CME.ExpandedFormat.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

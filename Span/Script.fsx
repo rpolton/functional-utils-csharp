@@ -1,11 +1,11 @@
 ﻿#load "Utils.fs"
 open Shaftesbury.FSharp.Utils
 #load "Span2.XMLParserDataTypes.fs"
-open Shaftesbury.Span2.XMLParserDataTypes
+open Shaftesbury.Span.XML2.ParserDataTypes
 #load "Span2.XMLParser.fs"
-open Shaftesbury.Span2.XMLParser
+open Shaftesbury.Span.XML2.Parser
 #load "Span2.QueryTools.fs"
-open Shaftesbury.Span2.QueryTools
+open Shaftesbury.Span.XML2.QueryTools
 
 let XMLfilenames = 
     [

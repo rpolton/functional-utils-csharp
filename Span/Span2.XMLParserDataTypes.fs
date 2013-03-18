@@ -1,4 +1,4 @@
-﻿module Shaftesbury.Span2.XMLParserDataTypes
+﻿namespace Shaftesbury.Span.XML2.ParserDataTypes
 
  // Level 9;
 type SpanXMLDiv = {
