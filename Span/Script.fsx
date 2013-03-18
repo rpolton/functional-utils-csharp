@@ -34,3 +34,13 @@ let tLegNode f input =
     | _ -> None
 
 findNodeWithPath (tLegNode fn) trees.[0]
+
+// We want to find the node which satisifies
+// max{/spanFile/pointInTime/clearingOrg/exchange/ooePf[undPf[pfCode="ANZ"] and exercise="AMER"]/series[setlDate="20130327"]/opt[o="C" and k="2850.00"]/ra/a
+let ooePfNode f input =
+    match input with
+    | Node (SpanXMLOoePf (record) as uNode, _) as node when f record -> Some(uNode,node)
+    | _ -> None
+
+let isOption underlierPf exercise (ooePf:SpanXMLOoePf) =
+    match ooePf with
