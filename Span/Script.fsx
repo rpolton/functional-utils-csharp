@@ -50,9 +50,27 @@ let opt = series |> List.filter (fun (node,path) -> findNode (optNode (optCombin
 
 // Get Max scenario from Risk Array
 // Max{/spanFile/pointInTime/clearingOrg/exchange/ooePf[undPf[pfCode="ANZ"] and exercise="AMER"]/series[setlDate="20130327"]/opt[o="C" and k="2850.00"]/ra/a
-let ra = opt |> List.map (fun (node,path) -> findNode (raNode (fun a -> true)) node) |> List.concat
-let a = ra |> List.choose (fun node ->
-    match node with
-    | Node (SpanXMLRa (record), _) -> Some record.A
-    | _ -> None) |> List.concat |> List.fold (fun st elem -> if st>elem then st else elem) System.Double.MinValue
+opt |> List.map first |> findMaxScenario
 
+// 2a
+// Maximum of the SPAN Risk Array as described in Step1. The trade facts include;
+// CONTRACTYEARMONTH=201309 and SYMBOL=BB
+// max(/spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201309"]/ra/a)
+// max(/spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201312"]/ra/a)
+
+let futPf = trees |> 
+    List.map (fun tree -> findNode (futPfNode (fun futpf -> futpf.PfCode="BB")) tree) |> List.concat |>
+    List.filter (fun tree -> findNode (futNode (fun f -> f.Pe=201309 || f.Pe=201312)) tree |> List.isEmpty |> not)
+
+findMaxScenario futPf
+
+// 2b
+// Composite Delta (Δ) using the following query.
+// /spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201309"]/d
+// /spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201312"]/d
+
+futPf |> List.map (fun tree -> findNode (futNode (fun f -> true)) tree) |> List.concat |> 
+    List.choose (fun f ->
+        match f with 
+        | Node(SpanXMLFut(record),_) -> Some record.D
+        | _ -> None)

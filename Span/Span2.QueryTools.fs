@@ -298,3 +298,11 @@ module QueryTools =
         match input with
         | Node (SpanXMLPointInTime (record) as uNode, _) as node when f record -> Some(uNode,node)
         | _ -> None
+
+    let findMaxScenario tree =
+        let ra = tree |> List.map (fun node -> findNode (raNode (fun a -> true)) node) |> List.concat
+        let a = ra |> List.choose (fun node ->
+            match node with
+            | Node (SpanXMLRa (record), _) -> Some record.A
+            | _ -> None) |> List.concat |> List.fold (fun st elem -> if st>elem then st else elem) System.Double.MinValue
+        a
