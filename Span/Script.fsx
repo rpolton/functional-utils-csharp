@@ -59,8 +59,8 @@ opt |> List.map first |> findMaxScenario
 // max(/spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201312"]/ra/a)
 
 let futPf = trees |> 
-    List.map (fun tree -> findNode (futPfNode (fun futpf -> futpf.PfCode="BB")) tree) |> List.concat |>
-    List.filter (fun tree -> findNode (futNode (fun f -> f.Pe=201309 || f.Pe=201312)) tree |> List.isEmpty |> not)
+            List.map (fun tree -> findNode (futPfNode (fun futpf -> futpf.PfCode="BB")) tree) |> List.concat |>
+            List.filter (fun tree -> findNode (futNode (fun f -> f.Pe=201309 || f.Pe=201312)) tree |> List.isEmpty |> not)
 
 findMaxScenario futPf
 
@@ -69,8 +69,123 @@ findMaxScenario futPf
 // /spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201309"]/d
 // /spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201312"]/d
 
-futPf |> List.map (fun tree -> findNode (futNode (fun f -> true)) tree) |> List.concat |> 
+futPf |> 
+    List.map (fun tree -> findNode (futNode (fun f -> true)) tree) |> List.concat |> 
     List.choose (fun f ->
         match f with 
         | Node(SpanXMLFut(record),_) -> Some record.D
         | _ -> None)
+
+
+// 2c
+// Lot size (Lots) using the following query:
+// /spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201309”]/undC/i [needs verification]
+// /spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201312”]/undC/i
+// The results are 1 and 1.
+ 
+futPf |> 
+    List.map (fun tree -> findNode (undCNode (fun t -> true)) tree) |> List.concat |>
+    List.choose (fun node -> 
+        match node with
+        | Node (SpanXMLUndC(record),_) -> Some record.I
+        | _ -> None)
+
+// 2d.
+// Retrieve the Delta Divisor using the following query:
+// /spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/cvf [needs verification]
+// The result is 0.
+
+trees |> 
+    List.map (fun tree -> findNode (futPfNode (fun futpf -> futpf.PfCode="BB")) tree) |> List.concat |>
+    List.choose (fun node ->
+        match node with
+        | Node (SpanXMLFutPf(record),_) -> Some record.Cvf
+        | _ -> None)
+
+
+// 3. Retrieve Inter-prompt Spread Code.
+// a.
+// Retrieve the intra-tier using the start date. For the two trades shown it should Sep13 and Dec13.
+// /spanFile/pointInTime/clearingOrg/ccDef[cc="BB"]/intraTiers/tier[sPe="201309"]/tn
+// /spanFile/pointInTime/clearingOrg/ccDef[cc="BB"]/intraTiers/tier[sPe="201312"]/tn
+// The results are 3 and 4, respectively.
+ 
+let ccDefs = trees |> List.map (fun tree -> findNode (ccDefNode (fun ccDef -> ccDef.Cc="BB")) tree) |> List.concat
+let intraTiers = ccDefs |> List.map (fun tree -> findNode (intraTiersNode (fun f -> true)) tree) |> List.concat
+
+intraTiers |> 
+    List.map (fun tree -> findNode (tierNode (fun tier -> tier.SPe=201309 || tier.SPe=201312)) tree) |> List.concat |>
+    List.choose (fun node -> 
+        match node with
+        | Node (SpanXMLTier(record),_) -> Some record.Tn
+        | _ -> None)
+
+// b.        Using the tiers, find the respective Spread Charge
+// /spanFile/pointInTime/clearingOrg/ccDef[cc="BB"]/dSpread[tLeg/tn=3 and tLeg/tn=4]/rate/val
+// The result is 120.
+
+let tLegNodeTn n (tLeg:SpanXMLTLeg) = tLeg.Tn = n
+let tLegCombo (tLeg:SpanXMLTLeg) = (tLegNodeTn 3 tLeg) || (tLegNodeTn 4 tLeg)
+
+let dSpreads = ccDefs |>
+                List.map (fun tree -> findNode (dSpreadNode (fun t -> true)) tree) |> List.concat |>
+                List.filter (fun tree -> findNode (tLegNode tLegCombo) tree |> List.isEmpty |> not)
+
+dSpreads |> 
+    List.map (fun tree -> findNode (rateNode (fun t -> true)) tree) |> List.concat |> 
+    List.choose (fun node ->
+        match node with
+        | Node (SpanXMLRate(record),_) -> Some record.Val
+        | _ -> None)
+ 
+// 4.        Calculate Inter-prompt Spread Charge
+//
+//a.     Multiple ‘CURRENTQUANTITY’, Δ and Lots, divide by (1-Delta Divisor) for each trade then add both. Multiply by the Inter-Prompt Spread Charge.
+//
+//(-40x1x1 + 100x1x1) x 120 = $7,200 with a Delta remainder of 60.
+// b.      Calculate Spot Charges
+
+
+
+// 5.        For each trade, retrieve the:
+// 5a.        Spot Charge for the tier in question (note this example on has one tier);
+// SYMBOL=BB
+// /spanFile/pointInTime/clearingOrg/ccDef[cc="BB"]/somTiers/tier/rate/val
+// The result is 12
+
+ccDefs |> 
+    List.map (fun tree -> findNode (somTiersNode (fun t -> true)) tree) |> List.concat |>
+    List.map (fun tree -> findNode (tierWithRateNode (fun t -> true)) tree) |> List.concat |>
+    List.map (fun tree -> findNode (rateNode (fun t -> true)) tree) |> List.concat |>
+    List.choose (fun node ->
+        match node with
+        | Node (SpanXMLRate(rate),_) -> Some rate.Val
+        | _ -> None)
+
+
+// 6. The Prompt Charges is calculated by multiplying the Prompt Charge by the remaining Delta. Continuing from the previous example it is:
+// 60 x 12 = $720
+// 6a. Calculate inter-contract spread charges
+
+// 7. For each trade pair, retrieve the Credit Spread Charge using the following query:
+// /spanFile/pointInTime/clearingOrg/interSpreads/dSpread[tLeg[cc="ANZ"] and tLeg[cc="CBA"]]/rate/val
+// The result is 0.4
+
+let tLegCombo2 (tLeg:SpanXMLTLeg) = (tLeg.Cc = "EE") || (tLeg.Cc = "PQ")
+
+trees |> 
+    List.map (fun tree -> findNode (dSpreadNode (fun t -> true)) tree) |> List.concat |>
+    List.filter (fun tree -> findNode (tLegNode tLegCombo2) tree |> List.isEmpty |> not) |>
+    List.map (fun tree -> findNode (rateNode (fun t -> true)) tree) |> List.concat |>
+    List.choose (fun node ->
+        match node with
+        | Node (SpanXMLRate(rate),_) -> Some rate.Val
+        | _ -> None)
+
+// 8. Multiply A. by the Span Risk Array worst case found in Step 1.
+// Span Risk Array worst case is given by:
+// max(/spanFile/pointInTime/clearingOrg/exchange/ooePf[undPf[pfCode="ANZ"] and exercise="AMER"]/series[setlDate="20130327"]/opt[o="C" and k="2850.00"]/ra/a)
+// The result is 768
+// 0.4 x 768 = $307.20 credit.
+
+// 9. Repeat Steps A & B for all pairs for any remaining delta.
