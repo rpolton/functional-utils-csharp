@@ -19,36 +19,10 @@ let trees = XMLfilenames |> List.map prepareXMLFile |> List.map readXML
 
 let fn (tLeg:SpanXMLTLeg) = tLeg.Cc = "HV"
     
-let findTLegs f tree =
-    let rec findIt tree acc = 
-        match tree with
-        | Node (SpanXMLTLeg (record), _) as node when f record -> node :: acc
-        | Node (_, trees) -> trees |> List.map (fun node -> findIt node acc) |> List.concat
-    findIt tree []
-
-findTLegs fn trees.[0]
-
-let tLegNode f input =
-    match input with
-    | Node (SpanXMLTLeg (record) as uNode, _) as node when f record -> Some(uNode,node)
-    | _ -> None
-
 findNodeWithPath (tLegNode fn) trees.[0]
 
 // We want to find the node which satisifies
 // max{/spanFile/pointInTime/clearingOrg/exchange/ooePf[undPf[pfCode="ANZ"] and exercise="AMER"]/series[setlDate="20130327"]/opt[o="C" and k="2850.00"]/ra/a
-
-// Filter fn for SpanXMLOofPf nodes
-let oofPfNode f input =
-    match input with
-    | Node (SpanXMLOofPf (record) as uNode, _) as node when f record -> Some(uNode,node)
-    | _ -> None
-
-// Filter fn for SpanXMLUndPf nodes
-let undPfNode f input =
-    match input with
-    | Node (SpanXMLUndPf (record) as uNode, _) as node when f record -> Some(uNode,node)
-    | _ -> None
 
 // Predicates for above filter functions
 let undPf_pfCode pfCode (undPf : SpanXMLUndPf) = undPf.PfCode=pfCode
@@ -59,23 +33,11 @@ let americanOptions = trees |> List.map (fun tree -> findNodeWithPath (oofPfNode
 // filter americanOptions including those nodes where pfCode is "BB"
 let BB = americanOptions |> List.filter (fun (node,path) -> findNode (undPfNode (undPf_pfCode "BB")) node |> List.isEmpty |> not)
 
-// Filter fn for SpanXMLSeries nodes
-let seriesNode f input =
-    match input with
-    | Node (SpanXMLSeries (record) as uNode, _) as node when f record -> Some(uNode,node)
-    | _ -> None
-
 // Predicate for SpanXMLSeries SetlDate
 let seriesSetlDate dt (s:SpanXMLSeries) = s.SetlDate=dt
 
 // filter BB including those nodes where series has SetlDate of 20130313
 let series = BB |> List.filter (fun (node,path) -> findNode (seriesNode (seriesSetlDate 20130313)) node |> List.isEmpty |> not)
-
-// Filter fn for SpanXMLOpt nodes
-let optNode f input =
-    match input with
-    | Node (SpanXMLOpt (record) as uNode, _) as node when f record -> Some(uNode,node)
-    | _ -> None
 
 let optO o (opt : SpanXMLOpt) = opt.O = o
 let optK k (opt : SpanXMLOpt) = opt.K = k
@@ -88,11 +50,6 @@ let opt = series |> List.filter (fun (node,path) -> findNode (optNode (optCombin
 
 // Get Max scenario from Risk Array
 // Max{/spanFile/pointInTime/clearingOrg/exchange/ooePf[undPf[pfCode="ANZ"] and exercise="AMER"]/series[setlDate="20130327"]/opt[o="C" and k="2850.00"]/ra/a
-let raNode f input =
-    match input with
-    | Node (SpanXMLRa (record) as uNode, _) as node when f record -> Some(uNode,node)
-    | _ -> None
-
 let ra = opt |> List.map (fun (node,path) -> findNode (raNode (fun a -> true)) node) |> List.concat
 let a = ra |> List.choose (fun node ->
     match node with
