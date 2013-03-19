@@ -85,3 +85,17 @@ let optCombination lst (opt:SpanXMLOpt) = lst |> List.forall (fun predicate -> p
 
 // filter series to include only the nodes which satisfy the list of predicates
 let opt = series |> List.filter (fun (node,path) -> findNode (optNode (optCombination [(optO "C"); (optK 95.5);])) node |> List.isEmpty |> not)
+
+// Get Max scenario from Risk Array
+// Max{/spanFile/pointInTime/clearingOrg/exchange/ooePf[undPf[pfCode="ANZ"] and exercise="AMER"]/series[setlDate="20130327"]/opt[o="C" and k="2850.00"]/ra/a
+let raNode f input =
+    match input with
+    | Node (SpanXMLRa (record) as uNode, _) as node when f record -> Some(uNode,node)
+    | _ -> None
+
+let ra = opt |> List.map (fun (node,path) -> findNode (raNode (fun a -> true)) node) |> List.concat
+let a = ra |> List.choose (fun node ->
+    match node with
+    | Node (SpanXMLRa (record), _) -> Some record.A
+    | _ -> None) |> List.concat |> List.fold (fun st elem -> if st>elem then st else elem) System.Double.MinValue
+
