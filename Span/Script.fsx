@@ -37,10 +37,51 @@ findNodeWithPath (tLegNode fn) trees.[0]
 
 // We want to find the node which satisifies
 // max{/spanFile/pointInTime/clearingOrg/exchange/ooePf[undPf[pfCode="ANZ"] and exercise="AMER"]/series[setlDate="20130327"]/opt[o="C" and k="2850.00"]/ra/a
-let ooePfNode f input =
+
+// Filter fn for SpanXMLOofPf nodes
+let oofPfNode f input =
     match input with
-    | Node (SpanXMLOoePf (record) as uNode, _) as node when f record -> Some(uNode,node)
+    | Node (SpanXMLOofPf (record) as uNode, _) as node when f record -> Some(uNode,node)
     | _ -> None
 
-let isOption underlierPf exercise (ooePf:SpanXMLOoePf) =
-    match ooePf with
+// Filter fn for SpanXMLUndPf nodes
+let undPfNode f input =
+    match input with
+    | Node (SpanXMLUndPf (record) as uNode, _) as node when f record -> Some(uNode,node)
+    | _ -> None
+
+// Predicates for above filter functions
+let undPf_pfCode pfCode (undPf : SpanXMLUndPf) = undPf.PfCode=pfCode
+let oofPf_exercise exercise (o: SpanXMLOofPf) = o.Exercise=exercise
+
+// americanOptions contains all the nodes which satisfy the oofPf_exercise predicate
+let americanOptions = trees |> List.map (fun tree -> findNodeWithPath (oofPfNode (oofPf_exercise "AMER")) tree) |> List.concat
+// filter americanOptions including those nodes where pfCode is "BB"
+let BB = americanOptions |> List.filter (fun (node,path) -> findNode (undPfNode (undPf_pfCode "BB")) node |> List.isEmpty |> not)
+
+// Filter fn for SpanXMLSeries nodes
+let seriesNode f input =
+    match input with
+    | Node (SpanXMLSeries (record) as uNode, _) as node when f record -> Some(uNode,node)
+    | _ -> None
+
+// Predicate for SpanXMLSeries SetlDate
+let seriesSetlDate dt (s:SpanXMLSeries) = s.SetlDate=dt
+
+// filter BB including those nodes where series has SetlDate of 20130313
+let series = BB |> List.filter (fun (node,path) -> findNode (seriesNode (seriesSetlDate 20130313)) node |> List.isEmpty |> not)
+
+// Filter fn for SpanXMLOpt nodes
+let optNode f input =
+    match input with
+    | Node (SpanXMLOpt (record) as uNode, _) as node when f record -> Some(uNode,node)
+    | _ -> None
+
+let optO o (opt : SpanXMLOpt) = opt.O = o
+let optK k (opt : SpanXMLOpt) = opt.K = k
+
+// All the supplied predicates must evaluate to 'true'
+let optCombination lst (opt:SpanXMLOpt) = lst |> List.forall (fun predicate -> predicate opt)
+
+// filter series to include only the nodes which satisfy the list of predicates
+let opt = series |> List.filter (fun (node,path) -> findNode (optNode (optCombination [(optO "C"); (optK 95.5);])) node |> List.isEmpty |> not)

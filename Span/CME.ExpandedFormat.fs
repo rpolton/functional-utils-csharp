@@ -4,6 +4,7 @@ module ExpandedFormat =
     open Shaftesbury.FSharp.Utils
 
     // This parser corresponds to the CME Expanded Format
+    // as described http://cme-ch.com/span/spanl300.htm
 
     let CMEformat_lengths =
         [

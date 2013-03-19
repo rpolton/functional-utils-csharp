@@ -11,7 +11,8 @@ let XMLfilenames =
         "ASXCLFEndOfDayRiskParameterFile130306.spn";
         "CFDEndOfDayRiskParameterFile120720.spn";
         "NZFEndOfDayRiskParameterFile130306.spn";
-        "SFEEndOfDayRiskParameterFile130128.spn"
+        "SFEEndOfDayRiskParameterFile130128.spn";
+        "ASXCLFEndOfDayRiskParameterFile130319.spn";
     ] |> List.map (fun nm -> @"C:\Users\Bob\development\data\Span\"+nm)
 
 let HKfilenames = 
