@@ -144,14 +144,6 @@ type SpanXMLTier = {
 //    Rate : SpanXMLRate list;
 //    ScanRate : SpanXMLScanRate list;
     }
-type SpanXMLTierWithRate = {
-    Tn : int;
-    }
-type SpanXMLTierWithScanRate = {
-    Tn : int;
-    SPe : int;
-    EPe : int;
-    }
 type SpanXMLTLeg = {
     Cc : string;
     Tn : int;
@@ -305,10 +297,10 @@ type SpanXMLInterTiers = struct end
 //    Tier : SpanXMLTier  ;
     
 type SpanXMLSomTiers = struct end
-//    Tier : SpanXMLTierWithRate ;
+//    Tier : SpanXMLTier ;
     
 type SpanXMLRateTiers = struct end
-//    Tier : SpanXMLTierWithScanRate ;
+//    Tier : SpanXMLTier ;
     
 type SpanXMLDSpread = {
     Spread : int;
@@ -477,8 +469,6 @@ type nodeType =
     | SpanXMLFut of SpanXMLFut
     | SpanXMLSeries of SpanXMLSeries
     | SpanXMLTier of SpanXMLTier
-    | SpanXMLTierWithRate of SpanXMLTierWithRate
-    | SpanXMLTierWithScanRate of SpanXMLTierWithScanRate
     | SpanXMLTLeg of SpanXMLTLeg
     | SpanXMLPLeg of SpanXMLPLeg
     | SpanXMLSLeg of SpanXMLSLeg
