@@ -135,18 +135,22 @@ type SpanXMLSeries = {
     }
 type SpanXMLTier = {
     Tn : int;
-    EPe : int;
-    SPe : int;
+    EPe : int option;
+    SPe : int option;
+    Tne : int option;
+    Tbn : int option;
+    Btn : int option;
+    Brk : int option;
+//    Rate : SpanXMLRate list;
+//    ScanRate : SpanXMLScanRate list;
     }
 type SpanXMLTierWithRate = {
-    Tn : int  ;
-//    Rate : SpanXMLRate list;
+    Tn : int;
     }
 type SpanXMLTierWithScanRate = {
-    Tn : int  ;
+    Tn : int;
     SPe : int;
     EPe : int;
-//    ScanRate : SpanXMLScanRate list;
     }
 type SpanXMLTLeg = {
     Cc : string;

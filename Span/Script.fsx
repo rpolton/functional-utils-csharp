@@ -114,7 +114,7 @@ let ccDefs = trees |> List.map (fun tree -> findNode (ccDefNode (fun ccDef -> cc
 let intraTiers = ccDefs |> List.map (fun tree -> findNode (intraTiersNode (fun f -> true)) tree) |> List.concat
 
 intraTiers |> 
-    List.map (fun tree -> findNode (tierNode (fun tier -> tier.SPe=201309 || tier.SPe=201312)) tree) |> List.concat |>
+    List.map (fun tree -> findNode (tierNode (fun tier -> tier.SPe=Some 201309 || tier.SPe=Some 201312)) tree) |> List.concat |>
     List.choose (fun node -> 
         match node with
         | Node (SpanXMLTier(record),_) -> Some record.Tn
@@ -155,7 +155,7 @@ dSpreads |>
 
 ccDefs |> 
     List.map (fun tree -> findNode (somTiersNode (fun t -> true)) tree) |> List.concat |>
-    List.map (fun tree -> findNode (tierWithRateNode (fun t -> true)) tree) |> List.concat |>
+    List.map (fun tree -> findNode (tierNode (fun t -> true)) tree) |> List.concat |>
     List.map (fun tree -> findNode (rateNode (fun t -> true)) tree) |> List.concat |>
     List.choose (fun node ->
         match node with

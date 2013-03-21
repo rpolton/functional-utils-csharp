@@ -124,16 +124,6 @@ module QueryTools =
         | Node (SpanXMLTier (record) as uNode, _) as node when f record -> Some(uNode,node)
         | _ -> None
 
-    let tierWithRateNode f input =
-        match input with
-        | Node (SpanXMLTierWithRate (record) as uNode, _) as node when f record -> Some(uNode,node)
-        | _ -> None
-
-    let tierWithScanRateNode f input =
-        match input with
-        | Node (SpanXMLTierWithScanRate (record) as uNode, _) as node when f record -> Some(uNode,node)
-        | _ -> None
-
     let tLegNode f input =
         match input with
         | Node (SpanXMLTLeg (record) as uNode, _) as node when f record -> Some(uNode,node)

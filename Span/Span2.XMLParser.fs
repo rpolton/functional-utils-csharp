@@ -404,59 +404,33 @@ module Parser =
             }), (undC @ intrRate @ divRate @ scanRate @ opt)
 
     let readTier (reader:System.Xml.XmlReader) : nodeType * tree list =
-        let dict = ["tn",0:>obj; "ePe",0:>obj; "sPe",0:>obj; ] |> toDict
+        let dict = ["tn",0:>obj; "ePe",None:>obj; "sPe",None:>obj; "tne",None:>obj; "tbn",None:>obj; "btn",None:>obj; "brk",None:>obj;] |> toDict
 
-        let rec read () =
+        let rec read rate scanRate =
             match reader.Name with
-            | "tn" as name -> dict.[name] <- readAsInt reader ; read ()
-            | "ePe" as name -> dict.[name] <- readAsInt reader ; read ()
-            | "sPe" as name -> dict.[name] <- readAsInt reader ; read ()
-            | _ -> ignore ()
+            | "tn" as name -> dict.[name] <- readAsInt reader ; read rate scanRate
+            | "ePe" as name -> dict.[name] <- Some (readAsInt reader) ; read rate scanRate
+            | "sPe" as name -> dict.[name] <- Some (readAsInt reader) ; read rate scanRate
+            | "tne" as name -> dict.[name] <- Some (readAsInt reader) ; read rate scanRate
+            | "tbn" as name -> dict.[name] <- Some (readAsInt reader) ; read rate scanRate
+            | "btn" as name -> dict.[name] <- Some (readAsInt reader) ; read rate scanRate
+            | "brk" as name -> dict.[name] <- Some (readAsInt reader) ; read rate scanRate
+            | "rate" as name -> read (Node (readRate reader) :: rate) scanRate
+            | "scanRate" as name -> read rate (Node (readScanRate reader) :: scanRate)
+            | _ -> rate, scanRate
         reader.ReadStartElement()
-        read ()
+        let rate, scanRate = read [] []
         reader.ReadEndElement()
         SpanXMLTier(
             {
                     Tn = dict.["tn"] :?> int
-                    EPe = dict.["ePe"] :?> int
-                    SPe = dict.["sPe"] :?> int
-            }), []
-
-    let readTierWithRate (reader:System.Xml.XmlReader) : nodeType * tree list =
-        let dict = ["tn",0:>obj; ] |> toDict
-
-        let rec read rate =
-            match reader.Name with
-            | "tn" as name -> dict.[name] <- readAsInt reader ; read rate
-            | "rate" as name -> read (Node (readRate reader) :: rate)
-            | _ -> rate
-        reader.ReadStartElement()
-        let rate = read []
-        reader.ReadEndElement()
-        SpanXMLTierWithRate(
-            {
-                    Tn = dict.["tn"] :?> int
-            }), rate
-
-    let readTierWithScanRate (reader:System.Xml.XmlReader) : nodeType * tree list =
-        let dict = ["tn",0:>obj; "ePe",0:>obj; "sPe",0:>obj; ] |> toDict
-
-        let rec read scanRate =
-            match reader.Name with
-            | "tn" as name -> dict.[name] <- readAsInt reader ; read scanRate
-            | "ePe" as name -> dict.[name] <- readAsInt reader ; read scanRate
-            | "sPe" as name -> dict.[name] <- readAsInt reader ; read scanRate
-            | "scanRate" as name -> read (Node (readScanRate reader) :: scanRate)
-            | _ -> scanRate
-        reader.ReadStartElement()
-        let scanRate = read []
-        reader.ReadEndElement()
-        SpanXMLTierWithScanRate(
-            {
-                    Tn = dict.["tn"] :?> int
-                    EPe = dict.["ePe"] :?> int
-                    SPe = dict.["sPe"] :?> int
-            }), scanRate
+                    EPe = dict.["ePe"] :?> int option
+                    SPe = dict.["sPe"] :?> int option
+                    Tne = dict.["tne"] :?> int option
+                    Tbn = dict.["tbn"] :?> int option
+                    Btn = dict.["btn"] :?> int option
+                    Brk = dict.["brk"] :?> int option
+            }), (rate @ scanRate)
 
     let readTLeg (reader:System.Xml.XmlReader) : nodeType * tree list =
         let dict = ["cc","":>obj; "tn",0:>obj; "rs","":>obj; "i",0.0:>obj; ] |> toDict
@@ -861,7 +835,7 @@ module Parser =
     let readSomTiers (reader:System.Xml.XmlReader) : nodeType * tree list =
         let rec read tier =
             match reader.Name with
-            | "tier" as name -> read (Node (readTierWithRate reader) :: tier)
+            | "tier" as name -> read (Node (readTier reader) :: tier)
             | _ -> tier
         reader.ReadStartElement()
         let tier = read []
@@ -871,7 +845,7 @@ module Parser =
     let readRateTiers (reader:System.Xml.XmlReader) : nodeType * tree list =
         let rec read tier =
             match reader.Name with
-            | "tier" as name -> read (Node (readTierWithScanRate reader) :: tier)
+            | "tier" as name -> read (Node (readTier reader) :: tier)
             | _ -> tier
         reader.ReadStartElement()
         let tier = read []
