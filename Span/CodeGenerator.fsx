@@ -33,7 +33,7 @@ let generate name fields =
  
 let generateSomeCode (namesAndFields:((string*(string*string) list) list)) =
     use fs = new System.IO.StreamWriter (@"C:\Users\Bob\development\data\generatedCode")
-    namesAndFields |> List.map (fun (name,fields) -> generate name fields) |> List.concat |> List.iter fs.WriteLine
+    namesAndFields |> List.collect (fun (name,fields) -> generate name fields) |> List.iter fs.WriteLine
     fs.Close()
 
 [

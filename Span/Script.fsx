@@ -29,7 +29,7 @@ let undPf_pfCode pfCode (undPf : SpanXMLUndPf) = undPf.PfCode=pfCode
 let oofPf_exercise exercise (o: SpanXMLOofPf) = o.Exercise=exercise
 
 // americanOptions contains all the nodes which satisfy the oofPf_exercise predicate
-let americanOptions = trees |> List.map (fun tree -> findNodeWithPath (oofPfNode (oofPf_exercise "AMER")) tree) |> List.concat
+let americanOptions = trees |> List.collect (fun tree -> findNodeWithPath (oofPfNode (oofPf_exercise "AMER")) tree)
 // filter americanOptions including those nodes where pfCode is "BB"
 let BB = americanOptions |> List.filter (fun (node,path) -> findNode (undPfNode (undPf_pfCode "BB")) node |> List.isEmpty |> not)
 
@@ -59,7 +59,7 @@ opt |> List.map first |> findMaxScenario
 // max(/spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201312"]/ra/a)
 
 let futPf = trees |> 
-            List.map (fun tree -> findNode (futPfNode (fun futpf -> futpf.PfCode="BB")) tree) |> List.concat |>
+            List.collect (fun tree -> findNode (futPfNode (fun futpf -> futpf.PfCode="BB")) tree) |>
             List.filter (fun tree -> findNode (futNode (fun f -> f.Pe=201309 || f.Pe=201312)) tree |> List.isEmpty |> not)
 
 findMaxScenario futPf
@@ -70,7 +70,7 @@ findMaxScenario futPf
 // /spanFile/pointInTime/clearingOrg/exchange/futPf[pfCode=”BB”]/fut[pe="201312"]/d
 
 futPf |> 
-    List.map (fun tree -> findNode (futNode (fun f -> true)) tree) |> List.concat |> 
+    List.collect (fun tree -> findNode (futNode (fun f -> true)) tree) |> 
     List.choose (fun f ->
         match f with 
         | Node(SpanXMLFut(record),_) -> Some record.D
@@ -84,7 +84,7 @@ futPf |>
 // The results are 1 and 1.
  
 futPf |> 
-    List.map (fun tree -> findNode (undCNode (fun t -> true)) tree) |> List.concat |>
+    List.collect (fun tree -> findNode (undCNode (fun t -> true)) tree) |> 
     List.choose (fun node -> 
         match node with
         | Node (SpanXMLUndC(record),_) -> Some record.I
@@ -96,7 +96,7 @@ futPf |>
 // The result is 0.
 
 trees |> 
-    List.map (fun tree -> findNode (futPfNode (fun futpf -> futpf.PfCode="BB")) tree) |> List.concat |>
+    List.collect (fun tree -> findNode (futPfNode (fun futpf -> futpf.PfCode="BB")) tree) |> 
     List.choose (fun node ->
         match node with
         | Node (SpanXMLFutPf(record),_) -> Some record.Cvf
@@ -110,11 +110,11 @@ trees |>
 // /spanFile/pointInTime/clearingOrg/ccDef[cc="BB"]/intraTiers/tier[sPe="201312"]/tn
 // The results are 3 and 4, respectively.
  
-let ccDefs = trees |> List.map (fun tree -> findNode (ccDefNode (fun ccDef -> ccDef.Cc="BB")) tree) |> List.concat
-let intraTiers = ccDefs |> List.map (fun tree -> findNode (intraTiersNode (fun f -> true)) tree) |> List.concat
+let ccDefs = trees |> List.collect (fun tree -> findNode (ccDefNode (fun ccDef -> ccDef.Cc="BB")) tree)
+let intraTiers = ccDefs |> List.collect (fun tree -> findNode (intraTiersNode (fun f -> true)) tree)
 
 intraTiers |> 
-    List.map (fun tree -> findNode (tierNode (fun tier -> tier.SPe=Some 201309 || tier.SPe=Some 201312)) tree) |> List.concat |>
+    List.collect (fun tree -> findNode (tierNode (fun tier -> tier.SPe=Some 201309 || tier.SPe=Some 201312)) tree) |> 
     List.choose (fun node -> 
         match node with
         | Node (SpanXMLTier(record),_) -> Some record.Tn
@@ -128,11 +128,11 @@ let tLegNodeTn n (tLeg:SpanXMLTLeg) = tLeg.Tn = n
 let tLegCombo (tLeg:SpanXMLTLeg) = (tLegNodeTn 3 tLeg) || (tLegNodeTn 4 tLeg)
 
 let dSpreads = ccDefs |>
-                List.map (fun tree -> findNode (dSpreadNode (fun t -> true)) tree) |> List.concat |>
+                List.collect (fun tree -> findNode (dSpreadNode (fun t -> true)) tree) |> 
                 List.filter (fun tree -> findNode (tLegNode tLegCombo) tree |> List.isEmpty |> not)
 
 dSpreads |> 
-    List.map (fun tree -> findNode (rateNode (fun t -> true)) tree) |> List.concat |> 
+    List.collect (fun tree -> findNode (rateNode (fun t -> true)) tree) |> 
     List.choose (fun node ->
         match node with
         | Node (SpanXMLRate(record),_) -> Some record.Val
@@ -154,9 +154,9 @@ dSpreads |>
 // The result is 12
 
 ccDefs |> 
-    List.map (fun tree -> findNode (somTiersNode (fun t -> true)) tree) |> List.concat |>
-    List.map (fun tree -> findNode (tierNode (fun t -> true)) tree) |> List.concat |>
-    List.map (fun tree -> findNode (rateNode (fun t -> true)) tree) |> List.concat |>
+    List.collect (fun tree -> findNode (somTiersNode (fun t -> true)) tree) |> 
+    List.collect (fun tree -> findNode (tierNode (fun t -> true)) tree) |> 
+    List.collect (fun tree -> findNode (rateNode (fun t -> true)) tree) |> 
     List.choose (fun node ->
         match node with
         | Node (SpanXMLRate(rate),_) -> Some rate.Val
@@ -174,9 +174,9 @@ ccDefs |>
 let tLegCombo2 (tLeg:SpanXMLTLeg) = (tLeg.Cc = "EE") || (tLeg.Cc = "PQ")
 
 trees |> 
-    List.map (fun tree -> findNode (dSpreadNode (fun t -> true)) tree) |> List.concat |>
+    List.collect (fun tree -> findNode (dSpreadNode (fun t -> true)) tree) |> 
     List.filter (fun tree -> findNode (tLegNode tLegCombo2) tree |> List.isEmpty |> not) |>
-    List.map (fun tree -> findNode (rateNode (fun t -> true)) tree) |> List.concat |>
+    List.collect (fun tree -> findNode (rateNode (fun t -> true)) tree) |> 
     List.choose (fun node ->
         match node with
         | Node (SpanXMLRate(rate),_) -> Some rate.Val

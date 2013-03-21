@@ -10,7 +10,7 @@ module QueryTools =
             match tree with
             | Node (SpanXMLDiv (div) as uNode, _) as node when f div -> (node, (uNode :: path |> List.rev)) :: acc
             | Node (_, []) -> acc
-            | Node (uNode, trees) -> trees |> List.map (fun node -> findDivs node acc (uNode :: path)) |> List.concat
+            | Node (uNode, trees) -> trees |> List.collect (fun node -> findDivs node acc (uNode :: path))
         findDivs tree [] []
 
     let findDivs f tree = findDivsWithPath f tree |> List.map first
@@ -30,7 +30,7 @@ module QueryTools =
             | _ ->
                 match tree with
                 | Node (_, []) -> acc
-                | Node (uNode, trees) -> trees |> List.map (fun node -> findNode node acc (uNode :: path)) |> List.concat
+                | Node (uNode, trees) -> trees |> List.collect (fun node -> findNode node acc (uNode :: path))
         findNode tree [] []
 
     //findNodeWithPath (divNode fn) trees.[0]
@@ -290,7 +290,7 @@ module QueryTools =
         | _ -> None
 
     let findMaxScenario tree =
-        let ra = tree |> List.map (fun node -> findNode (raNode (fun a -> true)) node) |> List.concat
+        let ra = tree |> List.collect (fun node -> findNode (raNode (fun a -> true)) node)
         let a = ra |> List.choose (fun node ->
             match node with
             | Node (SpanXMLRa (record), _) -> Some record.A
