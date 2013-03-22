@@ -569,5 +569,5 @@ module Span4RowTypes =
             LotSize = parts.[3] |> toInt;
             SettlementPrice = parts.[4] |> toInt;
             CompositeDelta = parts.[5] |> toFloat;
-            LossValue = parts.[6] |> toLossValues |> List.map (fun s -> toInt s |>> (Identity, (applyToOption fromTick)));
+            LossValue = parts.[6] |> toLossValues |> List.map (fun s -> toInt s |>> (id, (applyToOption fromTick)));
         }
