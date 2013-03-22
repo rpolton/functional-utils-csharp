@@ -96,3 +96,30 @@ module Utils =
             | _ -> outerLoop l'' (res :: lstlst)
 
         outerLoop l [[]] |> List.ofSeq
+
+// I posted this on StackExchange
+// http://stackoverflow.com/questions/2920094/how-can-i-convert-between-f-list-and-f-tuple
+    let tupleToList tpl = 
+        let rec loop tpl counter acc =
+            let getItemPropertyInfo t n = t.GetType().GetProperty(sprintf "Item%d" n)
+            let getItem t n = (getItemPropertyInfo t n).GetValue(t,null)
+            match counter with
+            | 8 -> 
+                match tpl.GetType().GetProperty("Rest") with
+                | null -> acc
+                | _ as r ->
+                    let rest = r.GetValue(tpl,null)
+                    loop rest 2 ((getItem rest 1) :: acc)
+            | _ as n -> 
+                match getItemPropertyInfo tpl n with
+                | null -> acc
+                | _ as item -> loop tpl (counter+1) (item.GetValue(tpl,null) :: acc)
+        loop tpl 1 [] |> List.rev
+
+// Take two list of numbers. The first list should be reduced proportionally by the values indicated in the second list whilst remaining positive.
+// For example, data = [10.;20.;40.;50.], proportions = [1.; 2.; 0.25; 1.]
+// should return [0.; 0.; 37.5; 40.]
+    let reduce (data:float list) proportions =
+        let howMany = List.zip data proportions |> List.map (fun (d,p) -> d * p)
+        let minHowMany = howMany |> List.fold (fun st elem -> min st elem) System.Double.MaxValue
+        List.zip data proportions |> List.map (fun (d,p) -> d - minHowMany * p)
