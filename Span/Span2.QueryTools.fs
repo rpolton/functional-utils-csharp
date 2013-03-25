@@ -294,5 +294,5 @@ module QueryTools =
         let a = ra |> List.choose (fun node ->
             match node with
             | Node (SpanXMLRa (record), _) -> Some record.A
-            | _ -> None) |> List.concat |> List.fold (fun st elem -> if st>elem then st else elem) System.Double.MinValue
+            | _ -> None) |> List.concat |> List.max
         a

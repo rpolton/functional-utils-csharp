@@ -45,6 +45,7 @@
     <Compile Include="Span2.XMLParserDataTypes.fs" />
     <Compile Include="Span2.XMLParser.fs" />
     <Compile Include="Span2.QueryTools.fs" />
+    <Compile Include="SpanProcess.fs" />
     <None Include="Script.fsx" />
     <None Include="CodeGenerator.fsx" />
     <Compile Include="HK.ExpandedFormat.fs" />

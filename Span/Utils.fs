@@ -120,6 +120,5 @@ module Utils =
 // For example, data = [10.;20.;40.;50.], proportions = [1.; 2.; 0.25; 1.]
 // should return [0.; 0.; 37.5; 40.]
     let reduce (data:float list) proportions =
-        let howMany = List.zip data proportions |> List.map (fun (d,p) -> d * p)
-        let minHowMany = howMany |> List.fold (fun st elem -> min st elem) System.Double.MaxValue
-        List.zip data proportions |> List.map (fun (d,p) -> d - minHowMany * p)
+        let howMany = List.zip data proportions |> List.map (fun (d,p) -> d / p)
+        proportions |> List.map (fun p -> List.min howMany * p)

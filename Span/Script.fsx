@@ -189,3 +189,23 @@ trees |>
 // 0.4 x 768 = $307.20 credit.
 
 // 9. Repeat Steps A & B for all pairs for any remaining delta.
+
+
+
+// Given a portfolio of instruments and their quantities and a list of possible ways by which instruments may be matched together with the
+// proportions matchable, calculate the reduced portfolio and show the portions which were removed. For example, if we have 10 of A and 5 of B
+// and the correlations state that 1 of A corresponds to 2 of B then we can reduce the portfolio for consideration (in the margining process) to
+// 7.5 of A and 0 of B, assuming non-integral positions are allowable.
+
+#load "SpanProcess.fs"
+open Shaftesbury.Span.SpanProcess
+
+let portfolio = ["ANZ", 10; "BASF", 1250; "FTSE100", -1000; "BB", -25] |> List.map (fun (inst,q) -> inst, float q)
+let matchingSets = [
+    ["ANZ",1.0; "BB", 1.0;];
+    ["ANZ",0.75; "FTSE100",1.0;];
+    ["ANZ", 1.0; "BASF", 0.1; "BB", 5.0];
+    ["BB", 1.0; "FTSE100", 1.0];
+    ]
+
+let remainingPosns, reductions = findNonOffsettingInsts portfolio matchingSets
