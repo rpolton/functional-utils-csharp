@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\Span.XML</DocumentationFile>
-    <StartArguments>CME</StartArguments>
+    <StartArguments>HK</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +39,7 @@
     <Compile Include="LCH.Span4RowTypes.fs" />
     <Compile Include="LCH.ParserDataTypes.fs" />
     <Compile Include="LCH.TextParser.fs" />
+    <Compile Include="LCH.ExpandedFormat.fs" />
     <Compile Include="LCH.QueryTools.fs" />
     <Compile Include="XMLParserDataTypes.fs" />
     <Compile Include="XMLParser.fs" />

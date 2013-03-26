@@ -37,6 +37,19 @@ let CMEfilenames =
     ]
     |> List.map (fun nm -> @"C:\Users\Bob\development\data\Span\"+nm)
 
+let LCHfilenames = 
+    [
+//        "EF130305.DAT";
+        "HF130305.DAT";
+        "lf130305.dat";
+        "RF130305.DAT";
+        "DF130305.DAT";
+        "MF130305.DAT";
+        "of130305.dat";
+        "xf130305.dat";
+    ]
+    |> List.map (fun nm -> @"C:\Users\Bob\development\data\Span\"+nm)
+
 [<EntryPoint>]
 let main args = 
     if Array.length args <> 0 then
@@ -46,6 +59,21 @@ let main args =
             0
         | "XML2" ->
             let trees = XMLfilenames |> List.map prepareXMLFile |> List.map Shaftesbury.Span.XML2.Parser.readXML
+            0
+        | "LCH" ->
+            let splitRows =
+                LCHfilenames |> 
+                List.map (fun filename ->
+                            use fs = new System.IO.StreamReader(filename)
+                            let lines = readFrom fs
+                            let splitRows = 
+                                lines |> Seq.map (fun row ->
+                                                    let lengths = Shaftesbury.Span.LCH.ExpandedFormat.findLengthArray row
+                                                    Seq.unfold splitter (row, lengths) |> List.ofSeq) |> List.ofSeq
+
+                            fs.Close()
+                            splitRows)
+            let trees = splitRows |> List.map (fun recordSet -> recordSet |> List.map Shaftesbury.Span.LCH.ExpandedFormat.convert |> Shaftesbury.Span.LCH.ExpandedFormat.buildTree)
             0
         | "HK" ->
             let splitRows =
@@ -60,7 +88,7 @@ let main args =
 
                             fs.Close()
                             splitRows)
-            let trees = splitRows |> List.map (fun recordSet -> recordSet |> List.map Shaftesbury.Span.HK.ExpandedFormat.convert)
+            let trees = splitRows |> List.map (fun recordSet -> recordSet |> List.map Shaftesbury.Span.HK.ExpandedFormat.convert |> Shaftesbury.Span.HK.ExpandedFormat.buildTree)
             0
         | "CME" ->
             let splitRows =
@@ -75,7 +103,7 @@ let main args =
 
                             fs.Close()
                             splitRows)
-            let trees = splitRows |> List.map (fun recordSet -> recordSet |> List.map Shaftesbury.Span.CME.ExpandedFormat.convert)
+            let trees = splitRows |> List.map (fun recordSet -> recordSet |> List.map Shaftesbury.Span.CME.ExpandedFormat.convert |> Shaftesbury.Span.CME.ExpandedFormat.buildTree)
             0
         | _ -> 1
     else

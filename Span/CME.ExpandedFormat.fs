@@ -1221,29 +1221,17 @@ module ExpandedFormat =
         | Node of LineType * tree list
 
     let buildTree records =
-        let buildL6 recs =
-            let rec build l acc =
-                match l with 
-                | ArrayCalculationParameters(_) as record :: tl -> build tl (Node (record, []) :: acc)
-                | _ -> l, acc
-            build recs []
-
-        let buildL5 recs =
-            let rec build l acc =
-                match l with 
-                | TierToTierIntraCommoditySpread(_) as record :: tl -> build tl (Node (record, []) :: acc)
-                | SpotCharge(_) as record :: tl -> 
-                    let remainder, l6 = buildL6 tl
-                    build remainder (Node (record, l6) :: acc)
-                | _ -> l, acc
-            build recs []
-
         let buildL4 recs =
             let rec build l acc =
                 match l with 
-                | IntraCommoditySpreadCharge(_) as record :: tl -> 
-                    let remainder, l5 = buildL5 tl
-                    build remainder (Node (record, l5) :: acc)
+                | ArrayCalculationParameters(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | TierToTierIntraCommoditySpread(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | SeriesToSeriesIntraCommoditySpread(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | ScanningTier(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | DailyAdjustmentRate(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | CombinationMarginingMethod(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | OptionOnCombinationProductFamilyDefinition(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | CombinationUnderlyingLegs(_) as record :: tl -> build tl (Node (record, []) :: acc)
                 | _ -> l, acc
             build recs []
 
@@ -1253,9 +1241,22 @@ module ExpandedFormat =
                 | CombinedCommodity(_) as record :: tl -> 
                     let remainder, l4 = buildL4 tl
                     build remainder (Node (record, l4) :: acc)
+                | IntraCommoditySpreadCharge(_) as record :: tl -> 
+                    let remainder, l4 = buildL4 tl
+                    build remainder (Node (record, l4) :: acc)
+                | SpotCharge(_) as record :: tl -> 
+                    let remainder, l4 = buildL4 tl
+                    build remainder (Node (record, l4) :: acc)
+                | InterCommoditySpread(_) as record :: tl -> build tl (Node (record, []) :: acc)
                 | CombinedCommodityGroup(_) as record :: tl -> build tl (Node (record, []) :: acc)
                 | RiskArray81(_) as record :: tl -> build tl (Node (record, []) :: acc)
                 | RiskArray82(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | RiskArray83(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | RiskArray84(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | DebtSecurity91(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | DebtSecurity92(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | PriceConversionParameter(_) as record :: tl -> build tl (Node (record, []) :: acc)
+                | CommodityRedefinition(_) as record :: tl -> build tl (Node (record, []) :: acc)
                 | _ -> l, acc
             build recs []
 

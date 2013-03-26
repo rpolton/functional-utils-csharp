@@ -19,8 +19,8 @@ module ExpandedFormat =
         ] |> toDictionary first second
 
     let findLengthArray = function
-        | FirstNChars 2 "81" as line -> HKformat_lengths.["81"]
-        | FirstNChars 2 "82" as line -> HKformat_lengths.["82"]
+        | FirstNChars 2 "81" -> HKformat_lengths.["81"]
+        | FirstNChars 2 "82" -> HKformat_lengths.["82"]
         | _ as line -> 
             let id = line.Substring (0,1)
             HKformat_lengths.[id]
