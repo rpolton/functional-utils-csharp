@@ -174,6 +174,18 @@ namespace Utils
             return input.Choose(f).First();
         }
 
+        public static Tuple<List<A>,List<B>> Unzip<A,B>(this IEnumerable<Tuple<A,B>> input)
+        {
+            var left = new List<A>();
+            var right = new List<B>();
+            foreach(var tuple in input)
+            {
+                left.Add(tuple.Item1);
+                right.Add(tuple.Item2);
+            }
+            return Tuple.Create(left, right);
+        }
+
 
         #region Standard predicates
         public static bool IsOdd(int v) { return v % 2 != 0; }

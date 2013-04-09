@@ -968,6 +968,16 @@ namespace Utils.Test
             CollectionAssert.AreEquivalent(expected.Item3, output.Item3);
             CollectionAssert.AreEquivalent(expected.Item4, output.Item4);
         }
+
+        [Test]
+        public void UnzipTest1()
+        {
+            var input = new[] {Tuple.Create("1", 1), Tuple.Create("2", 2)};
+            var expected = Tuple.Create(new[] {"1", "2"}.ToList(), new[] {1, 2}.ToList());
+            var output = input.Unzip();
+            CollectionAssert.AreEquivalent(expected.Item1, output.Item1);
+            CollectionAssert.AreEquivalent(expected.Item2, output.Item2);
+        }
     }
 }
 // ReSharper restore InconsistentNaming
