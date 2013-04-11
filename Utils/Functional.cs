@@ -186,6 +186,25 @@ namespace Utils
             return Tuple.Create(left, right);
         }
 
+        /// <summary> Zip3: A list -> B list -> C list -> (A * B* C) list</summary>
+        public static IEnumerable<Tuple<A,B,C>> Zip3<A, B, C>(IEnumerable<A> input1, IEnumerable<B> input2, IEnumerable<C> input3)
+        {
+            IEnumerator<A> enum1 = input1.GetEnumerator();
+            IEnumerator<B> enum2 = input2.GetEnumerator();
+            IEnumerator<C> enum3 = input3.GetEnumerator();
+            bool enum1Moved, enum2Moved, enum3Moved;
+            do
+            {
+                enum1Moved = enum1.MoveNext();
+                enum2Moved = enum2.MoveNext();
+                enum3Moved = enum3.MoveNext();
+                if (enum1Moved && enum2Moved && enum3Moved)
+                    yield return Tuple.Create(enum1.Current, enum2.Current, enum3.Current);
+            } while (enum1Moved && enum2Moved & enum3Moved);
+            if (enum1Moved != enum2Moved || enum1Moved != enum3Moved || enum2Moved != enum3Moved)
+                throw new ArgumentException();
+        }
+
 
         #region Standard predicates
         public static bool IsOdd(int v) { return v % 2 != 0; }

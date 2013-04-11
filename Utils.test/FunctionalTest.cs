@@ -978,6 +978,59 @@ namespace Utils.Test
             CollectionAssert.AreEquivalent(expected.Item1, output.Item1);
             CollectionAssert.AreEquivalent(expected.Item2, output.Item2);
         }
+
+        [Test]
+        public void Zip3Test1()
+        {
+            var input1 = new[] {1, 2, 3, 4, 5};
+            var input2 = new[] {'a', 'b', 'c', 'd', 'e'};
+            var input3 = new[] {1.0, 2.0, 2.5, 3.0, 3.5};
+            var expected = new[]
+                               {
+                                   Tuple.Create(1, 'a', 1.0), Tuple.Create(2, 'b', 2.0), Tuple.Create(3, 'c', 2.5),
+                                   Tuple.Create(4, 'd', 3.0), Tuple.Create(5, 'e', 3.5)
+                               }.ToList();
+
+            var output = Functional.Zip3(input1, input2, input3).ToList();
+
+            CollectionAssert.AreEquivalent(expected, output);
+        }
+
+        [ExpectedException(typeof(ArgumentException))]
+        [Test]
+        public void Zip3Test2()
+        {
+            var input1 = new[] { 1, 2, 3, 4, 5 };
+            var input2 = new[] { 'a', 'b', 'd', 'e' };
+            var input3 = new[] { 1.0, 2.0, 2.5, 3.0, 3.5 };
+            var expected = new[]
+                               {
+                                   Tuple.Create(1, 'a', 1.0), Tuple.Create(2, 'b', 2.0), Tuple.Create(3, 'c', 2.5),
+                                   Tuple.Create(4, 'd', 3.0), Tuple.Create(5, 'e', 3.5)
+                               }.ToList();
+
+            var output = Functional.Zip3(input1, input2, input3).ToList();
+
+            CollectionAssert.AreEquivalent(expected, output);
+        }
+
+        [ExpectedException(typeof(ArgumentException))]
+        [Test]
+        public void Zip3Test3()
+        {
+            var input1 = new[] { 1, 2, 3, 4, 5 };
+            var input2 = new[] { 'a', 'b', 'c', 'd', 'e' };
+            var input3 = new[] { 1.0, 2.0, 2.5, 3.5 };
+            var expected = new[]
+                               {
+                                   Tuple.Create(1, 'a', 1.0), Tuple.Create(2, 'b', 2.0), Tuple.Create(3, 'c', 2.5),
+                                   Tuple.Create(4, 'd', 3.0), Tuple.Create(5, 'e', 3.5)
+                               }.ToList();
+
+            var output = Functional.Zip3(input1, input2, input3).ToList();
+
+            CollectionAssert.AreEquivalent(expected, output);
+        }
     }
 }
 // ReSharper restore InconsistentNaming
