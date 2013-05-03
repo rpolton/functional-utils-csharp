@@ -8,8 +8,8 @@
     <ProjectGuid>{5FD14594-DC95-4F6E-B0E9-9685F2AB8EF0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Utils</RootNamespace>
-    <AssemblyName>Utils</AssemblyName>
+    <RootNamespace>Shaftesbury.Functional.Utils</RootNamespace>
+    <AssemblyName>Shaftesbury.Functional.Utils</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

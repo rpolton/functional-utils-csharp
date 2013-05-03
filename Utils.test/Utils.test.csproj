@@ -8,8 +8,8 @@
     <ProjectGuid>{82C77362-E482-4B40-9E78-7FB406C8CBB1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Utils.Test</RootNamespace>
-    <AssemblyName>Utils.Test</AssemblyName>
+    <RootNamespace>Shaftesbury.Functional.Utils.Test</RootNamespace>
+    <AssemblyName>Shaftesbury.Functional.Utils.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
