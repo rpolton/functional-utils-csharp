@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     public class MDictionary<K, V> //: IDictionary<K,V>
     {

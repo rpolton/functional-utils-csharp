@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     // http://www.codeproject.com/KB/collections/Enumerators.aspx
     public class Enumerators

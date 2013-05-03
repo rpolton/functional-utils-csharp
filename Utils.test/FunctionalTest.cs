@@ -4,7 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
-namespace Utils.Test
+namespace Shaftesbury.Functional.Utils.Test
 {
     [TestFixture]
     public class FunctionalTest

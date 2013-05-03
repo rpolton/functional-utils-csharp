@@ -1,7 +1,6 @@
 using System;
-using System.Reflection;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     public class EmptyOptionTypeException : Exception {}
 

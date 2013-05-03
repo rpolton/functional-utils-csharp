@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-namespace Utils.Test
+namespace Shaftesbury.Functional.Utils.Test
 {
     [TestFixture]
     internal class EnumeratorTest

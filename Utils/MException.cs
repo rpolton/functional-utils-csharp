@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     public class MException<T>
     {

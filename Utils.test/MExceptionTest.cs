@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace Utils.Test
+namespace Shaftesbury.Functional.Utils.Test
 {
     [TestFixture]
     public class MExceptionTest

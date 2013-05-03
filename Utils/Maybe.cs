@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     public interface Maybe<T>
     {

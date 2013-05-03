@@ -4,7 +4,7 @@ using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 
-namespace Utils.Test
+namespace Shaftesbury.Functional.Utils.Test
 {
     public class TupleAssert
     {

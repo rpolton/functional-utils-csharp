@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
 
-namespace Utils.Test
+namespace Shaftesbury.Functional.Utils.Test
 {
     [TestFixture]
     class OptionTypeUnitTest

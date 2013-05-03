@@ -1,5 +1,5 @@
 ﻿
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     public static class StringUtils
     {

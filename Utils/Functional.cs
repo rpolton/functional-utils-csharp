@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     /// <summary>
     /// http://msdn.microsoft.com/en-us/library/ee353738.aspx

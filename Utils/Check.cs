@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     /// <summary>
     /// Opt provides chk, an implementation of '??' for OptionType, and act, which is similar except that it performs the specified action

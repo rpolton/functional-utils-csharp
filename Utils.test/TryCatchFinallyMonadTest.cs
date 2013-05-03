@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace Utils.Test
+namespace Shaftesbury.Functional.Utils.Test
 {
     [TestFixture]
     class TryCatchFinallyMonadTest

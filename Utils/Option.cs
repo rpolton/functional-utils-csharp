@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     public struct Option<T>
     { // ReSharper disable InconsistentNaming

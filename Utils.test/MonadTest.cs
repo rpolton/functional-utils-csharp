@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
-namespace Utils.Test
+namespace Shaftesbury.Functional.Utils.Test
 {
     [TestFixture]
     class MonadTest

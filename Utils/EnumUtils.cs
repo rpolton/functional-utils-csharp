@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.ComponentModel;
 
-namespace Utils
+namespace Shaftesbury.Functional.Utils
 {
     public static class EnumUtils
     {
