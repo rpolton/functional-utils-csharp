@@ -205,6 +205,11 @@ namespace Shaftesbury.Functional.Utils
                 throw new ArgumentException();
         }
 
+        public static IEnumerable<A> Unique<A, Key>(this IEnumerable<A> input1, Func<A,Key> f)
+        {
+            return input.GroupBy(f).SelectMany(i => i.Take(1));
+        }
+
 
         #region Standard predicates
         public static bool IsOdd(int v) { return v % 2 != 0; }
@@ -411,6 +416,14 @@ namespace Shaftesbury.Functional.Utils
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> input)
         {
             return new HashSet<T>(input);
+        }
+    }
+
+    public static class Numerical
+    {
+        public static bool Between<T>(this A item, A left, A right) where A : IComparable<A>
+        {
+            return item.CompareTo(left) >= 0 && item.CompareTo(right) <= 0;
         }
     }
 }
