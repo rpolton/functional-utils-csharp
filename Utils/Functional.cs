@@ -43,9 +43,9 @@ namespace Shaftesbury.Functional.Utils
         }
 
         // An interesting alternative to using a HashSet
-        public static IEnumerable<A> Unique<A>(this IEnumerable<A> input)
+        public static IEnumerable<A> Unique<A,Key>(this IEnumerable<A> input, Func<A,Key> f)
         {
-            return input.GroupBy(i => i).SelectMany(i => i.Take(1));
+            return input.GroupBy<A,Key>(f).SelectMany(i => i.Take(1));
         }
 
         public static B Try<A, B, E>(A input, System.Func<A, B> tryClause, System.Func<A, B> catchClause) where E:Exception
