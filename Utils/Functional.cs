@@ -205,9 +205,9 @@ namespace Shaftesbury.Functional.Utils
                 throw new ArgumentException();
         }
 
-        public static IEnumerable<A> Unique<A, Key>(this IEnumerable<A> input1, Func<A,Key> f)
+        public static IEnumerable<A> Unique<A>(this IEnumerable<A> input)
         {
-            return input.GroupBy(f).SelectMany(i => i.Take(1));
+            return input.GroupBy(i => i).SelectMany(i => i.Take(1));
         }
 
 
