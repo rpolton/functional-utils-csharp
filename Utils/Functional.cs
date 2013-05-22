@@ -45,7 +45,7 @@ namespace Shaftesbury.Functional.Utils
         // An interesting alternative to using a HashSet
         public static IEnumerable<A> Unique<A>(this IEnumerable<A> input)
         {
-            return input.GroupBy(i => i).SelectMany(i => i.Take(1));
+            return input.GroupBy<A,Key>(i => i).SelectMany(i => i.Take(1));
         }
 
         public static B Try<A, B, E>(A input, System.Func<A, B> tryClause, System.Func<A, B> catchClause) where E:Exception
@@ -421,7 +421,7 @@ namespace Shaftesbury.Functional.Utils
 
     public static class Numerical
     {
-        public static bool Between<T>(this A item, A left, A right) where A : IComparable<A>
+        public static bool Between<A>(this A item, A left, A right) where A : IComparable<A>
         {
             return item.CompareTo(left) >= 0 && item.CompareTo(right) <= 0;
         }
