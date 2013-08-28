@@ -201,7 +201,7 @@ namespace Shaftesbury.Functional.Utils
         }
 
         /// <summary> find_noExcept: (A -> bool) -> A list -> A option</summary>
-        public static OptionType<A> find_noExcept<A>(System.Func<A,bool> f, IEnumerable<A> input) where A:class 
+        public static OptionType<A> find_noExcept<A>(Func<A,bool> f, IEnumerable<A> input) where A:class 
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -214,7 +214,7 @@ namespace Shaftesbury.Functional.Utils
         }
 
         /// <summary> pick: (A -> B option) -> A list -> B option</summary>
-        public static OptionType<B> pick_noExcept<A, B>(System.Func<A,OptionType<B>> f, IEnumerable<A> input) where B : class
+        public static OptionType<B> pick_noExcept<A, B>(Func<A,OptionType<B>> f, IEnumerable<A> input) where B : class
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -271,7 +271,7 @@ namespace Shaftesbury.Functional.Utils
         /// <param name="l"></param>
         /// <param name="fn"></param>
         /// <returns></returns>
-        public static string join<T>(string separator, IEnumerable<T> l, System.Func<T, string> fn)
+        public static string join<T>(string separator, IEnumerable<T> l, Func<T, string> fn)
         {
             #region Precondition
             if (l == null) throw new ArgumentNullException("l");
@@ -290,7 +290,7 @@ namespace Shaftesbury.Functional.Utils
         }
 
         /// <summary> findLast: (A -> bool) -> A list -> A</summary>
-        public static A findLast<A>(System.Func<A,bool> f, IList<A> input)
+        public static A findLast<A>(Func<A,bool> f, IList<A> input)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");

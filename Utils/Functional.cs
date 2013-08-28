@@ -12,7 +12,7 @@ namespace Shaftesbury.Functional.Utils
     {
         /// <summary> partition: (A -> bool) -> A list -> A list * A list</summary>
         /// <returns> (list * list). The first list contains all items for which f(a) is true. The second list contains the remainder.</returns>
-        public static Tuple<List<A>, List<A>> partition<A>(System.Func<A,bool> pred, IEnumerable<A> input)
+        public static Tuple<List<A>, List<A>> partition<A>(Func<A,bool> pred, IEnumerable<A> input)
         {
             #region Precondition
             if (input == null) throw new ArgumentNullException("input");
@@ -27,7 +27,7 @@ namespace Shaftesbury.Functional.Utils
             return Tuple.Create(left, right);
         }
 
-        public static IEnumerable<IGrouping<K, V>> Partition<K, V>(this IEnumerable<V> input, System.Func<V, K> groupFn)
+        public static IEnumerable<IGrouping<K, V>> Partition<K, V>(this IEnumerable<V> input, Func<V, K> groupFn)
         {
             #region Precondition
             if (input == null) throw new ArgumentNullException("input");
@@ -36,7 +36,7 @@ namespace Shaftesbury.Functional.Utils
             return from item in input group item by groupFn(item);
         }
 
-        public static IEnumerable<IGrouping<bool, B>> Select<A, B>(this IEnumerable<IGrouping<bool, A>> input, System.Func<A, B> left, System.Func<A, B> right)
+        public static IEnumerable<IGrouping<bool, B>> Select<A, B>(this IEnumerable<IGrouping<bool, A>> input, Func<A, B> left, Func<A, B> right)
         {
             #region Precondition
             if (input == null) throw new ArgumentNullException("input");
@@ -46,7 +46,7 @@ namespace Shaftesbury.Functional.Utils
             return input.SelectMany(grp => grp, (grp, element) => new { grp.Key, Value = (grp.Key ? left : right)(element) }).GroupBy(item => item.Key, item => item.Value);
         }
 
-        public static IEnumerable<IGrouping<G, B>> Select<A, B, G>(this IEnumerable<IGrouping<G, A>> input, IDictionary<G, System.Func<A, B>> transformations)
+        public static IEnumerable<IGrouping<G, B>> Select<A, B, G>(this IEnumerable<IGrouping<G, A>> input, IDictionary<G, Func<A, B>> transformations)
         {
             #region Precondition
             if (input == null) throw new ArgumentNullException("input");
@@ -67,7 +67,7 @@ namespace Shaftesbury.Functional.Utils
             return input.GroupBy<A, Key>(f).SelectMany(i => i.Take(1));
         }
 
-        public static B Try<A, B, E>(this A input, System.Func<A, B> tryClause, System.Func<A, B> catchClause) where E:Exception
+        public static B Try<A, B, E>(this A input, Func<A, B> tryClause, Func<A, B> catchClause) where E:Exception
         {
             #region Precondition
             if (tryClause == null) throw new ArgumentNullException("tryClause");
@@ -85,7 +85,7 @@ namespace Shaftesbury.Functional.Utils
             return results;
         }
 
-        public static B If<A, B>(this A a, System.Func<A,bool> predicate, System.Func<A, B> thenClause, System.Func<A, B> elseClause)
+        public static B If<A, B>(this A a, Func<A,bool> predicate, Func<A, B> thenClause, Func<A, B> elseClause)
         {
             #region Precondition
             if (a == null) throw new ArgumentNullException("a");
@@ -98,11 +98,11 @@ namespace Shaftesbury.Functional.Utils
 
         public class Case<A, B>
         {
-            public System.Func<A,bool> check { get; internal set; }
-            public System.Func<A, B> results { get; internal set; }
+            public Func<A,bool> check { get; internal set; }
+            public Func<A, B> results { get; internal set; }
         }
 
-        public static B Switch<A, B>(this A input, IEnumerable<Case<A, B>> cases, System.Func<A, B> defaultCase)
+        public static B Switch<A, B>(this A input, IEnumerable<Case<A, B>> cases, Func<A, B> defaultCase)
         {
             #region Precondition
             if (cases == null) throw new ArgumentNullException("cases");
@@ -111,7 +111,7 @@ namespace Shaftesbury.Functional.Utils
             return Try<InvalidOperationException>.ToTry(input, a => cases.First(chk => chk.check(a)).results(a), defaultCase);
         }
 
-	    public static IEnumerable<B> Choose<A,B>(this IEnumerable<A> input, System.Func<A,Maybe<B>> chooseFn)
+	    public static IEnumerable<B> Choose<A,B>(this IEnumerable<A> input, Func<A,Maybe<B>> chooseFn)
 	    {
             #region Precondition
             if (input == null) throw new ArgumentNullException("input");
@@ -120,7 +120,7 @@ namespace Shaftesbury.Functional.Utils
             return input.Select(chooseFn).OfType<Something<B>>().Select(intermediate => intermediate.Value);
 	    }
 
-        public static IEnumerable<B> Choose<A, B>(this IEnumerable<A> input, System.Func<A, Option<B>> chooseFn)
+        public static IEnumerable<B> Choose<A, B>(this IEnumerable<A> input, Func<A, Option<B>> chooseFn)
         {
             #region Precondition
             if (input == null) throw new ArgumentNullException("input");
@@ -142,7 +142,7 @@ namespace Shaftesbury.Functional.Utils
         }
 
         /// <summary> not: (A -> bool) -> (A -> bool)</summary>
-        public static System.Func<A, bool> not<A>(System.Func<A, bool> f)
+        public static Func<A, bool> not<A>(Func<A, bool> f)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -151,7 +151,7 @@ namespace Shaftesbury.Functional.Utils
         }
 
         /// <summary> not2: (A -> B -> bool) -> (A -> B -> bool)</summary>
-        public static System.Func<A,B,bool> not2<A, B>(System.Func<A,B,bool> f)
+        public static Func<A,B,bool> not2<A, B>(Func<A,B,bool> f)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -161,7 +161,7 @@ namespace Shaftesbury.Functional.Utils
 
 
         /// <summary> forAll2: (A -> B -> bool) -> A list -> B list -> bool</summary>
-        public static bool forAll2<A, B>(System.Func<A,B,bool> f, IEnumerable<A> input1, IEnumerable<B> input2)
+        public static bool forAll2<A, B>(Func<A,B,bool> f, IEnumerable<A> input1, IEnumerable<B> input2)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -184,7 +184,7 @@ namespace Shaftesbury.Functional.Utils
         }
 
         /// <summary> pick: (A -> B option) -> A list -> B</summary>
-        public static B pick<A, B>(System.Func<A, Maybe<B>> f, IEnumerable<A> input)
+        public static B pick<A, B>(Func<A, Maybe<B>> f, IEnumerable<A> input)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -249,20 +249,20 @@ namespace Shaftesbury.Functional.Utils
         
         public static bool AreEqual<A, B>(A a, B b) { return a.Equals(b); }
 
-        public static System.Func<int,bool> dIsOdd = IsOdd;
-        public static System.Func<int,bool> dIsEven = IsEven;
-        public static System.Func<object,bool> dIsNull = IsNull;
-        public static System.Func<object,bool> dIsNotNull = IsNotNull;
+        public static Func<int,bool> dIsOdd = IsOdd;
+        public static Func<int,bool> dIsEven = IsEven;
+        public static Func<object,bool> dIsNull = IsNull;
+        public static Func<object,bool> dIsNotNull = IsNotNull;
         #endregion
 
         #region Standard initialisers
-        public static System.Func<int,T> Constant<T>(T i) { return j => i; }
+        public static Func<int,T> Constant<T>(T i) { return j => i; }
         #endregion
 
         #region Standard map functions
         public static string Stringify(int a) { return a.ToString(); }
-        public static System.Func<string, string> dQuote = s => "'" + s + "'";
-        public static System.Func<int, string> dStringify = Stringify;
+        public static Func<string, string> dQuote = s => "'" + s + "'";
+        public static Func<int, string> dStringify = Stringify;
         #endregion
 
         #region Standard fold functions
@@ -271,10 +271,10 @@ namespace Shaftesbury.Functional.Utils
         private static int Min(int state, int b) { return state > b ? b : state; }
         private static int Count(int state, int b) { return state + 1; }
 
-        public static System.Func<int, int, int> dSum = Sum;
-        public static System.Func<int, int, int> dMax = Max;
-        public static System.Func<int, int, int> dMin = Min;
-        public static System.Func<int, int, int> dCount = Count;
+        public static Func<int, int, int> dSum = Sum;
+        public static Func<int, int, int> dMax = Max;
+        public static Func<int, int, int> dMin = Min;
+        public static Func<int, int, int> dCount = Count;
         #endregion
 
         #region Standard sort functions
@@ -304,17 +304,17 @@ namespace Shaftesbury.Functional.Utils
         //        return _f(a);
         //    }
 
-        //    private readonly System.Func<A, RetType> _f;
-        //    public Func(System.Func<A, RetType> f)
+        //    private readonly Func<A, RetType> _f;
+        //    public Func(Func<A, RetType> f)
         //    {
         //        _f = f;
         //    }
             
-        //    public static implicit operator System.Func<A,RetType> (Func<A, RetType> f)
+        //    public static implicit operator Func<A,RetType> (Func<A, RetType> f)
         //    {
         //        return f._f;
         //    }
-        //    public static implicit operator Func<A, RetType> (System.Func<A, RetType> f)
+        //    public static implicit operator Func<A, RetType> (Func<A, RetType> f)
         //    {
         //        return new Func<A, RetType>(f);
         //    }
@@ -323,7 +323,7 @@ namespace Shaftesbury.Functional.Utils
         /* 
         // Curried functions for use with Func<A,B> 
         */
-        public static Func<IEnumerable<A>, IEnumerable<A>> filter<A>(System.Func<A,bool> f)
+        public static Func<IEnumerable<A>, IEnumerable<A>> filter<A>(Func<A,bool> f)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -331,7 +331,7 @@ namespace Shaftesbury.Functional.Utils
             return l => l.Where(f);
         }
 
-        public static Func<IEnumerable<A>, IEnumerable<B>> map<A, B>(System.Func<A,B> f)
+        public static Func<IEnumerable<A>, IEnumerable<B>> map<A, B>(Func<A,B> f)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -340,7 +340,7 @@ namespace Shaftesbury.Functional.Utils
         }
 
         /// <summary> choose: (A -> B option) -> A list -> B list</summary>
-        public static Func<IEnumerable<A>, IEnumerable<B>> choose<A, B>(System.Func<A, Maybe<B>> f) where B : class
+        public static Func<IEnumerable<A>, IEnumerable<B>> choose<A, B>(Func<A, Maybe<B>> f) where B : class
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -349,7 +349,7 @@ namespace Shaftesbury.Functional.Utils
         }
 
         /// <summary> init: int -> (int -> A) -> A list</summary>
-        public static IEnumerable<T> Repeat<T>(this System.Func<int, T> f, int howMany)
+        public static IEnumerable<T> Repeat<T>(this Func<int, T> f, int howMany)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -359,7 +359,7 @@ namespace Shaftesbury.Functional.Utils
 
         /// <summary> init: int -> (int -> A) -> A list</summary>
         // ReSharper disable FunctionNeverReturns
-        public static IEnumerable<T> Repeat<T>(this System.Func<int,T> f)
+        public static IEnumerable<T> Repeat<T>(this Func<int,T> f)
         {
             #region Precondition
             if (f == null) throw new ArgumentNullException("f");
@@ -415,7 +415,7 @@ namespace Shaftesbury.Functional.Utils
 
     public static class Case
     {
-        public static Functional.Case<A, B> ToCase<A, B>(System.Func<A,bool> pred, Func<A, B> res)
+        public static Functional.Case<A, B> ToCase<A, B>(Func<A,bool> pred, Func<A, B> res)
         {
             #region Precondition
             if (pred == null) throw new ArgumentNullException("pred");

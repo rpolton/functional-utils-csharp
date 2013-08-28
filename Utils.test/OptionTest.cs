@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Shaftesbury.Functional.Utils.Test
@@ -163,7 +164,7 @@ namespace Shaftesbury.Functional.Utils.Test
         public void OptionBindTest3()
         {
             var input = new[] {1, 2, 3, 4, 5, 6};
-            System.Func<int, bool> isEven = i => i%2 == 0;
+            Func<int, bool> isEven = i => i%2 == 0;
             var expected = new[] {2, 4, 6};
 
             var output = input.Select(i => i.ToOption().Bind(j => isEven(j) ? j.ToOption() : Option<int>.None));
