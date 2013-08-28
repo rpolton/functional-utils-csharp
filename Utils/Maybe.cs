@@ -29,12 +29,20 @@ namespace Shaftesbury.Functional.Utils
 
         public static Maybe<B> Bind<A,B>(this Maybe<A> input, Func<A,Maybe<B>> tfm)
         {
+            #region Precondition
+            if (tfm == null) throw new ArgumentNullException("tfm");
+            #endregion
             var inputAsSmthg = input as Something<A>;
             return inputAsSmthg == null ? new Nothing<B>() : tfm(inputAsSmthg.Value);
         }
 
         public static Maybe<C> SelectMany<A,B,C>(this Maybe<A> a, Func<A,Maybe<B>> tfm, Func<A,B,C> select)
         {
+            #region Precondition
+            if (a == null) throw new ArgumentNullException("a");
+            if (tfm == null) throw new ArgumentNullException("tfm");
+            if (select == null) throw new ArgumentNullException("select");
+            #endregion
             return a.Bind(aval => tfm(aval).Bind(bval => select(aval, bval).ToMaybe()));
         }
     }

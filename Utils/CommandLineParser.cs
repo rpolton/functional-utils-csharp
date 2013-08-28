@@ -26,6 +26,11 @@ namespace Shaftesbury.Functional.Utils
     {
         public static Tuple<List<Argument>, List<Argument>, HashSet<string>, HashSet<string>> SplitArgsInto(this IList<string> input, IEnumerable<Argument> mandatory, IEnumerable<Argument> optional)
         {
+            #region Precondition
+            if (input == null) throw new ArgumentNullException("input");
+            if (mandatory == null) throw new ArgumentNullException("mandatory");
+            if (optional == null) throw new ArgumentNullException("optional");
+            #endregion
             var mandatoryAndValues = new List<Argument>();
             var optionalAndValues = new List<Argument>();
             var unrecognised = new HashSet<string>();

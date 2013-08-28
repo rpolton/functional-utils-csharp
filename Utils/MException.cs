@@ -16,6 +16,9 @@ namespace Shaftesbury.Functional.Utils
 
         public MException(Exception exception)
         {
+            #region Precondition
+            if (exception == null) throw new ArgumentNullException("exception");
+            #endregion
             this.exception = exception;
             HasException = true;
         }
@@ -38,11 +41,18 @@ namespace Shaftesbury.Functional.Utils
 
         public static MException<B> Bind<A, B>(this MException<A> input, Func<A, MException<B>> tfm)
         {
+            #region Precondition
+            if (input == null) throw new ArgumentNullException("input");
+            if (tfm == null) throw new ArgumentNullException("tfm");
+            #endregion
             return input.HasException ? new MException<B>(input.ShowException) : tfm(input.Value);
         }
 
         public static Func<A,MException<B>> Protect<A,B>(this Func<A,MException<B>> tfm)
         {
+            #region Precondition
+            if (tfm == null) throw new ArgumentNullException("tfm");
+            #endregion
             return a =>
                        {
                            try
@@ -58,26 +68,45 @@ namespace Shaftesbury.Functional.Utils
 
         public static MException<B> BindWithProtect<A,B>(this MException<A> input, Func<A,MException<B>> tfm)
         {
+            #region Precondition
+            if (input == null) throw new ArgumentNullException("input");
+            if (tfm == null) throw new ArgumentNullException("tfm");
+            #endregion
             return input.Bind(Protect(tfm));
         }
 
         public static MException<C> SelectMany<A, B, C>(this MException<A> a, Func<A, MException<B>> tfm, Func<A, B, C> select)
         {
+            #region Precondition
+            if (a == null) throw new ArgumentNullException("a");
+            if (tfm == null) throw new ArgumentNullException("tfm");
+            if (select == null) throw new ArgumentNullException("select");
+            #endregion
             return a.BindWithProtect(aval => tfm(aval).Bind(bval => select(aval, bval).ToMException()));
         }
 
         public static A GetValueOrDefault<A>(this MException<A> a)
         {
+            #region Precondition
+            if (a == null) throw new ArgumentNullException("a");
+            #endregion
             return a.HasException ? default(A) : a.Value;
         }
 
         public static A GetValueOrDefault<A>(this MException<A> a, A defValue)
         {
+            #region Precondition
+            if (a == null) throw new ArgumentNullException("a");
+            #endregion
             return a.HasException ? defValue : a.Value;
         }
 
         public static MException<T> Convert<T>(this MException<T> t, Func<Exception,Exception> fn)
         {
+            #region Precondition
+            if (t == null) throw new ArgumentNullException("t");
+            if (fn == null) throw new ArgumentNullException("fn");
+            #endregion
             return t.HasException ? new MException<T>(fn(t.ShowException)) : t;
         }
     }

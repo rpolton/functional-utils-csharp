@@ -229,27 +229,25 @@ namespace Shaftesbury.Functional.Utils.Test
             Assert.AreEqual(s1, s2);
         }
 
-        private readonly Functional.Func<List<int>, string> concatenate =
-            new Functional.Func<List<int>, string>(l => l.Aggregate(string.Empty, csv));
+        private readonly Func<List<int>, string> concatenate = l => l.Aggregate(string.Empty, csv);
 
         [Test]
         public void FwdPipelineTest1()
         {
             List<int> li = DoublingGenerator.Repeat(5).ToList();
-            string s1 = li > concatenate;
+            string s1 = li.In(concatenate);
             Assert.AreEqual("2,4,6,8,10", s1);
         }
 
-        private readonly Functional.Func<List<int>, List<int>> evens_f =
-            new Functional.Func<List<int>, List<int>>(l => l.Where(Functional.IsEven).ToList());
+        private readonly Func<List<int>, List<int>> evens_f = l => l.Where(Functional.IsEven).ToList();
 
         [Test]
         public void FwdPipelineTest2()
         {
             List<int> li = TriplingGenerator.Repeat(5).ToList();
-            List<int> evens = li > evens_f;
-            string s1 = evens > concatenate;
-            string s2 = li > evens_f > concatenate;
+            List<int> evens = li.In(evens_f);
+            string s1 = evens.In(concatenate);
+            string s2 = li.In(evens_f.Then(concatenate));
             Assert.AreEqual("6,12", s1);
             Assert.AreEqual(s1, s2);
         }
@@ -258,7 +256,7 @@ namespace Shaftesbury.Functional.Utils.Test
         public void CompositionTest3()
         {
             List<int> li = TriplingGenerator.Repeat(5).ToList();
-            string s = li > evens_f.Then(concatenate);
+            string s = li.In(evens_f.Then(concatenate));
             Assert.AreEqual("6,12", s);
         }
 
@@ -266,7 +264,7 @@ namespace Shaftesbury.Functional.Utils.Test
         public void CompositionTest4()
         {
             List<int> li = TriplingGenerator.Repeat(5).ToList();
-            string s = evens_f.Then(concatenate).act(li);
+            string s = evens_f.Then(concatenate)(li);
             Assert.AreEqual("6,12", s);
         }
 
@@ -290,9 +288,8 @@ namespace Shaftesbury.Functional.Utils.Test
             string s = indentation.Aggregate(string.Empty, (state, str) => state + str);
             Assert.AreEqual(s, expectedResult);
 
-            var folder =
-                new Functional.Func<List<string>, string>(l => l.Aggregate(string.Empty, (state, str) => state + str));
-            string s1 = indentation > folder;
+            Func<List<string>, string> folder = l => l.Aggregate(string.Empty, (state, str) => state + str);
+            string s1 = indentation.In(folder);
             Assert.AreEqual(s1, expectedResult);
         }
 
@@ -568,7 +565,7 @@ namespace Shaftesbury.Functional.Utils.Test
         public void FwdPipelineTest3()
         {
             var input = DoublingGenerator.Repeat(5).ToList();
-            var output = input > Functional.map(Functional.dStringify);
+            var output = input.In(Functional.map(Functional.dStringify));
             var expected = new List<string>(new[] {"2", "4", "6", "8", "10"});
             CollectionAssert.AreEquivalent(expected, output.ToList());
         }
@@ -577,7 +574,7 @@ namespace Shaftesbury.Functional.Utils.Test
         public void FwdPipelineTest4()
         {
             var input = DoublingGenerator.Repeat(5);
-            var output = input > Functional.map(Functional.dStringify);
+            var output = input.In(Functional.map(Functional.dStringify));
             var expected = new List<string>(new[] {"2", "4", "6", "8", "10"});
             CollectionAssert.AreEquivalent(expected, output.ToList());
         }
@@ -586,7 +583,7 @@ namespace Shaftesbury.Functional.Utils.Test
         public void FwdPipelineTest5()
         {
             IEnumerable<int> l = DoublingGenerator.Repeat(5);
-            var oddElems = l > Functional.filter<int>(Functional.IsOdd);
+            var oddElems = l.In(Functional.filter<int>(Functional.IsOdd));
             Assert.IsTrue(oddElems.ToList().Count == 0);
         }
 
@@ -600,16 +597,16 @@ namespace Shaftesbury.Functional.Utils.Test
             }
         }
 
-        private static Functional.Func<object, string> fn1()
+        private static Func<object, string> fn1()
         {
-            return new Functional.Func<object, string>(delegate(object o)
-                                                           {
-                                                               if (o.GetType() == typeof (Test1))
-                                                                   return fn2(o as Test1);
-                                                               if (o.GetType() == typeof (string))
-                                                                   return fn3(o as string);
-                                                               return null;
-                                                           });
+            return delegate(object o)
+                    {
+                        if (o.GetType() == typeof (Test1))
+                            return fn2(o as Test1);
+                        if (o.GetType() == typeof (string))
+                            return fn3(o as string);
+                        return null;
+                    };
         }
 
         private static string fn2(Test1 i)
@@ -625,11 +622,11 @@ namespace Shaftesbury.Functional.Utils.Test
         [Test]
         public void FwdPipelineTest6()
         {
-            Functional.Func<object, string> fn = fn1();
+            Func<object, string> fn = fn1();
             var i = new Test1(10);
             const string s = "test";
-            Assert.AreEqual("10", i > fn);
-            Assert.AreEqual("test", s > fn);
+            Assert.AreEqual("10", i.In(fn));
+            Assert.AreEqual("test", s.In(fn));
         }
 
         [Test]
@@ -650,17 +647,17 @@ namespace Shaftesbury.Functional.Utils.Test
                 Assert.AreEqual(initValue, i);
         }
 
-        private static Functional.Func<string, int?> fn4()
+        private static Func<string, int?> fn4()
         {
-            return new Functional.Func<string, int?>(s => s.Length > 4 ? s.Length : (int?) null);
+            return s => s.Length > 4 ? s.Length : (int?) null;
         }
 
         [Test]
         public void CurryingTest1()
         {
             const string value = "test";
-            int? i = value > fn4();
-            int? j = (value + "1") > fn4();
+            int? i = value.In(fn4());
+            int? j = (value + "1").In(fn4());
             Assert.IsNull(i);
             Assert.IsNotNull(j);
             Assert.AreEqual(5, j);
@@ -1030,6 +1027,33 @@ namespace Shaftesbury.Functional.Utils.Test
             var output = Functional.Zip3(input1, input2, input3).ToList();
 
             CollectionAssert.AreEquivalent(expected, output);
+        }
+
+        [Test]
+        public void WithTransformationTest1()
+        {
+            var input = new {Data = new[] {1, 2, 3, 4, 5}};
+            var expected = new {Data = new[] {2, 4, 6, 8, 10}};
+            var output = input.In(t => new {Data = t.Data.Select(i => i*2).ToArray()});
+            CollectionAssert.AreEquivalent(expected.Data, output.Data);
+        }
+
+        [Test]
+        public void WithTransformationTest2()
+        {
+            var input = new { Data = new[] { 1, 2, 3, 4, 5 } };
+            var expected = new { Data = new[] { 2, 4, 6, 8, 10 } };
+            var output = input.ThenTransformIfTrue(t => new {Data = t.Data.Select(i => i*2).ToArray()}, i => true);
+            CollectionAssert.AreEquivalent(expected.Data, output.Data);
+        }
+
+        [Test]
+        public void WithTransformationTest3()
+        {
+            var input = new { Data = new[] { 1, 2, 3, 4, 5 } };
+            var expected = new { Data = new[] { 1, 2, 3, 4, 5 } };
+            var output = input.ThenTransformIfTrue(t => new { Data = t.Data.Select(i => i * 2).ToArray() }, i => false);
+            CollectionAssert.AreEquivalent(expected.Data, output.Data);
         }
     }
 }

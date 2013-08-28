@@ -6,11 +6,14 @@ using System.Linq;
 namespace Shaftesbury.Functional.Utils
 {
     // http://www.codeproject.com/KB/collections/Enumerators.aspx
-    public class Enumerators
+    public static class Enumerators
     {
 // ReSharper disable FunctionNeverReturns
-        public static IEnumerable<T> CircularEnum<T>(IEnumerable<T> enumerable)
+        public static IEnumerable<T> CircularEnum<T>(this IEnumerable<T> enumerable)
         {
+            #region Precondition
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            #endregion
             while (true)
             {
                 var enu = enumerable.GetEnumerator();
@@ -22,8 +25,11 @@ namespace Shaftesbury.Functional.Utils
         }
 // ReSharper restore FunctionNeverReturns
 
-        public static IEnumerable ConstrainedEnum(IEnumerable enumerable, int start)
+        public static IEnumerable ConstrainedEnum(this IEnumerable enumerable, int start)
         {
+            #region Precondition
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            #endregion
             if (start < 0)
                 throw new ArgumentException("Invalid step value, must be positive or zero.");
 
@@ -35,8 +41,11 @@ namespace Shaftesbury.Functional.Utils
             }
         }
 
-        public static IEnumerable ConstrainedEnum(IEnumerable enumerable, int start, int count)
+        public static IEnumerable ConstrainedEnum(this IEnumerable enumerable, int start, int count)
         {
+            #region Precondition
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            #endregion
             if (start < 0)
                 throw new ArgumentException("Invalid step value, must be positive or zero.");
             if (count < 0)
@@ -66,8 +75,11 @@ namespace Shaftesbury.Functional.Utils
             }
         }
 
-        public static IEnumerable SteppedEnum(IEnumerable enumerable, int step)
+        public static IEnumerable SteppedEnum(this IEnumerable enumerable, int step)
         {
+            #region Precondition
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            #endregion
             if (step < 1)
                 throw new ArgumentException("Invalid step value, must be greater than zero.");
 
@@ -102,17 +114,11 @@ namespace Shaftesbury.Functional.Utils
         }
         */
 
-        public static IEnumerable ReverseEnum(IList list)
+        public static IEnumerable ReverseEnum(this IList list)
         {
-            if(list.Count<1)
-                throw new ArgumentException("Collection is empty");
-
-            for (int i = list.Count - 1; i >= 0; i--)
-                yield return list[i];
-        }
-
-        public static IEnumerable<T> ReverseEnum<T>(IList<T> list)
-        {
+            #region Precondition
+            if (list == null) throw new ArgumentNullException("list");
+            #endregion
             if (list.Count < 1)
                 throw new ArgumentException("Collection is empty");
 
@@ -120,24 +126,42 @@ namespace Shaftesbury.Functional.Utils
                 yield return list[i];
         }
 
-        public static IEnumerable<T> IgnoreLast<T>(IList<T> list)
+        public static IEnumerable<T> ReverseEnum<T>(this IList<T> list)
+        {
+            #region Precondition
+            if (list == null) throw new ArgumentNullException("list");
+            #endregion
+            if (list.Count < 1)
+                throw new ArgumentException("Collection is empty");
+
+            for (int i = list.Count - 1; i >= 0; i--)
+                yield return list[i];
+        }
+
+        public static IEnumerable<T> IgnoreLast<T>(this IList<T> list)
         {
             return IgnoreLastN(list, 1);
         }
 
-        public static IEnumerable<T> IgnoreLastN<T>(IList<T> list, int ignoreNElements)
+        public static IEnumerable<T> IgnoreLastN<T>(this IList<T> list, int ignoreNElements)
         {
+            #region Precondition
+            if (list == null) throw new ArgumentNullException("list");
+            #endregion
             for (int i = 0; i < list.Count - ignoreNElements; ++i)
                 yield return list[i];
         }
 
-        public static IEnumerable<T> IgnoreFirstAndLast<T>(IList<T> list)
+        public static IEnumerable<T> IgnoreFirstAndLast<T>(this IList<T> list)
         {
+            #region Precondition
+            if (list == null) throw new ArgumentNullException("list");
+            #endregion
             for (int i = 1; i < list.Count - 1; ++i)
                 yield return list[i];
         }
 
-        public static IEnumerable<T> Concat<T>(T first, IEnumerable<T> second)
+        public static IEnumerable<T> Concat<T>(this T first, IEnumerable<T> second)
         {
             return new[] {first}.Concat(second);
         }    

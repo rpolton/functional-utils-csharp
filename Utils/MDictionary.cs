@@ -7,6 +7,9 @@ namespace Shaftesbury.Functional.Utils
     {
         public MDictionary(Dictionary<K, V> dict)
         {
+            #region Precondition
+            if (dict == null) throw new ArgumentNullException("dict");
+            #endregion
             Exceptions = new List<Exception>();
             Dictionary = dict;
         }
@@ -19,12 +22,20 @@ namespace Shaftesbury.Functional.Utils
         // this is Return
         public static MDictionary<K, V> ToMDictionary<K, V>(this Dictionary<K, V> dict)
         {
+            #region Precondition
+            if (dict == null) throw new ArgumentNullException("dict");
+            #endregion
             return new MDictionary<K, V>(dict);
         }
 
         // this is Bind
         public static MDictionary<K, V> ToDictionaryReportingDuplicates<T, K, V>(this IEnumerable<T> input, Func<T, K> keyFn, Func<T, V> valueFn)
         {
+            #region Precondition
+            if (input == null) throw new ArgumentNullException("input");
+            if (keyFn == null) throw new ArgumentNullException("keyFn");
+            if (valueFn == null) throw new ArgumentNullException("valueFn");
+            #endregion
             var mDict = new Dictionary<K, V>().ToMDictionary();
             foreach (var elem in input)
             {

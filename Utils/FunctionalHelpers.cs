@@ -22,6 +22,10 @@ namespace Shaftesbury.Functional.Utils
         /// <param name="adder">an adder function used to determine how to process the value if the key already exists in the dictionary</param>
         public static void AddKeyValueToDict<K, V>(K key, V value, IDictionary<K, V> dict, adder_fn<V> adder)
         {
+            #region Precondition
+            if (dict == null) throw new ArgumentNullException("dict");
+            if (adder == null) throw new ArgumentNullException("adder");
+            #endregion
             if (dict.ContainsKey(key))
             {
                 V oldV = dict[key];
@@ -34,6 +38,9 @@ namespace Shaftesbury.Functional.Utils
         // snippety snip http://msmvps.com/blogs/jon_skeet/archive/2008/02/05/a-simple-extension-method-but-a-beautiful-one.aspx
         public static V GetOrCreate<K, V>(K key, IDictionary<K, V> dictionary) where V : new()
         {
+            #region Precondition
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            #endregion
             V ret;
             if (!dictionary.TryGetValue(key, out ret))
             {
@@ -46,6 +53,10 @@ namespace Shaftesbury.Functional.Utils
         public delegate V factory_fn<V>();
         public static V GetOrCreate<K, V>(K key, factory_fn<V> factory, IDictionary<K, V> dictionary)
         {
+            #region Precondition
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (factory == null) throw new ArgumentNullException("factory");
+            #endregion
             V ret;
             if (!dictionary.TryGetValue(key, out ret))
             {
@@ -57,6 +68,10 @@ namespace Shaftesbury.Functional.Utils
 
         public static Tuple<bool,V> GetOrCreate_x<K, V>(K key, factory_fn<V> factory, IDictionary<K, V> dictionary)
         {
+            #region Precondition
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (factory == null) throw new ArgumentNullException("factory");
+            #endregion
             V ret;
             bool s=dictionary.TryGetValue(key, out ret);
             if (!s)
@@ -71,6 +86,11 @@ namespace Shaftesbury.Functional.Utils
         // See comments below. This is (probably) the preferred method to use.
         public static V InsertOrUpdate<K, V>(K key, factory_fn<V> inserter, update_fn<V> updater, IDictionary<K, V> dictionary)
         {
+            #region Precondition
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (inserter == null) throw new ArgumentNullException("inserter");
+            if (updater == null) throw new ArgumentNullException("updater");
+            #endregion
             V ret;
             if (!dictionary.TryGetValue(key, out ret))
             {
@@ -94,6 +114,9 @@ namespace Shaftesbury.Functional.Utils
         /// <param name="size">If supplied, this indicates the initial capacity of the new List</param>
         public static void AddKeyValueToDictOfList<K,V>(K key, V value, IDictionary<K,List<V>> dict, params int[] size)
         {
+            #region Precondition
+            if (dict == null) throw new ArgumentNullException("dict");
+            #endregion
             if (!dict.ContainsKey(key))
                 dict[key] = size!=null && size.Length==1 ? new List<V>(size[0]) : new List<V>();
             dict[key].Add(value);
@@ -148,6 +171,9 @@ namespace Shaftesbury.Functional.Utils
         // The parameters are reversed from the .NET implementation - just in case we want to do some pipelining
         public static OptionType<V> TryGetValue<K,V>(K key, IDictionary<K,V> dict) where V:class
         {
+            #region Precondition
+            if (dict == null) throw new ArgumentNullException("dict");
+            #endregion
             V v;
             bool s = dict.TryGetValue(key, out v);
             return s ? v : OptionType<V>.Null;
@@ -155,6 +181,9 @@ namespace Shaftesbury.Functional.Utils
 
         public static V? TryGetValue_nullable<K, V>(K key, IDictionary<K, V> dict) where V : struct 
         {
+            #region Precondition
+            if (dict == null) throw new ArgumentNullException("dict");
+            #endregion
             V v;
             bool s = dict.TryGetValue(key, out v);
             return s ? v : (V?)null;
@@ -163,6 +192,9 @@ namespace Shaftesbury.Functional.Utils
         // For those occasions when you just can't live without knowing if the TryGetValue call succeeded
         public static Tuple<bool,OptionType<V>> TryGetValue_x<K, V>(K key, IDictionary<K, V> dict) where V : class
         {
+            #region Precondition
+            if (dict == null) throw new ArgumentNullException("dict");
+            #endregion
             V v;
             bool s = dict.TryGetValue(key, out v);
             return new Tuple<bool,OptionType<V>>(s, s ? v : OptionType<V>.Null);
@@ -171,6 +203,10 @@ namespace Shaftesbury.Functional.Utils
         /// <summary> find_noExcept: (A -> bool) -> A list -> A option</summary>
         public static OptionType<A> find_noExcept<A>(System.Func<A,bool> f, IEnumerable<A> input) where A:class 
         {
+            #region Precondition
+            if (f == null) throw new ArgumentNullException("f");
+            if (input == null) throw new ArgumentNullException("input");
+            #endregion
             foreach (A a in input)
                 if (f(a))
                     return a;
@@ -180,6 +216,10 @@ namespace Shaftesbury.Functional.Utils
         /// <summary> pick: (A -> B option) -> A list -> B option</summary>
         public static OptionType<B> pick_noExcept<A, B>(System.Func<A,OptionType<B>> f, IEnumerable<A> input) where B : class
         {
+            #region Precondition
+            if (f == null) throw new ArgumentNullException("f");
+            if (input == null) throw new ArgumentNullException("input");
+            #endregion
             foreach (A a in input)
             {
                 OptionType<B> intermediate = f(a); // which is, effectively, if(f(a)) return f(a), but without evaluating f twice
@@ -192,6 +232,10 @@ namespace Shaftesbury.Functional.Utils
         public delegate Tuple<A, OptionType<B>> foldAndChoose_fn<A, B>(A a, B b) where B:class;
         public static Tuple<A,List<B>> foldAndChoose<A, B>(foldAndChoose_fn<A, B> f, A initialValue, IEnumerable<B> input) where B:class
         {
+            #region Precondition
+            if (f == null) throw new ArgumentNullException("f");
+            if (input == null) throw new ArgumentNullException("input");
+            #endregion
             A state = initialValue;
             var results = new List<B>();
             foreach (B b in input)
@@ -213,6 +257,9 @@ namespace Shaftesbury.Functional.Utils
         /// <returns></returns>
         public static string join<T>(string separator, IEnumerable<T> l)
         {
+            #region Precondition
+            if (l == null) throw new ArgumentNullException("l");
+            #endregion
             return join(separator, l, id => id.ToString());
         }
 
@@ -226,18 +273,29 @@ namespace Shaftesbury.Functional.Utils
         /// <returns></returns>
         public static string join<T>(string separator, IEnumerable<T> l, System.Func<T, string> fn)
         {
+            #region Precondition
+            if (l == null) throw new ArgumentNullException("l");
+            if (fn == null) throw new ArgumentNullException("fn");
+            #endregion
             return string.Join(separator, l.Select(fn));
         }
 
         /// <summary>return lowerBound &lt; val &lt; upperBound</summary>
         public static bool between<T>(T lowerBound, T upperBound, T val) where T : IComparable
         {
-            return val.CompareTo(lowerBound)==1 && val.CompareTo(upperBound)==-1;
+            #region Precondition
+            if (val == null) throw new ArgumentNullException("val");
+            #endregion
+            return val.CompareTo(lowerBound) == 1 && val.CompareTo(upperBound) == -1;
         }
 
         /// <summary> findLast: (A -> bool) -> A list -> A</summary>
         public static A findLast<A>(System.Func<A,bool> f, IList<A> input)
         {
+            #region Precondition
+            if (f == null) throw new ArgumentNullException("f");
+            if (input == null) throw new ArgumentNullException("input");
+            #endregion
             foreach (A a in Enumerators.ReverseEnum(input))
                 if (f(a))
                     return a;

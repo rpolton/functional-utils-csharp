@@ -28,6 +28,11 @@ namespace Shaftesbury.Functional.Utils
         /// <returns></returns>
         public static DiscriminatedFieldContainer<A> PartitionWithVerify<A>(this IEnumerable<A> input, IEnumerable<A> MajorFields, IEnumerable<A> MinorFields)
         {
+            #region Precondition
+            if (input == null) throw new ArgumentNullException("input");
+            if (MajorFields == null) throw new ArgumentNullException("MajorFields");
+            if (MinorFields == null) throw new ArgumentNullException("MinorFields");
+            #endregion
             var intersect = MajorFields.Intersect(MinorFields).ToList();
             if(intersect.Any()) throw new ArgumentException("Fields cannot be both required and optional: {0}",String.Join(", ",intersect));
             return new DiscriminatedFieldContainer<A>()

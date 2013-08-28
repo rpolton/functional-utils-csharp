@@ -330,5 +330,19 @@ namespace Shaftesbury.Functional.Utils.Test
             string s = Opt.chk<string>("", "alternative");
             Assert.AreEqual("alternative", s);
         }
+
+        [Test]
+        public void CheckTest7()
+        {
+            string s = Opt.chk<string>("", ()=>"alternative");
+            Assert.AreEqual("alternative", s);
+        }
+
+        [Test,ExpectedException(typeof(ArgumentNullException))]
+        public void CheckTest8()
+        {
+            string s = Opt.chk<string>("", (Func<string>)null);
+            Assert.AreEqual("alternative", s);
+        }
     }
 }

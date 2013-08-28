@@ -9,23 +9,26 @@ namespace Shaftesbury.Functional.Utils
     /// </summary>
     public static class Opt
     {
-        public static T chk<T>(OptionType<T> a, T t) where T : class // would rather be able to provide operator ?? but this isn't allowed (at the mo)
+        public static T chk<T>(this OptionType<T> a, T t) where T : class // would rather be able to provide operator ?? but this isn't allowed (at the mo)
         {
             return a.None ? t : a.Some;
         }
 
-        public static T chk<T>(OptionType<T> a) where T : class, new()
+        public static T chk<T>(this OptionType<T> a) where T : class, new()
         {
             return a.None ? new T() : a.Some;
         }
 
-        public static string chk(OptionType<string> a)
+        public static string chk(this OptionType<string> a)
         {
             return a.None ? string.Empty : a.Some;
         }
 
-        public static T chk<T>(OptionType<T> a, Func<T> f) where T : class // for those cases when you shouldn't evaluate the 'else' branch unless it's actually needed
+        public static T chk<T>(this OptionType<T> a, Func<T> f) where T : class // for those cases when you shouldn't evaluate the 'else' branch unless it's actually needed
         {
+            #region Precondition
+            if (f == null) throw new ArgumentNullException("f");
+            #endregion
             return a.None ? f() : a.Some;
         }
 
@@ -34,7 +37,6 @@ namespace Shaftesbury.Functional.Utils
             return string.IsNullOrEmpty(a) ? def : a;
         }
 
-        public delegate void action();
         /// <summary>
         /// If the OptionType has a value, return it, otherwise execute the action and return a new T.
         /// </summary>
@@ -44,8 +46,11 @@ namespace Shaftesbury.Functional.Utils
         /// <returns>either a.Some or new T()</returns>
         /// <remarks>This is the preferred function to use when the action contains a throw clause in which the exception body is 
         /// constructed at the call-site using expensive functions.</remarks>
-        public static T act<T>(OptionType<T> a, action f) where T : class, new()
+        public static T act<T>(this OptionType<T> a, Action f) where T : class, new()
         {
+            #region Precondition
+            if (f == null) throw new ArgumentNullException("f");
+            #endregion
             if (a.None)
             {
                 f();
@@ -63,8 +68,11 @@ namespace Shaftesbury.Functional.Utils
         /// <returns>either a.Value or default T</returns>
         /// <remarks>This is the preferred function to use when the action contains a throw clause in which the exception body is 
         /// constructed at the call-site using expensive functions.</remarks>
-        public static T act<T>(T? a, action f) where T : struct
+        public static T act<T>(this T? a, Action f) where T : struct
         {
+            #region Precondition
+            if (f == null) throw new ArgumentNullException("f");
+            #endregion
             if (!a.HasValue)
             {
                 f();
@@ -76,8 +84,11 @@ namespace Shaftesbury.Functional.Utils
         /// <summary>
         /// If the Nullable has a value, return it, otherwise throw the specified exception.
         /// </summary>
-        public static T act<T>(T? a, Exception ex) where T : struct
+        public static T act<T>(this T? a, Exception ex) where T : struct
         {
+            #region Precondition
+            if (ex == null) throw new ArgumentNullException("ex");
+            #endregion
             if (!a.HasValue) throw ex;
             return a.Value;
         }
@@ -87,14 +98,20 @@ namespace Shaftesbury.Functional.Utils
         /// Additionally, there is the possibility of an InvalidCastException if the Type specified does not inherit from Exception. Use with 
         /// caution.
         /// </summary>
-        public static T act<T>(T? a, string message, Type ex) where T : struct
+        public static T act<T>(this T? a, string message, Type ex) where T : struct
         {
+            #region Precondition
+            if (ex == null) throw new ArgumentNullException("ex");
+            #endregion
             if (!a.HasValue) throw (Exception)ex.InvokeMember(null, BindingFlags.CreateInstance, null, null, new object[] { message });
             return a.Value;
         }
 
-        public static T act<T>(OptionType<T> a, string message, Type ex) where T : class
+        public static T act<T>(this OptionType<T> a, string message, Type ex) where T : class
         {
+            #region Precondition
+            if (ex == null) throw new ArgumentNullException("ex");
+            #endregion
             if (a.None) throw (Exception)ex.InvokeMember(null, BindingFlags.CreateInstance, null, null, new object[] { message });
             return a.Some;
         }
@@ -105,42 +122,42 @@ namespace Shaftesbury.Functional.Utils
     /// </summary>
     public static class Check
     {
-        public static bool IsNull(string s)
+        public static bool IsNull(this string s)
         {
             return string.IsNullOrEmpty(s);
         }
 
-        public static bool IsNotNull(string s)
+        public static bool IsNotNull(this string s)
         {
             return !IsNull(s);
         }
 
-        public static bool IsNull<T>(T t) where T : class
+        public static bool IsNull<T>(this T t) where T : class
         {
             return t == null;
         }
 
-        public static bool IsNotNull<T>(T t) where T : class
+        public static bool IsNotNull<T>(this T t) where T : class
         {
             return !IsNull(t);
         }
 
         // We need these two because OptionType<T> cannot call IsNull(string), it can only call IsNull<string>(string)
-        public static bool IsNullString(string s)
+        public static bool IsNullString(this string s)
         {
             return IsNull(s);
         }
-        public static bool IsNotNullString(string s)
+        public static bool IsNotNullString(this string s)
         {
             return IsNotNull(s);
         }
 
         // Handy checks used throughout GUI code
-        public static bool IsNullAsString(object o)
+        public static bool IsNullAsString(this object o)
         {
             return o == null || string.IsNullOrEmpty(o.ToString());
         }
-        public static bool IsNotNullAsString(object o)
+        public static bool IsNotNullAsString(this object o)
         {
             return o != null && !string.IsNullOrEmpty(o.ToString());
         }

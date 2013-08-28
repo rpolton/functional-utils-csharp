@@ -63,11 +63,18 @@ namespace Shaftesbury.Functional.Utils
 
         public static Option<B> Bind<A, B>(this Option<A> input, Func<A, Option<B>> tfm)
         {
+            #region Precondition
+            if (tfm == null) throw new ArgumentNullException("tfm");
+            #endregion
             return input.IsNone ? Option<B>.None : tfm(input.Some);
         }
 
         public static Option<C> SelectMany<A, B, C>(this Option<A> a, Func<A, Option<B>> tfm, Func<A, B, C> select)
         {
+            #region Precondition
+            if (tfm == null) throw new ArgumentNullException("tfm");
+            if (select == null) throw new ArgumentNullException("select");
+            #endregion
             return a.Bind(aval => tfm(aval).Bind(bval => select(aval, bval).ToOption()));
         }
     }
