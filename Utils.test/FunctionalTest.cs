@@ -800,7 +800,7 @@ namespace Shaftesbury.Functional.Utils.Test
         public void TryTest1()
         {
             int zero = 0;
-            int results = Functional.Try(10, a => a/zero).Catch<DivideByZeroException>(a => a);
+            int results = Functional.Try<int,int,DivideByZeroException>(10, a => a/zero, a => a);
             Assert.AreEqual(10, results);
         }
 

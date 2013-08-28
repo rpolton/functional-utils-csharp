@@ -85,57 +85,6 @@ namespace Shaftesbury.Functional.Utils
             return results;
         }
 
-        public class Trier<A, B>
-        {
-            public Trier(A input, System.Func<A, B> tryClause)
-            {
-                #region Precondition
-                if (input == null) throw new ArgumentNullException("input");
-                if (tryClause == null) throw new ArgumentNullException("tryClause");
-                #endregion
-                Input = input;
-                TryClause = tryClause;
-            }
-
-            public B Catch<E>(System.Func<A, B> catchClause) where E:Exception
-            {
-                #region Precondition
-                if (catchClause == null) throw new ArgumentNullException("catchClause");
-                #endregion
-                try
-                {
-                    return TryClause(Input);
-                }
-                catch (E)
-                {
-                    return catchClause(Input);
-                }
-            }
-
-            public B Finally(Action<A> finallyClause)
-            {
-                #region Precondition
-                if (finallyClause == null) throw new ArgumentNullException("finallyClause");
-                #endregion
-                try
-                {
-                    return TryClause(Input);
-                }
-                finally
-                {
-                    finallyClause(Input);
-                }
-            }
-
-            A Input { get; set; }
-            System.Func<A, B> TryClause { get; set; }
-        }
-
-        public static Trier<A, B> Try<A, B>(this A input, System.Func<A, B> tryClause)
-        {
-            return new Trier<A,B>(input,tryClause);
-        }
-
         public static B If<A, B>(this A a, System.Func<A,bool> predicate, System.Func<A, B> thenClause, System.Func<A, B> elseClause)
         {
             #region Precondition
