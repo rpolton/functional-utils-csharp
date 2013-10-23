@@ -572,7 +572,7 @@ public class functionalTest
     @Test
     public void foldAndChooseTest1() throws Exception
     {
-        Dictionary<Integer, Double> missingPricesPerDate = new Hashtable<Integer, Double>();
+        Map<Integer, Double> missingPricesPerDate = new Hashtable<Integer, Double>();
         Collection<Integer> openedDays = functional.init(TriplingGenerator, 5);
         Double last = 10.0;
         for (int day : openedDays)
@@ -603,7 +603,7 @@ public class functionalTest
                 }, 10.0, openedDays2);
 
         Assert.assertEquals(last, output.getValue0());
-        List<Integer> keys = functional.convert(missingPricesPerDate.keys());
+        List<Integer> keys = new ArrayList<Integer>(missingPricesPerDate.keySet());
         Collections.sort(keys);
         Assert.assertArrayEquals(keys.toArray(),
                 functional.map(
