@@ -741,5 +741,15 @@ public class functionalTest
         Assert.assertEquals((Integer)10, functional.findLast(functional.IsEven, l));
     }
 
+    @Test
+    public void seqMapTest1() throws Exception
+    {
+        List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5}); //Enumerable.Range(1, 5).ToList();
+        List<String> expected = Arrays.asList(new String[] {"1", "2", "3", "4", "5"});
+        Iterable<String> output = functional.seq.map(functional.dStringify, input);
+        Iterator<String> it = output.iterator();
+        for(int i=0; i<expected.size(); ++i)
+            Assert.assertEquals(expected.get(i), it.next());
+    }
 
 }

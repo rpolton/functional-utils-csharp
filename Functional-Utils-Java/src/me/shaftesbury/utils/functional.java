@@ -296,4 +296,35 @@ public final class functional
             state = f.apply(state, a);
         return state;
     }
+
+    public static final class seq
+    {
+        public static final <T,U>Iterable<U> map(final Func<T,U> f, final Iterable<T> input) throws Exception
+        {
+            if (input == null) throw new /*ArgumentNull*/Exception("input");
+
+            return new Iterable<U>() {
+                private final Iterator<T> _input=input.iterator();
+                @Override
+                public Iterator<U> iterator() {
+                    return new Iterator<U>() {
+                        @Override
+                        public boolean hasNext() {
+                            return _input.hasNext();
+                        }
+
+                        @Override
+                        public U next() {
+                            return f.apply(_input.next());
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                }
+            };
+        }
+    }
 }
