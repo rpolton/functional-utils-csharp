@@ -5,6 +5,13 @@
  * Time: 20:04
  * To change this template use File | Settings | File Templates.
  */
+/**
+ * Created with IntelliJ IDEA.
+ * User: Bob
+ * Date: 16/10/13
+ * Time: 20:04
+ * To change this template use File | Settings | File Templates.
+ */
 package me.shaftesbury.utils;
 
 import org.javatuples.Pair;
@@ -15,12 +22,12 @@ public final class functional
 {
     private functional() {}
 
-    public static boolean isNullOrEmpty(final String s)
+    public final static boolean isNullOrEmpty(final String s)
     {
         return s==null || s.isEmpty();
     }
 
-    public static <T>String join(final String delimiter, final Iterable<T> strs)
+    public final static <T>String join(final String delimiter, final Iterable<T> strs)
     {
         if(strs==null) return "";
         Iterator<T> it = strs.iterator();
@@ -35,7 +42,7 @@ public final class functional
         return sb.toString();
     }
 
-    public static String indentBy(final int howMany, final String unitOfIndentation, final String indentThis)
+    public final static String indentBy(final int howMany, final String unitOfIndentation, final String indentThis)
     {
         Collection<String> indentation = init(
                 new Func<Integer, String>() {
@@ -52,9 +59,9 @@ public final class functional
         },indentThis, indentation);
     }
 
-    public static <A, B>Pair<A,Collection<B>> foldAndChoose(
-        Func2<A, B, Pair<A,Option<B>>> f,
-        A initialValue, Iterable<B> input) throws Exception
+    public final static <A, B>Pair<A,Collection<B>> foldAndChoose(
+            final Func2<A, B, Pair<A,Option<B>>> f,
+            final A initialValue, final Iterable<B> input) throws Exception
     {
         if (f == null) throw new /*ArgumentNull*/Exception("f");
         if (input == null) throw new /*ArgumentNull*/Exception("input");
@@ -87,7 +94,7 @@ public final class functional
     /// <param name="l"></param>
     /// <param name="fn"></param>
     /// <returns></returns>
-    public static <T>String join(String separator, Iterable<T> l, Func<T, String> fn) throws Exception
+    public final static <T>String join(final String separator, final Iterable<T> l, final Func<T, String> fn) throws Exception
     {
         if (l == null) throw new /*ArgumentNull*/Exception("l");
         if (fn == null) throw new /*ArgumentNull*/Exception("fn");
@@ -96,7 +103,7 @@ public final class functional
     }
 
     /// <summary>return lowerBound &lt; val &lt; upperBound</summary>
-    public static <T extends Comparable<T>>boolean between(T lowerBound, T upperBound, T val) throws Exception
+    public final static <T extends Comparable<T>>boolean between(final T lowerBound, final T upperBound, final T val) throws Exception
     {
         if (val == null) throw new /*ArgumentNull*/Exception("val");
 
@@ -104,7 +111,7 @@ public final class functional
     }
 
     /// <summary> findLast: (A -> bool) -> A list -> A</summary>
-    public static <A>A findLast(Func<A,Boolean> f, List<A> input) throws Exception
+    public final static <A>A findLast(final Func<A,Boolean> f, final List<A> input) throws Exception
     {
         if (f == null) throw new /*ArgumentNull*/Exception("f");
         if (input == null) throw new /*ArgumentNull*/Exception("input");
@@ -120,12 +127,12 @@ public final class functional
         public R apply(final A a);
     }
 
-    public static <A, B> B In( final A input, final Func<A, B> f)
+    public final static <A, B> B In( final A input, final Func<A, B> f)
     {
         return f.apply(input);
     }
 
-    public static <A, B, C> Func<A, C> Then(final Func<A, B> f, final Func<B, C> g)
+    public final static <A, B, C> Func<A, C> Then(final Func<A, B> f, final Func<B, C> g)
     {
         return new Func<A, C>()
         {
@@ -133,6 +140,16 @@ public final class functional
             public C apply(A x)
             {
                 return g.apply(f.apply(x));
+            }
+        };
+    }
+
+    public final static <T>Func<T,T> Identity()
+    {
+        return new Func<T, T>() {
+            @Override
+            public T apply(T t) {
+                return t;
             }
         };
     }
@@ -162,7 +179,7 @@ public final class functional
 
 
     /// <summary> init: int -> (int -> A) -> A list</summary>
-    public static <T>Collection<T> init(final Func<Integer,T> f,final int howMany)
+    public final static <T>Collection<T> init(final Func<Integer,T> f,final int howMany)
     {
         //if (f == null) throw new ArgumentNullException("f");
 
@@ -173,7 +190,7 @@ public final class functional
     }
 
     /// <summary> map: (A -> B) -> A list -> B list</summary>
-    public static <A,B> Collection<B> map(final Func<A, B> f, final Iterable<A> input)
+    public final static <A,B> Collection<B> map(final Func<A, B> f, final Iterable<A> input)
     {
         Collection<B> output = new ArrayList<B>();
         for(A a : input)
@@ -182,30 +199,30 @@ public final class functional
     }
 
     /// <summary> sortWith: (A -> A -> int) -> A list -> A list</summary>
-    public static <A>Collection<A> sortWith(final Comparator<A> f, final List<A> input)
+    public final static <A>Collection<A> sortWith(final Comparator<A> f, final List<A> input)
     {
         List<A> output = new ArrayList<A>(input);
         Collections.sort(output, f);
         return output;
     }
 
-    public static <A extends Comparable<A>>int Sorter(final A left, final A right)
+    public final static <A extends Comparable<A>>int Sorter(final A left, final A right)
     {
         return left.compareTo(right);
     }
-    public static Comparator<Integer> dSorter = new Comparator<Integer>()
+    public final static Comparator<Integer> dSorter = new Comparator<Integer>()
     {
         @Override public int compare(Integer i, Integer j) { return Sorter(i, j); }
     };
 
-    public static <T> String Stringify(final T a) { return a.toString(); }
-    public static Func<Integer, String> dStringify = new Func<Integer, String>()
+    public final static <T> String Stringify(final T a) { return a.toString(); }
+    public final static Func<Integer, String> dStringify = new Func<Integer, String>()
     {
         @Override public String apply(Integer i) { return Stringify(i); }
     };
 
     /// <summary> forAll2: (A -> B -> bool) -> A list -> B list -> bool</summary>
-    public static <A, B>boolean forAll2(final Func2<A, B,Boolean> f, final Iterable<A> input1, final Iterable<B> input2) throws Exception
+    public final static <A, B>boolean forAll2(final Func2<A, B,Boolean> f, final Iterable<A> input1, final Iterable<B> input2) throws Exception
     {
         Iterator<A> enum1 = input1.iterator();
         Iterator<B> enum2 = input2.iterator();
@@ -222,7 +239,7 @@ public final class functional
         return true;
     }
 
-    public static <A>Collection<A> filter(final Func<A,Boolean> pred, final Iterable<A> input)
+    public final static <A>Collection<A> filter(final Func<A,Boolean> pred, final Iterable<A> input)
     {
         Collection<A> output = new ArrayList<A>();
         for(A element : input)
@@ -234,7 +251,7 @@ public final class functional
     }
 
     /// <summary> exists: (A -> bool) -> A list -> bool</summary>
-    public static <A>boolean exists(final Func<A,Boolean> f, final Iterable<A> input)
+    public final static <A>boolean exists(final Func<A,Boolean> f, final Iterable<A> input)
     {
         for(A a : input)
             if(f.apply(a))
@@ -243,26 +260,26 @@ public final class functional
     }
 
     /// <summary> not: (A -> bool) -> (A -> bool)</summary>
-    public static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
+    public final static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
     {
         return new Func<A,Boolean>(){@Override public Boolean apply(A a) { return !f.apply(a);}};
     }
 
     /// <summary> forAll: (A -> bool) -> A list -> bool</summary>
-    public static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<A> input)
+    public final static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<A> input)
     {
         return !exists(not(f), input);
     }
 
     /// <summary> not2: (A -> B -> bool) -> (A -> B -> bool)</summary>
-    public static <A,B>Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
+    public final static <A,B>Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
     {
         return new Func2<A,B,Boolean>(){@Override public Boolean apply(A a, B b) { return !f.apply(a,b);}};
     }
 
     /// <summary> partition: (A -> bool) -> A list -> A list * A list</summary>
     /// <returns> (list * list). The first list contains all items for which f(a) is true. The second list contains the remainder.</returns>
-    public static <A>org.javatuples.Pair<Collection<A>,Collection<A>> partition(final Func<A,Boolean> f, final Iterable<A> input)
+    public final static <A>org.javatuples.Pair<Collection<A>,Collection<A>> partition(final Func<A,Boolean> f, final Iterable<A> input)
     {
         Collection<A> left = new ArrayList<A>();
         Collection<A> right = new ArrayList<A>();
@@ -273,28 +290,38 @@ public final class functional
                 right.add(a);
         return new org.javatuples.Pair<Collection<A>,Collection<A>>(left, right);
     }
-    /*
+
     /// <summary> choose: (A -> B option) -> A list -> B list</summary>
-    public static <A, B>Collection<B> choose(Func<A, Option<B>> f, Iterable<A> input)
+    public final static <A, B>Collection<B> choose(final Func<A, Option<B>> f, final Iterable<A> input) throws OptionNoValueAccessException
     {
         Collection<B> results = new ArrayList<B>();
         for(A a : input)
         {
             Option<B> intermediate = f.apply(a);
-            if (!intermediate.None)
-                results.add(intermediate.Some);
+            if (!intermediate.isNone())
+                results.add(intermediate.Some());
         }
         return results;
     }
-    */
+
 
     /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
-    public static <A, B>A fold(Func2<A, B, A> f, A initialValue, Iterable<B> input)
+    public final static <A, B>A fold(final Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
     {
         A state = initialValue;
         for (B a : input)
             state = f.apply(state, a);
         return state;
+    }
+
+    public final static <T,K,V>Map<K,V> toDictionary(final Func<T,K> keyFn, final Func<T,V> valueFn, Iterable<T> input) throws Exception
+    {
+        if(keyFn==null) throw new Exception("keyFn");
+        if(valueFn==null) throw new Exception("valueFn");
+
+        Map<K,V> output = new HashMap<K,V>();
+        for(T element : input) output.put(keyFn.apply(element),valueFn.apply(element));
+        return output;
     }
 
     public static final class seq
@@ -306,15 +333,15 @@ public final class functional
             return new Iterable<U>() {
                 private final Iterator<T> _input=input.iterator();
                 @Override
-                public Iterator<U> iterator() {
+                public final Iterator<U> iterator() {
                     return new Iterator<U>() {
                         @Override
-                        public boolean hasNext() {
+                        public final boolean hasNext() {
                             return _input.hasNext();
                         }
 
                         @Override
-                        public U next() {
+                        public final U next() {
                             return f.apply(_input.next());
                         }
 

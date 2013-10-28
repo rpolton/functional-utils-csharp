@@ -1,6 +1,7 @@
 package me.shaftesbury.utils.test;
 
 import me.shaftesbury.utils.Option;
+import me.shaftesbury.utils.OptionNoValueAccessException;
 import me.shaftesbury.utils.functional;
 import org.javatuples.Pair;
 import org.junit.Assert;
@@ -231,23 +232,37 @@ public class functionalTest
     }
 
     @Test
-    public void ChooseTest1B()
-    {   /*
+    public void ChooseTest1B() throws OptionNoValueAccessException
+    {
         Collection<Integer> li = functional.init(TriplingGenerator, 5);
-        Collection<String> o = functional.choose(i => i%2 == 0 ? i.ToString().ToOption() : Option<string>.None, li);
+        Collection<String> o = functional.choose(
+                new functional.Func<Integer, Option<String>>() {
+                    @Override
+                    public Option<String> apply(Integer i) {
+                        return i%2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
+                    }
+                }, li);
         String[] expected = {"6", "12"};
-        Assert.assertArrayEquals(o.toArray(), expected);        */
+        Assert.assertArrayEquals(o.toArray(), expected);
     }
 
     @Test
-    public void ChooseTest2A()
-    {    /*
-        List<int> li = TriplingGenerator.Repeat(5).ToList();
-        var o = li.Choose( i => i%2 == 0 ? i.ToOption() : Option<int>.None).ToDictionary(i => i, i => i.ToString());
-        var expected = new Dictionary<int, string>();
-        expected[6] = "6";
-        expected[12] = "12";
-        CollectionAssert.AreEquivalent(o, expected);*/
+    public void ChooseTest2A() //throws OptionNoValueAccessException
+    {                                                      /*
+        try{
+        Collection<Integer> li = functional.init(TriplingGenerator, 5);
+        Collection<String> o = functional.<Integer,Integer,String>toDictionary( functional.<Integer>Identity(), functional.dStringify,
+                functional.choose(
+                new functional.Func<Integer, Option<Integer>>() {
+                    @Override
+                    public Option<Integer> apply(Integer i) {
+                        return i%2 == 0 ? Option.toOption(i) : Option.<Integer>None();
+        }},li));
+        }catch(Exception e){}
+        Map<Integer,String> expected = new HashMap<Integer,String>();
+        expected.put(6, "6");
+        expected.put(12, "12");
+        Assert.assertArrayEquals(o, expected);        */
     }
 
     private final static <B, C>boolean Fn(final B b, final C c)
@@ -752,4 +767,21 @@ public class functionalTest
             Assert.assertEquals(expected.get(i), it.next());
     }
 
+    /*
+            [Test]
+        public void seqChooseTest1()
+        {
+            var li = TriplingGenerator.Repeat(5).ToList();
+            var o = li.Choose(i => i%2 == 0 ? i.ToString().ToOption() : Option<string>.None).ToList();
+            string[] expected = {"6", "12"};
+            CollectionAssert.AreEquivalent(expected,o);
+        }
+
+        [Test]
+        public void seqInitTest1()
+        {
+            var output = DoublingGenerator.Repeat(5).ToList();
+            CollectionAssert.AreEquivalent(new[]{2,4,6,8,10},output);
+        }
+     */
 }
