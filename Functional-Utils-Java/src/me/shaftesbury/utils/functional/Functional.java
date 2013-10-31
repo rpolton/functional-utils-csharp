@@ -12,15 +12,15 @@
  * Time: 20:04
  * To change this template use File | Settings | File Templates.
  */
-package me.shaftesbury.utils;
+package me.shaftesbury.utils.functional;
 
 import org.javatuples.Pair;
 
 import java.util.*;
 
-public final class functional
+public final class Functional
 {
-    private functional() {}
+    private Functional() {}
 
     public final static boolean isNullOrEmpty(final String s)
     {
@@ -324,17 +324,53 @@ public final class functional
         return output;
     }
 
+    //public final static <T>T[] toArray(final Iterable<T> input)
+    public final static <T>Object[] toArray(final Iterable<T> input)
+    {
+        if(input==null) throw new IllegalArgumentException("Functional.toArray(Iterable<T>): input is null");
+
+        List<T> output = new ArrayList<T>();
+        for(T element: input) output.add(element);
+
+        return (T[])output.toArray();
+    }
+
+    public static final <T>T last(final Iterable<T> input)
+    {
+        if(input==null) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null");
+
+        T state = null;
+        for(T element: input) state = element;
+
+        return state;
+    }
+
+    public static final <T>T last(T[] input)
+    {
+        if(input==null||input.length==0) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null or empty");
+
+        return input[input.length-1];
+    }
+
+    public static final <T>Collection<T> concat(final Collection<T> list1, final Collection<T> list2)
+    {
+        Collection<T> newList = new ArrayList<T>(list1);
+        final boolean didItChange = newList.addAll(list2);
+        return new UnmodifiableCollection<T>(newList);
+    }
+
     public static final class seq
     {
         public static final <T,U>Iterable<U> map(final Func<T,U> f, final Iterable<T> input) throws Exception
         {
-            if (input == null) throw new /*ArgumentNull*/Exception("input");
+            if (input == null) throw new IllegalArgumentException("input");
 
             return new Iterable<U>() {
-                private final Iterator<T> _input=input.iterator();
                 @Override
                 public final Iterator<U> iterator() {
                     return new Iterator<U>() {
+                        private final Iterator<T> _input=input.iterator();
+                        private final Func<T,U> _f = f;
                         @Override
                         public final boolean hasNext() {
                             return _input.hasNext();
@@ -342,12 +378,43 @@ public final class functional
 
                         @Override
                         public final U next() {
-                            return f.apply(_input.next());
+                            return _f.apply(_input.next());
                         }
 
                         @Override
                         public void remove() {
-                            throw new UnsupportedOperationException();
+                            throw new UnsupportedOperationException("Functional.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                        }
+                    };
+                }
+            };
+        }
+
+        public static final <T>Iterable<T> concat(final Iterable<T> list1, final Iterable<T> list2)
+        {
+            if(list1==null) throw new IllegalArgumentException("Functional.seq.concat(Iterable<T>,Iterable<T>): list1 is null");
+            if(list2==null) throw new IllegalArgumentException("Functional.seq.concat(Iterable<T>,Iterable<T>): list2 is null");
+
+            return new Iterable<T>()
+            {
+                public Iterator<T> iterator()
+                {
+                    return new Iterator<T>() {
+                        private final Iterator<T> _s1 = list1.iterator();
+                        private final Iterator<T> _s2 = list2.iterator();
+                        @Override
+                        public boolean hasNext() {
+                            return _s1.hasNext() || _s2.hasNext();
+                        }
+
+                        @Override
+                        public T next() {
+                            return _s1.hasNext() ? _s1.next() : _s2.next();
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.concat(Iterable<T>,Iterable<T>): remove is not supported");
                         }
                     };
                 }

@@ -1,4 +1,4 @@
-package me.shaftesbury.utils;
+package me.shaftesbury.utils.functional;
 
 /**
  * Created with IntelliJ IDEA.

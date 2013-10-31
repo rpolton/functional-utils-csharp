@@ -1,4 +1,4 @@
-package me.shaftesbury.utils;
+package me.shaftesbury.utils.functional;
 
 import java.util.Iterator;
 import java.util.List;
