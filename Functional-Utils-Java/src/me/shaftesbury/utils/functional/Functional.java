@@ -15,6 +15,7 @@
 package me.shaftesbury.utils.functional;
 
 import org.javatuples.Pair;
+import org.javatuples.Triplet;
 
 import java.util.*;
 
@@ -75,7 +76,7 @@ public final class Functional
             if (!intermediate.getValue1().isNone())
                 results.add(intermediate.getValue1().Some());
         }
-        return new Pair<A, Collection<B>>(state, results);
+        return new Pair<A, Collection<B>>(state, new UnmodifiableCollection(results));
     }
 
     public static final <T>List<T> convert(final Enumeration<T> input)
@@ -162,7 +163,6 @@ public final class Functional
             return i % 2 == 0;
         }
     };
-
     public static final Func<Integer,Boolean> IsOdd = new Func<Integer, Boolean>()
     {
         @Override
@@ -171,6 +171,13 @@ public final class Functional
             return i % 2 != 0;
         }
     };
+    public static final Func2<Integer,Integer,Integer> Count =
+            new Func2<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer state, Integer b) {
+                    return state + 1;
+                }
+            };
 
     public interface Func2<A,B,C> // disappointing! This should be related to Func<A,Func<B,C>>
     {
@@ -186,7 +193,7 @@ public final class Functional
         Collection<T> output = new ArrayList<T>();
         for(int i=0; i<howMany; ++i)
             output.add(f.apply(i));
-        return output;
+        return new UnmodifiableCollection(output);
     }
 
     /// <summary> map: (A -> B) -> A list -> B list</summary>
@@ -195,7 +202,7 @@ public final class Functional
         Collection<B> output = new ArrayList<B>();
         for(A a : input)
             output.add(f.apply(a));
-        return output;
+        return new UnmodifiableCollection(output);
     }
 
     /// <summary> sortWith: (A -> A -> int) -> A list -> A list</summary>
@@ -203,7 +210,7 @@ public final class Functional
     {
         List<A> output = new ArrayList<A>(input);
         Collections.sort(output, f);
-        return output;
+        return new UnmodifiableCollection(output);
     }
 
     public final static <A extends Comparable<A>>int Sorter(final A left, final A right)
@@ -247,7 +254,7 @@ public final class Functional
             if(pred.apply(element))
                 output.add(element);
         }
-        return output;
+        return new UnmodifiableCollection(output);
     }
 
     /// <summary> exists: (A -> bool) -> A list -> bool</summary>
@@ -288,7 +295,7 @@ public final class Functional
                 left.add(a);
             else
                 right.add(a);
-        return new org.javatuples.Pair<Collection<A>,Collection<A>>(left, right);
+        return new org.javatuples.Pair<Collection<A>,Collection<A>>(new UnmodifiableCollection(left), new UnmodifiableCollection(right));
     }
 
     /// <summary> choose: (A -> B option) -> A list -> B list</summary>
@@ -301,7 +308,7 @@ public final class Functional
             if (!intermediate.isNone())
                 results.add(intermediate.Some());
         }
-        return results;
+        return new UnmodifiableCollection(results);
     }
 
 
@@ -321,7 +328,7 @@ public final class Functional
 
         Map<K,V> output = new HashMap<K,V>();
         for(T element : input) output.put(keyFn.apply(element),valueFn.apply(element));
-        return output;
+        return new UnmodifiableMap<K, V>(output);
     }
 
     //public final static <T>T[] toArray(final Iterable<T> input)
@@ -345,7 +352,7 @@ public final class Functional
         return state;
     }
 
-    public static final <T>T last(T[] input)
+    public static final <T>T last(final T[] input)
     {
         if(input==null||input.length==0) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null or empty");
 
@@ -354,15 +361,102 @@ public final class Functional
 
     public static final <T>Collection<T> concat(final Collection<T> list1, final Collection<T> list2)
     {
+        if(list1==null) throw new IllegalArgumentException("Functional.concat(Collection<T>,Collection<T>): list1 is null");
+        if(list2==null) throw new IllegalArgumentException("Functional.concat(Collection<T>,Collection<T>): list2 is null");
+
+        if(list1.size()==0) return new UnmodifiableCollection<T>(list2);
+        if(list2.size()==0) return new UnmodifiableCollection<T>(list1);
+
         Collection<T> newList = new ArrayList<T>(list1);
         final boolean didItChange = newList.addAll(list2);
         return new UnmodifiableCollection<T>(newList);
+    }
+
+    public static final<T>Collection<T> take(final int howMany, final Iterable<T> list)
+    {
+        if(howMany<0) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): howMany is negative");
+        if(list==null) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): list is null");
+
+        if(howMany==0) return new ArrayList<T>(0);
+
+        Collection<T> output = new ArrayList<T>(howMany);
+        Iterator<T> iterator = list.iterator();
+        for(int i=0;i<howMany;++i)
+        {
+            if(iterator.hasNext())
+                output.add(iterator.next());
+            else
+                throw new NoSuchElementException("Cannot take "+howMany+" elements from input list with fewer elements");
+        }
+        return new UnmodifiableCollection(output);
+    }
+
+    public static final <T>Func<Integer,T> Constant(final T constant)
+    {
+        return new Func<Integer, T>() {
+            @Override
+            public T apply(Integer integer) {
+                return constant;
+            }
+        };
+    }
+
+    public static final <A,B>Collection<org.javatuples.Pair<A,B>> zip(final Collection<A> l1, final Collection<B> l2)
+    {
+        if(l1==null) throw new IllegalArgumentException("Functional.zip(Collection<A>,Collection<B>): l1 is null");
+        if(l2==null) throw new IllegalArgumentException("Functional.zip(Collection<A>,Collection<B>): l2 is null");
+
+        if(l1.size()!=l2.size()) throw new IllegalArgumentException("Functional.zip(Collection<A>,Collection<B>): l1 and l2 have differing numbers of elements");
+
+        Collection<org.javatuples.Pair<A,B>> output = new ArrayList<org.javatuples.Pair<A, B>>(l1.size());
+        Iterator<A> l1_it = l1.iterator();
+        Iterator<B> l2_it = l2.iterator();
+
+        while(l1_it.hasNext() && l2_it.hasNext()) output.add(new org.javatuples.Pair(l1_it.next(),l2_it.next()));
+
+        return new UnmodifiableCollection(output);
+    }
+
+    public static final <A,B,C>Collection<Triplet<A,B,C>> zip3(final Collection<A> l1, final Collection<B> l2, final Collection<C> l3)
+    {
+        if(l1==null) throw new IllegalArgumentException("Functional.zip3(Collection<A>,Collection<B>,Collection<C>): l1 is null");
+        if(l2==null) throw new IllegalArgumentException("Functional.zip3(Collection<A>,Collection<B>,Collection<C>): l2 is null");
+        if(l3==null) throw new IllegalArgumentException("Functional.zip3(Collection<A>,Collection<B>,Collection<C>): l3 is null");
+
+        if(l1.size()!=l2.size() || l1.size()!=l3.size())
+            throw new IllegalArgumentException("Functional.zip3(Collection<A>,Collection<B>,Collection<C>): l1, l2 and l3 have differing numbers of elements");
+
+        Collection<org.javatuples.Triplet<A,B,C>> output = new ArrayList<org.javatuples.Triplet<A, B,C>>(l1.size());
+        Iterator<A> l1_it = l1.iterator();
+        Iterator<B> l2_it = l2.iterator();
+        Iterator<C> l3_it = l3.iterator();
+
+        while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(new org.javatuples.Triplet(l1_it.next(),l2_it.next(),l3_it.next()));
+
+        return new UnmodifiableCollection(output);
+    }
+
+    public static final <A,B>org.javatuples.Pair<Collection<A>,Collection<B>> unzip(final Collection<org.javatuples.Pair<A,B>> input)
+    {
+        if(input==null) throw new IllegalArgumentException("Functional.unzip(Collection<Pair<A,B>>): input is null");
+
+        Collection<A> l1 = new ArrayList<A>();
+        Collection<B> l2 = new ArrayList<B>();
+
+        for(org.javatuples.Pair<A,B> pair:input)
+        {
+            l1.add(pair.getValue0());
+            l2.add(pair.getValue1());
+        }
+
+        return new org.javatuples.Pair(new UnmodifiableCollection(l1),new UnmodifiableCollection(l2));
     }
 
     public static final class seq
     {
         public static final <T,U>Iterable<U> map(final Func<T,U> f, final Iterable<T> input) throws Exception
         {
+            if(f==null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
 
             return new Iterable<U>() {
@@ -383,7 +477,7 @@ public final class Functional
 
                         @Override
                         public void remove() {
-                            throw new UnsupportedOperationException("Functional.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                            throw new UnsupportedOperationException("Functional.seq.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                         }
                     };
                 }
@@ -415,6 +509,168 @@ public final class Functional
                         @Override
                         public void remove() {
                             throw new UnsupportedOperationException("Functional.seq.concat(Iterable<T>,Iterable<T>): remove is not supported");
+                        }
+                    };
+                }
+            };
+        }
+
+        public static final <T>Iterable<T> filter(final Func<T,Boolean> f, final Iterable<T> input) throws NoSuchElementException, IllegalArgumentException, UnsupportedOperationException
+        {
+            if(f==null) throw new IllegalArgumentException("f");
+            if (input == null) throw new IllegalArgumentException("input");
+
+            return new Iterable<T>() {
+                @Override
+                public final Iterator<T> iterator() {
+                    return new Iterator<T>() {
+                        private final Iterator<T> _input=input.iterator();
+                        private final Func<T,Boolean> _f = f;
+                        private T _next = null;
+                        @Override
+                        public final boolean hasNext() {
+                            while(_next==null && // ie we haven't already read the next element
+                                _input.hasNext())
+                            {
+                                T next = _input.next();
+                                if(_f.apply(next))
+                                {
+                                    _next=next;
+                                    return true;
+                                }
+                            }
+                            return _next!=null;
+                        }
+
+                        @Override
+                        public final T next() {
+                            if(hasNext())
+                            {
+                                T next = _next;
+                                _next=null;
+                                return next;
+                            }
+                            throw new NoSuchElementException();
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.filter(Func<T,Boolean>,Iterable<T>): Removing elements is strictly prohibited");
+                        }
+                    };
+                }
+            };
+        }
+
+        public static final <T,U>Iterable<U> choose(final Func<T,Option<U>> f, final Iterable<T> input) throws Exception
+        {
+            if(f==null) throw new IllegalArgumentException("f");
+            if (input == null) throw new IllegalArgumentException("input");
+
+            return new Iterable<U>() {
+                @Override
+                public final Iterator<U> iterator() {
+                    return new Iterator<U>() {
+                        private final Iterator<T> _input=input.iterator();
+                        private final Func<T,Option<U>> _f = f;
+                        private Option<U> _next = Option.<U>None();
+                        @Override
+                        public final boolean hasNext() {
+                            while(_next.isNone() && // ie we haven't already read the next element
+                                    _input.hasNext())
+                            {
+                                Option<U> next = _f.apply(_input.next());
+                                if(next.isSome())
+                                {
+                                    _next=next;
+                                    return true;
+                                }
+                            }
+                            return _next.isSome();
+                        }
+
+                        @Override
+                        public final U next()
+                        {
+                            if(hasNext())
+                            {
+                                Option<U> next = _next;
+                                _next=Option.<U>None();
+                                try {
+                                    return next.Some();
+                                } catch(OptionNoValueAccessException e) { throw new NoSuchElementException(); }
+                            }
+                            throw new NoSuchElementException();
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.choose(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                        }
+                    };
+                }
+            };
+        }
+
+        /// <summary> init: int -> (int -> A) -> A list</summary>
+        public final static <T>Iterable<T> init(final Func<Integer,T> f,final int howMany)
+        {
+            if(f==null) throw new IllegalArgumentException("f");
+            if(howMany<0) throw new IllegalArgumentException("howMany");
+
+            return new Iterable<T>()
+            {
+                @Override
+                public Iterator<T> iterator() {
+                    return new Iterator<T>()
+                    {
+                        private int _counter=0;
+                        private final Func<Integer,T> _f = f;
+                        @Override
+                        public boolean hasNext() {
+                            return _counter<howMany;
+                        }
+
+                        @Override
+                        public T next() {
+                            return _f.apply(_counter++);
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.init(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                        }
+                    };
+                }
+            };
+        }
+
+        /// <summary> init: int -> (int -> A) -> A list</summary>
+        public final static <T>Iterable<T> init(final Func<Integer,T> f)
+        {
+            if(f==null) throw new IllegalArgumentException("f");
+
+            return new Iterable<T>()
+            {
+                @Override
+                public Iterator<T> iterator() {
+                    return new Iterator<T>()
+                    {
+                        private int _counter=0;
+                        private final Func<Integer,T> _f = f;
+                        @Override
+                        public boolean hasNext() {
+                            return true;
+                        }
+
+                        @Override
+                        public T next() {
+                            return _f.apply(_counter++);
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.init(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                         }
                     };
                 }

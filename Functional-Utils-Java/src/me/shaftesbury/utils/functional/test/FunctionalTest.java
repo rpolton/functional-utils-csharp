@@ -2,6 +2,7 @@ package me.shaftesbury.utils.functional.test;
 
 import me.shaftesbury.utils.functional.*;
 import org.javatuples.Pair;
+import org.javatuples.Triplet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -733,35 +734,68 @@ public class FunctionalTest
         })
     } */
 
-/*    @Test
+    @Test
     public void seqFilterTest1()
     {
         Collection<Integer> l = Functional.init(DoublingGenerator,5);
-        Iterable<Integer> oddElems = Functional.filter(Functional.IsOdd, l);
-        Assert.assertEquals(0, oddElems.Aggregate(0, Functional.dCount));
-    }*/
+        Iterable<Integer> oddElems = Functional.seq.filter(Functional.IsOdd, l);
 
-    /*[Test]
+        AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
+    }
+
+    @Test
     public void seqFilterTest2()
     {
-        List<int> l = DoublingGenerator.Repeat(5).ToList();
-        Iterable<int> oddElems = Functional.filter(Functional.IsEven, l);
-        Assert.assertEquals(5, oddElems.Aggregate(0, Functional.dCount));
-    }                      */
+        Collection<Integer> l = Functional.init(DoublingGenerator,5);
+        Iterable<Integer> evenElems = Functional.seq.filter(Functional.IsEven, l);
 
-    /*[Test]
+        Collection<Integer> expected = Arrays.asList(new Integer[]{2,4,6,8,10});
+        AssertIterable.assertIterableEquals(expected, evenElems);
+    }
+
+    @Test
     public void seqFilterTest3()
     {
-        List<Integer> l = DoublingGenerator.Repeat(5).ToList();
+        Collection<Integer> l = Functional.init(DoublingGenerator,5);
         final Integer limit = 5;
-        Iterable<Integer> highElems = Functional.filter(
+        Iterable<Integer> highElems = Functional.seq.filter(
                 new Functional.Func<Integer,Boolean>()
                 {
                     @Override
                     public Boolean apply(Integer a) { return a > limit;}
                 }, l);
-        Assert.assertEquals(3, highElems.Aggregate(0, Functional.dCount));
-    } */
+
+        Collection<Integer> expected = Arrays.asList(new Integer[]{6,8,10});
+        AssertIterable.assertIterableEquals(expected,highElems);
+    }
+
+    @Test
+    public void seqFilterTest4()
+    {
+        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Integer limit = 10;
+        Iterable<Integer> output = Functional.seq.filter(
+                new Functional.Func<Integer,Boolean>()
+                {
+                    @Override public Boolean apply(Integer a) {return a > limit;}
+                }, li);
+
+        Assert.assertFalse(output.iterator().hasNext());
+    }
+
+    @Test
+    public void seqFilterTest5()
+    {
+        Collection<Integer> li = Functional.init(DoublingGenerator, 10);
+        Collection<Integer> expected = Arrays.asList(new Integer[]{4,8,12,16,20});
+        Iterable<Integer> output = Functional.seq.filter(
+                new Functional.Func<Integer,Boolean>()
+                {
+                    @Override public Boolean apply(Integer a) {return a % 4 ==0;}
+                }, li);
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
 
     @Test(expected=/*Functional.KeyNotFound*/Exception.class)
     public void findLastTest1() throws Exception
@@ -856,21 +890,368 @@ public class FunctionalTest
     }
 
 
-    /*
-            [Test]
-        public void seqChooseTest1()
+        @Test
+        public void seqChooseTest1() throws Exception
         {
-            var li = TriplingGenerator.Repeat(5).ToList();
-            var o = li.Choose(i => i%2 == 0 ? i.ToString().ToOption() : Option<string>.None).ToList();
-            string[] expected = {"6", "12"};
-            CollectionAssert.AreEquivalent(expected,o);
+            Collection<Integer> li = Functional.init(TriplingGenerator,5);
+            Iterable<String> output = Functional.seq.choose(
+                    new Functional.Func<Integer,Option<String>>()
+                    {
+                            @Override
+                            public Option<String> apply(Integer i)
+                            {
+                                return i%2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
+                            }
+                    }, li);
+
+            Collection<String> expected = Arrays.asList(new String[]{"6", "12"});
+            AssertIterable.assertIterableEquals(expected, output);
         }
 
-        [Test]
+        @Test
         public void seqInitTest1()
         {
-            var output = DoublingGenerator.Repeat(5).ToList();
-            CollectionAssert.AreEquivalent(new[]{2,4,6,8,10},output);
+            Iterable<Integer> output = Functional.seq.init(DoublingGenerator, 5);
+            AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10}), output);
         }
-     */
+
+    @Test
+    public void FwdPipelineTest3()
+    {
+        Collection<Integer> input = Functional.init(DoublingGenerator, 5);
+        Collection<String> output = Functional.In(input,
+                new Functional.Func<Collection<Integer>, Collection<String>>() {
+                    @Override
+                    public Collection<String> apply(Collection<Integer> integers) {
+                        return Functional.map(Functional.dStringify, integers);
+                    }
+                });
+
+        Collection<String> expected = Arrays.asList(new String[] {"2", "4", "6", "8", "10"});
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void FwdPipelineTest4()
+    {
+        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        Iterable<String> output = Functional.In(input,
+                new Functional.Func<Iterable<Integer>, Iterable<String>>() {
+                    @Override
+                    public Iterable<String> apply(Iterable<Integer> integers) {
+                        try {
+                            return Functional.seq.map(Functional.dStringify, integers);
+                        } catch (Exception e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            return null; // Argh!!!
+                        }
+                    }
+                });
+
+        Collection<String> expected = Arrays.asList(new String[] {"2", "4", "6", "8", "10"});
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void FwdPipelineTest5()
+    {
+        Iterable<Integer> l = Functional.seq.init(DoublingGenerator, 5);
+        Iterable<Integer> oddElems = Functional.In(l,
+                new Functional.Func<Iterable<Integer>,Iterable<Integer>>(){
+                    @Override
+                public Iterable<Integer> apply(Iterable<Integer> ints){return Functional.filter(Functional.IsOdd, ints);}});
+
+        Assert.assertFalse(oddElems.iterator().hasNext());
+    }
+    /*
+    private class Test1
+    {
+        public readonly int i;
+
+        public Test1(int j)
+        {
+            i = j;
+        }
+    }
+
+    private static Func<object, string> fn1()
+    {
+        return delegate(object o)
+        {
+            if (o.GetType() == typeof (Test1))
+                return fn2(o as Test1);
+            if (o.GetType() == typeof (string))
+                return fn3(o as string);
+            return null;
+        };
+    }
+
+    private static string fn2(Test1 i)
+    {
+        return i.i.ToString();
+    }
+
+    private static string fn3(string s)
+    {
+        return s;
+    }
+
+    [Test]
+    public void FwdPipelineTest6()
+    {
+        Func<object, string> fn = fn1();
+        var i = new Test1(10);
+        const string s = "test";
+        Assert.AreEqual("10", i.In(fn));
+        Assert.AreEqual("test", s.In(fn));
+    } */
+
+    @Test
+    public void seqInitTest2()
+    {
+        Iterable<Integer> output = Functional.seq.init(DoublingGenerator);
+        AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10,12,14,16,18,20,22}),Functional.take(11,output));
+    }
+
+    @Test
+    public void ConstantInitialiserTest1()
+    {
+        final int howMany = 6;
+        final int initValue = -1;
+        Collection<Integer> l = Functional.init(Functional.Constant(initValue),howMany);
+        Assert.assertEquals(howMany, l.size());
+        for(int i : l)
+            Assert.assertEquals(initValue, i);
+    }
+
+    /*[Test]
+    public void SwitchTest1()
+    {
+        Assert.AreEqual(1,
+                Functional.Switch(10,
+                        new[]
+        {
+            Case.ToCase((int a) => a < 5, a => -1),
+            Case.ToCase((int a) => a > 5, a => 1)
+        }, a => 0));
+    } */
+
+    /*[Test]
+    public void TryTest1()
+    {
+        int zero = 0;
+        int results = Functional.Try<int,int,DivideByZeroException>(10, a => a/zero, a => a);
+        Assert.AreEqual(10, results);
+    }*/
+    private class A
+    {
+        public String name;
+        public int id;
+    }
+    /*[Test]
+    public void CaseTest2()
+    {
+        var c1 = new List<Func<A, object>> {(A a) => (object) a.name, (A a) => (object) a.id};
+
+        Func<A, IEnumerable<Func<int, object>>> c2 =
+                a => c1.Select<Func<A, object>, Func<int, object>>(f => j => f(a));
+
+        Func<A, IEnumerable<Functional.Case<int, object>>> cases =
+                a => c2(a).Select((f, i) => Case.ToCase(i.Equals, f));
+
+        var theA = new A {id = 1, name = "one"};
+
+        IEnumerable<object> results =
+                Enumerable.Range(0, 3).Select(i => Functional.Switch(i, cases(theA), aa => "oh dear"));
+        var expected = new object[] {"one", 1, "oh dear"};
+        CollectionAssert.AreEquivalent(expected, results);
+    }*/
+
+    /*[Test]
+    public void IgnoreTest1()
+    {
+        var input = new[] {1, 2, 3, 4, 5};
+        var output = new List<string>();
+        Func<int, string> format = i => string.Format("Discarding {0}", i);
+        List<string> expected = new[] {1, 2, 3, 4, 5}.Select(format).ToList();
+        Func<int, bool> f = i =>
+        {
+            output.Add(format(i));
+            return true;
+        };
+        input.Select(f).Ignore();
+        CollectionAssert.AreEquivalent(expected, output);
+    }*/
+    @Test
+    public void ChooseTest1() throws OptionNoValueAccessException
+    {
+        Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
+        Collection<Integer> output =
+                Functional.choose(
+                        new Functional.Func<Integer, Option<Integer>>() {
+                            @Override
+                            public Option<Integer> apply(Integer i) {
+                                return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
+                            }
+                        }, input);
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void ChooseTest2() throws OptionNoValueAccessException
+    {
+        Collection<String> input = Arrays.asList(new String[] {"abc", "def"});
+        Collection<Character> expected = Arrays.asList(new Character[]{'a'});
+        Collection<Character> output =
+                Functional.choose(
+                        new Functional.Func<String, Option<Character>>() {
+                            @Override
+                            public Option<Character> apply(String str) {
+                                return str.startsWith("a") ? Option.toOption('a') : Option.<Character>None();
+                            }
+                        }
+                        ,input
+                );
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void ChooseTest3() throws OptionNoValueAccessException
+    {
+        Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
+        Collection<Integer> output = Functional.choose(
+                new Functional.Func<Integer, Option<Integer>>() {
+                    @Override
+                    public Option<Integer> apply(Integer i) {
+                        return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
+                    }
+                }, input)  ;
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    /*[Test]
+    public void CurryTest1()
+    {
+        Func<int, int, bool> f = (i, j) => i > j;
+        Func<int, Func<int, bool>> g = i => j => f(i, j);
+        bool t = 10.In(g(5));
+        Assert.IsFalse(t);
+    }*/
+
+    /*[Test]
+    public void CurryTest2()
+    {
+        Func<int, int, bool> f = (i, j) => i < j;
+        Func<int, Func<int, bool>> g = i => j => f(i, j);
+        bool t = 10.In(g(5));
+        Assert.IsTrue(t);
+    }*/
+
+    /*[Test]
+    public void CompositionTest1()
+    {
+        Func<int, int, int> add = (x, y) => x + y;
+        Func<int, Func<int, int>> add1 = y => x => add(x, y);
+        Func<int, int, int> mult = (x, y) => x*y;
+        Func<int, Func<int, int>> mult1 = y => x => mult(x, y);
+        int expected = mult(add(1, 2), 3);
+        Assert.AreEqual(9, expected);
+        Assert.AreEqual(expected, 2.In(add1(1).Then(mult1(3))));
+    }*/
+
+    @Test
+    public void UnzipTest1()
+    {
+        Collection<org.javatuples.Pair<String,Integer>> input =
+                new ArrayList<org.javatuples.Pair<String,Integer>>();
+        input.add(new org.javatuples.Pair<String,Integer>("1", 1));
+        input.add(new org.javatuples.Pair<String,Integer>("2", 2));
+
+        org.javatuples.Pair<Collection<String>,Collection<Integer>> expected =
+                new org.javatuples.Pair(
+                        Arrays.asList(new String[]{"1", "2"}),
+                        Arrays.asList(new Integer[]{1,2}));
+
+        org.javatuples.Pair<Collection<String>,Collection<Integer>> output =
+                Functional.unzip(input);
+
+        AssertIterable.assertIterableEquals(expected.getValue0(), output.getValue0());
+        AssertIterable.assertIterableEquals(expected.getValue1(), output.getValue1());
+    }
+
+    @Test
+    public void ZipTest1()
+    {
+        Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+
+        Collection<org.javatuples.Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
+        expected.add(new Pair<Integer, Character>(1, 'a'));
+        expected.add(new Pair<Integer, Character>(2, 'b'));
+        expected.add(new Pair<Integer, Character>(3, 'c'));
+        expected.add(new Pair<Integer, Character>(4, 'd'));
+        expected.add(new Pair<Integer, Character>(5, 'e'));
+
+        Collection<org.javatuples.Pair<Integer,Character>> output = Functional.zip(input1, input2);
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void Zip3Test1()
+    {
+        Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+        Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
+
+        Collection<Triplet<Integer,Character,Double>> expected = new ArrayList<Triplet<Integer, Character, Double>>();
+        expected.add(new Triplet<Integer, Character, Double>(1, 'a', 1.0));
+        expected.add(new Triplet<Integer, Character, Double>(2, 'b', 2.0));
+        expected.add(new Triplet<Integer, Character, Double>(3, 'c', 2.5));
+        expected.add(new Triplet<Integer, Character, Double>(4, 'd', 3.0));
+        expected.add(new Triplet<Integer, Character, Double>(5, 'e', 3.5));
+
+        Collection<Triplet<Integer,Character,Double>> output = Functional.zip3(input1, input2, input3);
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    /*[ExpectedException(typeof(ArgumentException))]
+        [Test]
+    public void Zip3Test2()
+    {
+        var input1 = new[] { 1, 2, 3, 4, 5 };
+        var input2 = new[] { 'a', 'b', 'd', 'e' };
+        var input3 = new[] { 1.0, 2.0, 2.5, 3.0, 3.5 };
+        var expected = new[]
+        {
+            Tuple.Create(1, 'a', 1.0), Tuple.Create(2, 'b', 2.0), Tuple.Create(3, 'c', 2.5),
+                    Tuple.Create(4, 'd', 3.0), Tuple.Create(5, 'e', 3.5)
+        }.ToList();
+
+        var output = Functional.Zip3(input1, input2, input3).ToList();
+
+        CollectionAssert.AreEquivalent(expected, output);
+    }*/
+
+    /*[ExpectedException(typeof(ArgumentException))]
+        [Test]
+    public void Zip3Test3()
+    {
+        var input1 = new[] { 1, 2, 3, 4, 5 };
+        var input2 = new[] { 'a', 'b', 'c', 'd', 'e' };
+        var input3 = new[] { 1.0, 2.0, 2.5, 3.5 };
+        var expected = new[]
+        {
+            Tuple.Create(1, 'a', 1.0), Tuple.Create(2, 'b', 2.0), Tuple.Create(3, 'c', 2.5),
+                    Tuple.Create(4, 'd', 3.0), Tuple.Create(5, 'e', 3.5)
+        }.ToList();
+
+        var output = Functional.Zip3(input1, input2, input3).ToList();
+
+        CollectionAssert.AreEquivalent(expected, output);
+    }*/
 }

@@ -37,7 +37,7 @@ public final class UnmodifiableCollection<T> implements Collection<T>
 
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException("");
+        return _collection.toArray();
     }
 
     @Override

@@ -7,7 +7,7 @@ package me.shaftesbury.utils.functional;
  * Time: 09:32
  * To change this template use File | Settings | File Templates.
  */
-public final class Pair<T1,T2>
+public final class Pair<T1,T2> // deprecated in favour of org.javatuples.Pair
 {
     final private T1 _t1;
     final private T2 _t2;
