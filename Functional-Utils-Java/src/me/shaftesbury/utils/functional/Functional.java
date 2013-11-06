@@ -111,6 +111,15 @@ public final class Functional
         return val.compareTo(lowerBound) == 1 && val.compareTo(upperBound) == -1;
     }
 
+    /// <summary> find: (A -> bool) -> A list -> A</summary>
+    public final static <A>A find(Func<A,Boolean> f, Iterable<A> input)
+    {
+        for(A a : input)
+            if(f.apply((a)))
+                return a;
+        throw new KeyNotFoundException();
+    }
+
     /// <summary> findLast: (A -> bool) -> A list -> A</summary>
     public final static <A>A findLast(final Func<A,Boolean> f, final List<A> input) throws Exception
     {

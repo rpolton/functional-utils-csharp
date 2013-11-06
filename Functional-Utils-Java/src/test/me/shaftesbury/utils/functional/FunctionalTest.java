@@ -1254,4 +1254,20 @@ public class FunctionalTest
 
         CollectionAssert.AreEquivalent(expected, output);
     }*/
+
+    @Test
+    public void findTest1()
+    {
+        final String trueMatch = "6";
+        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Assert.assertEquals(trueMatch,
+                Functional.find(
+                new Functional.Func<String, Boolean>() {
+                    @Override
+                    public Boolean apply(String s) {
+                        return s.equals(trueMatch);
+                    }
+                }, ls));
+    }
 }
