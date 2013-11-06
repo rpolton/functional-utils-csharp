@@ -1,4 +1,4 @@
-package me.shaftesbury.utils.functional.test;
+package test.me.shaftesbury.utils.functional;
 
 import me.shaftesbury.utils.functional.AssertIterable;
 import org.javatuples.Pair;
