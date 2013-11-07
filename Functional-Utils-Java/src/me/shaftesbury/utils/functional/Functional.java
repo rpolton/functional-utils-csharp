@@ -112,12 +112,29 @@ public final class Functional
     }
 
     /// <summary> find: (A -> bool) -> A list -> A</summary>
-    public final static <A>A find(Func<A,Boolean> f, Iterable<A> input)
+    public final static <A>A find(Func<A,Boolean> f, Iterable<A> input) throws Exception
     {
+        if (f == null) throw new /*ArgumentNull*/Exception("f");
+        if (input == null) throw new /*ArgumentNull*/Exception("input");
+
         for(A a : input)
             if(f.apply((a)))
                 return a;
         throw new KeyNotFoundException();
+    }
+
+    /// <summary> findIndex: (A -> bool) -> A list -> int</summary>
+    public static <A>int findIndex(Func<A,Boolean> f, Iterable<A> input) throws Exception
+    {
+        if (f == null) throw new /*ArgumentNull*/Exception("f");
+        if (input == null) throw new /*ArgumentNull*/Exception("input");
+
+        int pos = 0;
+        for (A a : input)
+            if (f.apply(a))
+                return pos;
+            else pos++;
+        throw new IllegalArgumentException();
     }
 
     /// <summary> findLast: (A -> bool) -> A list -> A</summary>
@@ -129,7 +146,22 @@ public final class Functional
         for (A a : Enumerators.ReverseEnum(input))
             if (f.apply(a))
                 return a;
-        throw new /*KeyNotFound*/Exception();
+        throw new KeyNotFoundException();
+    }
+
+    /// <summary> pick: (A -> B option) -> A list -> B</summary>
+    public static <A, B>B pick(Func<A,Option<B>> f, Iterable<A> input) throws Exception
+    {
+        if (f == null) throw new /*ArgumentNull*/Exception("f");
+        if (input == null) throw new /*ArgumentNull*/Exception("input");
+
+        for(A a : input)
+        {
+            Option<B> intermediate = f.apply(a); // which is, effectively, if(f(a)) return f(a), but without evaluating f twice
+            if (!intermediate.isNone())
+                return intermediate.Some();
+        }
+        throw new KeyNotFoundException();
     }
 
     public interface Func<A,R>
@@ -685,5 +717,15 @@ public final class Functional
                 }
             };
         }
+    }
+
+    public static final <T>Functional.Func<Iterable<T>,Collection<T>> filter(final Functional.Func<T,Boolean> f)
+    {
+        return new Functional.Func<Iterable<T>, Collection<T>>() {
+            @Override
+            public Collection<T> apply(final Iterable<T> input) {
+                return Functional.filter(f,input);
+            }
+        };
     }
 }

@@ -543,52 +543,6 @@ public class FunctionalTest
         }
 
      */
-/*
-    @Test
-    public void find_noExceptTest1()
-    {
-        final String trueMatch = "6";
-        Collection<Integer> li = Functional.init(DoublingGenerator,5);
-        Collection<String> ls = Functional.map(Functional.dStringify,li);
-        Assert.assertTrue(FunctionalHelpers.find_noExcept(a => a == trueMatch, ls).Some == trueMatch);
-    }
-  */
-    /*
-            [Test]
-        public void find_noExceptTest2()
-        {
-            const string falseMatch = "7";
-            List<int> li = DoublingGenerator.Repeat(5).ToList();
-            List<string> ls = li.Select(Functional.dStringify).ToList();
-            Assert.IsTrue(FunctionalHelpers.find_noExcept(a => a == falseMatch, ls).None);
-        }
-
-     */
-
-/*
-        [Test]
-        public void pick_noExceptTest1()
-        {
-            const string trueMatch = "6";
-            List<int> li = DoublingGenerator.Repeat(5).ToList();
-            List<string> ls = li.Select(Functional.dStringify).ToList();
-            Assert.IsTrue(
-                FunctionalHelpers.pick_noExcept(
-                    a => a == trueMatch ? a : OptionType<string>.Null, ls).Some == trueMatch);
-        }
-
-        [Test]
-        public void pick_noExceptTest2()
-        {
-            const string falseMatch = "7";
-            List<int> li = DoublingGenerator.Repeat(5).ToList();
-            List<string> ls = li.Select(Functional.dStringify).ToList();
-            Assert.IsTrue(
-                FunctionalHelpers.pick_noExcept(
-                    a => a == falseMatch ? a : OptionType<string>.Null, ls).None);
-        }
-
- */
 
     private class myInt
     {
@@ -1256,7 +1210,7 @@ public class FunctionalTest
     }*/
 
     @Test
-    public void findTest1()
+    public void findTest1() throws Exception
     {
         final String trueMatch = "6";
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
@@ -1269,5 +1223,97 @@ public class FunctionalTest
                         return s.equals(trueMatch);
                     }
                 }, ls));
+    }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void findTest2() throws Exception
+    {
+        final String falseMatch = "7";
+        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Functional.find(
+                new Functional.Func<String, Boolean>() {
+                    @Override
+                    public Boolean apply(String s) {
+                        return s.equals(falseMatch);
+                    }
+                }, ls);
+    }
+
+    @Test
+    public void findIndexTest1() throws Exception
+    {
+        final String trueMatch = "6";
+        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Assert.assertEquals(2,
+                Functional.findIndex(
+                        new Functional.Func<String, Boolean>() {
+                            @Override
+                            public Boolean apply(String s) {
+                                return s.equals(trueMatch);
+                            }
+                        }, ls));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void findIndexTest2() throws Exception
+    {
+        final String falseMatch = "7";
+        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Functional.findIndex(
+                new Functional.Func<String, Boolean>() {
+                    @Override
+                    public Boolean apply(String s) {
+                        return s.equals(falseMatch);
+                    }
+                }, ls);
+    }
+
+    @Test
+    public void pickTest1() throws Exception
+    {
+        final int trueMatch = 6;
+        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        Assert.assertEquals(((Integer)trueMatch).toString(),
+            Functional.pick(
+                    new Functional.Func<Integer, Option<String>>() {
+                        @Override
+                        public Option<String> apply(Integer a) {
+                            return a == trueMatch ? new Option<String>(a.toString()) : Option.<String>None();
+                        }
+                    }, li));
+    }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void pickTest2() throws Exception
+    {
+        final int falseMatch = 7;
+        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        Functional.pick(
+                new Functional.Func<Integer, Option<String>>() {
+                    @Override
+                    public Option<String> apply(Integer a) {
+                        return a == falseMatch ? new Option<String>(a.toString()) : Option.<String>None();
+                    }
+                }, li);
+    }
+
+    @Test
+    public void curryFnTest1()
+    {
+        final int state=0;
+        final Functional.Func<Integer,Boolean> testForPosInts = new Functional.Func<Integer, Boolean>() {
+            @Override public Boolean apply(Integer integer) { return integer > state; }
+        };
+
+        final Functional.Func<Iterable<Integer>,Collection<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
+
+        final Collection<Integer> l = Arrays.asList(new Integer[]{-3,-2,0,1,5});
+        final Collection<Integer> posInts = curriedTestForPosInts.apply(l);
+
+        final Collection<Integer> expected = Arrays.asList(new Integer[]{1,5});
+        AssertIterable.assertIterableEquals(expected, posInts);
     }
 }
