@@ -728,4 +728,20 @@ public final class Functional
             }
         };
     }
+
+        /*
+        // Following are functions for non-list collections
+        */
+
+    public static final <A, B, C>Map<B, C> map_dict(Func<A,Map.Entry<B,C>> f, Iterable<A> input)
+    {
+        Map<B, C> results = new HashMap<B, C>();
+        for (A a : input)
+        {
+            Map.Entry<B, C> intermediate = f.apply(a);
+            results.put(intermediate.getKey(), intermediate.getValue());
+        }
+        return results;
+    }
+
 }

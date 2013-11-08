@@ -1316,4 +1316,25 @@ public class FunctionalTest
         final Collection<Integer> expected = Arrays.asList(new Integer[]{1,5});
         AssertIterable.assertIterableEquals(expected, posInts);
     }
+
+    @Test
+    public void MapDictTest1()
+    {
+        Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        Map<String,String> output = Functional.map_dict(
+                new Functional.Func<Integer, Map.Entry<String, String>>() {
+                    @Override
+                    public Map.Entry<String, String> apply(final Integer i) {
+                        return new Map.Entry<String,String>(){
+                            public String setValue(String v){throw new UnsupportedOperationException(); }
+                            public String getValue() { return Functional.dStringify.apply(i); }
+                            public String getKey() { return Functional.dStringify.apply(i); }
+                        };
+                    }
+                }, input);
+
+        List<String> keys = new ArrayList<String>(output.keySet());
+        Collections.sort(keys);
+        AssertIterable.assertIterableEquals(Arrays.asList(new String[]{"1","2","3","4","5"}),keys);
+    }
 }
