@@ -1,6 +1,5 @@
-package test.me.shaftesbury.utils.functional;
+package me.shaftesbury.utils.functional;
 
-import me.shaftesbury.utils.functional.AssertIterable;
 import org.javatuples.Pair;
 import org.junit.Test;
 

@@ -60,7 +60,7 @@ public final class Functional
         },indentThis, indentation);
     }
 
-    public final static <A, B>Pair<A,Collection<B>> foldAndChoose(
+    public final static <A, B>Pair<A,List<B>> foldAndChoose(
             final Func2<A, B, Pair<A,Option<B>>> f,
             final A initialValue, final Iterable<B> input) throws Exception
     {
@@ -68,7 +68,7 @@ public final class Functional
         if (input == null) throw new /*ArgumentNull*/Exception("input");
 
         A state = initialValue;
-        Collection<B> results = new ArrayList<B>();
+        List<B> results = new ArrayList<B>();
         for (B b : input)
         {
             Pair<A, Option<B>> intermediate = f.apply(state, b);
@@ -76,7 +76,7 @@ public final class Functional
             if (!intermediate.getValue1().isNone())
                 results.add(intermediate.getValue1().Some());
         }
-        return new Pair<A, Collection<B>>(state, new UnmodifiableCollection(results));
+        return new Pair<A, List<B>>(state, new UnmodifiableList(results));
     }
 
     public static final <T>List<T> convert(final Enumeration<T> input)
@@ -227,31 +227,31 @@ public final class Functional
 
 
     /// <summary> init: int -> (int -> A) -> A list</summary>
-    public final static <T>Collection<T> init(final Func<Integer,T> f,final int howMany)
+    public final static <T>List<T> init(final Func<Integer,T> f,final int howMany)
     {
         //if (f == null) throw new ArgumentNullException("f");
 
-        Collection<T> output = new ArrayList<T>();
+        List<T> output = new ArrayList<T>();
         for(int i=0; i<howMany; ++i)
             output.add(f.apply(i));
-        return new UnmodifiableCollection(output);
+        return new UnmodifiableList(output);
     }
 
     /// <summary> map: (A -> B) -> A list -> B list</summary>
-    public final static <A,B> Collection<B> map(final Func<A, B> f, final Iterable<A> input)
+    public final static <A,B> List<B> map(final Func<A, B> f, final Iterable<A> input)
     {
-        Collection<B> output = new ArrayList<B>();
+        List<B> output = new ArrayList<B>();
         for(A a : input)
             output.add(f.apply(a));
-        return new UnmodifiableCollection(output);
+        return new UnmodifiableList(output);
     }
 
     /// <summary> sortWith: (A -> A -> int) -> A list -> A list</summary>
-    public final static <A>Collection<A> sortWith(final Comparator<A> f, final List<A> input)
+    public final static <A>List<A> sortWith(final Comparator<A> f, final List<A> input)
     {
         List<A> output = new ArrayList<A>(input);
         Collections.sort(output, f);
-        return new UnmodifiableCollection(output);
+        return new UnmodifiableList(output);
     }
 
     public final static <A extends Comparable<A>>int Sorter(final A left, final A right)
@@ -287,15 +287,15 @@ public final class Functional
         return true;
     }
 
-    public final static <A>Collection<A> filter(final Func<A,Boolean> pred, final Iterable<A> input)
+    public final static <A>List<A> filter(final Func<A,Boolean> pred, final Iterable<A> input)
     {
-        Collection<A> output = new ArrayList<A>();
+        List<A> output = new ArrayList<A>();
         for(A element : input)
         {
             if(pred.apply(element))
                 output.add(element);
         }
-        return new UnmodifiableCollection(output);
+        return new UnmodifiableList(output);
     }
 
     /// <summary> exists: (A -> bool) -> A list -> bool</summary>
@@ -327,29 +327,29 @@ public final class Functional
 
     /// <summary> partition: (A -> bool) -> A list -> A list * A list</summary>
     /// <returns> (list * list). The first list contains all items for which f(a) is true. The second list contains the remainder.</returns>
-    public final static <A>org.javatuples.Pair<Collection<A>,Collection<A>> partition(final Func<A,Boolean> f, final Iterable<A> input)
+    public final static <A>org.javatuples.Pair<List<A>,List<A>> partition(final Func<A,Boolean> f, final Iterable<A> input)
     {
-        Collection<A> left = new ArrayList<A>();
-        Collection<A> right = new ArrayList<A>();
+        List<A> left = new ArrayList<A>();
+        List<A> right = new ArrayList<A>();
         for (A a : input)
             if (f.apply(a))
                 left.add(a);
             else
                 right.add(a);
-        return new org.javatuples.Pair<Collection<A>,Collection<A>>(new UnmodifiableCollection(left), new UnmodifiableCollection(right));
+        return new org.javatuples.Pair<List<A>,List<A>>(new UnmodifiableList(left), new UnmodifiableList(right));
     }
 
     /// <summary> choose: (A -> B option) -> A list -> B list</summary>
-    public final static <A, B>Collection<B> choose(final Func<A, Option<B>> f, final Iterable<A> input) throws OptionNoValueAccessException
+    public final static <A, B>List<B> choose(final Func<A, Option<B>> f, final Iterable<A> input) throws OptionNoValueAccessException
     {
-        Collection<B> results = new ArrayList<B>();
+        List<B> results = new ArrayList<B>();
         for(A a : input)
         {
             Option<B> intermediate = f.apply(a);
             if (!intermediate.isNone())
                 results.add(intermediate.Some());
         }
-        return new UnmodifiableCollection(results);
+        return new UnmodifiableList(results);
     }
 
 
@@ -400,27 +400,27 @@ public final class Functional
         return input[input.length-1];
     }
 
-    public static final <T>Collection<T> concat(final Collection<T> list1, final Collection<T> list2)
+    public static final <T>List<T> concat(final List<T> list1, final List<T> list2)
     {
-        if(list1==null) throw new IllegalArgumentException("Functional.concat(Collection<T>,Collection<T>): list1 is null");
-        if(list2==null) throw new IllegalArgumentException("Functional.concat(Collection<T>,Collection<T>): list2 is null");
+        if(list1==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list1 is null");
+        if(list2==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list2 is null");
 
-        if(list1.size()==0) return new UnmodifiableCollection<T>(list2);
-        if(list2.size()==0) return new UnmodifiableCollection<T>(list1);
+        if(list1.size()==0) return new UnmodifiableList<T>(list2);
+        if(list2.size()==0) return new UnmodifiableList<T>(list1);
 
-        Collection<T> newList = new ArrayList<T>(list1);
+        List<T> newList = new ArrayList<T>(list1);
         final boolean didItChange = newList.addAll(list2);
-        return new UnmodifiableCollection<T>(newList);
+        return new UnmodifiableList<T>(newList);
     }
 
-    public static final<T>Collection<T> take(final int howMany, final Iterable<T> list)
+    public static final<T>List<T> take(final int howMany, final Iterable<T> list)
     {
         if(howMany<0) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): howMany is negative");
         if(list==null) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): list is null");
 
         if(howMany==0) return new ArrayList<T>(0);
 
-        Collection<T> output = new ArrayList<T>(howMany);
+        List<T> output = new ArrayList<T>(howMany);
         Iterator<T> iterator = list.iterator();
         for(int i=0;i<howMany;++i)
         {
@@ -429,7 +429,7 @@ public final class Functional
             else
                 throw new NoSuchElementException("Cannot take "+howMany+" elements from input list with fewer elements");
         }
-        return new UnmodifiableCollection(output);
+        return new UnmodifiableList(output);
     }
 
     public static final <T>Func<Integer,T> Constant(final T constant)
@@ -442,23 +442,23 @@ public final class Functional
         };
     }
 
-    public static final <A,B>Collection<org.javatuples.Pair<A,B>> zip(final Collection<A> l1, final Collection<B> l2)
+    public static final <A,B>List<org.javatuples.Pair<A,B>> zip(final Collection<A> l1, final Collection<B> l2)
     {
         if(l1==null) throw new IllegalArgumentException("Functional.zip(Collection<A>,Collection<B>): l1 is null");
         if(l2==null) throw new IllegalArgumentException("Functional.zip(Collection<A>,Collection<B>): l2 is null");
 
         if(l1.size()!=l2.size()) throw new IllegalArgumentException("Functional.zip(Collection<A>,Collection<B>): l1 and l2 have differing numbers of elements");
 
-        Collection<org.javatuples.Pair<A,B>> output = new ArrayList<org.javatuples.Pair<A, B>>(l1.size());
+        List<org.javatuples.Pair<A,B>> output = new ArrayList<org.javatuples.Pair<A, B>>(l1.size());
         Iterator<A> l1_it = l1.iterator();
         Iterator<B> l2_it = l2.iterator();
 
         while(l1_it.hasNext() && l2_it.hasNext()) output.add(new org.javatuples.Pair(l1_it.next(),l2_it.next()));
 
-        return new UnmodifiableCollection(output);
+        return new UnmodifiableList(output);
     }
 
-    public static final <A,B,C>Collection<Triplet<A,B,C>> zip3(final Collection<A> l1, final Collection<B> l2, final Collection<C> l3)
+    public static final <A,B,C>List<Triplet<A,B,C>> zip3(final Collection<A> l1, final Collection<B> l2, final Collection<C> l3)
     {
         if(l1==null) throw new IllegalArgumentException("Functional.zip3(Collection<A>,Collection<B>,Collection<C>): l1 is null");
         if(l2==null) throw new IllegalArgumentException("Functional.zip3(Collection<A>,Collection<B>,Collection<C>): l2 is null");
@@ -467,22 +467,22 @@ public final class Functional
         if(l1.size()!=l2.size() || l1.size()!=l3.size())
             throw new IllegalArgumentException("Functional.zip3(Collection<A>,Collection<B>,Collection<C>): l1, l2 and l3 have differing numbers of elements");
 
-        Collection<org.javatuples.Triplet<A,B,C>> output = new ArrayList<org.javatuples.Triplet<A, B,C>>(l1.size());
+        List<org.javatuples.Triplet<A,B,C>> output = new ArrayList<org.javatuples.Triplet<A, B,C>>(l1.size());
         Iterator<A> l1_it = l1.iterator();
         Iterator<B> l2_it = l2.iterator();
         Iterator<C> l3_it = l3.iterator();
 
         while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(new org.javatuples.Triplet(l1_it.next(),l2_it.next(),l3_it.next()));
 
-        return new UnmodifiableCollection(output);
+        return new UnmodifiableList(output);
     }
 
-    public static final <A,B>org.javatuples.Pair<Collection<A>,Collection<B>> unzip(final Collection<org.javatuples.Pair<A,B>> input)
+    public static final <A,B>org.javatuples.Pair<List<A>,List<B>> unzip(final Collection<org.javatuples.Pair<A,B>> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.unzip(Collection<Pair<A,B>>): input is null");
 
-        Collection<A> l1 = new ArrayList<A>();
-        Collection<B> l2 = new ArrayList<B>();
+        List<A> l1 = new ArrayList<A>();
+        List<B> l2 = new ArrayList<B>();
 
         for(org.javatuples.Pair<A,B> pair:input)
         {
@@ -490,7 +490,7 @@ public final class Functional
             l2.add(pair.getValue1());
         }
 
-        return new org.javatuples.Pair(new UnmodifiableCollection(l1),new UnmodifiableCollection(l2));
+        return new org.javatuples.Pair(new UnmodifiableList(l1),new UnmodifiableList(l2));
     }
 
     public static final class seq
@@ -719,11 +719,11 @@ public final class Functional
         }
     }
 
-    public static final <T>Functional.Func<Iterable<T>,Collection<T>> filter(final Functional.Func<T,Boolean> f)
+    public static final <T>Functional.Func<Iterable<T>,List<T>> filter(final Functional.Func<T,Boolean> f)
     {
-        return new Functional.Func<Iterable<T>, Collection<T>>() {
+        return new Functional.Func<Iterable<T>, List<T>>() {
             @Override
-            public Collection<T> apply(final Iterable<T> input) {
+            public List<T> apply(final Iterable<T> input) {
                 return Functional.filter(f,input);
             }
         };

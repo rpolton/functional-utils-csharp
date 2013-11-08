@@ -1,6 +1,5 @@
-package test.me.shaftesbury.utils.functional;
+package me.shaftesbury.utils.functional;
 
-import me.shaftesbury.utils.functional.*;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.junit.Assert;
@@ -203,7 +202,7 @@ public class FunctionalTest
     public void PartitionTest1()
     {
         Collection<Integer> m = Functional.init(TriplingGenerator, 5);
-        org.javatuples.Pair<Collection<Integer>, Collection<Integer>> r = Functional.partition(Functional.IsOdd, m);
+        org.javatuples.Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.IsOdd, m);
 
         Integer[] left = {3, 9, 15};
         Integer[] right = {6, 12};
@@ -215,7 +214,7 @@ public class FunctionalTest
     public void PartitionTest2()
     {
         Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        org.javatuples.Pair<Collection<Integer>, Collection<Integer>> r = Functional.partition(Functional.IsEven, l);
+        org.javatuples.Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.IsEven, l);
         Assert.assertArrayEquals(l.toArray(), r.getValue0().toArray());
         Assert.assertArrayEquals(new Integer[]{}, r.getValue1().toArray());
     }
@@ -224,7 +223,7 @@ public class FunctionalTest
     public void PartitionTest3()
     {
         Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        org.javatuples.Pair<Collection<Integer>, Collection<Integer>> r = Functional.partition(Functional.IsEven, l);
+        org.javatuples.Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.IsEven, l);
         Assert.assertArrayEquals(Functional.filter(Functional.IsEven, l).toArray(), r.getValue0().toArray());
     }
 
@@ -582,7 +581,7 @@ public class FunctionalTest
                         return new myInt(3 * (a + 1));
                     }
                 }, 5);
-        Pair<Double, Collection<myInt>> output = Functional.foldAndChoose(
+        Pair<Double, List<myInt>> output = Functional.foldAndChoose(
                 new Functional.Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
                     @Override
                     public Pair<Double, Option<myInt>> apply(Double state, myInt day) {
@@ -1129,8 +1128,7 @@ public class FunctionalTest
                         Arrays.asList(new String[]{"1", "2"}),
                         Arrays.asList(new Integer[]{1,2}));
 
-        org.javatuples.Pair<Collection<String>,Collection<Integer>> output =
-                Functional.unzip(input);
+        org.javatuples.Pair<List<String>,List<Integer>> output = Functional.unzip(input);
 
         AssertIterable.assertIterableEquals(expected.getValue0(), output.getValue0());
         AssertIterable.assertIterableEquals(expected.getValue1(), output.getValue1());
@@ -1308,7 +1306,7 @@ public class FunctionalTest
             @Override public Boolean apply(Integer integer) { return integer > state; }
         };
 
-        final Functional.Func<Iterable<Integer>,Collection<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
+        final Functional.Func<Iterable<Integer>,List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
 
         final Collection<Integer> l = Arrays.asList(new Integer[]{-3,-2,0,1,5});
         final Collection<Integer> posInts = curriedTestForPosInts.apply(l);
