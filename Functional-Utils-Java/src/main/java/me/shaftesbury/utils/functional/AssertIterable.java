@@ -1,5 +1,7 @@
 package me.shaftesbury.utils.functional;
 
+import org.junit.Assert;
+
 import java.util.Iterator;
 
 /**
@@ -21,8 +23,8 @@ public final class AssertIterable
         assert iterator1!=null;
         assert iterator2!=null;
 
-        while(iterator1.hasNext() && iterator2.hasNext()) org.junit.Assert.assertEquals(iterator1.next(),iterator2.next());
+        while(iterator1.hasNext() && iterator2.hasNext()) Assert.assertEquals(iterator1.next(), iterator2.next());
 
-        if(iterator1.hasNext()||iterator2.hasNext()) org.junit.Assert.fail("The two iterables containers have differing numbers of elements");
+        if(iterator1.hasNext()||iterator2.hasNext()) Assert.fail("The two iterables containers have differing numbers of elements");
     }
 }
