@@ -383,6 +383,16 @@ public final class Functional
         return (T[])output.toArray();
     }
 
+    public static final <T>List<T> toList(Iterable<T> input)
+    {
+        if(input==null) throw new IllegalArgumentException("Functional.toList(Iterable<T>): input is null");
+
+        List<T> output = new ArrayList<T>();
+        for(T element: input) output.add(element);
+
+        return output;
+    }
+
     public static final <T>T last(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null");

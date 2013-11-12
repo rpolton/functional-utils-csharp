@@ -1335,4 +1335,12 @@ public class FunctionalTest
         Collections.sort(keys);
         AssertIterable.assertIterableEquals(Arrays.asList(new String[]{"1","2","3","4","5"}),keys);
     }
+
+    @Test
+    public void ToListTest1()
+    {
+        Iterable<Integer> output = Functional.init(DoublingGenerator, 5);
+        List<Integer> output_ints = Functional.toList(output);
+        AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10}), output_ints);
+    }
 }
