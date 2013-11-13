@@ -380,7 +380,7 @@ public final class Functional
         List<T> output = new ArrayList<T>();
         for(T element: input) output.add(element);
 
-        return (T[])output.toArray();
+        return output.toArray(); // this needs to be output.toArray(new T[0]) but that doesn't appear to be allowable Java :-(
     }
 
     public static final <T>List<T> toList(Iterable<T> input)
