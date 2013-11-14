@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class EnumeratorsTest
 {
-    private static final Functional.Func<Integer,Integer> DoublingGenerator =
-            new Functional.Func<Integer,Integer>()
+    private static final Func<Integer,Integer> DoublingGenerator =
+            new Func<Integer,Integer>()
             {
                 @Override public Integer apply(Integer a) { return 2*(a + 1);}
             };

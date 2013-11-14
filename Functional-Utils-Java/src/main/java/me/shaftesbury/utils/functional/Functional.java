@@ -61,7 +61,7 @@ public final class Functional
     }
 
     public final static <A, B>Pair<A,List<B>> foldAndChoose(
-            final Func2<A, B, Pair<A,Option<B>>> f,
+            final me.shaftesbury.utils.functional.Func2<A, B, Pair<A,Option<B>>> f,
             final A initialValue, final Iterable<B> input) throws Exception
     {
         if (f == null) throw new /*ArgumentNull*/Exception("f");
@@ -79,7 +79,7 @@ public final class Functional
         return new Pair<A, List<B>>(state, new UnmodifiableList(results));
     }
 
-    public static final <T>List<T> convert(final Enumeration<T> input)
+    public static final <T>List<T> toList(final Enumeration<T> input)
     {
         final List<T> output = new ArrayList<T>();
         while(input.hasMoreElements())
@@ -164,11 +164,6 @@ public final class Functional
         throw new KeyNotFoundException();
     }
 
-    public interface Func<A,R>
-    {
-        public R apply(final A a);
-    }
-
     public final static <A, B> B In( final A input, final Func<A, B> f)
     {
         return f.apply(input);
@@ -212,19 +207,13 @@ public final class Functional
             return i % 2 != 0;
         }
     };
-    public static final Func2<Integer,Integer,Integer> Count =
+    public static final me.shaftesbury.utils.functional.Func2<Integer,Integer,Integer> Count =
             new Func2<Integer, Integer, Integer>() {
                 @Override
                 public Integer apply(Integer state, Integer b) {
                     return state + 1;
                 }
             };
-
-    public interface Func2<A,B,C> // disappointing! This should be related to Func<A,Func<B,C>>
-    {
-        public C apply(final A a, final B b);
-    }
-
 
     /// <summary> init: int -> (int -> A) -> A list</summary>
     public final static <T>List<T> init(final Func<Integer,T> f,final int howMany)
@@ -270,7 +259,7 @@ public final class Functional
     };
 
     /// <summary> forAll2: (A -> B -> bool) -> A list -> B list -> bool</summary>
-    public final static <A, B>boolean forAll2(final Func2<A, B,Boolean> f, final Iterable<A> input1, final Iterable<B> input2) throws Exception
+    public final static <A, B>boolean forAll2(final me.shaftesbury.utils.functional.Func2<A, B,Boolean> f, final Iterable<A> input1, final Iterable<B> input2) throws Exception
     {
         Iterator<A> enum1 = input1.iterator();
         Iterator<B> enum2 = input2.iterator();
@@ -320,7 +309,7 @@ public final class Functional
     }
 
     /// <summary> not2: (A -> B -> bool) -> (A -> B -> bool)</summary>
-    public final static <A,B>Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
+    public final static <A,B> me.shaftesbury.utils.functional.Func2<A,B,Boolean> not2(final me.shaftesbury.utils.functional.Func2<A,B,Boolean> f)
     {
         return new Func2<A,B,Boolean>(){@Override public Boolean apply(A a, B b) { return !f.apply(a,b);}};
     }
@@ -354,7 +343,7 @@ public final class Functional
 
 
     /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
-    public final static <A, B>A fold(final Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
+    public final static <A, B>A fold(final me.shaftesbury.utils.functional.Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
     {
         A state = initialValue;
         for (B a : input)
@@ -729,9 +718,9 @@ public final class Functional
         }
     }
 
-    public static final <T>Functional.Func<Iterable<T>,List<T>> filter(final Functional.Func<T,Boolean> f)
+    public static final <T>Func<Iterable<T>,List<T>> filter(final Func<T,Boolean> f)
     {
-        return new Functional.Func<Iterable<T>, List<T>>() {
+        return new Func<Iterable<T>, List<T>>() {
             @Override
             public List<T> apply(final Iterable<T> input) {
                 return Functional.filter(f,input);

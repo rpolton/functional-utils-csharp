@@ -16,8 +16,8 @@ import java.util.*;
  */
 public class FunctionalTest
 {
-    private static final Functional.Func<Integer,Integer> DoublingGenerator =
-            new Functional.Func<Integer,Integer>()
+    private static final Func<Integer,Integer> DoublingGenerator =
+            new Func<Integer,Integer>()
             {
                 @Override public Integer apply(Integer a) { return 2*(a + 1);}
             };
@@ -74,16 +74,16 @@ public class FunctionalTest
         Assert.assertArrayEquals(new Integer[]{1,4,6,7,23}, j.toArray());
     }
 
-    private static final Functional.Func<Integer, Integer> TriplingGenerator =
-            new Functional.Func<Integer, Integer>() {
+    private static final Func<Integer, Integer> TriplingGenerator =
+            new Func<Integer, Integer>() {
                 @Override
                 public Integer apply(Integer a) {
                     return 3 * (a + 1);
                 }
             };
 
-    private static final Functional.Func<Integer, Integer> QuadruplingGenerator =
-            new Functional.Func<Integer, Integer>() {
+    private static final Func<Integer, Integer> QuadruplingGenerator =
+            new Func<Integer, Integer>() {
                 @Override
                 public Integer apply(Integer a) {
                     return 4 * (a + 1);
@@ -105,7 +105,7 @@ public class FunctionalTest
         try
         {
             Assert.assertTrue(Functional.forAll2(
-                    new Functional.Func2<Integer, Integer, Boolean>() {
+                    new Func2<Integer, Integer, Boolean>() {
                         @Override
                         public Boolean apply(Integer a, Integer b) {
                             return BothAreEven(a, b);
@@ -121,8 +121,8 @@ public class FunctionalTest
         return a < 10 && b < 10;
     }
 
-    private static Functional.Func2<Integer, Integer, Boolean> dBothAreLessThan10 =
-            new Functional.Func2<Integer, Integer, Boolean>() {
+    private static Func2<Integer, Integer, Boolean> dBothAreLessThan10 =
+            new Func2<Integer, Integer, Boolean>() {
     @Override
     public Boolean apply(Integer a, Integer b) {
         return BothAreLessThan10(a, b);
@@ -146,7 +146,7 @@ public class FunctionalTest
         Collection<Integer> m = Functional.init(QuadruplingGenerator, 7);
 
         Functional.forAll2(
-                new Functional.Func2<Integer, Integer, Boolean>() {
+                new Func2<Integer, Integer, Boolean>() {
                     @Override
                     public Boolean apply(Integer a, Integer b) {
                         return BothAreEven(a, b);
@@ -179,7 +179,7 @@ public class FunctionalTest
         Assert.assertFalse(
                 Functional.forAll2(
                         Functional.not2(
-                                new Functional.Func2<Integer, Integer, Boolean>() {
+                                new Func2<Integer, Integer, Boolean>() {
                                     @Override
                                     public Boolean apply(Integer a, Integer b) {
                                         return a > lowerLimit && b > lowerLimit;
@@ -189,7 +189,7 @@ public class FunctionalTest
         Assert.assertTrue(
                 Functional.forAll2(
                         Functional.not2(
-                                new Functional.Func2<Integer, Integer, Boolean>() {
+                                new Func2<Integer, Integer, Boolean>() {
                                     @Override
                                     public Boolean apply(Integer a, Integer b) {
                                         return a > upperLimit && b > upperLimit;
@@ -241,7 +241,7 @@ public class FunctionalTest
     {
         Collection<Integer> li = Functional.init(TriplingGenerator, 5);
         Collection<String> o = Functional.choose(
-                new Functional.Func<Integer, Option<String>>() {
+                new Func<Integer, Option<String>>() {
                     @Override
                     public Option<String> apply(Integer i) {
                         return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
@@ -259,7 +259,7 @@ public class FunctionalTest
         Collection<Integer> li = Functional.init(TriplingGenerator, 5);
         o = Functional.toDictionary(Functional.<Integer>Identity(), Functional.dStringify,
                 Functional.choose(
-                        new Functional.Func<Integer, Option<Integer>>() {
+                        new Func<Integer, Option<Integer>>() {
                             @Override
                             public Option<Integer> apply(Integer i) {
                                 return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
@@ -284,9 +284,9 @@ public class FunctionalTest
         return b.equals(c);
     }
 
-    private final static <B, C>Functional.Func<C, Boolean> curried_fn(final B b)
+    private final static <B, C>Func<C, Boolean> curried_fn(final B b)
     {
-        return new Functional.Func<C, Boolean>() {
+        return new Func<C, Boolean>() {
             @Override
             public Boolean apply(C c) {
                 return Fn(b,c);
@@ -304,9 +304,9 @@ public class FunctionalTest
 
     private static int adder_int(int left, int right) { return left + right; }
 
-    private static final Functional.Func<Integer, Integer> curried_adder_int(final int c)
+    private static final Func<Integer, Integer> curried_adder_int(final int c)
     {
-        return new Functional.Func<Integer, Integer>() {
+        return new Func<Integer, Integer>() {
             @Override
             public Integer apply(Integer p) {
                 return adder_int(c, p);
@@ -319,7 +319,7 @@ public class FunctionalTest
     {
         List<Integer> a = Arrays.asList(1, 2, 3, 4, 5);
         Collection<Integer> b = Functional.map(
-                new Functional.Func<Integer, Integer>() {
+                new Func<Integer, Integer>() {
                     @Override
                     public Integer apply(final Integer a1) {
                         return adder_int(2, a1);
@@ -341,7 +341,7 @@ public class FunctionalTest
         String s1 = Functional.join(",", Functional.map(Functional.dStringify, li));
         Assert.assertEquals("2,4,6,8,10", s1);
         String s2 = Functional.fold(
-                new Functional.Func2<String, Integer, String>() {
+                new Func2<String, Integer, String>() {
                     @Override
                     public String apply(String s1, Integer s2) {
                         return csv(s1, s2);
@@ -350,11 +350,11 @@ public class FunctionalTest
         Assert.assertEquals(s1, s2);
     }
 
-    private final Functional.Func<Collection<Integer>, String> concatenate =
-            new Functional.Func<Collection<Integer>, String>() {
+    private final Func<Collection<Integer>, String> concatenate =
+            new Func<Collection<Integer>, String>() {
                 @Override
                 public String apply(Collection<Integer> l) {
-                    return Functional.fold(new Functional.Func2<String, Integer, String>() {
+                    return Functional.fold(new Func2<String, Integer, String>() {
                         @Override
                         public String apply(String s1, Integer s2) {
                             return csv(s1, s2);
@@ -371,8 +371,8 @@ public class FunctionalTest
         Assert.assertEquals("2,4,6,8,10", s1);
     }
 
-    private final Functional.Func<Collection<Integer>, Collection<Integer>> evens_f =
-            new Functional.Func<Collection<Integer>, Collection<Integer>>() {
+    private final Func<Collection<Integer>, Collection<Integer>> evens_f =
+            new Func<Collection<Integer>, Collection<Integer>>() {
                 @Override
                 public Collection<Integer> apply(Collection<Integer> l) {
                     return Functional.filter(Functional.IsEven, l);
@@ -420,7 +420,7 @@ public class FunctionalTest
         Assert.assertEquals(indentedName, expectedResult);
 
         Collection<String> indentation = Functional.init(
-                new Functional.Func<Integer, String>() {
+                new Func<Integer, String>() {
                     @Override
                     public String apply(Integer integer) {
                         return " ";
@@ -429,7 +429,7 @@ public class FunctionalTest
         Assert.assertEquals(Functional.join("", indentation), "     ");
 
         String s = Functional.fold(
-                new Functional.Func2<String, String, String>() {
+                new Func2<String, String, String>() {
                     @Override
                     public String apply(String state, String str) {
                         return state + str;
@@ -437,11 +437,11 @@ public class FunctionalTest
                 }, "", indentation);
         Assert.assertEquals(s, expectedResult);
 
-        Functional.Func<Collection<String>, String> folder =
-                new Functional.Func<Collection<String>, String>() {
+        Func<Collection<String>, String> folder =
+                new Func<Collection<String>, String>() {
                     @Override
                     public String apply(Collection<String> l) {
-                        return Functional.fold(new Functional.Func2<String, String, String>() {
+                        return Functional.fold(new Func2<String, String, String>() {
                             @Override
                             public String apply(String state, String str) {
                                 return state + str;
@@ -469,7 +469,7 @@ public class FunctionalTest
         Collection<Integer> li = Functional.init(TriplingGenerator, 5);
         Collection<Integer> o =
                 Functional.choose(
-                        new Functional.Func<Integer, Option<Integer>>() {
+                        new Func<Integer, Option<Integer>>() {
                             public Option<Integer> apply(Integer i) {
                                 return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
                             }
@@ -575,14 +575,14 @@ public class FunctionalTest
         }
 
         Collection<myInt> openedDays2 = Functional.init(
-                new Functional.Func<Integer, myInt>() {
+                new Func<Integer, myInt>() {
                     @Override
                     public myInt apply(Integer a) {
                         return new myInt(3 * (a + 1));
                     }
                 }, 5);
         Pair<Double, List<myInt>> output = Functional.foldAndChoose(
-                new Functional.Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
+                new Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
                     @Override
                     public Pair<Double, Option<myInt>> apply(Double state, myInt day) {
                         Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
@@ -597,7 +597,7 @@ public class FunctionalTest
         Collections.sort(keys);
         Assert.assertArrayEquals(keys.toArray(),
                 Functional.map(
-                        new Functional.Func<myInt, Integer>() {
+                        new Func<myInt, Integer>() {
                             @Override
                             public Integer apply(myInt i) {
                                 return i.i();
@@ -619,8 +619,8 @@ public class FunctionalTest
     {
         Collection<Integer> ids = Functional.init(TriplingGenerator, 5);
         final String expected = "'3','6','9','12','15'";
-        Functional.Func<Integer, String> f =
-                new Functional.Func<Integer, String>() {
+        Func<Integer, String> f =
+                new Func<Integer, String>() {
                     @Override
                     public String apply(Integer id) {
                         return "'" + id + "'";
@@ -680,7 +680,7 @@ public class FunctionalTest
         Integer two = 2;
         Integer three = 3;
         Integer four = 4;
-        Functional.Then(new Functional.Func<Integer,Integer>()
+        Functional.Then(new Func<Integer,Integer>()
         {
             @Override
             public Integer apply(Integer i) { return }
@@ -712,7 +712,7 @@ public class FunctionalTest
         Collection<Integer> l = Functional.init(DoublingGenerator,5);
         final Integer limit = 5;
         Iterable<Integer> highElems = Functional.seq.filter(
-                new Functional.Func<Integer,Boolean>()
+                new Func<Integer,Boolean>()
                 {
                     @Override
                     public Boolean apply(Integer a) { return a > limit;}
@@ -728,7 +728,7 @@ public class FunctionalTest
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         final Integer limit = 10;
         Iterable<Integer> output = Functional.seq.filter(
-                new Functional.Func<Integer,Boolean>()
+                new Func<Integer,Boolean>()
                 {
                     @Override public Boolean apply(Integer a) {return a > limit;}
                 }, li);
@@ -742,7 +742,7 @@ public class FunctionalTest
         Collection<Integer> li = Functional.init(DoublingGenerator, 10);
         Collection<Integer> expected = Arrays.asList(new Integer[]{4,8,12,16,20});
         Iterable<Integer> output = Functional.seq.filter(
-                new Functional.Func<Integer,Boolean>()
+                new Func<Integer,Boolean>()
                 {
                     @Override public Boolean apply(Integer a) {return a % 4 ==0;}
                 }, li);
@@ -816,7 +816,7 @@ public class FunctionalTest
     public void seqConcatTest1() throws Exception
     {
         List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
-        Functional.Func<Integer,Integer> doubler = new Functional.Func<Integer, Integer>() {
+        Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
             @Override
             public Integer apply(Integer i) {
                 return i * 2;
@@ -848,7 +848,7 @@ public class FunctionalTest
         {
             Collection<Integer> li = Functional.init(TriplingGenerator,5);
             Iterable<String> output = Functional.seq.choose(
-                    new Functional.Func<Integer,Option<String>>()
+                    new Func<Integer,Option<String>>()
                     {
                             @Override
                             public Option<String> apply(Integer i)
@@ -873,7 +873,7 @@ public class FunctionalTest
     {
         Collection<Integer> input = Functional.init(DoublingGenerator, 5);
         Collection<String> output = Functional.In(input,
-                new Functional.Func<Collection<Integer>, Collection<String>>() {
+                new Func<Collection<Integer>, Collection<String>>() {
                     @Override
                     public Collection<String> apply(Collection<Integer> integers) {
                         return Functional.map(Functional.dStringify, integers);
@@ -889,7 +889,7 @@ public class FunctionalTest
     {
         Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
         Iterable<String> output = Functional.In(input,
-                new Functional.Func<Iterable<Integer>, Iterable<String>>() {
+                new Func<Iterable<Integer>, Iterable<String>>() {
                     @Override
                     public Iterable<String> apply(Iterable<Integer> integers) {
                         try {
@@ -910,7 +910,7 @@ public class FunctionalTest
     {
         Iterable<Integer> l = Functional.seq.init(DoublingGenerator, 5);
         Iterable<Integer> oddElems = Functional.In(l,
-                new Functional.Func<Iterable<Integer>,Iterable<Integer>>(){
+                new Func<Iterable<Integer>,Iterable<Integer>>(){
                     @Override
                 public Iterable<Integer> apply(Iterable<Integer> ints){return Functional.filter(Functional.IsOdd, ints);}});
 
@@ -1042,7 +1042,7 @@ public class FunctionalTest
         Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
         Collection<Integer> output =
                 Functional.choose(
-                        new Functional.Func<Integer, Option<Integer>>() {
+                        new Func<Integer, Option<Integer>>() {
                             @Override
                             public Option<Integer> apply(Integer i) {
                                 return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
@@ -1058,7 +1058,7 @@ public class FunctionalTest
         Collection<Character> expected = Arrays.asList(new Character[]{'a'});
         Collection<Character> output =
                 Functional.choose(
-                        new Functional.Func<String, Option<Character>>() {
+                        new Func<String, Option<Character>>() {
                             @Override
                             public Option<Character> apply(String str) {
                                 return str.startsWith("a") ? Option.toOption('a') : Option.<Character>None();
@@ -1075,7 +1075,7 @@ public class FunctionalTest
         Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
         Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
         Collection<Integer> output = Functional.choose(
-                new Functional.Func<Integer, Option<Integer>>() {
+                new Func<Integer, Option<Integer>>() {
                     @Override
                     public Option<Integer> apply(Integer i) {
                         return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
@@ -1215,7 +1215,7 @@ public class FunctionalTest
         Collection<String> ls = Functional.map(Functional.dStringify, li);
         Assert.assertEquals(trueMatch,
                 Functional.find(
-                new Functional.Func<String, Boolean>() {
+                new Func<String, Boolean>() {
                     @Override
                     public Boolean apply(String s) {
                         return s.equals(trueMatch);
@@ -1230,7 +1230,7 @@ public class FunctionalTest
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         Collection<String> ls = Functional.map(Functional.dStringify, li);
         Functional.find(
-                new Functional.Func<String, Boolean>() {
+                new Func<String, Boolean>() {
                     @Override
                     public Boolean apply(String s) {
                         return s.equals(falseMatch);
@@ -1246,7 +1246,7 @@ public class FunctionalTest
         Collection<String> ls = Functional.map(Functional.dStringify, li);
         Assert.assertEquals(2,
                 Functional.findIndex(
-                        new Functional.Func<String, Boolean>() {
+                        new Func<String, Boolean>() {
                             @Override
                             public Boolean apply(String s) {
                                 return s.equals(trueMatch);
@@ -1261,7 +1261,7 @@ public class FunctionalTest
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         Collection<String> ls = Functional.map(Functional.dStringify, li);
         Functional.findIndex(
-                new Functional.Func<String, Boolean>() {
+                new Func<String, Boolean>() {
                     @Override
                     public Boolean apply(String s) {
                         return s.equals(falseMatch);
@@ -1276,7 +1276,7 @@ public class FunctionalTest
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         Assert.assertEquals(((Integer)trueMatch).toString(),
             Functional.pick(
-                    new Functional.Func<Integer, Option<String>>() {
+                    new Func<Integer, Option<String>>() {
                         @Override
                         public Option<String> apply(Integer a) {
                             return a == trueMatch ? new Option<String>(a.toString()) : Option.<String>None();
@@ -1290,7 +1290,7 @@ public class FunctionalTest
         final int falseMatch = 7;
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         Functional.pick(
-                new Functional.Func<Integer, Option<String>>() {
+                new Func<Integer, Option<String>>() {
                     @Override
                     public Option<String> apply(Integer a) {
                         return a == falseMatch ? new Option<String>(a.toString()) : Option.<String>None();
@@ -1302,11 +1302,11 @@ public class FunctionalTest
     public void curryFnTest1()
     {
         final int state=0;
-        final Functional.Func<Integer,Boolean> testForPosInts = new Functional.Func<Integer, Boolean>() {
+        final Func<Integer,Boolean> testForPosInts = new Func<Integer, Boolean>() {
             @Override public Boolean apply(Integer integer) { return integer > state; }
         };
 
-        final Functional.Func<Iterable<Integer>,List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
+        final Func<Iterable<Integer>,List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
 
         final Collection<Integer> l = Arrays.asList(new Integer[]{-3,-2,0,1,5});
         final Collection<Integer> posInts = curriedTestForPosInts.apply(l);
@@ -1320,7 +1320,7 @@ public class FunctionalTest
     {
         Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         Map<String,String> output = Functional.map_dict(
-                new Functional.Func<Integer, Map.Entry<String, String>>() {
+                new Func<Integer, Map.Entry<String, String>>() {
                     @Override
                     public Map.Entry<String, String> apply(final Integer i) {
                         return new Map.Entry<String,String>(){
