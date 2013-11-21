@@ -1343,4 +1343,38 @@ public class FunctionalTest
         List<Integer> output_ints = Functional.toList(output);
         AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10}), output_ints);
     }
+
+    public static final Func<Integer,Iterable<Integer>> intToList(final int howMany)
+    {
+        return new Func<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(final Integer integer) {
+                return Functional.init(
+                        new Func<Integer, Integer>() {
+                            @Override
+                            public Integer apply(Integer counter) {
+                                return integer;
+                            }
+                        }, howMany);
+            }
+        };
+    }
+
+    @Test
+    public void CollectTest1()
+    {
+        Iterable<Integer> input = Functional.init(DoublingGenerator, 5);
+        List<Integer> output = Functional.collect(intToList(3), input);
+        List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void seqCollectTest1()
+    {
+        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        Iterable<Integer> output = Functional.seq.collect(intToList(3), input);
+        List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
+        AssertIterable.assertIterableEquals(expected, output);
+    }
 }
