@@ -729,6 +729,9 @@ public final class Functional
 
         public static final <T>Iterable<T> collect(final Func<T,Iterable<T>> f, final Iterable<T> input)
         {
+            if(f==null) throw new IllegalArgumentException("Functional.seq.collect: f is null");
+            if(input==null) throw new IllegalArgumentException("Functional.seq.collect: input is null");
+
             return new Iterable<T>(){
 
                 @Override
