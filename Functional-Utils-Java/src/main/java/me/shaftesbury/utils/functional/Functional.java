@@ -376,6 +376,8 @@ public final class Functional
     {
         if(input==null) throw new IllegalArgumentException("Functional.toList(Iterable<T>): input is null");
 
+        if(input instanceof List<?>) return (List<T>)input;
+
         final List<T> output = new ArrayList<T>();
         for(final T element: input) output.add(element);
 
