@@ -1377,4 +1377,15 @@ public class FunctionalTest
         List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
         AssertIterable.assertIterableEquals(expected, output);
     }
+
+    @Test
+    public void seqCollectTest2()
+    {
+        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        Iterable<Integer> output1 = Functional.seq.collect(intToList(3), input);
+        Iterable<Integer> output2 = output1;
+        List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
+        AssertIterable.assertIterableEquals(expected, output1);
+        AssertIterable.assertIterableEquals(expected, output2);
+    }
 }

@@ -494,12 +494,12 @@ public final class Functional
         return new org.javatuples.Pair(new UnmodifiableList(l1),new UnmodifiableList(l2));
     }
 
-    public static final <T>List<T> collect(final Func<T,Iterable<T>> f, final Iterable<T> input)
+    public static final <T,U>List<U> collect(final Func<T,Iterable<U>> f, final Iterable<T> input)
     {
-        List<T> output = new ArrayList<T>();
+        List<U> output = new ArrayList<U>();
         for(final T element : input)
             output = Functional.concat(output, Functional.toList(f.apply(element)));
-        return new UnmodifiableList<T>(output);
+        return new UnmodifiableList<U>(output);
     }
 
     public static final class seq
@@ -727,26 +727,26 @@ public final class Functional
             };
         }
 
-        public static final <T>Iterable<T> collect(final Func<T,Iterable<T>> f, final Iterable<T> input)
+        public static final <T,U>Iterable<U> collect(final Func<T,Iterable<U>> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("Functional.seq.collect: f is null");
             if(input==null) throw new IllegalArgumentException("Functional.seq.collect: input is null");
 
-            return new Iterable<T>(){
+            return new Iterable<U>(){
 
                 @Override
-                public Iterator<T> iterator() {
-                    return new Iterator<T>(){
+                public Iterator<U> iterator() {
+                    return new Iterator<U>(){
                         private final Iterator<T> it = input.iterator();
-                        private List<T> cache = new ArrayList<T>();
-                        private Iterator<T> cacheIterator = cache.iterator();
+                        private List<U> cache = new ArrayList<U>();
+                        private Iterator<U> cacheIterator = cache.iterator();
                         @Override
                         public boolean hasNext() {
                             return it.hasNext() || cacheIterator.hasNext();
                         }
 
                         @Override
-                        public T next() {
+                        public U next() {
                             if(cacheIterator.hasNext()) return cacheIterator.next();
                             cache = toList(f.apply(it.next()));
                             cacheIterator=cache.iterator();
