@@ -502,6 +502,32 @@ public final class Functional
         return new UnmodifiableList<U>(output);
     }
 
+    public static final <A>me.shaftesbury.utils.functional.Pair<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
+    {
+        if (input == null) throw new IllegalArgumentException("Functional.takeNAndYield: input is null");
+
+        int counter = 0;
+        final List<A> output = new ArrayList<A>();
+        final Iterator<A> position = input.iterator();
+        if(howMany>0&&position.hasNext())
+        {
+            while(counter<howMany)
+            {
+                output.add(position.next());
+                counter++;
+                if (counter < howMany && !position.hasNext()) break;
+            }
+            return me.shaftesbury.utils.functional.Pair.create(output, (Iterable<A>) new Iterable<A>(){
+                @Override
+                public Iterator<A> iterator() {
+                    return position;
+                }
+            });
+        }
+        return me.shaftesbury.utils.functional.Pair.create(output, input);
+    }
+
+
     public static final class seq
     {
         public static final <T,U>Iterable<U> map(final Func<T,U> f, final Iterable<T> input) throws Exception

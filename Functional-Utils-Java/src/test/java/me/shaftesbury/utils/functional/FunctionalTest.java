@@ -1388,4 +1388,26 @@ public class FunctionalTest
         AssertIterable.assertIterableEquals(expected, output1);
         AssertIterable.assertIterableEquals(expected, output2);
     }
+
+    @Test
+    public void takeNandYieldTest1()
+    {
+        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        me.shaftesbury.utils.functional.Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input,2);
+        List<Integer> expectedList = Arrays.asList(2,4);
+        List<Integer> expectedRemainder = Arrays.asList(6,8,10);
+        AssertIterable.assertIterableEquals(expectedList,output.getValue0());
+        AssertIterable.assertIterableEquals(expectedRemainder,output.getValue1());
+    }
+
+    @Test
+    public void takeNandYieldTest2()
+    {
+        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        me.shaftesbury.utils.functional.Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input,0);
+        List<Integer> expectedList = Arrays.asList();
+        List<Integer> expectedRemainder = Arrays.asList(2,4,6,8,10);
+        AssertIterable.assertIterableEquals(expectedList,output.getValue0());
+        AssertIterable.assertIterableEquals(expectedRemainder,output.getValue1());
+    }
 }
