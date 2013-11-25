@@ -7,6 +7,6 @@ package me.shaftesbury.utils.functional;
  * Time: 13:28
  * To change this template use File | Settings | File Templates.
  */
-public class OptionNoValueAccessException extends Exception
+public class OptionNoValueAccessException extends RuntimeException
 {
 }
