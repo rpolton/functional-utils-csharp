@@ -946,20 +946,25 @@ public final class Functional
         }
     }
 
-/*
+
     // Recursive implementations of the functions
     public final static class rec
     {
-        private static final <A>Iterable<A> filter(Func<A,Boolean> f, Iterator<A> input)
+        private static final <A>Iterable<A> filter(Func<A,Boolean> f, Iterator<A> input, List<A> accumulator)
         {
-
+            if(input.hasNext())
+            {
+                A next = input.next();
+                if(f.apply(next)) accumulator.add(next);
+                return filter(f,input,accumulator);
+            }
+            else return accumulator;
         }
         public static final <A>Iterable<A> filter(Func<A,Boolean> f, Iterable<A> input)
         {
-            Iterator<A> it = input.iterator();
-            return it.hasNext() ? f.apply(it.next()) :: filter(f,it) :
+            return filter(f,input.iterator(),new ArrayList<A>());
         }
-    }*/
+    }
         /*
         // Following are functions for non-list collections
         */

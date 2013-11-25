@@ -1410,4 +1410,14 @@ public class FunctionalTest
         AssertIterable.assertIterableEquals(expectedList,output.getValue0());
         AssertIterable.assertIterableEquals(expectedRemainder,output.getValue1());
     }
+
+    @Test
+    public void recFilterTest1()
+    {
+        Collection<Integer> l = Functional.init(DoublingGenerator,5);
+        Iterable<Integer> oddElems = Functional.rec.filter(Functional.IsOdd, l);
+
+        AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
+    }
+
 }
