@@ -1420,4 +1420,27 @@ public class FunctionalTest
         AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
     }
 
+    @Test
+    public void recMapTest1()
+    {
+        Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        Iterable<String> output = Functional.rec.map(Functional.dStringify, input);
+        AssertIterable.assertIterableEquals(Arrays.asList("1","2","3","4","5"),output);
+    }
+
+    @Test
+    public void recFoldvsMapTest1()
+    {
+        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        String s1 = Functional.join(",", Functional.rec.map(Functional.dStringify, li));
+        Assert.assertEquals("2,4,6,8,10", s1);
+        String s2 = Functional.rec.fold(
+                new Func2<String, Integer, String>() {
+                    @Override
+                    public String apply(String s1, Integer s2) {
+                        return csv(s1, s2);
+                    }
+                }, "", li);
+        Assert.assertEquals(s1, s2);
+    }
 }

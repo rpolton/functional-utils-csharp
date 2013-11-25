@@ -964,6 +964,35 @@ public final class Functional
         {
             return filter(f,input.iterator(),new ArrayList<A>());
         }
+
+        private static final <A,B>Iterable<B> map(Func<A,B> f, Iterator<A> input, List<B> accumulator)
+        {
+            if(input.hasNext())
+            {
+                accumulator.add(f.apply(input.next()));
+                return map(f,input,accumulator);
+            }
+            else return accumulator;
+        }
+        public static final <A,B>Iterable<B> map(Func<A,B> f, Iterable<A> input)
+        {
+            return map(f,input.iterator(),new ArrayList<B>());
+        }
+
+        private final static <A,B>A fold(final Func2<A,B,A> f, final A initialValue, final Iterator<B> input)
+        {
+            if(input.hasNext())
+            {
+                B next = input.next();
+                return fold(f,f.apply(initialValue,next),input);
+            }
+            else return initialValue;
+        }
+        /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
+        public final static <A, B>A fold(final me.shaftesbury.utils.functional.Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
+        {
+            return fold(f,initialValue,input.iterator());
+        }
     }
         /*
         // Following are functions for non-list collections
