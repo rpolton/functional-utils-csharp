@@ -588,7 +588,7 @@ public final class Functional
 
     public static final <A,B>org.javatuples.Pair<List<A>,List<B>> unzip(final Iterable<org.javatuples.Pair<A,B>> input)
     {
-        if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
+        if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Tuple2<A,B>>): input is null");
 
         final List<A> l1 = new ArrayList<A>();
         final List<B> l2 = new ArrayList<B>();
@@ -620,7 +620,7 @@ public final class Functional
         };
     }
 
-    public static final <A>me.shaftesbury.utils.functional.Pair<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
+    public static final <A>Tuple2<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
     {
         if (input == null) throw new IllegalArgumentException("Functional.takeNAndYield: input is null");
 
@@ -635,14 +635,14 @@ public final class Functional
                 counter++;
                 if (counter < howMany && !position.hasNext()) break;
             }
-            return me.shaftesbury.utils.functional.Pair.create(output, (Iterable<A>) new Iterable<A>(){
+            return Tuple2.create(output, (Iterable<A>) new Iterable<A>() {
                 @Override
                 public Iterator<A> iterator() {
                     return position;
                 }
             });
         }
-        return me.shaftesbury.utils.functional.Pair.create(output, input);
+        return Tuple2.create(output, input);
     }
 
     public static final class seq
