@@ -2,9 +2,7 @@ package me.shaftesbury.utils.functional;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,4 +27,37 @@ public class EnumeratorsTest
         Iterable<Integer> output = Enumerators.ReverseEnum(li);
         AssertIterable.assertIterableEquals(expected,output);
     }
+
+    private final Map<Integer, String> list = new HashMap<Integer, String>();
+    /*
+    @TestSetup
+    public void Initialise()
+    {
+        list.put(1, "one");
+        list.put(2, "two");
+        list.put(10, "ten");
+        list.put(100, "one hundred");
+        list.put(97, "ninety seven");
+        list.put(-1, "minus one");
+        list.put(0, "zero zero UFO");
+    }
+
+    @TestTearDown
+    public void Clear()
+    {
+        list.clear();
+    }
+
+    @Test
+    public void SteppedEnumTest1()
+    {
+        StringBuilder sb = new StringBuilder();
+        for (KeyValuePair<int, string> pair : Enumerators.SteppedEnum(list, 3))
+        sb.Append(pair.ToString());
+
+        string expected =
+                new StringBuilder("[-1, minus one]").Append("[2, two]").Append("[100, one hundred]").ToString();
+        Assert.AreEqual(expected, sb.ToString());
+    }
+             */
 }

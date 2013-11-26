@@ -14,12 +14,12 @@ public final class Enumerators
 {
     private Enumerators(){}
 
-    public static final <T>Iterable<T> ReverseEnum(final List<T> list) throws Exception
+    public static final <T>Iterable<T> ReverseEnum(final List<T> list)
     {
-        if (list == null) throw new /*ArgumentNull*/Exception("list");
+        if (list == null) throw new IllegalArgumentException("list");
 
         if (list.isEmpty())
-            throw new /*Argument*/Exception("Collection is empty");
+            throw new IllegalArgumentException("Collection is empty");
 
         return new Iterable<T>() {
             private final List<T> _list=list;
@@ -46,5 +46,39 @@ public final class Enumerators
         };
     }
 
+    public static final <T>Iterable<T> SteppedEnum(final int step, final Iterable<T> enumerable)
+    {
+        if (enumerable == null) throw new IllegalArgumentException("enumerable");
 
+        if (step < 1)
+            throw new IllegalArgumentException("Invalid step value, must be greater than zero.");
+
+        return new Iterable<T>(){
+            final private Iterable<T> cache = enumerable;
+
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>(){
+                    final private Iterator<T> posn = cache.iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        for(int i=0;i<step-1;++i) if(posn.hasNext()) posn.next();
+                        return posn.hasNext();
+                    }
+
+                    @Override
+                    public T next() {
+                        for(int i=0;i<step-1;++i) posn.next();
+                        return posn.next();
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
+    }
 }
