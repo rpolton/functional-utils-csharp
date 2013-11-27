@@ -4,6 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <scm>
+        <connection>scm:svn:http://functional-utils-csharp.googlecode.com/svn/trunk/Functional-Utils-Java/</connection>
+        <developerConnection>scm:svn:https://functional-utils-csharp.googlecode.com/svn/trunk/Functional-Utils-Java/</developerConnection>
+        <url>http://functional-utils-csharp.googlecode.com/svn/trunk/Functional-Utils-Java/</url>
+    </scm>
+
     <groupId>me.shaftesbury</groupId>
     <artifactId>Functional-Utils-Java</artifactId>
     <version>1.0-SNAPSHOT</version>
