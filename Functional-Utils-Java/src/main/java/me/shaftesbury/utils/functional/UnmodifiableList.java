@@ -84,7 +84,7 @@ public final class UnmodifiableList<T> implements List<T>
 
     @Override
     public Object[] toArray(Object[] a) {
-        throw new UnsupportedOperationException("");
+        return _collection.toArray(a);
     }
 
     public final boolean equals(Object o)
