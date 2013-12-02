@@ -148,6 +148,22 @@ public final class Functional
     }
 
     /// <summary> findLast: (A -> bool) -> A list -> A</summary>
+    public final static <A>A findLast(final Func<A,Boolean> f, final Iterable<A> input)
+    {
+        if (f == null) throw new IllegalArgumentException("f");
+        if (input == null) throw new IllegalArgumentException("input");
+
+        final Tuple2<List<A>,Iterable<A>> p = takeNAndYield(input,1);
+        final Tuple2<A,Boolean> seed = Tuple2.create(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
+        final Tuple2<A,Boolean> result = fold(new Func2<Tuple2<A,Boolean>,A,Tuple2<A,Boolean>>(){
+            @Override public Tuple2<A,Boolean> apply(final Tuple2<A,Boolean> state, final A item){return f.apply(item)?Tuple2.create(item,true):state;}
+        },seed,p.getValue1());
+
+        if(result.getValue1()) return result.getValue0();
+        throw new KeyNotFoundException();
+    }
+
+    /// <summary> findLast: (A -> bool) -> A list -> A</summary>
     public final static <A>A findLast(final Func<A,Boolean> f, final List<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
