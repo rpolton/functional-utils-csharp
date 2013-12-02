@@ -32,7 +32,7 @@ public class LispListTest
     public void mapTest1()
     {
         List<Integer> input = list(1, list(2, list(3, list(4, list(5, LispList.<Integer>nil())))));
-        List<String> output = map(Functional.dStringify, input);
+        List<String> output = map(Functional.<Integer>dStringify(), input);
         Assert.assertEquals(list("1",list("2",list("3",list("4",list("5",LispList.nil()))))),output);
     }
 

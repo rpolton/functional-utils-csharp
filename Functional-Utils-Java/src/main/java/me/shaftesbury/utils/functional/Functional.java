@@ -57,7 +57,7 @@ public final class Functional
             public String apply(String state, String str) {
                 return str + state;
             }
-        },indentThis, indentation);
+        }, indentThis, indentation);
     }
 
     public final static <A, B>Pair<A,List<B>> foldAndChoose(
@@ -309,10 +309,13 @@ public final class Functional
     };
 
     public final static <T> String Stringify(final T a) { return a.toString(); }
-    public final static Func<Integer, String> dStringify = new Func<Integer, String>()
+    public final static <T>Func<T, String> dStringify()
     {
-        @Override public String apply(Integer i) { return Stringify(i); }
-    };
+        return new Func<T, String>()
+        {
+            @Override public String apply(T i) { return Stringify(i); }
+        };
+    }
 
     /// <summary> forAll2: (A -> B -> bool) -> A list -> B list -> bool</summary>
     public final static <A, B>boolean forAll2(final me.shaftesbury.utils.functional.Func2<A, B,Boolean> f, final Iterable<A> input1, final Iterable<B> input2)
@@ -616,6 +619,24 @@ public final class Functional
         }
 
         return new org.javatuples.Pair(new UnmodifiableList(l1),new UnmodifiableList(l2));
+    }
+
+    public static final <A,B,C>Triplet<List<A>,List<B>,List<C>> unzip3(final Iterable<Triplet<A,B,C>> input)
+    {
+        if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Tuple2<A,B>>): input is null");
+
+        final List<A> l1 = new ArrayList<A>();
+        final List<B> l2 = new ArrayList<B>();
+        final List<C> l3 = new ArrayList<C>();
+
+        for(org.javatuples.Triplet<A,B,C> triplet:input)
+        {
+            l1.add(triplet.getValue0());
+            l2.add(triplet.getValue1());
+            l3.add(triplet.getValue2());
+        }
+
+        return new org.javatuples.Triplet(new UnmodifiableList(l1),new UnmodifiableList(l2),new UnmodifiableList(l3));
     }
 
     public static final <T,U>List<U> collect(final Func<T,Iterable<U>> f, final Iterable<T> input)

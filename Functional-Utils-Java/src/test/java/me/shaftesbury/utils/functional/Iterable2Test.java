@@ -34,7 +34,7 @@ public class Iterable2Test
     public void MapTest1()
     {
         Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1, 2, 3, 4, 5});
-        Iterable2<String> output = input.map(Functional.dStringify);
+        Iterable2<String> output = input.map(Functional.<Integer>dStringify());
         AssertIterable.assertIterableEquals(Arrays.asList("1","2","3","4","5"),output);
     }
 
@@ -230,7 +230,7 @@ public class Iterable2Test
     public void ToStringTest1()
     {
         Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        Iterable2<String> ls = li.map(Functional.dStringify);
+        Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         //String s = String.Join(",", ls);
         AssertIterable.assertIterableEquals(IterableHelper.asList("2","4","6","8","10"), ls);
     }
@@ -256,7 +256,7 @@ public class Iterable2Test
         Map<Integer,String> o=null;
         try{
             Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
-            o = Functional.toDictionary(Functional.<Integer>Identity(), Functional.dStringify,
+            o = Functional.toDictionary(Functional.<Integer>Identity(), Functional.<Integer>dStringify(),
                     li.choose(
                             new Func<Integer, Option<Integer>>() {
                                 @Override
@@ -337,7 +337,7 @@ public class Iterable2Test
     public void FoldvsMapTest1()
     {
         Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        String s1 = Functional.join(",", li.map(Functional.dStringify));
+        String s1 = Functional.join(",", li.map(Functional.<Integer>dStringify()));
         Assert.assertEquals("2,4,6,8,10", s1);
         String s2 = li.fold(
                 new Func2<String, Integer, String>() {
@@ -609,7 +609,7 @@ public class Iterable2Test
     {
         Iterable2<Integer> ids = IterableHelper.init(TriplingGenerator, 5);
         final String expected = "3,6,9,12,15";
-        Assert.assertEquals(expected, Functional.join(",", ids.map(Functional.dStringify)));
+        Assert.assertEquals(expected, Functional.join(",", ids.map(Functional.<Integer>dStringify())));
         Assert.assertEquals(expected, Functional.join(",", ids));
     }
 
@@ -705,7 +705,7 @@ public class Iterable2Test
     public void toArrayTest1() throws Exception
     {
         Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        Iterable<String> strs = input.map(Functional.dStringify);
+        Iterable<String> strs = input.map(Functional.<Integer>dStringify());
         List<String> expected = Arrays.asList(new String[]{"1", "2", "3", "4", "5"});
 
         Object[] output = Functional.toArray(strs);
@@ -726,7 +726,7 @@ public class Iterable2Test
     public void lastTest2() throws Exception
     {
         Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        Iterable<String> strs = input.map(Functional.dStringify);
+        Iterable<String> strs = input.map(Functional.<Integer>dStringify());
         Assert.assertEquals("5", Functional.last(strs));
     }
 
@@ -750,8 +750,8 @@ public class Iterable2Test
         };
         Iterable2<String> expected = IterableHelper.asList(new String[]{"1","2","3","4","5","2","4","6","8","10"});
 
-        Iterable2<String> strs = input.map(Functional.dStringify);
-        Iterable2<String> output = strs.concat(input.map(doubler).map(Functional.dStringify));
+        Iterable2<String> strs = input.map(Functional.<Integer>dStringify());
+        Iterable2<String> output = strs.concat(input.map(doubler).map(Functional.<Integer>dStringify()));
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -795,7 +795,7 @@ public class Iterable2Test
                 new Func<Iterable2<Integer>, Iterable2<String>>() {
                     @Override
                     public Iterable2<String> apply(Iterable2<Integer> integers) {
-                        return integers.map(Functional.dStringify);
+                        return integers.map(Functional.<Integer>dStringify());
                     }
                 });
 
@@ -812,7 +812,7 @@ public class Iterable2Test
                     @Override
                     public Iterable2<String> apply(Iterable2<Integer> integers) {
                         try {
-                            return integers.map(Functional.dStringify);
+                            return integers.map(Functional.<Integer>dStringify());
                         } catch (Exception e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                             return null; // Argh!!!
@@ -1133,7 +1133,7 @@ public class Iterable2Test
     {
         final String trueMatch = "6";
         Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        Iterable2<String> ls = li.map(Functional.dStringify);
+        Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         Assert.assertEquals(trueMatch,
                 ls.find(
                         new Func<String, Boolean>() {
@@ -1149,7 +1149,7 @@ public class Iterable2Test
     {
         final String falseMatch = "7";
         Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        Iterable2<String> ls = li.map(Functional.dStringify);
+        Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         ls.find(
                 new Func<String, Boolean>() {
                     @Override
@@ -1164,7 +1164,7 @@ public class Iterable2Test
     {
         final String trueMatch = "6";
         Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        Iterable2<String> ls = li.map(Functional.dStringify);
+        Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         Assert.assertEquals(2,
                 ls.findIndex(
                         new Func<String, Boolean>() {
@@ -1180,7 +1180,7 @@ public class Iterable2Test
     {
         final String falseMatch = "7";
         Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        Iterable2<String> ls = li.map(Functional.dStringify);
+        Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         ls.findIndex(
                 new Func<String, Boolean>() {
                     @Override
@@ -1246,8 +1246,8 @@ public class Iterable2Test
                     public Map.Entry<String, String> apply(final Integer i) {
                         return new Map.Entry<String,String>(){
                             public String setValue(String v){throw new UnsupportedOperationException(); }
-                            public String getValue() { return Functional.dStringify.apply(i); }
-                            public String getKey() { return Functional.dStringify.apply(i); }
+                            public String getValue() { return Functional.<Integer>dStringify().apply(i); }
+                            public String getKey() { return Functional.<Integer>dStringify().apply(i); }
                         };
                     }
                 }, input);
@@ -1345,7 +1345,7 @@ public class Iterable2Test
     public void recMapTest1()
     {
         Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1, 2, 3, 4, 5});
-        Iterable<String> output = input.map(Functional.dStringify);
+        Iterable<String> output = input.map(Functional.<Integer>dStringify());
         AssertIterable.assertIterableEquals(Arrays.asList("1","2","3","4","5"),output);
     }
 
@@ -1353,7 +1353,7 @@ public class Iterable2Test
     public void recFoldvsMapTest1()
     {
         Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        String s1 = Functional.join(",", li.map(Functional.dStringify));
+        String s1 = Functional.join(",", li.map(Functional.<Integer>dStringify()));
         Assert.assertEquals("2,4,6,8,10", s1);
         String s2 = li.fold(
                 new Func2<String, Integer, String>() {

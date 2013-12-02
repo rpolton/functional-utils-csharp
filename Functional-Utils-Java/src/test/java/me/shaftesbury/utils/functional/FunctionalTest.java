@@ -34,7 +34,7 @@ public class FunctionalTest
     public void MapTest1()
     {
         Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        Collection<String> output = Functional.map(Functional.dStringify, input);
+        Collection<String> output = Functional.map(Functional.<Integer>dStringify(), input);
         Assert.assertArrayEquals(new String[]{"1","2","3","4","5"},output.toArray());
     }
 
@@ -231,7 +231,7 @@ public class FunctionalTest
     public void ToStringTest1()
     {
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         //String s = String.Join(",", ls);
         Assert.assertArrayEquals(new String[]{"2","4","6","8","10"}, ls.toArray());
     }
@@ -257,7 +257,7 @@ public class FunctionalTest
         Map<Integer,String> o=null;
         try{
         Collection<Integer> li = Functional.init(TriplingGenerator, 5);
-        o = Functional.toDictionary(Functional.<Integer>Identity(), Functional.dStringify,
+        o = Functional.toDictionary(Functional.<Integer>Identity(), Functional.<Integer>dStringify(),
                 Functional.choose(
                         new Func<Integer, Option<Integer>>() {
                             @Override
@@ -338,7 +338,7 @@ public class FunctionalTest
     public void FoldvsMapTest1()
     {
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        String s1 = Functional.join(",", Functional.map(Functional.dStringify, li));
+        String s1 = Functional.join(",", Functional.map(Functional.<Integer>dStringify(), li));
         Assert.assertEquals("2,4,6,8,10", s1);
         String s2 = Functional.fold(
                 new Func2<String, Integer, String>() {
@@ -610,7 +610,7 @@ public class FunctionalTest
     {
         Collection<Integer> ids = Functional.init(TriplingGenerator, 5);
         final String expected = "3,6,9,12,15";
-        Assert.assertEquals(expected, Functional.join(",", Functional.map(Functional.dStringify, ids)));
+        Assert.assertEquals(expected, Functional.join(",", Functional.map(Functional.<Integer>dStringify(), ids)));
         Assert.assertEquals(expected, Functional.join(",", ids));
     }
 
@@ -783,7 +783,7 @@ public class FunctionalTest
     {
         List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5}); //Enumerable.Range(1, 5).ToList();
         List<String> expected = Arrays.asList(new String[] {"1", "2", "3", "4", "5"});
-        Iterable<String> output = Functional.seq.map(Functional.dStringify, input);
+        Iterable<String> output = Functional.seq.map(Functional.<Integer>dStringify(), input);
         Iterator<String> it = output.iterator();
         for(int i=0; i<expected.size(); ++i)
             Assert.assertEquals(expected.get(i), it.next());
@@ -793,7 +793,7 @@ public class FunctionalTest
     public void toArrayTest1() throws Exception
     {
         List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
-        Iterable<String> strs = Functional.seq.map(Functional.dStringify, input);
+        Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
         List<String> expected = Arrays.asList(new String[]{"1", "2", "3", "4", "5"});
 
         Object[] output = Functional.toArray(strs);
@@ -814,7 +814,7 @@ public class FunctionalTest
     public void lastTest2() throws Exception
     {
         List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
-        Iterable<String> strs = Functional.seq.map(Functional.dStringify, input);
+        Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
         Assert.assertEquals("5", Functional.last(strs));
     }
 
@@ -838,8 +838,8 @@ public class FunctionalTest
         };
         List<String> expected = Arrays.asList(new String[]{"1","2","3","4","5","2","4","6","8","10"});
 
-        Iterable<String> strs = Functional.seq.map(Functional.dStringify, input);
-        Iterable<String> output = Functional.seq.concat(strs, Functional.seq.map(Functional.dStringify, Functional.seq.map(doubler, input)));
+        Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
+        Iterable<String> output = Functional.seq.concat(strs, Functional.seq.map(Functional.<Integer>dStringify(), Functional.seq.map(doubler, input)));
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -890,7 +890,7 @@ public class FunctionalTest
                 new Func<Collection<Integer>, Collection<String>>() {
                     @Override
                     public Collection<String> apply(Collection<Integer> integers) {
-                        return Functional.map(Functional.dStringify, integers);
+                        return Functional.map(Functional.<Integer>dStringify(), integers);
                     }
                 });
 
@@ -907,7 +907,7 @@ public class FunctionalTest
                     @Override
                     public Iterable<String> apply(Iterable<Integer> integers) {
                         try {
-                            return Functional.seq.map(Functional.dStringify, integers);
+                            return Functional.seq.map(Functional.<Integer>dStringify(), integers);
                         } catch (Exception e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                             return null; // Argh!!!
@@ -1149,6 +1149,28 @@ public class FunctionalTest
     }
 
     @Test
+    public void Unzip3Test1()
+    {
+        Collection<org.javatuples.Triplet<String,Integer,String>> input =
+                new ArrayList<org.javatuples.Triplet<String,Integer,String>>();
+        input.add(new org.javatuples.Triplet<String,Integer,String>("1", 1,"L"));
+        input.add(new org.javatuples.Triplet<String,Integer,String>("2", 2,"M"));
+        input.add(new org.javatuples.Triplet<String,Integer,String>("3", 3,"K"));
+
+        org.javatuples.Triplet<Collection<String>,Collection<Integer>,Collection<String>> expected =
+                new org.javatuples.Triplet(
+                        Arrays.asList(new String[]{"1", "2","3"}),
+                        Arrays.asList(new Integer[]{1,2,3}),
+                        Arrays.asList(new String[]{"L","M","K"}));
+
+        org.javatuples.Triplet<List<String>,List<Integer>,List<String>> output = Functional.unzip3(input);
+
+        AssertIterable.assertIterableEquals(expected.getValue0(), output.getValue0());
+        AssertIterable.assertIterableEquals(expected.getValue1(), output.getValue1());
+        AssertIterable.assertIterableEquals(expected.getValue2(), output.getValue2());
+    }
+
+    @Test
     public void ZipTest1()
     {
         Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
@@ -1226,7 +1248,7 @@ public class FunctionalTest
     {
         final String trueMatch = "6";
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         Assert.assertEquals(trueMatch,
                 Functional.find(
                 new Func<String, Boolean>() {
@@ -1242,7 +1264,7 @@ public class FunctionalTest
     {
         final String falseMatch = "7";
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         Functional.find(
                 new Func<String, Boolean>() {
                     @Override
@@ -1257,7 +1279,7 @@ public class FunctionalTest
     {
         final String trueMatch = "6";
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         Assert.assertEquals(2,
                 Functional.findIndex(
                         new Func<String, Boolean>() {
@@ -1273,7 +1295,7 @@ public class FunctionalTest
     {
         final String falseMatch = "7";
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.dStringify, li);
+        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         Functional.findIndex(
                 new Func<String, Boolean>() {
                     @Override
@@ -1339,8 +1361,8 @@ public class FunctionalTest
                     public Map.Entry<String, String> apply(final Integer i) {
                         return new Map.Entry<String,String>(){
                             public String setValue(String v){throw new UnsupportedOperationException(); }
-                            public String getValue() { return Functional.dStringify.apply(i); }
-                            public String getKey() { return Functional.dStringify.apply(i); }
+                            public String getValue() { return Functional.<Integer>dStringify().apply(i); }
+                            public String getKey() { return Functional.<Integer>dStringify().apply(i); }
                         };
                     }
                 }, input);
@@ -1438,7 +1460,7 @@ public class FunctionalTest
     public void recMapTest1()
     {
         Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        Iterable<String> output = Functional.rec.map(Functional.dStringify, input);
+        Iterable<String> output = Functional.rec.map(Functional.<Integer>dStringify(), input);
         AssertIterable.assertIterableEquals(Arrays.asList("1","2","3","4","5"),output);
     }
 
@@ -1446,7 +1468,7 @@ public class FunctionalTest
     public void recFoldvsMapTest1()
     {
         Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        String s1 = Functional.join(",", Functional.rec.map(Functional.dStringify, li));
+        String s1 = Functional.join(",", Functional.rec.map(Functional.<Integer>dStringify(), li));
         Assert.assertEquals("2,4,6,8,10", s1);
         String s2 = Functional.rec.fold(
                 new Func2<String, Integer, String>() {
