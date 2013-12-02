@@ -153,10 +153,10 @@ public final class Functional
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
 
-        final Tuple2<List<A>,Iterable<A>> p = takeNAndYield(input,1);
-        final Tuple2<A,Boolean> seed = Tuple2.create(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
-        final Tuple2<A,Boolean> result = fold(new Func2<Tuple2<A,Boolean>,A,Tuple2<A,Boolean>>(){
-            @Override public Tuple2<A,Boolean> apply(final Tuple2<A,Boolean> state, final A item){return f.apply(item)?Tuple2.create(item,true):state;}
+        final Pair<List<A>,Iterable<A>> p = takeNAndYield(input,1);
+        final Pair<A,Boolean> seed = Pair.with(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
+        final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
+            @Override public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.with(item,true):state;}
         },seed,p.getValue1());
 
         if(result.getValue1()) return result.getValue0();
@@ -607,7 +607,7 @@ public final class Functional
 
     public static final <A,B>org.javatuples.Pair<List<A>,List<B>> unzip(final Iterable<org.javatuples.Pair<A,B>> input)
     {
-        if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Tuple2<A,B>>): input is null");
+        if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
 
         final List<A> l1 = new ArrayList<A>();
         final List<B> l2 = new ArrayList<B>();
@@ -623,7 +623,7 @@ public final class Functional
 
     public static final <A,B,C>Triplet<List<A>,List<B>,List<C>> unzip3(final Iterable<Triplet<A,B,C>> input)
     {
-        if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Tuple2<A,B>>): input is null");
+        if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
 
         final List<A> l1 = new ArrayList<A>();
         final List<B> l2 = new ArrayList<B>();
@@ -657,7 +657,7 @@ public final class Functional
         };
     }
 
-    public static final <A>Tuple2<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
+    public static final <A>Pair<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
     {
         if (input == null) throw new IllegalArgumentException("Functional.takeNAndYield: input is null");
 
@@ -672,14 +672,14 @@ public final class Functional
                 counter++;
                 if (counter < howMany && !position.hasNext()) break;
             }
-            return Tuple2.create(output, (Iterable<A>) new Iterable<A>() {
+            return Pair.with(output, (Iterable<A>) new Iterable<A>() {
                 @Override
                 public Iterator<A> iterator() {
                     return position;
                 }
             });
         }
-        return Tuple2.create(output, input);
+        return Pair.with(output, input);
     }
 
     public static final class seq
