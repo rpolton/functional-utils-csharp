@@ -76,7 +76,7 @@ public final class UnmodifiableCollection<T> implements Collection<T>
     }
 
     @Override
-    public Object[] toArray(Object[] a) {
+    public <U>U[] toArray(U[] a) {
         return _collection.toArray(a);
     }
 
