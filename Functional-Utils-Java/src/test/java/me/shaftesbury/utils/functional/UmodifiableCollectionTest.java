@@ -28,7 +28,7 @@ public class UmodifiableCollectionTest
     @Test
     public void UnmodifiableCollectionSizeTest1()
     {
-        Assert.assertEquals(l.size(),u.size());
+        Assert.assertEquals(l.size(), u.size());
     }
 
     @Test
@@ -63,14 +63,15 @@ public class UmodifiableCollectionTest
     {
         List<Integer> ll = new ArrayList<Integer>();
         for(Integer i:u) ll.add(i);
-        Assert.assertArrayEquals(l.toArray(),ll.toArray());
+        Assert.assertArrayEquals(l.toArray(), ll.toArray());
+        AssertIterable.assertIterableEquals(l,ll);
     }
 
     @Test
     public void UnmodifiableCollectionToArrayTest1()
     {
         Object[] ii = u.toArray();
-        Assert.assertArrayEquals(l.toArray(),ii);
+        Assert.assertArrayEquals(l.toArray(), ii);
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -119,13 +120,22 @@ public class UmodifiableCollectionTest
     public void UnmodifiableCollectionToArrayTest2()
     {
         Integer[] ii = u.toArray(new Integer[]{});
-        Assert.assertArrayEquals(l.toArray(new Integer[]{}),ii);
+        Assert.assertArrayEquals(l.toArray(new Integer[]{}), ii);
     }
 
     @Test
     public void UnmodifiableCollectionEqualsTest1()
     {
         Assert.assertTrue(u.equals(l));
-        Assert.assertTrue(l.equals(u));
+        Assert.assertTrue(new UnmodifiableCollection(l).equals(u));
+    }
+
+    @Test
+    public void UnmodifiableCollectionEqualsTest2()
+    {
+        Collection<Integer> d = Arrays.asList(1,2,3,4,5,6);
+        UnmodifiableCollection<Integer> dummy = new UnmodifiableCollection<Integer>(d);
+        Assert.assertFalse(u.equals(dummy));
+        Assert.assertFalse(dummy.equals(u));
     }
 }

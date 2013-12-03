@@ -75,4 +75,12 @@ public class UnmodifiableMap<K,V> implements Map<K,V>
     public Set<Entry<K, V>> entrySet() {
         return _map.entrySet();
     }
+    public final boolean equals(Object o)
+    {
+        return o instanceof Map<?,?> &&
+                _map.entrySet().containsAll(((Map)o).entrySet()) &&
+                ((Map) o).entrySet().containsAll(_map.entrySet());
+    }
+
+    public final int hashCode() { return 13 * _map.hashCode(); }
 }

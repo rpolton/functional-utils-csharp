@@ -16,7 +16,7 @@ import java.util.ListIterator;
  * Time: 23:32
  * To change this template use File | Settings | File Templates.
  */
-public class UmodifiableContainerTest
+public class UmodifiableListTest
 {
     private List<Integer> l;
     private UnmodifiableList<Integer> u;
@@ -67,6 +67,7 @@ public class UmodifiableContainerTest
         List<Integer> ll = new ArrayList<Integer>();
         for(Integer i:u) ll.add(i);
         Assert.assertArrayEquals(l.toArray(),ll.toArray());
+        AssertIterable.assertIterableEquals(l,ll);
     }
 
     @Test
@@ -122,7 +123,7 @@ public class UmodifiableContainerTest
     public void UnmodifiableListToArrayTest2()
     {
         Integer[] ii = u.toArray(new Integer[]{});
-        Assert.assertArrayEquals(l.toArray(),ii);
+        Assert.assertArrayEquals(l.toArray(new Integer[]{}),ii);
     }
 
     @Test
@@ -130,6 +131,15 @@ public class UmodifiableContainerTest
     {
         Assert.assertTrue(u.equals(l));
         Assert.assertTrue(l.equals(u));
+    }
+
+    @Test
+    public void UnmodifiableCollectionEqualsTest2()
+    {
+        List<Integer> d = Arrays.asList(1,2,3,4,5,6);
+        UnmodifiableList<Integer> dummy = new UnmodifiableList<Integer>(d);
+        Assert.assertFalse(u.equals(dummy));
+        Assert.assertFalse(dummy.equals(u));
     }
 
     @Test

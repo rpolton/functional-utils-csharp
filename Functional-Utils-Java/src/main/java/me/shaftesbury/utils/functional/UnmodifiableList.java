@@ -89,9 +89,18 @@ public final class UnmodifiableList<T> implements List<T>
 
     public final boolean equals(Object o)
     {
+        try {
         return o instanceof List<?> &&
-                _collection.containsAll((List)o) &&
-                ((List) o).containsAll(_collection);
+                //_collection.containsAll((List)o) &&
+                //((List) o).containsAll(_collection);
+                Functional.forAll2(new Func2<Object, Object, Boolean>() {
+                    @Override
+                    public Boolean apply(Object o, Object o2) {
+                        return o.equals(o2);
+                    }
+                },ArrayIterable.create(((List<?>)o).toArray()),ArrayIterable.create(_collection.toArray()));
+        } catch(Exception e ) { return false;}
+
     }
 
     public final int hashCode() { return 13 * _collection.hashCode(); }

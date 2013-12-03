@@ -82,9 +82,17 @@ public final class UnmodifiableCollection<T> implements Collection<T>
 
     public final boolean equals(Object o)
     {
-        return o instanceof UnmodifiableCollection<?> &&
-                _collection.containsAll((UnmodifiableCollection)o) &&
-                ((UnmodifiableCollection) o).containsAll(_collection);
+        try{
+        return o instanceof Collection<?> &&
+                //_collection.containsAll((Collection)o) &&
+                //((Collection) o).containsAll(_collection);
+        Functional.forAll2(new Func2<Object, Object, Boolean>() {
+            @Override
+            public Boolean apply(Object o, Object o2) {
+                return o.equals(o2);
+            }
+        },ArrayIterable.create(((Collection<?>)o).toArray()),ArrayIterable.create(_collection.toArray()));
+        } catch(Exception e ) { return false;}
     }
 
     public final int hashCode() { return 13 * _collection.hashCode(); }
