@@ -83,15 +83,15 @@ public final class UnmodifiableList<T> implements List<T>
     }
 
     @Override
-    public Object[] toArray(Object[] a) {
+    public <U>U[] toArray(U[] a) {
         return _collection.toArray(a);
     }
 
     public final boolean equals(Object o)
     {
-        return o instanceof UnmodifiableList<?> &&
-                _collection.containsAll((UnmodifiableList)o) &&
-                ((UnmodifiableList) o).containsAll(_collection);
+        return o instanceof List<?> &&
+                _collection.containsAll((List)o) &&
+                ((List) o).containsAll(_collection);
     }
 
     public final int hashCode() { return 13 * _collection.hashCode(); }
