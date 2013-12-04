@@ -1479,4 +1479,29 @@ public class FunctionalTest
                 }, "", li);
         Assert.assertEquals(s1, s2);
     }
+
+    @Test
+    public void IfTest1()
+    {
+        final Integer input = 1;
+        final Iterable2<Integer> i = IterableHelper.asList(0,1,2);
+        final Iterable2<Integer> result = i.map(
+                new Func<Integer,Integer>(){
+                    public Integer apply(Integer ii) { return Functional.If(input,Functional.greaterThan(ii),DoublingGenerator,TriplingGenerator); }});
+        final List<Integer> expected = Arrays.asList(4,6,6); // remember DoublingGenerator returns 2*(a+1)
+        AssertIterable.assertIterableEquals(expected, result);
+    }
+
+    @Test
+    public void switchTest1()
+    {
+        Assert.assertEquals(new Integer(1),
+                Functional.Switch(new Integer(10),
+                        Arrays.asList(
+
+                Functional.toCase(Functional.lessThan(new Integer(5)),Functional.Constant(new Integer(-1))),
+            Functional.toCase(Functional.greaterThan(new Integer(5)),Functional.Constant(new Integer(1)))
+                        ), Functional.Constant(new Integer(0))));
+    }
+
 }

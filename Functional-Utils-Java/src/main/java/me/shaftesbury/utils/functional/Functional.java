@@ -253,13 +253,60 @@ public final class Functional
             return i % 2 != 0;
         }
     };
-    public static final me.shaftesbury.utils.functional.Func2<Integer,Integer,Integer> Count =
-            new Func2<Integer, Integer, Integer>() {
+    public static final Func2<Integer,Integer,Integer> Count = new Func2<Integer, Integer, Integer>() {
                 @Override
                 public Integer apply(Integer state, Integer b) {
                     return state + 1;
                 }
             };
+
+    public static final <T extends Comparable<T>>Func<T,Boolean> greaterThan(final T that)
+    {
+        return new Func<T, Boolean>()
+        {
+            @Override
+            public Boolean apply(final T ths)
+            {
+                return ths.compareTo(that)>0;
+            }
+        };
+    }
+
+    public static final <T extends Comparable<T>>Func<T,Boolean> greaterThanOrEqual(final T that)
+    {
+        return new Func<T, Boolean>()
+        {
+            @Override
+            public Boolean apply(final T ths)
+            {
+                return ths.compareTo(that)>=0;
+            }
+        };
+    }
+
+    public static final <T extends Comparable<T>>Func<T,Boolean> lessThan(final T that)
+    {
+        return new Func<T, Boolean>()
+        {
+            @Override
+            public Boolean apply(final T ths)
+            {
+                return ths.compareTo(that)<0;
+            }
+        };
+    }
+
+    public static final <T extends Comparable<T>>Func<T,Boolean> lessThanOrEqual(final T that)
+    {
+        return new Func<T, Boolean>()
+        {
+            @Override
+            public Boolean apply(final T ths)
+            {
+                return ths.compareTo(that)<=0;
+            }
+        };
+    }
 
     /// <summary> init: int -> (int -> A) -> A list</summary>
     public final static <T>List<T> init(final Func<Integer,T> f,final int howMany)
@@ -1044,5 +1091,49 @@ public final class Functional
             results.put(intermediate.getKey(), intermediate.getValue());
         }
         return results;
+    }
+
+    /*
+    // Following are control structures, eg if, switch
+     */
+
+    public static final <A,B>B If(final A a, final Func<A,Boolean> predicate, final Func<A, B> thenClause, final Func<A, B> elseClause)
+    {
+        if (a == null) throw new IllegalArgumentException("a");
+        if (predicate == null) throw new IllegalArgumentException("predicate");
+        if (thenClause == null) throw new IllegalArgumentException("thenClause");
+        if (elseClause == null) throw new IllegalArgumentException("elseClause");
+
+        return predicate.apply(a) ? thenClause.apply(a) : elseClause.apply(a);
+    }
+
+    public static final <A, B>Case<A, B> toCase(final Func<A,Boolean> pred, final Func<A, B> result)
+    {
+        if (pred == null) throw new IllegalArgumentException("pred");
+        if (result == null) throw new IllegalArgumentException("res");
+
+        return new Case<A, B> ( pred, result );
+    }
+
+    public static <A, B>B Switch(final A input, final Iterable<Case<A, B>> cases, final Func<A, B> defaultCase)
+    {
+        return Switch(input,IterableHelper.create(cases),defaultCase);
+    }
+
+    public static <A, B>B Switch(final A input, final Iterable2<Case<A, B>> cases, final Func<A, B> defaultCase)
+    {
+        if (input == null) throw new IllegalArgumentException("input");
+        if (cases == null) throw new IllegalArgumentException("cases");
+        if (defaultCase == null) throw new IllegalArgumentException("defaultCase");
+
+        //return Try<InvalidOperationException>.ToTry(input, a => cases.First(chk => chk.check(a)).results(a), defaultCase);
+        try {
+            return cases.find(new Func<Case<A, B>, Boolean>() {
+                @Override
+                public Boolean apply(Case<A, B> abCase) {
+                    return abCase.predicate(input);
+                }
+            }).results(input);
+        } catch(KeyNotFoundException k) { return defaultCase.apply(input); }
     }
 }
