@@ -35,16 +35,21 @@ public final class Option<T>
     {
         return _t==null;
     }
-    public final boolean equals(final Option<T> other)
+    public final boolean equals(final Object o)
     {
-        try
+        if(o instanceof Option<?>)
         {
-            return isSome() == other.isSome() && Some()==other.Some();
+            final Option<?> other = (Option<?>)o;
+            try
+            {
+                return isSome()==other.isSome() && Some().equals(other.Some());
+            }
+            catch(OptionNoValueAccessException ex)
+            {
+                return isNone() && other.isNone(); // every None is considered to be the same
+            }
         }
-        catch(OptionNoValueAccessException o)
-        {
-            return true; // every None is considered to be the same
-        }
+        else return false;
     }
     public final int hashCode()
     {
