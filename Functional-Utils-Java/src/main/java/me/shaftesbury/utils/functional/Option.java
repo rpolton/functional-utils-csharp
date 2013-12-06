@@ -56,8 +56,8 @@ public final class Option<T>
         return isNone() ? 0 : 31 * _t.hashCode();
     }
 
-    public final static <T>Option<T> toOption(T t)
+    public final static <U>Option<U> toOption(U t)
     {
-        return new Option<T>(t);
+        return new Option<U>(t);
     }
 }
