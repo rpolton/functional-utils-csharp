@@ -1195,7 +1195,7 @@ public class Iterable2Test
     {
         final int trueMatch = 6;
         Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        Assert.assertEquals(((Integer)trueMatch).toString(),
+        Assert.assertEquals(((Integer) trueMatch).toString(),
                 li.pick(
                         new Func<Integer, Option<String>>() {
                             @Override
@@ -1232,7 +1232,7 @@ public class Iterable2Test
         final Collection<Integer> l = Arrays.asList(new Integer[]{-3,-2,0,1,5});
         final Collection<Integer> posInts = curriedTestForPosInts.apply(l);
 
-        final Collection<Integer> expected = Arrays.asList(new Integer[]{1,5});
+        final Collection<Integer> expected = Arrays.asList(new Integer[]{1, 5});
         AssertIterable.assertIterableEquals(expected, posInts);
     }
 
@@ -1254,7 +1254,7 @@ public class Iterable2Test
 
         List<String> keys = new ArrayList<String>(output.keySet());
         Collections.sort(keys);
-        AssertIterable.assertIterableEquals(Arrays.asList(new String[]{"1","2","3","4","5"}),keys);
+        AssertIterable.assertIterableEquals(Arrays.asList(new String[]{"1", "2", "3", "4", "5"}), keys);
     }
 
     @Test
@@ -1262,7 +1262,7 @@ public class Iterable2Test
     {
         Iterable2<Integer> output = IterableHelper.init(DoublingGenerator, 5);
         List<Integer> output_ints = output.toList();
-        AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10}), output_ints);
+        AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2, 4, 6, 8, 10}), output_ints);
     }
 
     public static final Func<Integer,Iterable<Integer>> intToList(final int howMany)
@@ -1314,7 +1314,7 @@ public class Iterable2Test
     public void takeNandYieldTest1()
     {
         Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
-        Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input,2);
+        Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 2);
         List<Integer> expectedList = Arrays.asList(2,4);
         List<Integer> expectedRemainder = Arrays.asList(6,8,10);
         AssertIterable.assertIterableEquals(expectedList,output.getValue0());
@@ -1325,7 +1325,7 @@ public class Iterable2Test
     public void takeNandYieldTest2()
     {
         Iterable<Integer> input = IterableHelper.init(DoublingGenerator, 5);
-        Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input,0);
+        Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 0);
         List<Integer> expectedList = Arrays.asList();
         List<Integer> expectedRemainder = Arrays.asList(2,4,6,8,10);
         AssertIterable.assertIterableEquals(expectedList,output.getValue0());
@@ -1363,5 +1363,250 @@ public class Iterable2Test
                     }
                 }, "");
         Assert.assertEquals(s1, s2);
+    }
+
+    @Test
+    public void EmptySeqTestHasNoElements()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty();
+
+        int i=0;
+        Iterator<Integer> it = l.iterator();
+        while(it.hasNext()) ++i;
+
+        Assert.assertEquals(0, i);
+    }
+
+    @Test
+    public void EmptySeqTestEquals()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty();
+        final Iterable2<Integer> ll = IterableHelper.createEmpty();
+
+        AssertIterable.assertIterableEquals(l, ll);
+    }
+
+    @Test
+    public void EmptySeqTestFilter()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<Integer> l1 = l.filter(Functional.IsEven); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+
+        AssertIterable.assertIterableEquals(other, l1);
+    }
+
+    @Test
+    public void EmptySeqTestMap()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<String> l1 = l.map(Functional.<Integer>dStringify()); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<String> other = IterableHelper.createEmpty();
+
+        AssertIterable.assertIterableEquals(other, l1);
+    }
+
+    @Test
+    public void EmptySeqTestChoose()
+    {
+        final Func<Integer,Option<String>> chooser = new Func<Integer, Option<String>>() {
+            @Override
+            public Option<String> apply(Integer integer) {
+                return Option.toOption(integer.toString());
+            }
+        };
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<String> l1 = l.choose(chooser); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<String> other = IterableHelper.createEmpty();
+
+        AssertIterable.assertIterableEquals(other,l1);
+    }
+
+    @Test
+    public void EmptySeqTestExists1()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final boolean b = l.exists(Functional.IsEven); // this filter needed to be fed from a statically-typed variable
+
+        Assert.assertFalse(b);
+    }
+
+    @Test
+    public void EmptySeqTestExists2()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final boolean b = l.exists(Functional.IsOdd); // this filter needed to be fed from a statically-typed variable
+
+        Assert.assertFalse(b);
+    }
+
+    @Test
+    public void EmptySeqTestForAll1()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final boolean b = l.forAll(Functional.IsEven); // this filter needed to be fed from a statically-typed variable
+
+        Assert.assertFalse(b);
+    }
+
+    @Test
+    public void EmptySeqTestForAll2()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final boolean b = l.forAll(Functional.IsOdd); // this filter needed to be fed from a statically-typed variable
+
+        Assert.assertFalse(b);
+    }
+
+    @Test
+    public void EmptySeqTestFold()
+    {
+        final Func2<String,Integer,String> folder = new Func2<String,Integer,String>() {
+            @Override
+            public String apply(String s, Integer integer) {
+                return s+integer.toString();
+            }
+        };
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final String l1 = l.fold(folder, ""); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<String> other = IterableHelper.createEmpty();
+
+        Assert.assertEquals("", l1);
+    }
+
+    @Test
+    public void EmptySeqTestToList()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final List<Integer> l1 = l.toList(); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+
+        AssertIterable.assertIterableEquals(other, l1);
+    }
+
+    @Test
+    public void EmptySeqTestSortWith()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<Integer> l1 = l.sortWith(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return 0;
+            }
+        }); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+
+        AssertIterable.assertIterableEquals(other,l1);
+    }
+
+    @Test
+    public void EmptySeqTestConcat()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<Integer> l1 = l.concat(IterableHelper.create(Arrays.asList(1, 2, 3))); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.create(Arrays.asList(1, 2, 3));
+
+        AssertIterable.assertIterableEquals(other,l1);
+    }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void EmptySeqTestFind()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Integer i = l.find(new Func<Integer, Boolean>() {
+            @Override
+            public Boolean apply(Integer integer) {
+                return true;
+            }
+        }); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+    }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void EmptySeqTestFindIndex()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final int i = l.findIndex(new Func<Integer, Boolean>() {
+            @Override
+            public Boolean apply(Integer integer) {
+                return true;
+            }
+        }); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+    }
+
+    @Test(expected = KeyNotFoundException.class)
+    public void EmptySeqTestPick()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final String i = l.pick(new Func<Integer, Option<String>>() {
+            @Override
+            public Option<String> apply(Integer integer) {
+                return Option.toOption(integer.toString());
+            }
+        }); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+    }
+
+    @Test
+    public void EmptySeqTestTake()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<Integer> l1 = l.take(10); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+
+        AssertIterable.assertIterableEquals(other, l1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void EmptySeqTestZip()
+    {
+        final Iterable2<Integer> k = IterableHelper.create(Arrays.asList(1, 2, 3));
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<Pair<Integer,Integer>> l1 = l.zip(k); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void EmptySeqTestZip3()
+    {
+        final Iterable2<Integer> j = IterableHelper.create(Arrays.asList(1,2,3));
+        final Iterable2<Integer> k = IterableHelper.create(Arrays.asList(1,2,3));
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<Triplet<Integer,Integer,Integer>> l1 = l.zip3(k, j); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+    }
+
+    @Test
+    public void EmptySeqTestCollect()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<Integer> l1 = l.collect(new Func<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer integer) {
+                return Arrays.asList(1,2,3,integer);
+            }
+        }); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+
+        AssertIterable.assertIterableEquals(other, l1);
+    }
+
+    @Test
+    public void EmptySeqTestIn()
+    {
+        final Iterable2<Integer> l = IterableHelper.createEmpty();
+        final String u = l.in(new Func<Iterable2<Integer>, String>() {
+            @Override
+            public String apply(Iterable2<Integer> integers) {
+                return integers.fold(new Func2<String, Integer, String>() {
+                    @Override
+                    public String apply(String s, Integer integer) {
+                        return s+integer.toString();
+                    }
+                }, "");
+            }
+        });
+        Assert.assertEquals("",u);
     }
 }
