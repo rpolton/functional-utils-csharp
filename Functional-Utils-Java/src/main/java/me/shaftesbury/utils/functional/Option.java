@@ -60,4 +60,10 @@ public final class Option<T>
     {
         return new Option<U>(t);
     }
+
+    public final <U>Option<U> bind(final Func<T,Option<U>> f)
+    {
+        if(isSome()) return f.apply(Some());
+        else return Option.None();
+    }
 }
