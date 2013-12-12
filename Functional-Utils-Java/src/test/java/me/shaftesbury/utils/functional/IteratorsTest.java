@@ -11,7 +11,7 @@ import java.util.*;
  * Time: 15:12
  * To change this template use File | Settings | File Templates.
  */
-public class EnumeratorsTest
+public class IteratorsTest
 {
     private static final Func<Integer,Integer> DoublingGenerator =
             new Func<Integer,Integer>()
@@ -24,7 +24,7 @@ public class EnumeratorsTest
     {
         List<Integer> li = Functional.init(DoublingGenerator, 10);
         Collection<Integer> expected = Arrays.asList(new Integer[]{20,18,16,14,12,10,8,6,4,2});
-        Iterable<Integer> output = Enumerators.ReverseEnum(li);
+        Iterable<Integer> output = Iterators.ReverseIterator(li);
         AssertIterable.assertIterableEquals(expected,output);
     }
 
@@ -52,7 +52,7 @@ public class EnumeratorsTest
     public void SteppedEnumTest1()
     {
         StringBuilder sb = new StringBuilder();
-        for (KeyValuePair<int, string> pair : Enumerators.SteppedEnum(list, 3))
+        for (KeyValuePair<int, string> pair : Enumerators.SteppedIterator(list, 3))
         sb.Append(pair.ToString());
 
         string expected =

@@ -10,11 +10,11 @@ import java.util.List;
  * Time: 11:39
  * To change this template use File | Settings | File Templates.
  */
-public final class Enumerators
+public final class Iterators
 {
-    private Enumerators(){}
+    private Iterators(){}
 
-    public static final <T>Iterable<T> ReverseEnum(final List<T> list)
+    public static final <T>Iterable<T> ReverseIterator(final List<T> list)
     {
         if (list == null) throw new IllegalArgumentException("list");
 
@@ -46,7 +46,7 @@ public final class Enumerators
         };
     }
 
-    public static final <T>Iterable<T> SteppedEnum(final int step, final Iterable<T> enumerable)
+    public static final <T>Iterable<T> SteppedIterator(final int step, final Iterable<T> enumerable)
     {
         if (enumerable == null) throw new IllegalArgumentException("enumerable");
 

@@ -61,4 +61,22 @@ public class FunctionTest
 
         AssertIterable.assertIterableEquals(expected,output);
     }
+
+    @Test
+    public void BinaryFunctionDecompositionTest2()
+    {
+        final BinaryFunction<Double,Integer,String> f =
+                new BinaryFunction<Double,Integer, String>() {
+                    @Override
+                    public String apply(Double d, Integer i) {
+                        return Functional.Stringify((int)(i * d));
+                    }
+                };
+
+        final Func<Double,String> decomposed = f.toFunc(2);
+        final Iterable2<String> output = IterableHelper.asList(1.0,2.0,3.0,4.0,5.0).map(decomposed);
+        final Iterable<String> expected = Arrays.asList("2","4","6","8","10");
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
 }

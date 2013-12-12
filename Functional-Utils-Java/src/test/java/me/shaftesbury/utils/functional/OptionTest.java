@@ -1,7 +1,9 @@
 package me.shaftesbury.utils.functional;
 
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Arrays;
 
 /**
  * Created with IntelliJ IDEA.
@@ -159,31 +161,109 @@ public class OptionTest
 //        Assert.assertFalse(none.isSome());
 //    }
 //
-//    @Test
-//    public void OptionBindTest1()
-//    {
-//        var a = 1.toOption();
-//        var b = a.Bind(o => (o*2).toOption());
-//        Assert.assertTrue(b.isSome());
-//        Assert.assertEquals(2,b.Some());
-//    }
-//
-//    @Test
-//    public void OptionBindTest2()
-//    {
-//        var a = Option<Integer>.None();
-//        var b = a.Bind(o => (o * 2).toOption());
-//        Assert.assertTrue(b.isNone());
-//    }
-//
-//    @Test
-//    public void OptionBindTest3()
-//    {
-//        var input = new[] {1, 2, 3, 4, 5, 6};
-//        Func<int, bool> isEven = i => i%2 == 0;
-//        var expected = new[] {2, 4, 6};
-//
-//        var output = input.Select(i => i.toOption().Bind(j => isEven(j) ? j.toOption() : Option<Integer>.None()));
-//        CollectionAssert.AreEquivalent(expected, output.Where(o=>o.isSome()).Select(o=>o.Some()).ToList());
-//    }
+    @Test
+    public void OptionBindTest1()
+    {
+        final Option<Integer> a = Option.toOption(1);
+        final Option<Integer> b = a.bind(
+                new Func<Integer, Option<Integer>>() {
+                    @Override
+                    public Option<Integer> apply(Integer integer) {
+                        return Option.toOption(integer*2);
+                    }
+                });
+        Assert.assertTrue(b.isSome());
+        Assert.assertEquals(new Integer(2),b.Some());
+    }
+
+    @Test
+    public void OptionBindTest2()
+    {
+        final Option<Integer> a = Option.<Integer>None();
+        final Option<Integer> b = a.bind(
+                new Func<Integer, Option<Integer>>() {
+                    @Override
+                    public Option<Integer> apply(Integer integer) {
+                        return Option.toOption(integer*2);
+                    }
+                });
+        Assert.assertTrue(b.isNone());
+    }
+
+    @Test
+    public void OptionBindTest3()
+    {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5, 6);
+        final java.util.List<Integer> expected = Arrays.asList(2, 4, 6);
+
+        // Note that this really ought to be an example of 'choose' but we use bind here to exercise the code ;-)
+
+        final Iterable2<Option<Integer>> output = input.map(
+                new Func<Integer, Option<Integer>>() {
+                    @Override
+                    public Option<Integer> apply(Integer integer) {
+                        return Option.toOption(integer).bind(
+                                new Func<Integer,Option<Integer>>(){
+                                    public Option<Integer> apply(final Integer i) {
+                                        return Functional.IsEven.apply(i) ? Option.toOption(i) : Option.<Integer>None();
+                                    } }); } } );
+
+
+        AssertIterable.assertIterableEquals(expected,output.choose(
+                new Func<Option<Integer>, Option<Integer>>() {
+                    @Override
+                    public Option<Integer> apply(Option<Integer> integerOption) {
+                        return integerOption;
+                    }
+                }
+        ));
+    }
+
+    private final static Func2<Integer,Integer,Integer> plus = new Func2<Integer, Integer, Integer>() {
+        @Override
+        public Integer apply(Integer integer1, Integer integer2) {
+            return integer1 + integer2;
+        }
+    };
+
+    @Test
+    public void OptionLiftTest1()
+    {
+        final Option<Integer> a = Option.toOption(10);
+        final Option<Integer> b = Option.toOption(100);
+        final Option<Integer> c = Option.lift(plus,a,b);
+
+        Assert.assertTrue(c.isSome());
+        Assert.assertEquals(new Integer(110), c.Some());
+    }
+
+    @Test
+    public void OptionLiftTest2()
+    {
+        final Option<Integer> a = Option.toOption(10);
+        final Option<Integer> b = Option.<Integer>None();
+        final Option<Integer> c = Option.lift(plus,a,b);
+
+        Assert.assertTrue(c.isNone());
+    }
+
+    @Test
+    public void OptionLiftTest3()
+    {
+        final Option<Integer> a = Option.<Integer>None();
+        final Option<Integer> b = Option.toOption(10);
+        final Option<Integer> c = Option.lift(plus,a,b);
+
+        Assert.assertTrue(c.isNone());
+    }
+
+    @Test
+    public void OptionLiftTest4()
+    {
+        final Option<Integer> a = Option.<Integer>None();
+        final Option<Integer> b = Option.<Integer>None();
+        final Option<Integer> c = Option.lift(plus,a,b);
+
+        Assert.assertTrue(c.isNone());
+    }
 }

@@ -76,7 +76,7 @@ public final class Functional
             if (!intermediate.getValue1().isNone())
                 results.add(intermediate.getValue1().Some());
         }
-        return new Pair<A, List<B>>(state, new UnmodifiableList(results));
+        return new Pair<A, List<B>>(state, Collections.unmodifiableList(results));
     }
 
     public static final <T>List<T> toList(final Enumeration<T> input)
@@ -84,7 +84,7 @@ public final class Functional
         final List<T> output = new ArrayList<T>();
         while(input.hasMoreElements())
             output.add(input.nextElement());
-        return new UnmodifiableList(output);
+        return Collections.unmodifiableList(output);
     }
 
     /// <summary>
@@ -169,7 +169,7 @@ public final class Functional
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
 
-        for (final A a : Enumerators.ReverseEnum(input))
+        for (final A a : Iterators.ReverseIterator(input))
             if (f.apply(a))
                 return a;
         throw new KeyNotFoundException();
@@ -316,7 +316,7 @@ public final class Functional
         final List<T> output = new ArrayList<T>();
         for(int i=0; i<howMany; ++i)
             output.add(f.apply(i));
-        return new UnmodifiableList(output);
+        return Collections.unmodifiableList(output);
     }
 
     /// <summary> map: (A -> B) -> A list -> B list</summary>
@@ -325,7 +325,7 @@ public final class Functional
         final List<B> output = new ArrayList<B>();
         for(final A a : input)
             output.add(f.apply(a));
-        return new UnmodifiableList(output);
+        return Collections.unmodifiableList(output);
     }
 
     public final static <A,B> Func<Iterable<A>,List<B>> map(final Func<A, B> f)
@@ -343,7 +343,7 @@ public final class Functional
     {
         final List<A> output = new ArrayList<A>(input);
         Collections.sort(output, f);
-        return new UnmodifiableList(output);
+        return Collections.unmodifiableList(output);
     }
 
     public final static <A extends Comparable<A>>int Sorter(final A left, final A right)
@@ -386,11 +386,10 @@ public final class Functional
     {
         final List<A> output = new ArrayList<A>();
         for(final A element : input)
-        {
             if(pred.apply(element))
                 output.add(element);
-        }
-        return new UnmodifiableList(output);
+
+        return Collections.unmodifiableList(output);
     }
 
     public static final <T>Func<Iterable<T>,List<T>> filter(final Func<T,Boolean> f)
@@ -461,7 +460,7 @@ public final class Functional
                 left.add(a);
             else
                 right.add(a);
-        return new org.javatuples.Pair<List<A>,List<A>>(new UnmodifiableList(left), new UnmodifiableList(right));
+        return new org.javatuples.Pair<List<A>,List<A>>(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
     }
 
     public final static <A>Func<Iterable<A>,org.javatuples.Pair<List<A>,List<A>>> partition(final Func<A,Boolean> f)
@@ -484,7 +483,7 @@ public final class Functional
             if (!intermediate.isNone())
                 results.add(intermediate.Some());
         }
-        return new UnmodifiableList(results);
+        return Collections.unmodifiableList(results);
     }
 
     public final static <A, B>Func<Iterable<A>,List<B>> choose(final Func<A, Option<B>> f)
@@ -524,7 +523,7 @@ public final class Functional
 
         final Map<K,V> output = new HashMap<K,V>();
         for(final T element : input) output.put(keyFn.apply(element),valueFn.apply(element));
-        return new UnmodifiableMap<K, V>(output);
+        return Collections.unmodifiableMap(output);
     }
 
     //public final static <T>T[] toArray(final Iterable<T> input)
@@ -545,6 +544,19 @@ public final class Functional
         if(input instanceof List<?>) return (List<T>)input;
 
         final List<T> output = new ArrayList<T>();
+        for(final T element: input) output.add(element);
+
+        return output;
+    }
+
+    public static final <T>Set<T> toSet(Iterable<T> input)
+    {
+        //Sets.newSetFromMap();
+        if(input==null) throw new IllegalArgumentException("Functional.toSet(Iterable<T>): input is null");
+
+        if(input instanceof Set<?>) return (Set<T>)input;
+
+        final Set<T> output = new HashSet<T>();
         for(final T element: input) output.add(element);
 
         return output;
@@ -572,12 +584,12 @@ public final class Functional
         if(list1==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list1 is null");
         if(list2==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list2 is null");
 
-        if(list1.size()==0) return new UnmodifiableList<T>(list2);
-        if(list2.size()==0) return new UnmodifiableList<T>(list1);
+        if(list1.size()==0) return Collections.unmodifiableList(list2);
+        if(list2.size()==0) return Collections.unmodifiableList(list1);
 
         final List<T> newList = new ArrayList<T>(list1);
         final boolean didItChange = newList.addAll(list2);
-        return new UnmodifiableList<T>(newList);
+        return Collections.unmodifiableList(newList);
     }
 
     public static final<T>List<T> take(final int howMany, final Iterable<T> list)
@@ -596,7 +608,7 @@ public final class Functional
             else
                 throw new NoSuchElementException("Cannot take "+howMany+" elements from input list with fewer elements");
         }
-        return new UnmodifiableList(output);
+        return Collections.unmodifiableList(output);
     }
 
     public static final<T>Func<Iterable<T>,List<T>> take(final int howMany)
@@ -631,7 +643,7 @@ public final class Functional
         while(l1_it.hasNext() && l2_it.hasNext()) output.add(new org.javatuples.Pair(l1_it.next(),l2_it.next()));
         if(l1_it.hasNext() || l2_it.hasNext()) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 and l2 have differing numbers of elements");
 
-        return new UnmodifiableList(output);
+        return Collections.unmodifiableList(output);
     }
 
     public static final <A,B,C>List<Triplet<A,B,C>> zip3(final Iterable<A> l1, final Iterable<B> l2, final Iterable<C> l3)
@@ -649,7 +661,7 @@ public final class Functional
         if(l1_it.hasNext() || l2_it.hasNext() || l3_it.hasNext())
             throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1, l2 and l3 have differing numbers of elements");
 
-        return new UnmodifiableList(output);
+        return Collections.unmodifiableList(output);
     }
 
     public static final <A,B>org.javatuples.Pair<List<A>,List<B>> unzip(final Iterable<org.javatuples.Pair<A,B>> input)
@@ -665,7 +677,7 @@ public final class Functional
             l2.add(pair.getValue1());
         }
 
-        return new org.javatuples.Pair(new UnmodifiableList(l1),new UnmodifiableList(l2));
+        return new org.javatuples.Pair(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2));
     }
 
     public static final <A,B,C>Triplet<List<A>,List<B>,List<C>> unzip3(final Iterable<Triplet<A,B,C>> input)
@@ -683,7 +695,7 @@ public final class Functional
             l3.add(triplet.getValue2());
         }
 
-        return new org.javatuples.Triplet(new UnmodifiableList(l1),new UnmodifiableList(l2),new UnmodifiableList(l3));
+        return new org.javatuples.Triplet(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2),Collections.unmodifiableList(l3));
     }
 
     public static final <T,U>List<U> collect(final Func<T,Iterable<U>> f, final Iterable<T> input)
@@ -691,7 +703,7 @@ public final class Functional
         List<U> output = new ArrayList<U>();
         for(final T element : input)
             output = Functional.concat(output, Functional.toList(f.apply(element)));
-        return new UnmodifiableList<U>(output);
+        return Collections.unmodifiableList(output);
     }
 
     public static final <T,U>Func<Iterable<T>,List<U>> collect(final Func<T,Iterable<U>> f)
@@ -727,6 +739,33 @@ public final class Functional
             });
         }
         return Pair.with(output, input);
+    }
+
+    public static final <T>Iterable<T> append(final T t, final Iterable<T> input)
+    {
+        return new Iterable<T>(){
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>(){
+                    private int counter=0;
+                    private Iterator<T> iterator=input.iterator();
+                    @Override
+                    public boolean hasNext() {
+                        return counter==0||iterator.hasNext();
+                    }
+
+                    @Override
+                    public T next() {
+                        return counter++==0 ? t : iterator.next();
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException("Functional.append(T,Iterable<T>): it is not possible to remove elements from this sequence");
+                    }
+                };
+            }
+        };
     }
 
     public static final class seq
@@ -1091,6 +1130,67 @@ public final class Functional
             results.put(intermediate.getKey(), intermediate.getValue());
         }
         return results;
+    }
+
+    public static final class set
+    {
+        public final static <A>Set<A> filter(final Func<A,Boolean> pred, final Iterable<A> input)
+        {
+            final Set<A> output = new HashSet<A>();
+            for(final A element : input)
+            {
+                if(pred.apply(element))
+                    output.add(element);
+            }
+            return Collections.unmodifiableSet(output);
+        }
+
+        public static final <T,U>Set<U> collect(final Func<T,Iterable<U>> f, final Iterable<T> input)
+        {
+            Set<U> output = new HashSet<U>();
+            for(final T element : input)
+                output.addAll(Functional.toSet(f.apply(element)));
+            return Collections.unmodifiableSet(output);
+        }
+
+        public final static <A,B> Set<B> map(final Func<A, B> f, final Iterable<A> input)
+        {
+            final Set<B> output = new HashSet<B>();
+            for(final A a : input)
+                output.add(f.apply(a));
+            return Collections.unmodifiableSet(output);
+        }
+
+        public static final <T>Set<T> concat(final Set<T> list1, final Set<T> list2)
+        {
+            if(list1==null) throw new IllegalArgumentException("Functional.concat(Set<T>,List<T>): list1 is null");
+            if(list2==null) throw new IllegalArgumentException("Functional.concat(Set<T>,List<T>): list2 is null");
+
+            if(list1.size()==0) return Collections.unmodifiableSet(list2);
+            if(list2.size()==0) return Collections.unmodifiableSet(list1);
+
+            final Set<T> newList = new HashSet<T>(list1);
+            final boolean didItChange = newList.addAll(list2);
+            return Collections.unmodifiableSet(newList);
+        }
+
+        /*
+        * Non-destructive wrappers for set intersection and set difference
+         */
+
+        public final static <E>Set<E> intersection(final Set<E> e1, final Set<E> e2)
+        {
+            Set<E> i = new HashSet<E>(e1);
+            i.retainAll(e2);
+            return Collections.unmodifiableSet(i);
+        }
+
+        public final static <E>Set<E> asymmetricDifference(final Set<E> inSet, final Set<E> notInSet)
+        {
+            Set<E> i = new HashSet<E>(inSet);
+            i.removeAll(notInSet);
+            return Collections.unmodifiableSet(i);
+        }
     }
 
     /*

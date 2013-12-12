@@ -66,4 +66,10 @@ public final class Option<T>
         if(isSome()) return f.apply(Some());
         else return Option.None();
     }
+
+    public final static <A,B,C>Option<C>lift(final Func2<A,B,C> f, final Option<A> o1, final Option<B> o2)
+    {
+        if(o1.isSome() && o2.isSome()) return toOption(f.apply(o1.Some(),o2.Some()));
+        else return None();
+    }
 }
