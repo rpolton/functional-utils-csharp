@@ -1682,4 +1682,26 @@ public class FunctionalTest
 
         AssertIterable.assertIterableEquals(expected,output);
     }
+
+    @Test
+    public void unfoldTest1()
+    {
+        final Integer seed = 0;
+        final Func<Integer,Pair<Integer,Integer>> unspool = new Func<Integer, Pair<Integer, Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(Integer integer) {
+                return Pair.with(integer+1,integer+1);
+            }
+        };
+        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+            @Override
+            public Boolean apply(Integer integer) {
+                return integer==10;
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> output = Functional.unfold(unspool,finished,seed);
+        AssertIterable.assertIterableEquals(expected,output);
+    }
 }

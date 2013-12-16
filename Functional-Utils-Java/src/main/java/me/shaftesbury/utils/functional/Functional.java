@@ -496,7 +496,6 @@ public final class Functional
         };
     }
 
-
     /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
     public final static <A, B>A fold(final me.shaftesbury.utils.functional.Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
     {
@@ -514,6 +513,23 @@ public final class Functional
                 return Functional.fold(f,initialValue,input);
             }
         };
+    }
+
+    // http://en.wikipedia.org/wiki/Anamorphism
+    // unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
+    public final static <A,B>List<A> unfold(final Func<B,Pair<A,B>> unspool, final Func<B,Boolean> finished, final B seed)
+    {
+        if(unspool==null) throw new IllegalArgumentException("unspool");
+        if(finished==null) throw new IllegalArgumentException("finished");
+
+        B next = seed;
+        final List<A> results = new ArrayList<A>();
+        while(!finished.apply(next)) {
+            final Pair<A,B> t = unspool.apply(next);
+            results.add(t.getValue0());
+            next = t.getValue1();
+        }
+        return results;
     }
 
     public final static <T,K,V>Map<K,V> toDictionary(final Func<T,K> keyFn, final Func<T,V> valueFn, Iterable<T> input)
