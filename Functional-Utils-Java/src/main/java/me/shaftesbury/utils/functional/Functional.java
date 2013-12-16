@@ -311,10 +311,11 @@ public final class Functional
     /// <summary> init: int -> (int -> A) -> A list</summary>
     public final static <T>List<T> init(final Func<Integer,T> f,final int howMany)
     {
-        //if (f == null) throw new ArgumentNullException("f");
+        if (f == null) throw new IllegalArgumentException("f");
+        if(howMany<1) throw new IllegalArgumentException("howMany");
 
         final List<T> output = new ArrayList<T>();
-        for(int i=0; i<howMany; ++i)
+        for(int i=1; i<=howMany; ++i)
             output.add(f.apply(i));
         return Collections.unmodifiableList(output);
     }
@@ -497,15 +498,15 @@ public final class Functional
     }
 
     /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
-    public final static <A, B>A fold(final me.shaftesbury.utils.functional.Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
+    public final static <A, B>A fold(final Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
     {
         A state = initialValue;
-        for (final B a : input)
-            state = f.apply(state, a);
+        for (final B b : input)
+            state = f.apply(state, b);
         return state;
     }
 
-    public final static <A, B>Func<Iterable<B>,A> fold(final me.shaftesbury.utils.functional.Func2<A, B, A> f, final A initialValue)
+    public final static <A, B>Func<Iterable<B>,A> fold(final Func2<A, B, A> f, final A initialValue)
     {
         return new Func<Iterable<B>, A>() {
             @Override
@@ -993,7 +994,7 @@ public final class Functional
         public final static <T>Iterable<T> init(final Func<Integer,T> f,final int howMany)
         {
             if(f==null) throw new IllegalArgumentException("f");
-            if(howMany<0) throw new IllegalArgumentException("howMany");
+            if(howMany<1) throw new IllegalArgumentException("howMany");
 
             return new Iterable<T>()
             {
@@ -1001,11 +1002,11 @@ public final class Functional
                 public Iterator<T> iterator() {
                     return new Iterator<T>()
                     {
-                        private int _counter=0;
+                        private int _counter=1;
                         private final Func<Integer,T> _f = f;
                         @Override
                         public boolean hasNext() {
-                            return _counter<howMany;
+                            return _counter<=howMany;
                         }
 
                         @Override
@@ -1033,7 +1034,7 @@ public final class Functional
                 public Iterator<T> iterator() {
                     return new Iterator<T>()
                     {
-                        private int _counter=0;
+                        private int _counter=1;
                         private final Func<Integer,T> _f = f;
                         @Override
                         public boolean hasNext() {
@@ -1159,6 +1160,18 @@ public final class Functional
         {
             return unfold(unspool,finished,seed,new ArrayList<A>());
         }
+
+        private final static <A,B>List<A> unfold(final Func<B,Option<Pair<A,B>>> unspool, final B seed, final List<A> accumulator)
+        {
+            final Option<Pair<A,B>> p = unspool.apply(seed);
+            if(p.isNone()) return accumulator;
+            accumulator.add(p.Some().getValue0());
+            return unfold(unspool,p.Some().getValue1(),accumulator);
+        }
+        public final static <A,B>List<A> unfold(final Func<B,Option<Pair<A,B>>> unspool, final B seed)
+        {
+            return unfold(unspool,seed,new ArrayList<A>());
+        }
     }
         /*
         // Following are functions for non-list collections
@@ -1234,6 +1247,44 @@ public final class Functional
             i.removeAll(notInSet);
             return Collections.unmodifiableSet(i);
         }
+    }
+
+    public static final class inTermsOfFold
+    {
+        public static final <T,U>List<T> map(final Func<U,T> f, final Iterable<U> l)
+        {
+            final List<T> l2 = Functional.fold(new Func2<List<T>,U,List<T>>() {
+                @Override
+                public List<T> apply(List<T> state, U o2) {
+                    state.add(f.apply(o2));
+                    return state;
+                }
+            }, new ArrayList<T>(), l);
+            return l2;
+        }
+
+        public static final <T>List<T> filter(final Func<T,Boolean> predicate, final Iterable<T> l)
+        {
+            final List<T> l2 = Functional.fold(new Func2<List<T>, T, List<T>>() {
+                @Override
+                public List<T> apply(List<T> ts, T o) {
+                    if(predicate.apply(o)) ts.add(o);
+                    return ts;
+                }
+            }, new ArrayList<T>(), l);
+            return l2;
+        }
+
+        public static final <A>List<A> init(final Func<Integer,A> f, final int howMany)
+        {
+            return Functional.unfold(new Func<Integer, Option<Pair<A,Integer>>>() {
+                @Override
+                public Option<Pair<A,Integer>> apply(final Integer a) {
+                    return a<=howMany ? Option.toOption(Pair.with(f.apply(a), a + 1)) : Option.<Pair<A,Integer>>None();
+                }
+            }, new Integer(1));
+        }
+
     }
 
     /*
