@@ -1,5 +1,6 @@
 package me.shaftesbury.utils.functional;
 
+import org.javatuples.Pair;
 import org.javatuples.Triplet;
 
 import java.util.*;
@@ -148,6 +149,211 @@ public class ListHelper
             @Override
             public List<T> subList(int fromIndex, int toIndex) {
                 return list.subList(fromIndex,toIndex);
+            }
+        };
+    }
+
+    public static final <A>List<A> createEmpty()
+    {
+        return new List2<A>(){
+            @Override
+            public Iterable2<A> filter(Func<A, Boolean> f) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public <U> Iterable2<U> map(Func<A, U> f) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public <U> Iterable2<U> choose(Func<A, Option<U>> f) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public boolean exists(Func<A, Boolean> f) {
+                return false;
+            }
+
+            @Override
+            public boolean forAll(Func<A, Boolean> f) {
+                return false;
+            }
+
+            @Override
+            public <U> U fold(Func2<U, A, U> f, U seed) {
+                return null;
+            }
+
+            @Override
+            public List<A> toList() {
+                return new ArrayList<A>();
+            }
+
+            @Override
+            public Iterable2<A> sortWith(Comparator<A> f) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public Iterable2<A> concat(Iterable2<A> list2) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public A find(Func<A, Boolean> f) {
+                return null;
+            }
+
+            @Override
+            public int findIndex(Func<A, Boolean> f) {
+                return 0;
+            }
+
+            @Override
+            public <U> U pick(Func<A, Option<U>> f) {
+                return null;
+            }
+
+            @Override
+            public <U> Iterable2<U> collect(Func<A, Iterable<U>> f) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public Iterable2<A> take(int howMany) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public <U> Iterable2<Pair<A, U>> zip(Iterable2<U> l2) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public <U, V> Iterable2<Triplet<A, U, V>> zip3(Iterable<U> l2, Iterable<V> l3) {
+                return IterableHelper.createEmpty();
+            }
+
+            @Override
+            public <U> U in(Func<Iterable2<A>, U> f) {
+                return null;
+            }
+
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return true;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return false;
+            }
+
+            @Override
+            public Iterator<A> iterator() {
+                return null;
+            }
+
+            @Override
+            public Object[] toArray() {
+                return new Object[0];
+            }
+
+            @Override
+            public <T> T[] toArray(T[] a) {
+                return null;
+            }
+
+            @Override
+            public boolean add(A a) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(Collection<?> c) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(Collection<? extends A> c) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(int index, Collection<? extends A> c) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(Collection<?> c) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(Collection<?> c) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+
+            @Override
+            public A get(int index) {
+                return null;
+            }
+
+            @Override
+            public A set(int index, A element) {
+                return null;
+            }
+
+            @Override
+            public void add(int index, A element) {
+
+            }
+
+            @Override
+            public A remove(int index) {
+                return null;
+            }
+
+            @Override
+            public int indexOf(Object o) {
+                return 0;
+            }
+
+            @Override
+            public int lastIndexOf(Object o) {
+                return 0;
+            }
+
+            @Override
+            public ListIterator<A> listIterator() {
+                return null;
+            }
+
+            @Override
+            public ListIterator<A> listIterator(int index) {
+                return null;
+            }
+
+            @Override
+            public List<A> subList(int fromIndex, int toIndex) {
+                return null;
             }
         };
     }

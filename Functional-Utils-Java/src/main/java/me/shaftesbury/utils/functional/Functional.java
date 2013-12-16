@@ -532,6 +532,21 @@ public final class Functional
         return results;
     }
 
+    public final static <A,B>List<A> unfold(final Func<B,Option<Pair<A,B>>> unspool, final B seed)
+    {
+        if(unspool==null) throw new IllegalArgumentException("unspool");
+
+        B next = seed;
+        final List<A> results = new ArrayList<A>();
+        while(true) {
+            final Option<Pair<A,B>> t = unspool.apply(next);
+            if(t.isNone()) break;
+            results.add(t.Some().getValue0());
+            next = t.Some().getValue1();
+        }
+        return results;
+    }
+
     public final static <T,K,V>Map<K,V> toDictionary(final Func<T,K> keyFn, final Func<T,V> valueFn, Iterable<T> input)
     {
         if(keyFn==null) throw new IllegalArgumentException("keyFn");
@@ -1128,9 +1143,21 @@ public final class Functional
             else return initialValue;
         }
         /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
-        public final static <A, B>A fold(final me.shaftesbury.utils.functional.Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
+        public final static <A, B>A fold(final Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
         {
             return fold(f,initialValue,input.iterator());
+        }
+
+        private final static <A,B>List<A> unfold(final Func<B,Pair<A,B>> unspool, final Func<B,Boolean> finished, final B seed, final List<A> accumulator)
+        {
+            if(finished.apply(seed)) return accumulator;
+            final Pair<A,B> p = unspool.apply(seed);
+            accumulator.add(p.getValue0());
+            return unfold(unspool,finished,p.getValue1(),accumulator);
+        }
+        public final static <A,B>List<A> unfold(final Func<B,Pair<A,B>> unspool, final Func<B,Boolean> finished, final B seed)
+        {
+            return unfold(unspool,finished,seed,new ArrayList<A>());
         }
     }
         /*

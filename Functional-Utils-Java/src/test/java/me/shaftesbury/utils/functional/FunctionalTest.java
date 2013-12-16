@@ -1704,4 +1704,64 @@ public class FunctionalTest
         final List<Integer> output = Functional.unfold(unspool,finished,seed);
         AssertIterable.assertIterableEquals(expected,output);
     }
+
+    @Test
+    public void unfoldAsDoublingGeneratorTest1()
+    {
+        final Integer seed = 1;
+        final Func<Integer,Pair<Integer,Integer>> doubler = new Func<Integer, Pair<Integer, Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(Integer integer) {
+                return Pair.with(integer * 2, integer+1);
+            }
+        };
+        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+            @Override
+            public Boolean apply(Integer integer) {
+                return integer>10;
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(2,4,6,8,10,12,14,16,18,20);
+        final List<Integer> output = Functional.unfold(doubler,finished,seed);
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void unfoldAsDoublingGeneratorTest2()
+    {
+        final Integer seed = 1;
+        final Func<Integer,Option<Pair<Integer,Integer>>> doubler = new Func<Integer, Option<Pair<Integer, Integer>>>() {
+            @Override
+            public Option<Pair<Integer, Integer>> apply(Integer integer) {
+                return integer>10 ? Option.<Pair<Integer, Integer>>None() : Option.toOption(Pair.with(integer * 2, integer+1));
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(2,4,6,8,10,12,14,16,18,20);
+        final List<Integer> output = Functional.unfold(doubler,seed);
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void recUnfoldAsDoublingGeneratorTest1()
+    {
+        final Integer seed = 1;
+        final Func<Integer,Pair<Integer,Integer>> doubler = new Func<Integer, Pair<Integer, Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(Integer integer) {
+                return Pair.with(integer * 2, integer+1);
+            }
+        };
+        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+            @Override
+            public Boolean apply(Integer integer) {
+                return integer>10;
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(2,4,6,8,10,12,14,16,18,20);
+        final List<Integer> output = Functional.rec.unfold(doubler, finished, seed);
+        AssertIterable.assertIterableEquals(expected,output);
+    }
 }
