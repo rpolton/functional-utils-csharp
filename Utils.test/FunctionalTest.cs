@@ -9,7 +9,7 @@ namespace Shaftesbury.Functional.Utils.Test
     [TestFixture]
     public class FunctionalTest
     {
-        private static readonly Func<int,int> DoublingGenerator = a=>2*(a + 1);
+        private static readonly Func<int,int> DoublingGenerator = a=>2*a;
 
         [Test]
         public void InitTest1()
@@ -55,8 +55,8 @@ namespace Shaftesbury.Functional.Utils.Test
             CollectionAssert.AreEquivalent(new[] { 1, 4, 6, 7, 23 }, j);
         }
 
-        private static readonly Func<int, int> TriplingGenerator = a => 3 * (a + 1);
-        private static readonly Func<int,int> QuadruplingGenerator= a=>4*(a + 1);
+        private static readonly Func<int, int> TriplingGenerator = a => 3 * a;
+        private static readonly Func<int,int> QuadruplingGenerator= a=>4*a;
 
         private static bool BothAreEven(int a, int b)
         {
@@ -429,7 +429,7 @@ namespace Shaftesbury.Functional.Utils.Test
                     missingPricesPerDate.Add(day, last);
             }
 
-            List<myInt> openedDays2 = Functional.Repeat(a => new myInt(3*(a + 1)), 5).ToList();
+            List<myInt> openedDays2 = Functional.Repeat(a => new myInt(3*a), 5).ToList();
             Tuple<double, List<myInt>> output = FunctionalHelpers.foldAndChoose(delegate(double state, myInt day)
                                                                                     {
                                                                                         double? value = day.i%2 == 0
@@ -1054,6 +1054,28 @@ namespace Shaftesbury.Functional.Utils.Test
             var expected = new { Data = new[] { 1, 2, 3, 4, 5 } };
             var output = input.ThenTransformIfTrue(t => new { Data = t.Data.Select(i => i * 2).ToArray() }, i => false);
             CollectionAssert.AreEquivalent(expected.Data, output.Data);
+        }
+
+        [Test]
+        public void unfoldTest1()
+        {
+            int seed = 0;
+            Func<int, Option<Tuple<int, int>>> unspool = i => i == 10 ? Option<Tuple<int, int>>.None : Tuple.Create(i + 1, i + 1).ToOption();
+
+            var expected = new List<int>{1,2,3,4,5,6,7,8,9,10};
+            var output = Functional.Unfold(unspool,seed);
+            CollectionAssert.AreEquivalent(expected, output);
+        }
+
+        [Test]
+        public void unfoldAsDoublingGeneratorTest1()
+        {
+            int seed = 1;
+            Func<int, Option<Tuple<int, int>>> doubler = i => i > 10 ? Option<Tuple<int, int>>.None : Tuple.Create(i * 2, i + 1).ToOption();
+
+            var expected = new List<int>{2,4,6,8,10,12,14,16,18,20};
+            var output = Functional.Unfold(doubler,seed);
+            CollectionAssert.AreEquivalent(expected, output);
         }
     }
 }
