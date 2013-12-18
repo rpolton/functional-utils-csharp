@@ -120,7 +120,7 @@ public final class Functional
         for(final A a : input)
             if(f.apply((a)))
                 return a;
-        throw new KeyNotFoundException();
+        throw new NoSuchElementException();
     }
 
     public final static <A>Func<Iterable<A>,A> find(final Func<A,Boolean> f)
@@ -160,7 +160,7 @@ public final class Functional
         },seed,p.getValue1());
 
         if(result.getValue1()) return result.getValue0();
-        throw new KeyNotFoundException();
+        throw new NoSuchElementException();
     }
 
     /// <summary> findLast: (A -> bool) -> A list -> A</summary>
@@ -169,10 +169,10 @@ public final class Functional
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
 
-        for (final A a : Iterators.ReverseIterator(input))
+        for (final A a : Iterators.reverse(input))
             if (f.apply(a))
                 return a;
-        throw new KeyNotFoundException();
+        throw new NoSuchElementException();
     }
 
     public final static <A>Func<List<A>,A> findLast(final Func<A,Boolean> f)
@@ -197,7 +197,7 @@ public final class Functional
             if (!intermediate.isNone())
                 return intermediate.Some();
         }
-        throw new KeyNotFoundException();
+        throw new NoSuchElementException();
     }
 
     public static <A,B>Func<Iterable<A>,B> pick(final Func<A,Option<B>> f)
@@ -638,7 +638,7 @@ public final class Functional
             if(iterator.hasNext())
                 output.add(iterator.next());
             else
-                throw new NoSuchElementException("Cannot take "+howMany+" elements from input list with fewer elements");
+                throw new java.util.NoSuchElementException("Cannot take "+howMany+" elements from input list with fewer elements");
         }
         return Collections.unmodifiableList(output);
     }
@@ -908,7 +908,7 @@ public final class Functional
                                 _next=null;
                                 return next;
                             }
-                            throw new NoSuchElementException();
+                            throw new java.util.NoSuchElementException();
                         }
 
                         @Override
@@ -966,9 +966,9 @@ public final class Functional
                                 _next=Option.<U>None();
                                 try {
                                     return next.Some();
-                                } catch(OptionNoValueAccessException e) { throw new NoSuchElementException(); }
+                                } catch(OptionNoValueAccessException e) { throw new java.util.NoSuchElementException(); }
                             }
-                            throw new NoSuchElementException();
+                            throw new java.util.NoSuchElementException();
                         }
 
                         @Override
@@ -1328,6 +1328,6 @@ public final class Functional
                     return abCase.predicate(input);
                 }
             }).results(input);
-        } catch(KeyNotFoundException k) { return defaultCase.apply(input); }
+        } catch(NoSuchElementException k) { return defaultCase.apply(input); }
     }
 }

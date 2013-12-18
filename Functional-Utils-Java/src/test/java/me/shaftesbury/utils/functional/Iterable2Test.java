@@ -19,7 +19,7 @@ public class Iterable2Test
     private static final Func<Integer,Integer> DoublingGenerator =
             new Func<Integer,Integer>()
             {
-                @Override public Integer apply(Integer a) { return 2*(a + 1);}
+                @Override public Integer apply(Integer a) { return 2*a;}
             };
 
     @Test
@@ -78,7 +78,7 @@ public class Iterable2Test
             new Func<Integer, Integer>() {
                 @Override
                 public Integer apply(Integer a) {
-                    return 3 * (a + 1);
+                    return 3 * a;
                 }
             };
 
@@ -86,7 +86,7 @@ public class Iterable2Test
             new Func<Integer, Integer>() {
                 @Override
                 public Integer apply(Integer a) {
-                    return 4 * (a + 1);
+                    return 4 * a;
                 }
             };
 
@@ -577,7 +577,7 @@ public class Iterable2Test
                 new Func<Integer, myInt>() {
                     @Override
                     public myInt apply(Integer a) {
-                        return new myInt(3 * (a + 1));
+                        return new myInt(3 * a);
                     }
                 }, 5);
         Pair<Double, List<myInt>> output = Functional.foldAndChoose(
@@ -687,7 +687,7 @@ public class Iterable2Test
     } */
 
 
-    @Test(expected=KeyNotFoundException.class)
+    @Test(expected=NoSuchElementException.class)
     public void findLastTest1() throws Exception
     {
         Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
@@ -1144,7 +1144,7 @@ public class Iterable2Test
                         }));
     }
 
-    @Test(expected = KeyNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void findTest2() throws Exception
     {
         final String falseMatch = "7";
@@ -1205,7 +1205,7 @@ public class Iterable2Test
                         }));
     }
 
-    @Test(expected = KeyNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void pickTest2() throws Exception
     {
         final int falseMatch = 7;
@@ -1509,7 +1509,7 @@ public class Iterable2Test
         AssertIterable.assertIterableEquals(other,l1);
     }
 
-    @Test(expected = KeyNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void EmptySeqTestFind()
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
@@ -1522,7 +1522,7 @@ public class Iterable2Test
         final Iterable2<Integer> other = IterableHelper.createEmpty();
     }
 
-    @Test(expected = KeyNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void EmptySeqTestFindIndex()
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
@@ -1535,7 +1535,7 @@ public class Iterable2Test
         final Iterable2<Integer> other = IterableHelper.createEmpty();
     }
 
-    @Test(expected = KeyNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void EmptySeqTestPick()
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so

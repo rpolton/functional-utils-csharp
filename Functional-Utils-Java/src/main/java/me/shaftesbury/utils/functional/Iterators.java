@@ -14,7 +14,7 @@ public final class Iterators
 {
     private Iterators(){}
 
-    public static final <T>Iterable<T> ReverseIterator(final List<T> list)
+    public static final <T>Iterable<T> reverse(final List<T> list)
     {
         if (list == null) throw new IllegalArgumentException("list");
 
@@ -23,10 +23,10 @@ public final class Iterators
 
         return new Iterable<T>() {
             private final List<T> _list=list;
-            private int _posn=list.size()-1;
             @Override
             public Iterator<T> iterator() {
                 return new Iterator<T>() {
+                    private int _posn=list.size()-1;
                     @Override
                     public boolean hasNext() {
                         return _posn>=0;
@@ -46,30 +46,40 @@ public final class Iterators
         };
     }
 
-    public static final <T>Iterable<T> SteppedIterator(final int step, final Iterable<T> enumerable)
+    // Return the first item of the sequence and then every nth item thereafter
+    public static final <T>Iterable<T> everyNth(final int step, final Iterable<T> it)
     {
-        if (enumerable == null) throw new IllegalArgumentException("enumerable");
+        if (it == null) throw new IllegalArgumentException("enumerable");
 
         if (step < 1)
             throw new IllegalArgumentException("Invalid step value, must be greater than zero.");
 
         return new Iterable<T>(){
-            final private Iterable<T> cache = enumerable;
+            final private Iterable<T> cache = it;
 
             @Override
             public Iterator<T> iterator() {
                 return new Iterator<T>(){
+                    private boolean isFirst = true;
+                    private boolean isNextReady = true;
                     final private Iterator<T> posn = cache.iterator();
 
                     @Override
                     public boolean hasNext() {
-                        for(int i=0;i<step-1;++i) if(posn.hasNext()) posn.next();
+                        if(isFirst||isNextReady) ;
+                        else {
+                            for(int i=0;i<step-1;++i) if(posn.hasNext()) posn.next();
+                            isNextReady = true;
+                        }
                         return posn.hasNext();
                     }
 
                     @Override
                     public T next() {
-                        for(int i=0;i<step-1;++i) posn.next();
+                        if(isFirst||isNextReady) ;
+                        else for(int i=0;i<step-1;++i) posn.next();
+                        isFirst=false;
+                        isNextReady = false;
                         return posn.next();
                     }
 

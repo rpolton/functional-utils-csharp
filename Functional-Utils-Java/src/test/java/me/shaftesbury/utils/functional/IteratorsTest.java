@@ -1,6 +1,6 @@
 package me.shaftesbury.utils.functional;
 
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.*;
 
@@ -16,48 +16,88 @@ public class IteratorsTest
     private static final Func<Integer,Integer> DoublingGenerator =
             new Func<Integer,Integer>()
             {
-                @Override public Integer apply(Integer a) { return 2*(a + 1);}
+                @Override public Integer apply(Integer a) { return 2*a;}
             };
 
     @Test
     public void ReverseTest1() throws Exception
     {
-        List<Integer> li = Functional.init(DoublingGenerator, 10);
-        Collection<Integer> expected = Arrays.asList(new Integer[]{20,18,16,14,12,10,8,6,4,2});
-        Iterable<Integer> output = Iterators.ReverseIterator(li);
+        final List<Integer> li = Functional.init(DoublingGenerator, 10);
+        final Collection<Integer> expected = Arrays.asList(new Integer[]{20,18,16,14,12,10,8,6,4,2});
+        final Iterable<Integer> output = Iterators.reverse(li);
         AssertIterable.assertIterableEquals(expected,output);
     }
 
-    private final Map<Integer, String> list = new HashMap<Integer, String>();
-    /*
-    @TestSetup
+    private final Map<Integer, String> map = new LinkedHashMap<Integer, String>();
+    private final List<String> list = new ArrayList<String>();
+
+    @Before
     public void Initialise()
     {
-        list.put(1, "one");
-        list.put(2, "two");
-        list.put(10, "ten");
-        list.put(100, "one hundred");
-        list.put(97, "ninety seven");
-        list.put(-1, "minus one");
-        list.put(0, "zero zero UFO");
+        map.put(-1, "minus one");
+        map.put(0, "zero zero UFO");
+        map.put(1, "one");
+        map.put(2, "two");
+        map.put(10, "ten");
+        map.put(97, "ninety seven");
+        map.put(100, "one hundred");
+        list.addAll(map.values());
+        Collections.sort(list);
     }
 
-    @TestTearDown
+    @After
     public void Clear()
     {
+        map.clear();
         list.clear();
     }
 
     @Test
     public void SteppedEnumTest1()
     {
-        StringBuilder sb = new StringBuilder();
-        for (KeyValuePair<int, string> pair : Enumerators.SteppedIterator(list, 3))
-        sb.Append(pair.ToString());
+        final StringBuilder sb = new StringBuilder();
+        for (final String s : Iterators.everyNth(3, list))
+            sb.append(s.toString());
 
-        string expected =
-                new StringBuilder("[-1, minus one]").Append("[2, two]").Append("[100, one hundred]").ToString();
-        Assert.AreEqual(expected, sb.ToString());
+        final String expected =
+                new StringBuilder("minus one").append("one hundred").append("zero zero UFO").toString();
+        Assert.assertEquals(expected, sb.toString());
     }
-             */
+
+    @Test
+    public void SteppedEnumTest2()
+    {
+        final StringBuilder sb = new StringBuilder();
+        for (final String s : Iterators.everyNth(2, list))
+            sb.append(s.toString());
+
+        final String expected =
+                new StringBuilder("minus one").append("one").append("ten").append("zero zero UFO").toString();
+        Assert.assertEquals(expected, sb.toString());
+    }
+
+    @Test
+    public void SteppedEnumTest3()
+    {
+        final StringBuilder sb = new StringBuilder();
+        for (final String s : Iterators.everyNth(1, list))
+            sb.append(s.toString());
+
+        final String expected =
+                new StringBuilder("minus one").append("ninety seven").append("one").append("one hundred").append("ten").append("two").
+                        append("zero zero UFO").toString();
+        Assert.assertEquals(expected, sb.toString());
+    }
+
+    @Test
+    public void SteppedEnumTest4()
+    {
+        final StringBuilder sb = new StringBuilder();
+        for (final String s : Iterators.everyNth(4, Iterators.reverse(list)))
+            sb.append(s.toString());
+
+        final String expected =
+                new StringBuilder("zero zero UFO").append("one").toString();
+        Assert.assertEquals(expected, sb.toString());
+    }
 }

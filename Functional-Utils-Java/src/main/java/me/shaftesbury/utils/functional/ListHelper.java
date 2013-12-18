@@ -10,6 +10,10 @@ import java.util.*;
  */
 public class ListHelper
 {
+    public static final <T>List2<T> init(Func<Integer,T> f, int howMany) { return create(Functional.init(f, howMany)); }
+    @SafeVarargs
+    public static <T>List2<T> asList(T... a) { return create(Arrays.asList(a)); }
+
     public static final <T>List2<T> create(final java.util.List<T> l)
     {
         return new List2<T>() {
@@ -183,7 +187,7 @@ public class ListHelper
 
             @Override
             public <U> U fold(Func2<U, A, U> f, U seed) {
-                return null;
+                return seed;
             }
 
             @Override
@@ -203,17 +207,17 @@ public class ListHelper
 
             @Override
             public A find(Func<A, Boolean> f) {
-                return null;
+                throw new NoSuchElementException();
             }
 
             @Override
             public int findIndex(Func<A, Boolean> f) {
-                return 0;
+                throw new NoSuchElementException();
             }
 
             @Override
             public <U> U pick(Func<A, Option<U>> f) {
-                return null;
+                throw new NoSuchElementException();
             }
 
             @Override
@@ -238,7 +242,7 @@ public class ListHelper
 
             @Override
             public <U> U in(Func<Iterable2<A>, U> f) {
-                return null;
+                throw new UnsupportedOperationException();
             }
 
             @Override
@@ -258,7 +262,22 @@ public class ListHelper
 
             @Override
             public Iterator<A> iterator() {
-                return null;
+                return new Iterator<A>(){
+                    @Override
+                    public boolean hasNext() {
+                        return false;
+                    }
+
+                    @Override
+                    public A next() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public void remove() {
+
+                    }
+                };
             }
 
             @Override
@@ -268,7 +287,7 @@ public class ListHelper
 
             @Override
             public <T> T[] toArray(T[] a) {
-                return null;
+                throw new UnsupportedOperationException();
             }
 
             @Override
@@ -313,12 +332,12 @@ public class ListHelper
 
             @Override
             public A get(int index) {
-                return null;
+                throw new NoSuchElementException();
             }
 
             @Override
             public A set(int index, A element) {
-                return null;
+                throw new NoSuchElementException();
             }
 
             @Override
@@ -328,32 +347,122 @@ public class ListHelper
 
             @Override
             public A remove(int index) {
-                return null;
+                throw new NoSuchElementException();
             }
 
             @Override
             public int indexOf(Object o) {
-                return 0;
+                throw new NoSuchElementException();
             }
 
             @Override
             public int lastIndexOf(Object o) {
-                return 0;
+                throw new NoSuchElementException();
             }
 
             @Override
             public ListIterator<A> listIterator() {
-                return null;
+                return new ListIterator<A>() {
+                    @Override
+                    public boolean hasNext() {
+                        return false;
+                    }
+
+                    @Override
+                    public A next() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public boolean hasPrevious() {
+                        return false;
+                    }
+
+                    @Override
+                    public A previous() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public int nextIndex() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public int previousIndex() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public void remove() {
+
+                    }
+
+                    @Override
+                    public void set(A a) {
+
+                    }
+
+                    @Override
+                    public void add(A a) {
+
+                    }
+                };
             }
 
             @Override
             public ListIterator<A> listIterator(int index) {
-                return null;
+                return new ListIterator<A>() {
+                    @Override
+                    public boolean hasNext() {
+                        return false;
+                    }
+
+                    @Override
+                    public A next() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public boolean hasPrevious() {
+                        return false;
+                    }
+
+                    @Override
+                    public A previous() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public int nextIndex() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public int previousIndex() {
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public void remove() {
+
+                    }
+
+                    @Override
+                    public void set(A a) {
+
+                    }
+
+                    @Override
+                    public void add(A a) {
+
+                    }
+                };
             }
 
             @Override
             public List<A> subList(int fromIndex, int toIndex) {
-                return null;
+                return createEmpty();
             }
         };
     }

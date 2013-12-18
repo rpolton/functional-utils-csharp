@@ -2,10 +2,7 @@ package me.shaftesbury.utils.functional;
 
 import org.javatuples.Triplet;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,7 +53,7 @@ public class IterableHelper
     {
         public Iterator<T> iterator() { return new Iterator<T>() {
             @Override public boolean hasNext() { return false; }
-            @Override public T next() { return null; }
+            @Override public T next() { throw new java.util.NoSuchElementException(); }
             @Override public void remove() { }
         }; }
 
@@ -69,9 +66,9 @@ public class IterableHelper
         public final List<T> toList() { return Functional.toList(this); }
         public final Iterable2<T> sortWith(final Comparator<T> f) { return this; }
         public final Iterable2<T> concat(final Iterable2<T> list2) { return list2;}
-        public final T find(final Func<T,Boolean> f) { throw new KeyNotFoundException();}
-        public int findIndex(final Func<T,Boolean> f) { throw new KeyNotFoundException();}
-        public final <B>B pick(final Func<T,Option<B>> f){throw new KeyNotFoundException();}
+        public final T find(final Func<T,Boolean> f) { throw new NoSuchElementException();}
+        public int findIndex(final Func<T,Boolean> f) { throw new NoSuchElementException();}
+        public final <B>B pick(final Func<T,Option<B>> f){throw new NoSuchElementException();}
         public final Iterable2<T> take(final int howMany){return this;}
 
         public final <U>Iterable2<org.javatuples.Pair<T,U>> zip(final Iterable2<U> l2) { throw new IllegalArgumentException("Iterable2.zip: It is not possible to zip an empty list with a non-empty list");}

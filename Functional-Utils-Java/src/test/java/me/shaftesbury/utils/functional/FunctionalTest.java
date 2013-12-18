@@ -750,7 +750,7 @@ public class FunctionalTest
         AssertIterable.assertIterableEquals(expected, output);
     }
 
-    @Test(expected=KeyNotFoundException.class)
+    @Test(expected=NoSuchElementException.class)
     public void findLastTest1() throws Exception
     {
         List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
@@ -764,7 +764,7 @@ public class FunctionalTest
         Assert.assertEquals((Integer)10, Functional.findLast(Functional.IsEven, l));
     }
 
-    @Test(expected=KeyNotFoundException.class)
+    @Test(expected=NoSuchElementException.class)
     public void findLastIterableTest1() throws Exception
     {
         Iterable<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
@@ -1259,7 +1259,7 @@ public class FunctionalTest
                         }, ls));
     }
 
-    @Test(expected = KeyNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void findTest2() throws Exception
     {
         final String falseMatch = "7";
@@ -1320,7 +1320,7 @@ public class FunctionalTest
                         }, li));
     }
 
-    @Test(expected = KeyNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void pickTest2() throws Exception
     {
         final int falseMatch = 7;
