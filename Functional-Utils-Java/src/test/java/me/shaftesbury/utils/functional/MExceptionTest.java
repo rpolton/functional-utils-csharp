@@ -63,7 +63,7 @@ public class MExceptionTest
     private static final Func<Integer,Integer> DoublingGenerator =
             new Func<Integer,Integer>()
             {
-                @Override public Integer apply(Integer a) { return 2*(a + 1);}
+                @Override public Integer apply(Integer a) { return 2*a;}
             };
 
     @Test

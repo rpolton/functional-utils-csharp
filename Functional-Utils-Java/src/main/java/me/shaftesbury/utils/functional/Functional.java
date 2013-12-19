@@ -210,12 +210,12 @@ public final class Functional
         };
     }
 
-    public final static <A, B> B In( final A input, final Func<A, B> f)
+    public final static <A, B> B in(final A input, final Func<A, B> f)
     {
         return f.apply(input);
     }
 
-    public final static <A, B, C> Func<A, C> Then(final Func<A, B> f, final Func<B, C> g)
+    public final static <A, B, C> Func<A, C> then(final Func<A, B> f, final Func<B, C> g)
     {
         return new Func<A, C>()
         {
@@ -227,7 +227,7 @@ public final class Functional
         };
     }
 
-    public final static <T>Func<T,T> Identity()
+    public final static <T>Func<T,T> identity()
     {
         return new Func<T, T>() {
             @Override
@@ -237,7 +237,7 @@ public final class Functional
         };
     }
 
-    public static final Func<Integer,Boolean> IsEven = new Func<Integer, Boolean>()
+    public static final Func<Integer,Boolean> isEven = new Func<Integer, Boolean>()
     {
         @Override
         public Boolean apply(Integer i)
@@ -245,7 +245,7 @@ public final class Functional
             return i % 2 == 0;
         }
     };
-    public static final Func<Integer,Boolean> IsOdd = new Func<Integer, Boolean>()
+    public static final Func<Integer,Boolean> isOdd = new Func<Integer, Boolean>()
     {
         @Override
         public Boolean apply(Integer i)
@@ -253,7 +253,7 @@ public final class Functional
             return i % 2 != 0;
         }
     };
-    public static final Func2<Integer,Integer,Integer> Count = new Func2<Integer, Integer, Integer>() {
+    public static final Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
                 @Override
                 public Integer apply(Integer state, Integer b) {
                     return state + 1;
@@ -569,11 +569,11 @@ public final class Functional
         return output.toArray(); // this needs to be output.toArray(new T[0]) but that doesn't appear to be allowable Java :-(
     }
 
-    public static final <T>List<T> toList(Iterable<T> input)
+    public static final <T>List<T> toMutableList(Iterable<T> input)
     {
-        if(input==null) throw new IllegalArgumentException("Functional.toList(Iterable<T>): input is null");
+        if(input==null) throw new IllegalArgumentException("Functional.toMutableList(Iterable<T>): input is null");
 
-        if(input instanceof List<?>) return (List<T>)input;
+        if(input instanceof List<?>) return Collections.unmodifiableList((List<T>)input);
 
         final List<T> output = new ArrayList<T>();
         for(final T element: input) output.add(element);
@@ -581,17 +581,29 @@ public final class Functional
         return output;
     }
 
-    public static final <T>Set<T> toSet(Iterable<T> input)
+    public static final <T>Set<T> toMutableSet(Iterable<T> input)
     {
-        //Sets.newSetFromMap();
-        if(input==null) throw new IllegalArgumentException("Functional.toSet(Iterable<T>): input is null");
+        if(input==null) throw new IllegalArgumentException("Functional.toMutableSet(Iterable<T>): input is null");
 
-        if(input instanceof Set<?>) return (Set<T>)input;
+        if(input instanceof Set<?>) return Collections.unmodifiableSet((Set<T>)input);
 
         final Set<T> output = new HashSet<T>();
         for(final T element: input) output.add(element);
 
         return output;
+    }
+
+    public static final <T>List<T> toList(Iterable<T> input)
+    {
+        if(input==null) throw new IllegalArgumentException("Functional.toList(Iterable<T>): input is null");
+        return Collections.unmodifiableList(toMutableList(input));
+    }
+
+    public static final <T>Set<T> toSet(Iterable<T> input)
+    {
+        //Sets.newSetFromMap();
+        if(input==null) throw new IllegalArgumentException("Functional.toSet(Iterable<T>): input is null");
+        return Collections.unmodifiableSet(toMutableSet(input));
     }
 
     public static final <T>T last(final Iterable<T> input)
@@ -611,16 +623,13 @@ public final class Functional
         return input[input.length-1];
     }
 
-    public static final <T>List<T> concat(final List<T> list1, final List<T> list2)
+    public static final <T>List<T> concat(final Iterable<T> list1, final Iterable<T> list2)
     {
         if(list1==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list1 is null");
         if(list2==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list2 is null");
 
-        if(list1.size()==0) return Collections.unmodifiableList(list2);
-        if(list2.size()==0) return Collections.unmodifiableList(list1);
-
-        final List<T> newList = new ArrayList<T>(list1);
-        final boolean didItChange = newList.addAll(list2);
+        final List<T> newList = new ArrayList<T>(Functional.toList(list1));
+        final boolean didItChange = newList.addAll(Functional.toList(list2));
         return Collections.unmodifiableList(newList);
     }
 
@@ -730,7 +739,7 @@ public final class Functional
         return new org.javatuples.Triplet(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2),Collections.unmodifiableList(l3));
     }
 
-    public static final <T,U>List<U> collect(final Func<T,Iterable<U>> f, final Iterable<T> input)
+    public static final <T,U>List<U> collect(final Func<T,? extends Iterable<U>> f, final Iterable<T> input)
     {
         List<U> output = new ArrayList<U>();
         for(final T element : input)
@@ -738,7 +747,7 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
-    public static final <T,U>Func<Iterable<T>,List<U>> collect(final Func<T,Iterable<U>> f)
+    public static final <T,U>Func<Iterable<T>,List<U>> collect(final Func<T,? extends Iterable<U>> f)
     {
         return new Func<Iterable<T>, List<U>>() {
             @Override
@@ -1055,7 +1064,7 @@ public final class Functional
             };
         }
 
-        public static final <T,U>Iterable<U> collect(final Func<T,Iterable<U>> f, final Iterable<T> input)
+        public static final <T,U>Iterable<U> collect(final Func<T,? extends Iterable<U>> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("Functional.seq.collect: f is null");
             if(input==null) throw new IllegalArgumentException("Functional.seq.collect: input is null");
@@ -1090,7 +1099,7 @@ public final class Functional
             };
         }
 
-        public static final <T,U>Func<Iterable<T>,Iterable<U>> collect(final Func<T,Iterable<U>> f)
+        public static final <T,U>Func<Iterable<T>,Iterable<U>> collect(final Func<T,? extends Iterable<U>> f)
         {
             return new Func<Iterable<T>, Iterable<U>>() {
                 @Override
@@ -1201,7 +1210,7 @@ public final class Functional
             return Collections.unmodifiableSet(output);
         }
 
-        public static final <T,U>Set<U> collect(final Func<T,Iterable<U>> f, final Iterable<T> input)
+        public static final <T,U>Set<U> collect(final Func<T,? extends Iterable<U>> f, final Iterable<T> input)
         {
             Set<U> output = new HashSet<U>();
             for(final T element : input)

@@ -18,8 +18,8 @@ public final class AssertIterable
     public static final <T>void assertIterableEquals(Iterable<T> it1, Iterable<T> it2)
     {
         if(it1==null||it2==null) throw new AssertionError("Unexpected null iterable passed to Assert");
-        Iterator<T> iterator1 = it1.iterator();
-        Iterator<T> iterator2 = it2.iterator();
+        final Iterator<T> iterator1 = it1.iterator();
+        final Iterator<T> iterator2 = it2.iterator();
         assert iterator1!=null;
         assert iterator2!=null;
 

@@ -17,23 +17,23 @@ public class OptionTest
     @Test
     public void equalityTest1()
     {
-        Option<String> a = Option.toOption("TEST");
+        final Option<String> a = Option.toOption("TEST");
         Assert.assertTrue(a.equals(a));
     }
 
     @Test
     public void equalityTest2()
     {
-        Option<String> a = Option.toOption("TEST");
-        Option<String> b = Option.toOption("TEST");
+        final Option<String> a = Option.toOption("TEST");
+        final Option<String> b = Option.toOption("TEST");
         Assert.assertTrue(a.equals(b));
     }
 
     @Test
     public void equalityTest3()
     {
-        Option<Integer> a = Option.toOption(1);
-        Option<Integer> b = Option.toOption(2);
+        final Option<Integer> a = Option.toOption(1);
+        final Option<Integer> b = Option.toOption(2);
         Assert.assertTrue(a.equals(a));
         Assert.assertFalse(a.equals(b));
     }
@@ -42,7 +42,7 @@ public class OptionTest
     public void OptionTestValueType1()
     {
         final int expected = 10;
-        Option<Integer> a = Option.toOption(expected);
+        final Option<Integer> a = Option.toOption(expected);
         Assert.assertTrue(a.isSome());
         Assert.assertFalse(a.isNone());
         Assert.assertEquals((Integer)expected, a.Some());
@@ -52,7 +52,7 @@ public class OptionTest
     public void OptionTestStringType1()
     {
         final String expected = "ll";
-        Option<String> a = Option.toOption(expected);
+        final Option<String> a = Option.toOption(expected);
         Assert.assertTrue(a.isSome());
         Assert.assertFalse(a.isNone());
         Assert.assertEquals(expected, a.Some());
@@ -61,7 +61,7 @@ public class OptionTest
     @Test
     public void OptionTestValueType2()
     {
-        Option<Integer> a = Option.None();
+        final Option<Integer> a = Option.None();
         Assert.assertTrue(a.isNone());
         Assert.assertFalse(a.isSome());
     }
@@ -71,7 +71,7 @@ public class OptionTest
     @Test
     public void OptionTestReferenceType1()
     {
-        Option<tmp> a = Option.toOption(new tmp());
+        final Option<tmp> a = Option.toOption(new tmp());
         Assert.assertTrue(a.isSome());
         Assert.assertFalse(a.isNone());
         a.Some();
@@ -80,7 +80,7 @@ public class OptionTest
     @Test
     public void OptionTestReferenceType2()
     {
-        Option<tmp> a = new Option<tmp>(null);
+        final Option<tmp> a = new Option<tmp>(null);
         Assert.assertTrue(a.isNone());
         Assert.assertFalse(a.isSome());
     }
@@ -129,7 +129,7 @@ public class OptionTest
     @Test
     public void OptionNoneisNoneTest1()
     {
-        Option<Integer> none = Option.None();
+        final Option<Integer> none = Option.None();
         Assert.assertTrue(none.isNone());
         Assert.assertFalse(none.isSome());
     }
@@ -137,7 +137,7 @@ public class OptionTest
     @Test
     public void OptionNoneisNoneTest2()
     {
-        Option<String> none = Option.None();
+        final Option<String> none = Option.None();
         Assert.assertTrue(none.isNone());
         Assert.assertFalse(none.isSome());
     }
@@ -145,7 +145,7 @@ public class OptionTest
     @Test
     public void OptionNoneisNoneTest3()
     {
-        Option<tmp> none = Option.None();
+        final Option<tmp> none = Option.None();
         Assert.assertTrue(none.isNone());
         Assert.assertFalse(none.isSome());
     }
@@ -205,7 +205,7 @@ public class OptionTest
                         return Option.toOption(integer).bind(
                                 new Func<Integer,Option<Integer>>(){
                                     public Option<Integer> apply(final Integer i) {
-                                        return Functional.IsEven.apply(i) ? Option.toOption(i) : Option.<Integer>None();
+                                        return Functional.isEven.apply(i) ? Option.toOption(i) : Option.<Integer>None();
                                     } }); } } );
 
 

@@ -25,7 +25,7 @@ public class FunctionalTest
     @Test
     public void InitTest1()
     {
-        Collection<Integer> output = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> output = Functional.init(DoublingGenerator, 5);
         Assert.assertArrayEquals(new Integer[]{2,4,6,8,10}, output.toArray());
     }
 
@@ -33,16 +33,16 @@ public class FunctionalTest
     @Test
     public void MapTest1()
     {
-        Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        Collection<String> output = Functional.map(Functional.<Integer>dStringify(), input);
+        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Collection<String> output = Functional.map(Functional.<Integer>dStringify(), input);
         Assert.assertArrayEquals(new String[]{"1","2","3","4","5"},output.toArray());
     }
 
     @Test
     public void SortWithTest1()
     {
-        List<Integer> i = Arrays.asList(new Integer[]{1,6,23,7,4});
-        Collection<Integer> output = Functional.sortWith(
+        final List<Integer> i = Arrays.asList(new Integer[]{1,6,23,7,4});
+        final Collection<Integer> output = Functional.sortWith(
                 new Comparator<Integer>() {
                     @Override
                     public int compare(Integer a, Integer b) {
@@ -55,8 +55,8 @@ public class FunctionalTest
     @Test
     public void SortWithTest2()
     {
-        List<Integer> i = Arrays.asList(new Integer[] { 1, 6, 23, 7, 4 });
-        Collection<Integer> j = Functional.sortWith(
+        final List<Integer> i = Arrays.asList(new Integer[] { 1, 6, 23, 7, 4 });
+        final Collection<Integer> j = Functional.sortWith(
                 new Comparator<Integer>() {
                     @Override
                     public int compare(Integer a, Integer b) {
@@ -69,8 +69,8 @@ public class FunctionalTest
     @Test
     public void SortWithTest3()
     {
-        List<Integer> i = Arrays.asList(new Integer[] { 1, 6, 23, 7, 4 });
-        Collection<Integer> j = Functional.sortWith(Functional.dSorter, i);
+        final List<Integer> i = Arrays.asList(new Integer[] { 1, 6, 23, 7, 4 });
+        final Collection<Integer> j = Functional.sortWith(Functional.dSorter, i);
         Assert.assertArrayEquals(new Integer[]{1,4,6,7,23}, j.toArray());
     }
 
@@ -93,15 +93,15 @@ public class FunctionalTest
 
     private static boolean BothAreEven(int a, int b)
     {
-        return Functional.IsEven.apply(a) && Functional.IsEven.apply(b);
+        return Functional.isEven.apply(a) && Functional.isEven.apply(b);
     }
 
 
     @Test
     public void ForAll2Test1()
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        Collection<Integer> m = Functional.init(QuadruplingGenerator, 5);
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> m = Functional.init(QuadruplingGenerator, 5);
         try
         {
             Assert.assertTrue(Functional.forAll2(
@@ -132,8 +132,8 @@ public class FunctionalTest
     @Test
     public void ForAll2Test2() throws Exception
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        Collection<Integer> m = Functional.init(TriplingGenerator, 5);
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> m = Functional.init(TriplingGenerator, 5);
 
         Assert.assertFalse(Functional.forAll2(dBothAreLessThan10
                 , l, m));
@@ -142,8 +142,8 @@ public class FunctionalTest
     @Test(expected=Exception.class)
     public void ForAll2Test3() throws Exception
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        Collection<Integer> m = Functional.init(QuadruplingGenerator, 7);
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> m = Functional.init(QuadruplingGenerator, 7);
 
         Functional.forAll2(
                 new Func2<Integer, Integer, Boolean>() {
@@ -157,10 +157,10 @@ public class FunctionalTest
     @Test
     public void CompositionTest1A()
     {
-        Collection<Integer> i = Arrays.asList(1, 2, 3, 45, 56, 6);
+        final Collection<Integer> i = Arrays.asList(1, 2, 3, 45, 56, 6);
 
-        boolean allOdd = Functional.forAll(Functional.IsOdd, i);
-        boolean notAllOdd = Functional.exists(Functional.not(Functional.IsOdd), i);
+        final boolean allOdd = Functional.forAll(Functional.isOdd, i);
+        final boolean notAllOdd = Functional.exists(Functional.not(Functional.isOdd), i);
 
         Assert.assertFalse(allOdd);
         Assert.assertTrue(notAllOdd);
@@ -169,8 +169,8 @@ public class FunctionalTest
     @Test
     public void CompositionTest2() throws Exception
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        Collection<Integer> m = Functional.init(TriplingGenerator, 5);
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> m = Functional.init(TriplingGenerator, 5);
         Assert.assertFalse(Functional.forAll2(Functional.not2(dBothAreLessThan10), l, m));
         // equivalent to BothAreGreaterThanOrEqualTo10
 
@@ -201,11 +201,11 @@ public class FunctionalTest
     @Test
     public void PartitionTest1()
     {
-        Collection<Integer> m = Functional.init(TriplingGenerator, 5);
-        org.javatuples.Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.IsOdd, m);
+        final Collection<Integer> m = Functional.init(TriplingGenerator, 5);
+        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isOdd, m);
 
-        Integer[] left = {3, 9, 15};
-        Integer[] right = {6, 12};
+        final Integer[] left = {3, 9, 15};
+        final Integer[] right = {6, 12};
         Assert.assertArrayEquals(left, r.getValue0().toArray());
         Assert.assertArrayEquals(right, r.getValue1().toArray());
     }
@@ -213,8 +213,8 @@ public class FunctionalTest
     @Test
     public void PartitionTest2()
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        org.javatuples.Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.IsEven, l);
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
         Assert.assertArrayEquals(l.toArray(), r.getValue0().toArray());
         Assert.assertArrayEquals(new Integer[]{}, r.getValue1().toArray());
     }
@@ -222,16 +222,16 @@ public class FunctionalTest
     @Test
     public void PartitionTest3()
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        org.javatuples.Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.IsEven, l);
-        Assert.assertArrayEquals(Functional.filter(Functional.IsEven, l).toArray(), r.getValue0().toArray());
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
+        Assert.assertArrayEquals(Functional.filter(Functional.isEven, l).toArray(), r.getValue0().toArray());
     }
 
     @Test
     public void ToStringTest1()
     {
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         //String s = String.Join(",", ls);
         Assert.assertArrayEquals(new String[]{"2","4","6","8","10"}, ls.toArray());
     }
@@ -239,15 +239,15 @@ public class FunctionalTest
     @Test
     public void ChooseTest1B() throws OptionNoValueAccessException
     {
-        Collection<Integer> li = Functional.init(TriplingGenerator, 5);
-        Collection<String> o = Functional.choose(
+        final Collection<Integer> li = Functional.init(TriplingGenerator, 5);
+        final Collection<String> o = Functional.choose(
                 new Func<Integer, Option<String>>() {
                     @Override
                     public Option<String> apply(Integer i) {
                         return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
                     }
                 }, li);
-        String[] expected = {"6", "12"};
+        final String[] expected = {"6", "12"};
         Assert.assertArrayEquals(o.toArray(), expected);
     }
 
@@ -256,8 +256,8 @@ public class FunctionalTest
     {
         Map<Integer,String> o=null;
         try{
-        Collection<Integer> li = Functional.init(TriplingGenerator, 5);
-        o = Functional.toDictionary(Functional.<Integer>Identity(), Functional.<Integer>dStringify(),
+            final Collection<Integer> li = Functional.init(TriplingGenerator, 5);
+        o = Functional.toDictionary(Functional.<Integer>identity(), Functional.<Integer>dStringify(),
                 Functional.choose(
                         new Func<Integer, Option<Integer>>() {
                             @Override
@@ -266,14 +266,14 @@ public class FunctionalTest
                             }
                         }, li));
         }catch(Exception e){}
-        Map<Integer,String> expected = new HashMap<Integer,String>();
+        final Map<Integer,String> expected = new HashMap<Integer,String>();
         expected.put(6, "6");
         expected.put(12, "12");
         Assert.assertTrue(expected.size()==o.size());
-        for(Integer expectedKey : expected.keySet())
+        for(final Integer expectedKey : expected.keySet())
         {
             Assert.assertTrue(o.containsKey(expectedKey));
-            String expectedValue=expected.get(expectedKey);
+            final String expectedValue=expected.get(expectedKey);
             //Assert.assertEquals(expectedValue,o.get(expectedKey),"Expected '"+expectedValue+"' but got '"+o.get(expectedKey)+"'");
             Assert.assertTrue(o.get(expectedKey).equals(expectedValue));
         }
@@ -297,8 +297,8 @@ public class FunctionalTest
     @Test
     public void CurriedFnTest1()
     {
-        boolean test1a = Fn(1, 2);
-        boolean test1b = curried_fn(1).apply(2);
+        final boolean test1a = Fn(1, 2);
+        final boolean test1b = curried_fn(1).apply(2);
         Assert.assertEquals(test1a, test1b);
     }
 
@@ -317,15 +317,15 @@ public class FunctionalTest
     @Test
     public void CurriedFnTest2()
     {
-        List<Integer> a = Arrays.asList(1, 2, 3, 4, 5);
-        Collection<Integer> b = Functional.map(
+        final List<Integer> a = Arrays.asList(1, 2, 3, 4, 5);
+        final Collection<Integer> b = Functional.map(
                 new Func<Integer, Integer>() {
                     @Override
                     public Integer apply(final Integer a1) {
                         return adder_int(2, a1);
                     }
                 }, a);
-        Collection<Integer> c = Functional.map(curried_adder_int(2), a);
+        final Collection<Integer> c = Functional.map(curried_adder_int(2), a);
         Assert.assertArrayEquals(b.toArray(), c.toArray());
     }
 
@@ -337,10 +337,10 @@ public class FunctionalTest
     @Test
     public void FoldvsMapTest1()
     {
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        String s1 = Functional.join(",", Functional.map(Functional.<Integer>dStringify(), li));
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final String s1 = Functional.join(",", Functional.map(Functional.<Integer>dStringify(), li));
         Assert.assertEquals("2,4,6,8,10", s1);
-        String s2 = Functional.fold(
+        final String s2 = Functional.fold(
                 new Func2<String, Integer, String>() {
                     @Override
                     public String apply(String s1, Integer s2) {
@@ -366,8 +366,8 @@ public class FunctionalTest
     @Test
     public void FwdPipelineTest1()
     {
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        String s1 = Functional.In(li, concatenate);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final String s1 = Functional.in(li, concatenate);
         Assert.assertEquals("2,4,6,8,10", s1);
     }
 
@@ -375,17 +375,17 @@ public class FunctionalTest
             new Func<Collection<Integer>, Collection<Integer>>() {
                 @Override
                 public Collection<Integer> apply(Collection<Integer> l) {
-                    return Functional.filter(Functional.IsEven, l);
+                    return Functional.filter(Functional.isEven, l);
                 }
             };
 
     @Test
     public void FwdPipelineTest2()
     {
-        Collection<Integer> li = Functional.init(TriplingGenerator, 5);
-        Collection<Integer> evens = Functional.In(li, evens_f);
-        String s1 = Functional.In(evens, concatenate);
-        String s2 = Functional.In(li, Functional.Then(evens_f, concatenate));
+        final Collection<Integer> li = Functional.init(TriplingGenerator, 5);
+        final Collection<Integer> evens = Functional.in(li, evens_f);
+        final String s1 = Functional.in(evens, concatenate);
+        final String s2 = Functional.in(li, Functional.then(evens_f, concatenate));
         Assert.assertEquals("6,12", s1);
         Assert.assertEquals(s1, s2);
     }
@@ -393,16 +393,16 @@ public class FunctionalTest
     @Test
     public void CompositionTest3()
     {
-        Collection<Integer> li = Functional.init(TriplingGenerator, 5);
-        String s = Functional.In(li, Functional.Then(evens_f, concatenate));
+        final Collection<Integer> li = Functional.init(TriplingGenerator, 5);
+        final String s = Functional.in(li, Functional.then(evens_f, concatenate));
         Assert.assertEquals("6,12", s);
     }
 
     @Test
     public void CompositionTest4()
     {
-        Collection<Integer> li = Functional.init(TriplingGenerator, 5);
-        String s = Functional.Then(evens_f, concatenate).apply(li);
+        final Collection<Integer> li = Functional.init(TriplingGenerator, 5);
+        final String s = Functional.then(evens_f, concatenate).apply(li);
         Assert.assertEquals("6,12", s);
     }
 
@@ -419,7 +419,7 @@ public class FunctionalTest
         }
         Assert.assertEquals(indentedName, expectedResult);
 
-        Collection<String> indentation = Functional.init(
+        final Collection<String> indentation = Functional.init(
                 new Func<Integer, String>() {
                     @Override
                     public String apply(Integer integer) {
@@ -428,7 +428,7 @@ public class FunctionalTest
                 }, level);
         Assert.assertEquals(Functional.join("", indentation), "     ");
 
-        String s = Functional.fold(
+        final String s = Functional.fold(
                 new Func2<String, String, String>() {
                     @Override
                     public String apply(String state, String str) {
@@ -437,7 +437,7 @@ public class FunctionalTest
                 }, "", indentation);
         Assert.assertEquals(s, expectedResult);
 
-        Func<Collection<String>, String> folder =
+        final Func<Collection<String>, String> folder =
                 new Func<Collection<String>, String>() {
                     @Override
                     public String apply(Collection<String> l) {
@@ -450,7 +450,7 @@ public class FunctionalTest
                     }
                 };
 
-        String s1 = Functional.In(indentation, folder);
+        final String s1 = Functional.in(indentation, folder);
         Assert.assertEquals(s1, expectedResult);
     }
 
@@ -466,8 +466,8 @@ public class FunctionalTest
     @Test
     public void ChooseTest3A() throws OptionNoValueAccessException
     {
-        Collection<Integer> li = Functional.init(TriplingGenerator, 5);
-        Collection<Integer> o =
+        final Collection<Integer> li = Functional.init(TriplingGenerator, 5);
+        final Collection<Integer> o =
                 Functional.choose(
                         new Func<Integer, Option<Integer>>() {
                             public Option<Integer> apply(Integer i) {
@@ -475,7 +475,7 @@ public class FunctionalTest
                             }
                         }, li);
 
-        Integer[] expected = new Integer[]{6,12};
+        final Integer[] expected = new Integer[]{6,12};
         Assert.assertArrayEquals(expected, o.toArray());
     }
 
@@ -562,10 +562,10 @@ public class FunctionalTest
     @Test
     public void foldAndChooseTest1() throws Exception
     {
-        Map<Integer, Double> missingPricesPerDate = new Hashtable<Integer, Double>();
-        Collection<Integer> openedDays = Functional.init(TriplingGenerator, 5);
+        final Map<Integer, Double> missingPricesPerDate = new Hashtable<Integer, Double>();
+        final Collection<Integer> openedDays = Functional.init(TriplingGenerator, 5);
         Double last = 10.0;
-        for (int day : openedDays)
+        for (final int day : openedDays)
         {
             Double value = day%2 == 0 ? (Double)((double)(day/2)) : null;
             if (value!=null)
@@ -574,18 +574,18 @@ public class FunctionalTest
                 missingPricesPerDate.put(day, last);
         }
 
-        Collection<myInt> openedDays2 = Functional.init(
+        final Collection<myInt> openedDays2 = Functional.init(
                 new Func<Integer, myInt>() {
                     @Override
                     public myInt apply(Integer a) {
                         return new myInt(3 * a);
                     }
                 }, 5);
-        Pair<Double, List<myInt>> output = Functional.foldAndChoose(
+        final Pair<Double, List<myInt>> output = Functional.foldAndChoose(
                 new Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
                     @Override
                     public Pair<Double, Option<myInt>> apply(Double state, myInt day) {
-                        Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
+                        final Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
                         return value != null
                                 ? new Pair<Double, Option<myInt>>(value, Option.<myInt>None())
                                 : new Pair<Double, Option<myInt>>(state, Option.toOption(day));
@@ -593,7 +593,7 @@ public class FunctionalTest
                 }, 10.0, openedDays2);
 
         Assert.assertEquals(last, output.getValue0());
-        List<Integer> keys = new ArrayList<Integer>(missingPricesPerDate.keySet());
+        final List<Integer> keys = new ArrayList<Integer>(missingPricesPerDate.keySet());
         Collections.sort(keys);
         Assert.assertArrayEquals(keys.toArray(),
                 Functional.map(
@@ -608,7 +608,7 @@ public class FunctionalTest
     @Test
     public void joinTest1()
     {
-        Collection<Integer> ids = Functional.init(TriplingGenerator, 5);
+        final Collection<Integer> ids = Functional.init(TriplingGenerator, 5);
         final String expected = "3,6,9,12,15";
         Assert.assertEquals(expected, Functional.join(",", Functional.map(Functional.<Integer>dStringify(), ids)));
         Assert.assertEquals(expected, Functional.join(",", ids));
@@ -617,9 +617,9 @@ public class FunctionalTest
     @Test
     public void joinTest2() throws Exception
     {
-        Collection<Integer> ids = Functional.init(TriplingGenerator, 5);
+        final Collection<Integer> ids = Functional.init(TriplingGenerator, 5);
         final String expected = "'3','6','9','12','15'";
-        Func<Integer, String> f =
+        final Func<Integer, String> f =
                 new Func<Integer, String>() {
                     @Override
                     public String apply(Integer id) {
@@ -651,23 +651,17 @@ public class FunctionalTest
         Assert.assertTrue(Functional.between(lowerBound, upperBound, 2.55));
     }
 
-
-
-
-
-
-
     @Test
     public void testIsEven_withEvenNum()
     {
-        Assert.assertTrue(Functional.IsEven.apply(2));
+        Assert.assertTrue(Functional.isEven.apply(2));
     }
 
     @Test
     public void testIn() throws Exception
     {
-        Integer a = 10;
-        Assert.assertTrue(Functional.In(a, Functional.IsEven));
+        final Integer a = 10;
+        Assert.assertTrue(Functional.in(a, Functional.isEven));
     }
 
 
@@ -690,8 +684,8 @@ public class FunctionalTest
     @Test
     public void seqFilterTest1()
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator,5);
-        Iterable<Integer> oddElems = Functional.seq.filter(Functional.IsOdd, l);
+        final Collection<Integer> l = Functional.init(DoublingGenerator,5);
+        final Iterable<Integer> oddElems = Functional.seq.filter(Functional.isOdd, l);
 
         AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
     }
@@ -699,35 +693,35 @@ public class FunctionalTest
     @Test
     public void seqFilterTest2()
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator,5);
-        Iterable<Integer> evenElems = Functional.seq.filter(Functional.IsEven, l);
+        final Collection<Integer> l = Functional.init(DoublingGenerator,5);
+        final Iterable<Integer> evenElems = Functional.seq.filter(Functional.isEven, l);
 
-        Collection<Integer> expected = Arrays.asList(new Integer[]{2,4,6,8,10});
+        final Collection<Integer> expected = Arrays.asList(new Integer[]{2,4,6,8,10});
         AssertIterable.assertIterableEquals(expected, evenElems);
     }
 
     @Test
     public void seqFilterTest3()
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator,5);
+        final Collection<Integer> l = Functional.init(DoublingGenerator,5);
         final Integer limit = 5;
-        Iterable<Integer> highElems = Functional.seq.filter(
+        final Iterable<Integer> highElems = Functional.seq.filter(
                 new Func<Integer,Boolean>()
                 {
                     @Override
                     public Boolean apply(Integer a) { return a > limit;}
                 }, l);
 
-        Collection<Integer> expected = Arrays.asList(new Integer[]{6,8,10});
+        final Collection<Integer> expected = Arrays.asList(new Integer[]{6,8,10});
         AssertIterable.assertIterableEquals(expected,highElems);
     }
 
     @Test
     public void seqFilterTest4()
     {
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         final Integer limit = 10;
-        Iterable<Integer> output = Functional.seq.filter(
+        final Iterable<Integer> output = Functional.seq.filter(
                 new Func<Integer,Boolean>()
                 {
                     @Override public Boolean apply(Integer a) {return a > limit;}
@@ -739,9 +733,9 @@ public class FunctionalTest
     @Test
     public void seqFilterTest5()
     {
-        Collection<Integer> li = Functional.init(DoublingGenerator, 10);
-        Collection<Integer> expected = Arrays.asList(new Integer[]{4,8,12,16,20});
-        Iterable<Integer> output = Functional.seq.filter(
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 10);
+        final Collection<Integer> expected = Arrays.asList(new Integer[]{4,8,12,16,20});
+        final Iterable<Integer> output = Functional.seq.filter(
                 new Func<Integer,Boolean>()
                 {
                     @Override public Boolean apply(Integer a) {return a % 4 ==0;}
@@ -753,38 +747,38 @@ public class FunctionalTest
     @Test(expected=NoSuchElementException.class)
     public void findLastTest1() throws Exception
     {
-        List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
-        Assert.assertEquals((Integer) 5, Functional.findLast(Functional.IsOdd, l));
+        final List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
+        Assert.assertEquals((Integer) 5, Functional.findLast(Functional.isOdd, l));
     }
 
     @Test
     public void findLastTest2() throws Exception
     {
-        List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
-        Assert.assertEquals((Integer)10, Functional.findLast(Functional.IsEven, l));
+        final List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
+        Assert.assertEquals((Integer)10, Functional.findLast(Functional.isEven, l));
     }
 
     @Test(expected=NoSuchElementException.class)
     public void findLastIterableTest1() throws Exception
     {
-        Iterable<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
-        Assert.assertEquals((Integer) 5, Functional.findLast(Functional.IsOdd, l));
+        final Iterable<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
+        Assert.assertEquals((Integer) 5, Functional.findLast(Functional.isOdd, l));
     }
 
     @Test
     public void findLastIterableTest2() throws Exception
     {
-        Iterable<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
-        Assert.assertEquals((Integer)10, Functional.findLast(Functional.IsEven, l));
+        final Iterable<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
+        Assert.assertEquals((Integer)10, Functional.findLast(Functional.isEven, l));
     }
 
     @Test
     public void seqMapTest1() throws Exception
     {
-        List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5}); //Enumerable.Range(1, 5).ToList();
-        List<String> expected = Arrays.asList(new String[] {"1", "2", "3", "4", "5"});
-        Iterable<String> output = Functional.seq.map(Functional.<Integer>dStringify(), input);
-        Iterator<String> it = output.iterator();
+        final List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5}); //Enumerable.Range(1, 5).ToList();
+        final List<String> expected = Arrays.asList(new String[] {"1", "2", "3", "4", "5"});
+        final Iterable<String> output = Functional.seq.map(Functional.<Integer>dStringify(), input);
+        final Iterator<String> it = output.iterator();
         for(int i=0; i<expected.size(); ++i)
             Assert.assertEquals(expected.get(i), it.next());
     }
@@ -792,11 +786,11 @@ public class FunctionalTest
     @Test
     public void toArrayTest1() throws Exception
     {
-        List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
-        Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
-        List<String> expected = Arrays.asList(new String[]{"1", "2", "3", "4", "5"});
+        final List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
+        final Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
+        final List<String> expected = Arrays.asList(new String[]{"1", "2", "3", "4", "5"});
 
-        Object[] output = Functional.toArray(strs);
+        final Object[] output = Functional.toArray(strs);
 
         Assert.assertEquals(expected.size(),output.length);
         for(int i=0; i<expected.size(); ++i)
@@ -806,40 +800,40 @@ public class FunctionalTest
     @Test
     public void lastTest1() throws Exception
     {
-        List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
+        final List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
         Assert.assertEquals(5,(long) Functional.last(input));
     }
 
     @Test
     public void lastTest2() throws Exception
     {
-        List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
-        Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
+        final List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
+        final Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
         Assert.assertEquals("5", Functional.last(strs));
     }
 
     @Test
     public void concatTest1() throws Exception
     {
-        List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
-        List<Integer> expected = Arrays.asList(new Integer[]{1,2,3,4,5,1,2,3,4,5});
+        final List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
+        final List<Integer> expected = Arrays.asList(new Integer[]{1,2,3,4,5,1,2,3,4,5});
         AssertIterable.assertIterableEquals(expected, Functional.concat(input, input));
     }
 
     @Test
     public void seqConcatTest1() throws Exception
     {
-        List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
-        Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
+        final List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
+        final Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
             @Override
             public Integer apply(Integer i) {
                 return i * 2;
             }
         };
-        List<String> expected = Arrays.asList(new String[]{"1","2","3","4","5","2","4","6","8","10"});
+        final List<String> expected = Arrays.asList(new String[]{"1","2","3","4","5","2","4","6","8","10"});
 
-        Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
-        Iterable<String> output = Functional.seq.concat(strs, Functional.seq.map(Functional.<Integer>dStringify(), Functional.seq.map(doubler, input)));
+        final Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
+        final Iterable<String> output = Functional.seq.concat(strs, Functional.seq.map(Functional.<Integer>dStringify(), Functional.seq.map(doubler, input)));
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -847,12 +841,12 @@ public class FunctionalTest
     @Test
     public void arrayIterableTest1() throws Exception
     {
-        Integer[] input = new Integer[]{1,2,3,4,5};
-        List<Integer> expected = Arrays.asList(new Integer[]{1,2,3,4,5});
+        final Integer[] input = new Integer[]{1,2,3,4,5};
+        final List<Integer> expected = Arrays.asList(new Integer[]{1,2,3,4,5});
 
-        ArrayIterable<Integer> ait = ArrayIterable.create(input);
-        List<Integer> output = new ArrayList<Integer>();
-        for(Integer i:ait) output.add(i);
+        final ArrayIterable<Integer> ait = ArrayIterable.create(input);
+        final List<Integer> output = new ArrayList<Integer>();
+        for(final Integer i:ait) output.add(i);
         Assert.assertArrayEquals(expected.toArray(), output.toArray());
     }
 
@@ -860,8 +854,8 @@ public class FunctionalTest
         @Test
         public void seqChooseTest1() throws Exception
         {
-            Collection<Integer> li = Functional.init(TriplingGenerator,5);
-            Iterable<String> output = Functional.seq.choose(
+            final Collection<Integer> li = Functional.init(TriplingGenerator,5);
+            final Iterable<String> output = Functional.seq.choose(
                     new Func<Integer,Option<String>>()
                     {
                             @Override
@@ -871,22 +865,22 @@ public class FunctionalTest
                             }
                     }, li);
 
-            Collection<String> expected = Arrays.asList(new String[]{"6", "12"});
+            final Collection<String> expected = Arrays.asList(new String[]{"6", "12"});
             AssertIterable.assertIterableEquals(expected, output);
         }
 
         @Test
         public void seqInitTest1()
         {
-            Iterable<Integer> output = Functional.seq.init(DoublingGenerator, 5);
+            final Iterable<Integer> output = Functional.seq.init(DoublingGenerator, 5);
             AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10}), output);
         }
 
     @Test
     public void FwdPipelineTest3()
     {
-        Collection<Integer> input = Functional.init(DoublingGenerator, 5);
-        Collection<String> output = Functional.In(input,
+        final Collection<Integer> input = Functional.init(DoublingGenerator, 5);
+        final Collection<String> output = Functional.in(input,
                 new Func<Collection<Integer>, Collection<String>>() {
                     @Override
                     public Collection<String> apply(Collection<Integer> integers) {
@@ -894,15 +888,15 @@ public class FunctionalTest
                     }
                 });
 
-        Collection<String> expected = Arrays.asList(new String[] {"2", "4", "6", "8", "10"});
+        final Collection<String> expected = Arrays.asList(new String[] {"2", "4", "6", "8", "10"});
         AssertIterable.assertIterableEquals(expected, output);
     }
 
     @Test
     public void FwdPipelineTest4()
     {
-        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
-        Iterable<String> output = Functional.In(input,
+        final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        final Iterable<String> output = Functional.in(input,
                 new Func<Iterable<Integer>, Iterable<String>>() {
                     @Override
                     public Iterable<String> apply(Iterable<Integer> integers) {
@@ -915,18 +909,21 @@ public class FunctionalTest
                     }
                 });
 
-        Collection<String> expected = Arrays.asList(new String[] {"2", "4", "6", "8", "10"});
+        final Collection<String> expected = Arrays.asList(new String[] {"2", "4", "6", "8", "10"});
         AssertIterable.assertIterableEquals(expected, output);
     }
 
     @Test
     public void FwdPipelineTest5()
     {
-        Iterable<Integer> l = Functional.seq.init(DoublingGenerator, 5);
-        Iterable<Integer> oddElems = Functional.In(l,
-                new Func<Iterable<Integer>,Iterable<Integer>>(){
+        final Iterable<Integer> l = Functional.seq.init(DoublingGenerator, 5);
+        final Iterable<Integer> oddElems = Functional.in(l,
+                new Func<Iterable<Integer>, Iterable<Integer>>() {
                     @Override
-                public Iterable<Integer> apply(Iterable<Integer> ints){return Functional.filter(Functional.IsOdd, ints);}});
+                    public Iterable<Integer> apply(Iterable<Integer> ints) {
+                        return Functional.filter(Functional.isOdd, ints);
+                    }
+                });
 
         Assert.assertFalse(oddElems.iterator().hasNext());
     }
@@ -976,8 +973,23 @@ public class FunctionalTest
     @Test
     public void seqInitTest2()
     {
-        Iterable<Integer> output = Functional.seq.init(DoublingGenerator);
+        final Iterable<Integer> output = Functional.seq.init(DoublingGenerator);
         AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10,12,14,16,18,20,22}),Functional.take(11,output));
+    }
+
+    @Test
+    public void takeTest1()
+    {
+        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer o) {
+                return Functional.take(o, input);
+            }
+        }, input);
+        final List<Integer> expected = Arrays.asList(1,1,2,1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,10);
+
+        AssertIterable.assertIterableEquals(expected,output);
     }
 
     @Test
@@ -985,9 +997,9 @@ public class FunctionalTest
     {
         final int howMany = 6;
         final int initValue = -1;
-        Collection<Integer> l = Functional.init(Functional.Constant(initValue),howMany);
+        final Collection<Integer> l = Functional.init(Functional.Constant(initValue),howMany);
         Assert.assertEquals(howMany, l.size());
-        for(int i : l)
+        for(final int i : l)
             Assert.assertEquals(initValue, i);
     }
 
@@ -1052,9 +1064,9 @@ public class FunctionalTest
     @Test
     public void ChooseTest1() throws OptionNoValueAccessException
     {
-        Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
-        Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
-        Collection<Integer> output =
+        final Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
+        final Collection<Integer> output =
                 Functional.choose(
                         new Func<Integer, Option<Integer>>() {
                             @Override
@@ -1068,9 +1080,9 @@ public class FunctionalTest
     @Test
     public void ChooseTest2() throws OptionNoValueAccessException
     {
-        Collection<String> input = Arrays.asList(new String[] {"abc", "def"});
-        Collection<Character> expected = Arrays.asList(new Character[]{'a'});
-        Collection<Character> output =
+        final Collection<String> input = Arrays.asList(new String[] {"abc", "def"});
+        final Collection<Character> expected = Arrays.asList(new Character[]{'a'});
+        final Collection<Character> output =
                 Functional.choose(
                         new Func<String, Option<Character>>() {
                             @Override
@@ -1086,9 +1098,9 @@ public class FunctionalTest
     @Test
     public void ChooseTest3() throws OptionNoValueAccessException
     {
-        Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
-        Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
-        Collection<Integer> output = Functional.choose(
+        final Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
+        final Collection<Integer> output = Functional.choose(
                 new Func<Integer, Option<Integer>>() {
                     @Override
                     public Option<Integer> apply(Integer i) {
@@ -1132,17 +1144,17 @@ public class FunctionalTest
     @Test
     public void UnzipTest1()
     {
-        Collection<org.javatuples.Pair<String,Integer>> input =
+        final Collection<org.javatuples.Pair<String,Integer>> input =
                 new ArrayList<org.javatuples.Pair<String,Integer>>();
         input.add(new org.javatuples.Pair<String,Integer>("1", 1));
         input.add(new org.javatuples.Pair<String,Integer>("2", 2));
 
-        org.javatuples.Pair<Collection<String>,Collection<Integer>> expected =
+        final Pair<Collection<String>,Collection<Integer>> expected =
                 new org.javatuples.Pair(
                         Arrays.asList(new String[]{"1", "2"}),
                         Arrays.asList(new Integer[]{1,2}));
 
-        org.javatuples.Pair<List<String>,List<Integer>> output = Functional.unzip(input);
+        final Pair<List<String>,List<Integer>> output = Functional.unzip(input);
 
         AssertIterable.assertIterableEquals(expected.getValue0(), output.getValue0());
         AssertIterable.assertIterableEquals(expected.getValue1(), output.getValue1());
@@ -1151,19 +1163,19 @@ public class FunctionalTest
     @Test
     public void Unzip3Test1()
     {
-        Collection<org.javatuples.Triplet<String,Integer,String>> input =
+        final Collection<org.javatuples.Triplet<String,Integer,String>> input =
                 new ArrayList<org.javatuples.Triplet<String,Integer,String>>();
         input.add(new org.javatuples.Triplet<String,Integer,String>("1", 1,"L"));
         input.add(new org.javatuples.Triplet<String,Integer,String>("2", 2,"M"));
         input.add(new org.javatuples.Triplet<String,Integer,String>("3", 3,"K"));
 
-        org.javatuples.Triplet<Collection<String>,Collection<Integer>,Collection<String>> expected =
+        final Triplet<Collection<String>,Collection<Integer>,Collection<String>> expected =
                 new org.javatuples.Triplet(
                         Arrays.asList(new String[]{"1", "2","3"}),
                         Arrays.asList(new Integer[]{1,2,3}),
                         Arrays.asList(new String[]{"L","M","K"}));
 
-        org.javatuples.Triplet<List<String>,List<Integer>,List<String>> output = Functional.unzip3(input);
+        final Triplet<List<String>,List<Integer>,List<String>> output = Functional.unzip3(input);
 
         AssertIterable.assertIterableEquals(expected.getValue0(), output.getValue0());
         AssertIterable.assertIterableEquals(expected.getValue1(), output.getValue1());
@@ -1173,17 +1185,17 @@ public class FunctionalTest
     @Test
     public void ZipTest1()
     {
-        Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
-        Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
 
-        Collection<org.javatuples.Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
+        final Collection<Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
         expected.add(new Pair<Integer, Character>(1, 'a'));
         expected.add(new Pair<Integer, Character>(2, 'b'));
         expected.add(new Pair<Integer, Character>(3, 'c'));
         expected.add(new Pair<Integer, Character>(4, 'd'));
         expected.add(new Pair<Integer, Character>(5, 'e'));
 
-        Collection<org.javatuples.Pair<Integer,Character>> output = Functional.zip(input1, input2);
+        final Collection<Pair<Integer,Character>> output = Functional.zip(input1, input2);
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -1191,18 +1203,18 @@ public class FunctionalTest
     @Test
     public void Zip3Test1()
     {
-        Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
-        Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
-        Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+        final Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
 
-        Collection<Triplet<Integer,Character,Double>> expected = new ArrayList<Triplet<Integer, Character, Double>>();
+        final Collection<Triplet<Integer,Character,Double>> expected = new ArrayList<Triplet<Integer, Character, Double>>();
         expected.add(new Triplet<Integer, Character, Double>(1, 'a', 1.0));
         expected.add(new Triplet<Integer, Character, Double>(2, 'b', 2.0));
         expected.add(new Triplet<Integer, Character, Double>(3, 'c', 2.5));
         expected.add(new Triplet<Integer, Character, Double>(4, 'd', 3.0));
         expected.add(new Triplet<Integer, Character, Double>(5, 'e', 3.5));
 
-        Collection<Triplet<Integer,Character,Double>> output = Functional.zip3(input1, input2, input3);
+        final Collection<Triplet<Integer,Character,Double>> output = Functional.zip3(input1, input2, input3);
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -1247,8 +1259,8 @@ public class FunctionalTest
     public void findTest1() throws Exception
     {
         final String trueMatch = "6";
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         Assert.assertEquals(trueMatch,
                 Functional.find(
                         new Func<String, Boolean>() {
@@ -1263,8 +1275,8 @@ public class FunctionalTest
     public void findTest2() throws Exception
     {
         final String falseMatch = "7";
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         Functional.find(
                 new Func<String, Boolean>() {
                     @Override
@@ -1278,8 +1290,8 @@ public class FunctionalTest
     public void findIndexTest1() throws Exception
     {
         final String trueMatch = "6";
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         Assert.assertEquals(2,
                 Functional.findIndex(
                         new Func<String, Boolean>() {
@@ -1294,8 +1306,8 @@ public class FunctionalTest
     public void findIndexTest2() throws Exception
     {
         final String falseMatch = "7";
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
         Functional.findIndex(
                 new Func<String, Boolean>() {
                     @Override
@@ -1309,7 +1321,7 @@ public class FunctionalTest
     public void pickTest1() throws Exception
     {
         final int trueMatch = 6;
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         Assert.assertEquals(((Integer) trueMatch).toString(),
                 Functional.pick(
                         new Func<Integer, Option<String>>() {
@@ -1324,7 +1336,7 @@ public class FunctionalTest
     public void pickTest2() throws Exception
     {
         final int falseMatch = 7;
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         Functional.pick(
                 new Func<Integer, Option<String>>() {
                     @Override
@@ -1354,8 +1366,8 @@ public class FunctionalTest
     @Test
     public void MapDictTest1()
     {
-        Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        Map<String,String> output = Functional.map_dict(
+        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Map<String,String> output = Functional.map_dict(
                 new Func<Integer, Map.Entry<String, String>>() {
                     @Override
                     public Map.Entry<String, String> apply(final Integer i) {
@@ -1375,7 +1387,7 @@ public class FunctionalTest
                     }
                 }, input);
 
-        List<String> keys = new ArrayList<String>(output.keySet());
+        final List<String> keys = new ArrayList<String>(output.keySet());
         Collections.sort(keys);
         AssertIterable.assertIterableEquals(Arrays.asList(new String[]{"1", "2", "3", "4", "5"}), keys);
     }
@@ -1383,16 +1395,16 @@ public class FunctionalTest
     @Test
     public void ToListTest1()
     {
-        Iterable<Integer> output = Functional.init(DoublingGenerator, 5);
-        List<Integer> output_ints = Functional.toList(output);
+        final Iterable<Integer> output = Functional.init(DoublingGenerator, 5);
+        final List<Integer> output_ints = Functional.toList(output);
         AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10}), output_ints);
     }
 
-    public static final Func<Integer,Iterable<Integer>> repeat(final int howMany)
+    public static final Func<Integer,List<Integer>> repeat(final int howMany)
     {
-        return new Func<Integer, Iterable<Integer>>() {
+        return new Func<Integer, List<Integer>>() {
             @Override
-            public Iterable<Integer> apply(final Integer integer) {
+            public List<Integer> apply(final Integer integer) {
                 return Functional.init(
                         new Func<Integer, Integer>() {
                             @Override
@@ -1407,28 +1419,28 @@ public class FunctionalTest
     @Test
     public void CollectTest1()
     {
-        Iterable<Integer> input = Functional.init(DoublingGenerator, 5);
-        List<Integer> output = Functional.collect(repeat(3), input);
-        List<Integer> expected = Arrays.asList(2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8, 10, 10, 10);
+        final List<Integer> input = Functional.init(DoublingGenerator, 5);
+        final List<Integer> output = Functional.collect(repeat(3), input);
+        final List<Integer> expected = Arrays.asList(2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8, 10, 10, 10);
         AssertIterable.assertIterableEquals(expected, output);
     }
 
     @Test
     public void seqCollectTest1()
     {
-        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
-        Iterable<Integer> output = Functional.seq.collect(repeat(3), input);
-        List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
+        final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        final Iterable<Integer> output = Functional.seq.collect(repeat(3), input);
+        final List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
         AssertIterable.assertIterableEquals(expected, output);
     }
 
     @Test
     public void seqCollectTest2()
     {
-        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
-        Iterable<Integer> output1 = Functional.seq.collect(repeat(3), input);
-        Iterable<Integer> output2 = output1;
-        List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
+        final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        final Iterable<Integer> output1 = Functional.seq.collect(repeat(3), input);
+        final Iterable<Integer> output2 = output1;
+        final List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
         AssertIterable.assertIterableEquals(expected, output1);
         AssertIterable.assertIterableEquals(expected, output2);
     }
@@ -1436,10 +1448,10 @@ public class FunctionalTest
     @Test
     public void takeNandYieldTest1()
     {
-        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
-        Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 2);
-        List<Integer> expectedList = Arrays.asList(2,4);
-        List<Integer> expectedRemainder = Arrays.asList(6,8,10);
+        final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        final Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 2);
+        final List<Integer> expectedList = Arrays.asList(2,4);
+        final List<Integer> expectedRemainder = Arrays.asList(6,8,10);
         AssertIterable.assertIterableEquals(expectedList,output.getValue0());
         AssertIterable.assertIterableEquals(expectedRemainder,output.getValue1());
     }
@@ -1447,10 +1459,10 @@ public class FunctionalTest
     @Test
     public void takeNandYieldTest2()
     {
-        Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
-        Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 0);
-        List<Integer> expectedList = Arrays.asList();
-        List<Integer> expectedRemainder = Arrays.asList(2,4,6,8,10);
+        final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        final Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 0);
+        final List<Integer> expectedList = Arrays.asList();
+        final List<Integer> expectedRemainder = Arrays.asList(2,4,6,8,10);
         AssertIterable.assertIterableEquals(expectedList,output.getValue0());
         AssertIterable.assertIterableEquals(expectedRemainder,output.getValue1());
     }
@@ -1458,8 +1470,8 @@ public class FunctionalTest
     @Test
     public void recFilterTest1()
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator, 5);
-        Iterable<Integer> oddElems = Functional.rec.filter(Functional.IsOdd, l);
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Iterable<Integer> oddElems = Functional.rec.filter(Functional.isOdd, l);
 
         AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
     }
@@ -1467,18 +1479,18 @@ public class FunctionalTest
     @Test
     public void recMapTest1()
     {
-        Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        Iterable<String> output = Functional.rec.map(Functional.<Integer>dStringify(), input);
+        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Iterable<String> output = Functional.rec.map(Functional.<Integer>dStringify(), input);
         AssertIterable.assertIterableEquals(Arrays.asList("1", "2", "3", "4", "5"), output);
     }
 
     @Test
     public void recFoldvsMapTest1()
     {
-        Collection<Integer> li = Functional.init(DoublingGenerator, 5);
-        String s1 = Functional.join(",", Functional.rec.map(Functional.<Integer>dStringify(), li));
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final String s1 = Functional.join(",", Functional.rec.map(Functional.<Integer>dStringify(), li));
         Assert.assertEquals("2,4,6,8,10", s1);
-        String s2 = Functional.rec.fold(
+        final String s2 = Functional.rec.fold(
                 new Func2<String, Integer, String>() {
                     @Override
                     public String apply(String s1, Integer s2) {
@@ -1520,7 +1532,7 @@ public class FunctionalTest
     {
         final Collection<Integer> l = Functional.init(DoublingGenerator,5);
         final Set<Integer> sl = new HashSet<Integer>(l);
-        final Set<Integer> oddElems = Functional.set.filter(Functional.IsOdd, sl);
+        final Set<Integer> oddElems = Functional.set.filter(Functional.isOdd, sl);
 
         AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
     }
@@ -1530,7 +1542,7 @@ public class FunctionalTest
     {
         final Collection<Integer> l = Functional.init(DoublingGenerator,5);
         final Set<Integer> sl = new HashSet<Integer>(l);
-        final Set<Integer> evenElems = Functional.set.filter(Functional.IsEven, sl);
+        final Set<Integer> evenElems = Functional.set.filter(Functional.isEven, sl);
 
         final Collection<Integer> expected = Arrays.asList(new Integer[]{2,4,6,8,10});
         Assert.assertTrue(expected.containsAll(evenElems));
@@ -1814,23 +1826,23 @@ public class FunctionalTest
     @Test
     public void MapInTermsOfFoldTest1()
     {
-        Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        Collection<String> output = Functional.inTermsOfFold.map(Functional.<Integer>dStringify(), input);
+        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Collection<String> output = Functional.inTermsOfFold.map(Functional.<Integer>dStringify(), input);
         Assert.assertArrayEquals(new String[]{"1", "2", "3", "4", "5"}, output.toArray());
     }
 
     @Test
     public void FilterInTermsOfFoldTest1()
     {
-        Collection<Integer> l = Functional.init(DoublingGenerator,5);
-        Iterable<Integer> oddElems = Functional.inTermsOfFold.filter(Functional.IsOdd, l);
+        final Collection<Integer> l = Functional.init(DoublingGenerator,5);
+        final Iterable<Integer> oddElems = Functional.inTermsOfFold.filter(Functional.isOdd, l);
         AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
     }
 
     @Test
     public void InitInTermsOfUnfoldTest1()
     {
-        Collection<Integer> output = Functional.inTermsOfFold.init(new Func<Integer, Integer>() {
+        final Collection<Integer> output = Functional.inTermsOfFold.init(new Func<Integer, Integer>() {
             @Override
             public Integer apply(Integer integer) {
                 return integer * 2;
