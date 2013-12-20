@@ -20,7 +20,7 @@ public class IteratorsTest
             };
 
     @Test
-    public void ReverseTest1() throws Exception
+    public void ReverseTest1()
     {
         final List<Integer> li = Functional.init(DoublingGenerator, 10);
         final Collection<Integer> expected = Arrays.asList(new Integer[]{20,18,16,14,12,10,8,6,4,2});

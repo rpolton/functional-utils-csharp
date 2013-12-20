@@ -80,7 +80,7 @@ public class OptionTest
     @Test
     public void OptionTestReferenceType2()
     {
-        final Option<tmp> a = new Option<tmp>(null);
+        final Option<tmp> a = Option.<tmp>toOption(null);
         Assert.assertTrue(a.isNone());
         Assert.assertFalse(a.isSome());
     }

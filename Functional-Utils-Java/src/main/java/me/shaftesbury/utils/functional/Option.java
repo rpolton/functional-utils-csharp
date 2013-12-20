@@ -10,11 +10,11 @@ package me.shaftesbury.utils.functional;
 public final class Option<T>
 {
     private final T _t;
-    public Option()
+    private Option()
     {
         _t=null;
     }
-    public Option(final T t)
+    private Option(final T t)
     {
         _t = t;
     }

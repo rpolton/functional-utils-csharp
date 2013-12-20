@@ -9,7 +9,7 @@ public class MException<U>
 {
     private Func0<U> fn;
     private U state = null;
-    private Exception exception = null;
+    private RuntimeException exception = null;
     private StackTraceElement[] stacktrace = null;
 
     // this is 'return'
@@ -23,11 +23,33 @@ public class MException<U>
         if(!hasException())
             try {
                 return f.apply(state);
-            } catch(Exception ex) {
+            } catch(RuntimeException ex) {
                 return new MException<B>(ex, new Throwable().getStackTrace());
             }
         else
             return new MException<B>(exception, stacktrace);
+    }
+
+    private static final <C>MException<C> toMException(final Pair<RuntimeException,StackTraceElement[]> exc)
+    {
+        return new MException(exc.getValue0(),exc.getValue1());
+    }
+
+    public static final <A,B,C>MException<C> lift(final Func2<A,B,C> f, final MException<A> a, final MException<B> b)
+    {
+        if(a.hasException()) return toMException(a.getExceptionWithStackTrace());
+        if(b.hasException()) return toMException(b.getExceptionWithStackTrace());
+        return new MException(delay(f, a.read(), b.read()));
+    }
+
+    private static final <A,B,C>Func0<C> delay(final Func2<A, B, C> f, final A a, final B b)
+    {
+        return new Func0<C>() {
+            @Override
+            public C apply() {
+                return f.apply(a,b);
+            }
+        };
     }
 
     private MException(final Func0<U> f)
@@ -35,7 +57,7 @@ public class MException<U>
         fn = f;
     }
 
-    private MException(final Exception ex, final StackTraceElement[] stack)
+    private MException(final RuntimeException ex, final StackTraceElement[] stack)
     {
         exception = ex;
         stacktrace = stack;
@@ -48,7 +70,7 @@ public class MException<U>
         {
             try {
                 state = fn.apply();
-            } catch(Exception ex) {
+            } catch(RuntimeException ex) {
                 exception = ex;
                 stacktrace = new Throwable().getStackTrace();
             }
@@ -56,17 +78,17 @@ public class MException<U>
         return exception!=null;
     }
 
-    public Exception getException()
+    public RuntimeException getException()
     {
         return exception; // what happens if exception==null?
     }
 
-    public Pair<Exception,StackTraceElement[]> getExceptionWithStackTrace()
+    public Pair<RuntimeException,StackTraceElement[]> getExceptionWithStackTrace()
     {
         return Pair.with(exception, stacktrace); // what happens if exception==null?
     }
 
-    public final U read() throws Exception
+    public final U read()
     {
         if(!hasException()) return state;
         throw exception;

@@ -130,7 +130,7 @@ public class Iterable2Test
             }   ;
 
     @Test
-    public void ForAll2Test2() throws Exception
+    public void ForAll2Test2()
     {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
@@ -139,7 +139,7 @@ public class Iterable2Test
     }
 
     @Test(expected=Exception.class)
-    public void ForAll2Test3() throws Exception
+    public void ForAll2Test3()
     {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> m = IterableHelper.init(QuadruplingGenerator, 7);
@@ -166,7 +166,7 @@ public class Iterable2Test
     }
 
     @Test
-    public void CompositionTest2() throws Exception
+    public void CompositionTest2()
     {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
@@ -559,7 +559,7 @@ public class Iterable2Test
 
 
     @Test
-    public void foldAndChooseTest1() throws Exception
+    public void foldAndChooseTest1()
     {
         final Map<Integer, Double> missingPricesPerDate = new Hashtable<Integer, Double>();
         final Iterable2<Integer> openedDays = IterableHelper.init(TriplingGenerator, 5);
@@ -614,7 +614,7 @@ public class Iterable2Test
     }
 
     @Test
-    public void joinTest2() throws Exception
+    public void joinTest2()
     {
         final Iterable2<Integer> ids = IterableHelper.init(TriplingGenerator, 5);
         final String expected = "'3','6','9','12','15'";
@@ -630,21 +630,21 @@ public class Iterable2Test
     }
 
     @Test
-    public void betweenTest1() throws Exception
+    public void betweenTest1()
     {
         final int lowerBound = 2, upperBound = 4;
         Assert.assertTrue(Functional.between(lowerBound, upperBound, 3));
     }
 
     @Test
-    public void betweenTest2() throws Exception
+    public void betweenTest2()
     {
         final int lowerBound = 2, upperBound = 4;
         Assert.assertFalse(Functional.between(lowerBound, upperBound, 1));
     }
 
     @Test
-    public void betweenTest3() throws Exception
+    public void betweenTest3()
     {
         final double lowerBound = 2.5, upperBound = 2.6;
         Assert.assertTrue(Functional.between(lowerBound, upperBound, 2.55));
@@ -657,7 +657,7 @@ public class Iterable2Test
     }
 
     @Test
-    public void testIn() throws Exception
+    public void testIn()
     {
         final Integer a = 10;
         Assert.assertTrue(Functional.in(a, Functional.isEven));
@@ -665,7 +665,7 @@ public class Iterable2Test
 
 
     /*@Test
-    public void testThen() throws Exception
+    public void testThen()
     {
         // mult(two,three).then(add(four)) =>
         // then(mult(two,three),add(four))
@@ -682,21 +682,21 @@ public class Iterable2Test
 
 
     @Test(expected=NoSuchElementException.class)
-    public void findLastTest1() throws Exception
+    public void findLastTest1()
     {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         Assert.assertEquals((Integer) 5, Functional.findLast(Functional.isOdd, l));
     }
 
     @Test
-    public void findLastTest2() throws Exception
+    public void findLastTest2()
     {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         Assert.assertEquals((Integer)10, Functional.findLast(Functional.isEven, l));
     }
 
     @Test
-    public void toArrayTest1() throws Exception
+    public void toArrayTest1()
     {
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
         final Iterable<String> strs = input.map(Functional.<Integer>dStringify());
@@ -710,14 +710,14 @@ public class Iterable2Test
     }
 
     @Test
-    public void lastTest1() throws Exception
+    public void lastTest1()
     {
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
         Assert.assertEquals(5,(long) Functional.last(input));
     }
 
     @Test
-    public void lastTest2() throws Exception
+    public void lastTest2()
     {
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
         final Iterable<String> strs = input.map(Functional.<Integer>dStringify());
@@ -725,7 +725,7 @@ public class Iterable2Test
     }
 
     @Test
-    public void concatTest1() throws Exception
+    public void concatTest1()
     {
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
         final Iterable2<Integer> expected = IterableHelper.asList(new Integer[]{1,2,3,4,5,1,2,3,4,5});
@@ -733,7 +733,7 @@ public class Iterable2Test
     }
 
     @Test
-    public void seqConcatTest1() throws Exception
+    public void seqConcatTest1()
     {
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
         final Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
@@ -751,7 +751,7 @@ public class Iterable2Test
     }
 
     @Test
-    public void arrayIterableTest1() throws Exception
+    public void arrayIterableTest1()
     {
         final Integer[] input = new Integer[]{1,2,3,4,5};
         final Iterable2<Integer> expected = IterableHelper.asList(new Integer[]{1,2,3,4,5});
@@ -764,7 +764,7 @@ public class Iterable2Test
 
 
     @Test
-    public void seqChooseTest1() throws Exception
+    public void seqChooseTest1()
     {
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator,5);
         final Iterable2<String> output = li.choose(
@@ -1123,7 +1123,7 @@ public class Iterable2Test
     }*/
 
     @Test
-    public void findTest1() throws Exception
+    public void findTest1()
     {
         final String trueMatch = "6";
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
@@ -1139,7 +1139,7 @@ public class Iterable2Test
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void findTest2() throws Exception
+    public void findTest2()
     {
         final String falseMatch = "7";
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
@@ -1154,7 +1154,7 @@ public class Iterable2Test
     }
 
     @Test
-    public void findIndexTest1() throws Exception
+    public void findIndexTest1()
     {
         final String trueMatch = "6";
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
@@ -1170,7 +1170,7 @@ public class Iterable2Test
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void findIndexTest2() throws Exception
+    public void findIndexTest2()
     {
         final String falseMatch = "7";
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
@@ -1185,7 +1185,7 @@ public class Iterable2Test
     }
 
     @Test
-    public void pickTest1() throws Exception
+    public void pickTest1()
     {
         final int trueMatch = 6;
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
@@ -1194,13 +1194,13 @@ public class Iterable2Test
                         new Func<Integer, Option<String>>() {
                             @Override
                             public Option<String> apply(Integer a) {
-                                return a == trueMatch ? new Option<String>(a.toString()) : Option.<String>None();
+                                return a == trueMatch ? Option.toOption(a.toString()) : Option.<String>None();
                             }
                         }));
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void pickTest2() throws Exception
+    public void pickTest2()
     {
         final int falseMatch = 7;
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
@@ -1208,7 +1208,7 @@ public class Iterable2Test
                 new Func<Integer, Option<String>>() {
                     @Override
                     public Option<String> apply(Integer a) {
-                        return a == falseMatch ? new Option<String>(a.toString()) : Option.<String>None();
+                        return a == falseMatch ? Option.toOption(a.toString()) : Option.<String>None();
                     }
                 });
     }

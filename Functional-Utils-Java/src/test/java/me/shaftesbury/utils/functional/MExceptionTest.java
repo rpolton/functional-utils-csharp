@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class MExceptionTest
 {
     @Test
-    public void returnTest1() throws Exception
+    public void returnTest1()
     {
         final MException<Object> mex = MException.toMException(
             new Func0<Object>() {
@@ -27,7 +27,7 @@ public class MExceptionTest
     }
 
     @Test
-    public void returnTest2() throws Exception
+    public void returnTest2()
     {
         final MException<Integer> mex = MException.toMException(
                 new Func0<Integer>() {
@@ -43,7 +43,7 @@ public class MExceptionTest
     }
 
     @Test
-    public void returnWithFuncTest1() throws Exception
+    public void returnWithFuncTest1()
     {
         for(int i=0;i<10;++i)
         {
@@ -67,7 +67,7 @@ public class MExceptionTest
             };
 
     @Test
-    public void returnWithFuncTest2() throws Exception
+    public void returnWithFuncTest2()
     {
         Iterable2<Integer> it = IterableHelper.init(DoublingGenerator,10);
         java.util.List<MException<Integer>> l = it.map(
@@ -140,5 +140,37 @@ public class MExceptionTest
                                 return m2.hasException();
                             }
                         }, l1));
+
+        Assert.assertEquals(3, IterableHelper.create(l).filter(new Func<MException<Integer>, Boolean>() {
+            public Boolean apply(final MException<Integer> m) {
+                return m.hasException();
+            }
+        }).toList().size());
+    }
+
+    @Test
+    public void liftTest1()
+    {
+        final Integer valu = 10;
+        final MException<Integer> a = MException.toMException(new Func0<Integer>() {
+            @Override
+            public Integer apply() {
+                return 10 / valu;
+            }
+        });
+        final MException<Integer> b = MException.toMException(new Func0<Integer>() {
+            @Override
+            public Integer apply() {
+                return 20 / valu;
+            }
+        });
+        final MException<Integer> c = MException.lift(new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer o, Integer o2) {
+                return o + o2;
+            }
+        }, a, b);
+        Assert.assertFalse(c.hasException());
+        Assert.assertEquals(new Integer(3),c.read());
     }
 }
