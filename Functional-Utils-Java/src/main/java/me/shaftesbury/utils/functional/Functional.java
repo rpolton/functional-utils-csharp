@@ -259,6 +259,12 @@ public final class Functional
                     return state + 1;
                 }
             };
+    public static final Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
+        @Override
+        public Integer apply(Integer state, Integer b) {
+            return state + b;
+        }
+    };
 
     public static final <T extends Comparable<T>>Func<T,Boolean> greaterThan(final T that)
     {
@@ -662,7 +668,7 @@ public final class Functional
         };
     }
 
-    public static final <T>Func<Integer,T> Constant(final T constant)
+    public static final <T>Func<Integer,T> constant(final T constant)
     {
         return new Func<Integer, T>() {
             @Override
@@ -671,6 +677,17 @@ public final class Functional
             }
         };
     }
+
+    public static final Func<Integer,Integer> range(final Integer startFrom)
+    {
+        return new Func<Integer,Integer>(){
+            private final Integer start = startFrom;
+            public Integer apply(final Integer input) {
+                return (start-1)+input; // because init starts counting from 1
+            }
+        };
+    }
+
 
     public static final <A,B>List<org.javatuples.Pair<A,B>> zip(final Iterable<A> l1, final Iterable<B> l2)
     {

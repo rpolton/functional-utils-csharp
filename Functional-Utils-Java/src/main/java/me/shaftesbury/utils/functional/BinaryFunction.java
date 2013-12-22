@@ -34,4 +34,14 @@ public abstract class BinaryFunction<A,B,C> implements Func2<A,B,C>
             }
         };
     }
+
+    public static final <A,B,C>Func0<C> delay(final Func2<A, B, C> f, final A a, final B b)
+    {
+        return new Func0<C>() {
+            @Override
+            public C apply() {
+                return f.apply(a,b);
+            }
+        };
+    }
 }

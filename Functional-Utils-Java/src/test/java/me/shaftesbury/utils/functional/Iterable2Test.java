@@ -887,7 +887,7 @@ public class Iterable2Test
     {
         final int howMany = 6;
         final int initValue = -1;
-        final Iterable2<Integer> l = IterableHelper.init(Functional.Constant(initValue),howMany);
+        final Iterable2<Integer> l = IterableHelper.init(Functional.constant(initValue),howMany);
         Assert.assertEquals(howMany, l.toList().size());
         for(final int i : l)
             Assert.assertEquals(initValue, i);

@@ -59,6 +59,12 @@ public final class LispList
                 : f.apply(input.head(),foldRight(f,initialValue,input.tail()));
     }
 
+    public static final <T>List<T> cons(final T t, final List<T> l) { return list(t,l); }
+    public static final <T>T car(final List<T> l) { return l.head(); }
+    public static final <T>List<T> cdr(final List<T> l) { return l.tail(); }
+    public static final <T>T cadr(final List<T> l) { return car(cdr(l)); }
+    public static final <T>List<T> compose(final T t1, final T t2) { return list(t1, list(t2, (List<T>)nil())); }
+
     public static final class EmptyListHasNoHead extends RuntimeException {}
     public static final class EmptyListHasNoTail extends RuntimeException {}
 

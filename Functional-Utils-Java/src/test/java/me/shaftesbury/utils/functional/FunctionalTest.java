@@ -29,6 +29,12 @@ public class FunctionalTest
         Assert.assertArrayEquals(new Integer[]{2,4,6,8,10}, output.toArray());
     }
 
+    @Test
+    public void rangeTest1()
+    {
+        final Collection<Integer> output = Functional.init(Functional.range(0),5);
+        Assert.assertArrayEquals(new Integer[]{0,1,2,3,4},output.toArray());
+    }
 
     @Test
     public void MapTest1()
@@ -997,7 +1003,7 @@ public class FunctionalTest
     {
         final int howMany = 6;
         final int initValue = -1;
-        final Collection<Integer> l = Functional.init(Functional.Constant(initValue),howMany);
+        final Collection<Integer> l = Functional.init(Functional.constant(initValue),howMany);
         Assert.assertEquals(howMany, l.size());
         for(final int i : l)
             Assert.assertEquals(initValue, i);
@@ -1522,9 +1528,9 @@ public class FunctionalTest
                 Functional.Switch(new Integer(10),
                         Arrays.asList(
 
-                                Functional.toCase(Functional.lessThan(new Integer(5)), Functional.Constant(new Integer(-1))),
-                                Functional.toCase(Functional.greaterThan(new Integer(5)), Functional.Constant(new Integer(1)))
-                        ), Functional.Constant(new Integer(0))));
+                                Functional.toCase(Functional.lessThan(new Integer(5)), Functional.constant(new Integer(-1))),
+                                Functional.toCase(Functional.greaterThan(new Integer(5)), Functional.constant(new Integer(1)))
+                        ), Functional.constant(new Integer(0))));
     }
 
     @Test

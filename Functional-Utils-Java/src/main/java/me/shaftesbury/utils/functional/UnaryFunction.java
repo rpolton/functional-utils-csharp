@@ -21,4 +21,15 @@ public abstract class UnaryFunction<A,B> implements Func<A,B>
             public C apply(final A a) { return g.apply(f.apply(a));}
         };
     }
+
+    public static final <A,B>Func0<B> delay(final Func<A,B> f, final A a)
+    {
+        return new Func0<B>()
+        {
+            @Override
+            public B apply() {
+                return f.apply(a);
+            }
+        };
+    }
 }

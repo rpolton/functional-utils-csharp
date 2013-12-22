@@ -39,17 +39,7 @@ public class MException<U>
     {
         if(a.hasException()) return toMException(a.getExceptionWithStackTrace());
         if(b.hasException()) return toMException(b.getExceptionWithStackTrace());
-        return new MException(delay(f, a.read(), b.read()));
-    }
-
-    private static final <A,B,C>Func0<C> delay(final Func2<A, B, C> f, final A a, final B b)
-    {
-        return new Func0<C>() {
-            @Override
-            public C apply() {
-                return f.apply(a,b);
-            }
-        };
+        return new MException(BinaryFunction.delay(f, a.read(), b.read()));
     }
 
     private MException(final Func0<U> f)
