@@ -18,6 +18,8 @@ import org.javatuples.Pair;
 import org.javatuples.Triplet;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public final class Functional
 {
@@ -46,13 +48,12 @@ public final class Functional
     public final static String indentBy(final int howMany, final String unitOfIndentation, final String indentThis)
     {
         final Collection<String> indentation = init(
-                new Func<Integer, String>() {
-                    @Override
+                new Function<Integer, String>() {
                     public String apply(Integer integer) {
                         return unitOfIndentation;
                     }
                 }, howMany);
-        return fold(new Func2<String, String, String>() {
+        return fold(new BiFunction<String, String, String>() {
             @Override
             public String apply(String state, String str) {
                 return str + state;
@@ -61,7 +62,7 @@ public final class Functional
     }
 
     public final static <A, B>Pair<A,List<B>> foldAndChoose(
-            final me.shaftesbury.utils.functional.Func2<A, B, Pair<A,Option<B>>> f,
+            final BiFunction<A, B, Pair<A,Option<B>>> f,
             final A initialValue, final Iterable<B> input) throws OptionNoValueAccessException
     {
         if (f == null) throw new IllegalArgumentException("f");
@@ -95,7 +96,7 @@ public final class Functional
     /// <param name="l"></param>
     /// <param name="fn"></param>
     /// <returns></returns>
-    public final static <T>String join(final String separator, final Iterable<T> l, final Func<T, String> fn)
+    public final static <T>String join(final String separator, final Iterable<T> l, final Function<T, String> fn)
     {
         if (l == null) throw new IllegalArgumentException("l");
         if (fn == null) throw new IllegalArgumentException("fn");
@@ -112,7 +113,7 @@ public final class Functional
     }
 
     /// <summary> find: (A -> bool) -> A list -> A</summary>
-    public final static <A>A find(Func<A,Boolean> f, Iterable<A> input)
+    public final static <A>A find(Function<A,Boolean> f, Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -123,9 +124,9 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
-    public final static <A>Func<Iterable<A>,A> find(final Func<A,Boolean> f)
+    public final static <A>Function<Iterable<A>,A> find(final Function<A,Boolean> f)
     {
-        return new Func<Iterable<A>, A>() {
+        return new Function<Iterable<A>, A>() {
             @Override
             public A apply(Iterable<A> input) {
                 return Functional.find(f,input);
@@ -134,7 +135,7 @@ public final class Functional
     }
 
     /// <summary> findIndex: (A -> bool) -> A list -> int</summary>
-    public static <A>int findIndex(Func<A,Boolean> f, Iterable<A> input)
+    public static <A>int findIndex(Function<A,Boolean> f, Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -148,14 +149,14 @@ public final class Functional
     }
 
     /// <summary> findLast: (A -> bool) -> A list -> A</summary>
-    public final static <A>A findLast(final Func<A,Boolean> f, final Iterable<A> input)
+    public final static <A>A findLast(final Function<A,Boolean> f, final Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
 
         final Pair<List<A>,Iterable<A>> p = takeNAndYield(input,1);
         final Pair<A,Boolean> seed = Pair.with(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
-        final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
+        final Pair<A,Boolean> result = fold(new BiFunction<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
             @Override public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.with(item,true):state;}
         },seed,p.getValue1());
 
@@ -164,7 +165,7 @@ public final class Functional
     }
 
     /// <summary> findLast: (A -> bool) -> A list -> A</summary>
-    public final static <A>A findLast(final Func<A,Boolean> f, final List<A> input)
+    public final static <A>A findLast(final Function<A,Boolean> f, final List<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -175,9 +176,9 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
-    public final static <A>Func<List<A>,A> findLast(final Func<A,Boolean> f)
+    public final static <A>Function<List<A>,A> findLast(final Function<A,Boolean> f)
     {
-        return new Func<List<A>, A>() {
+        return new Function<List<A>, A>() {
             @Override
             public A apply(List<A> input) {
                 return Functional.findLast(f,input);
@@ -186,7 +187,7 @@ public final class Functional
     }
 
     /// <summary> pick: (A -> B option) -> A list -> B</summary>
-    public static <A, B>B pick(final Func<A,Option<B>> f, final Iterable<A> input)
+    public static <A, B>B pick(final Function<A,Option<B>> f, final Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -200,9 +201,9 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
-    public static <A,B>Func<Iterable<A>,B> pick(final Func<A,Option<B>> f)
+    public static <A,B>Function<Iterable<A>,B> pick(final Function<A,Option<B>> f)
     {
-        return new Func<Iterable<A>, B>() {
+        return new Function<Iterable<A>, B>() {
             @Override
             public B apply(final Iterable<A> input) {
                 return Functional.pick(f,input);
@@ -210,14 +211,14 @@ public final class Functional
         };
     }
 
-    public final static <A, B> B in(final A input, final Func<A, B> f)
+    public final static <A, B> B in(final A input, final Function<A, B> f)
     {
         return f.apply(input);
     }
 
-    public final static <A, B, C> Func<A, C> then(final Func<A, B> f, final Func<B, C> g)
+    public final static <A, B, C> Function<A, C> then(final Function<A, B> f, final Function<B, C> g)
     {
-        return new Func<A, C>()
+        return new Function<A, C>()
         {
             @Override
             public C apply(A x)
@@ -227,9 +228,9 @@ public final class Functional
         };
     }
 
-    public final static <T>Func<T,T> identity()
+    public final static <T>Function<T,T> identity()
     {
-        return new Func<T, T>() {
+        return new Function<T, T>() {
             @Override
             public T apply(T t) {
                 return t;
@@ -237,7 +238,7 @@ public final class Functional
         };
     }
 
-    public static final Func<Integer,Boolean> isEven = new Func<Integer, Boolean>()
+    public static final Function<Integer,Boolean> isEven = new Function<Integer, Boolean>()
     {
         @Override
         public Boolean apply(Integer i)
@@ -245,7 +246,7 @@ public final class Functional
             return i % 2 == 0;
         }
     };
-    public static final Func<Integer,Boolean> isOdd = new Func<Integer, Boolean>()
+    public static final Function<Integer,Boolean> isOdd = new Function<Integer, Boolean>()
     {
         @Override
         public Boolean apply(Integer i)
@@ -253,22 +254,22 @@ public final class Functional
             return i % 2 != 0;
         }
     };
-    public static final Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
+    public static final BiFunction<Integer,Integer,Integer> count = new BiFunction<Integer, Integer, Integer>() {
                 @Override
                 public Integer apply(Integer state, Integer b) {
                     return state + 1;
                 }
             };
-    public static final Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
+    public static final BiFunction<Integer,Integer,Integer> sum = new BiFunction<Integer, Integer, Integer>() {
         @Override
         public Integer apply(Integer state, Integer b) {
             return state + b;
         }
     };
 
-    public static final <T extends Comparable<T>>Func<T,Boolean> greaterThan(final T that)
+    public static final <T extends Comparable<T>>Function<T,Boolean> greaterThan(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             @Override
             public Boolean apply(final T ths)
@@ -278,9 +279,9 @@ public final class Functional
         };
     }
 
-    public static final <T extends Comparable<T>>Func<T,Boolean> greaterThanOrEqual(final T that)
+    public static final <T extends Comparable<T>>Function<T,Boolean> greaterThanOrEqual(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             @Override
             public Boolean apply(final T ths)
@@ -290,9 +291,9 @@ public final class Functional
         };
     }
 
-    public static final <T extends Comparable<T>>Func<T,Boolean> lessThan(final T that)
+    public static final <T extends Comparable<T>>Function<T,Boolean> lessThan(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             @Override
             public Boolean apply(final T ths)
@@ -302,9 +303,9 @@ public final class Functional
         };
     }
 
-    public static final <T extends Comparable<T>>Func<T,Boolean> lessThanOrEqual(final T that)
+    public static final <T extends Comparable<T>>Function<T,Boolean> lessThanOrEqual(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             @Override
             public Boolean apply(final T ths)
@@ -315,7 +316,7 @@ public final class Functional
     }
 
     /// <summary> init: int -> (int -> A) -> A list</summary>
-    public final static <T>List<T> init(final Func<Integer,T> f,final int howMany)
+    public final static <T>List<T> init(final Function<Integer,T> f,final int howMany)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if(howMany<1) throw new IllegalArgumentException("howMany");
@@ -327,7 +328,7 @@ public final class Functional
     }
 
     /// <summary> map: (A -> B) -> A list -> B list</summary>
-    public final static <A,B> List<B> map(final Func<A, B> f, final Iterable<A> input)
+    public final static <A,B> List<B> map(final Function<A, B> f, final Iterable<A> input)
     {
         final List<B> output = new ArrayList<B>();
         for(final A a : input)
@@ -335,9 +336,9 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
-    public final static <A,B> Func<Iterable<A>,List<B>> map(final Func<A, B> f)
+    public final static <A,B> Function<Iterable<A>,List<B>> map(final Function<A, B> f)
     {
-        return new Func<Iterable<A>, List<B>>() {
+        return new Function<Iterable<A>, List<B>>() {
             @Override
             public List<B> apply(Iterable<A> input) {
                 return Functional.map(f,input);
@@ -363,16 +364,16 @@ public final class Functional
     };
 
     public final static <T> String Stringify(final T a) { return a.toString(); }
-    public final static <T>Func<T, String> dStringify()
+    public final static <T>Function<T, String> dStringify()
     {
-        return new Func<T, String>()
+        return new Function<T, String>()
         {
             @Override public String apply(T i) { return Stringify(i); }
         };
     }
 
     /// <summary> forAll2: (A -> B -> bool) -> A list -> B list -> bool</summary>
-    public final static <A, B>boolean forAll2(final me.shaftesbury.utils.functional.Func2<A, B,Boolean> f, final Iterable<A> input1, final Iterable<B> input2)
+    public final static <A, B>boolean forAll2(final BiFunction<A, B,Boolean> f, final Iterable<A> input1, final Iterable<B> input2)
     {
         final Iterator<A> enum1 = input1.iterator();
         final Iterator<B> enum2 = input2.iterator();
@@ -389,7 +390,7 @@ public final class Functional
         return true;
     }
 
-    public final static <A>List<A> filter(final Func<A,Boolean> pred, final Iterable<A> input)
+    public final static <A>List<A> filter(final Function<A,Boolean> pred, final Iterable<A> input)
     {
         final List<A> output = new ArrayList<A>();
         for(final A element : input)
@@ -399,9 +400,9 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
-    public static final <T>Func<Iterable<T>,List<T>> filter(final Func<T,Boolean> f)
+    public static final <T>Function<Iterable<T>,List<T>> filter(final Function<T,Boolean> f)
     {
-        return new Func<Iterable<T>, List<T>>() {
+        return new Function<Iterable<T>, List<T>>() {
             @Override
             public List<T> apply(final Iterable<T> input) {
                 return Functional.filter(f,input);
@@ -410,7 +411,7 @@ public final class Functional
     }
 
     /// <summary> exists: (A -> bool) -> A list -> bool</summary>
-    public final static <A>boolean exists(final Func<A,Boolean> f, final Iterable<A> input)
+    public final static <A>boolean exists(final Function<A,Boolean> f, final Iterable<A> input)
     {
         for(final A a : input)
             if(f.apply(a))
@@ -418,9 +419,9 @@ public final class Functional
         return false;
     }
 
-    public final static <A>Func<Iterable<A>,Boolean> exists(final Func<A,Boolean> f)
+    public final static <A>Function<Iterable<A>,Boolean> exists(final Function<A,Boolean> f)
     {
-        return new Func<Iterable<A>, Boolean>() {
+        return new Function<Iterable<A>, Boolean>() {
             @Override
             public Boolean apply(Iterable<A> input) {
                 return Functional.exists(f,input);
@@ -429,20 +430,20 @@ public final class Functional
     }
 
     /// <summary> not: (A -> bool) -> (A -> bool)</summary>
-    public final static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
+    public final static <A>Function<A,Boolean> not(final Function<A,Boolean> f)
     {
-        return new Func<A,Boolean>(){@Override public Boolean apply(A a) { return !f.apply(a);}};
+        return new Function<A,Boolean>(){@Override public Boolean apply(A a) { return !f.apply(a);}};
     }
 
     /// <summary> forAll: (A -> bool) -> A list -> bool</summary>
-    public final static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<A> input)
+    public final static <A>boolean forAll(final Function<A,Boolean> f, final Iterable<A> input)
     {
         return !exists(not(f), input);
     }
 
-    public final static <A>Func<Iterable<A>,Boolean> forAll(final Func<A,Boolean> f)
+    public final static <A>Function<Iterable<A>,Boolean> forAll(final Function<A,Boolean> f)
     {
-        return new Func<Iterable<A>, Boolean>() {
+        return new Function<Iterable<A>, Boolean>() {
             @Override
             public Boolean apply(Iterable<A> input) {
                 return Functional.forAll(f,input);
@@ -451,14 +452,14 @@ public final class Functional
     }
 
     /// <summary> not2: (A -> B -> bool) -> (A -> B -> bool)</summary>
-    public final static <A,B> me.shaftesbury.utils.functional.Func2<A,B,Boolean> not2(final me.shaftesbury.utils.functional.Func2<A,B,Boolean> f)
+    public final static <A,B> BiFunction<A,B,Boolean> not2(final BiFunction<A,B,Boolean> f)
     {
-        return new Func2<A,B,Boolean>(){@Override public Boolean apply(A a, B b) { return !f.apply(a,b);}};
+        return new BiFunction<A,B,Boolean>(){@Override public Boolean apply(A a, B b) { return !f.apply(a,b);}};
     }
 
     /// <summary> partition: (A -> bool) -> A list -> A list * A list</summary>
     /// <returns> (list * list). The first list contains all items for which f(a) is true. The second list contains the remainder.</returns>
-    public final static <A>Pair<List<A>,List<A>> partition(final Func<A,Boolean> f, final Iterable<A> input)
+    public final static <A>Pair<List<A>,List<A>> partition(final Function<A,Boolean> f, final Iterable<A> input)
     {
         final List<A> left = new ArrayList<A>();
         final List<A> right = new ArrayList<A>();
@@ -470,9 +471,9 @@ public final class Functional
         return new Pair<List<A>,List<A>>(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
     }
 
-    public final static <A>Func<Iterable<A>,Pair<List<A>,List<A>>> partition(final Func<A,Boolean> f)
+    public final static <A>Function<Iterable<A>,Pair<List<A>,List<A>>> partition(final Function<A,Boolean> f)
     {
-        return new Func<Iterable<A>, Pair<List<A>, List<A>>>() {
+        return new Function<Iterable<A>, Pair<List<A>, List<A>>>() {
             @Override
             public Pair<List<A>, List<A>> apply(Iterable<A> input) {
                 return Functional.partition(f,input);
@@ -481,7 +482,7 @@ public final class Functional
     }
 
     /// <summary> choose: (A -> B option) -> A list -> B list</summary>
-    public final static <A, B>List<B> choose(final Func<A, Option<B>> f, final Iterable<A> input)
+    public final static <A, B>List<B> choose(final Function<A, Option<B>> f, final Iterable<A> input)
     {
         final List<B> results = new ArrayList<B>();
         for(final A a : input)
@@ -493,9 +494,9 @@ public final class Functional
         return Collections.unmodifiableList(results);
     }
 
-    public final static <A, B>Func<Iterable<A>,List<B>> choose(final Func<A, Option<B>> f)
+    public final static <A, B>Function<Iterable<A>,List<B>> choose(final Function<A, Option<B>> f)
     {
-        return new Func<Iterable<A>, List<B>>() {
+        return new Function<Iterable<A>, List<B>>() {
             @Override
             public List<B> apply(Iterable<A> input) {
                 return Functional.choose(f,input);
@@ -504,7 +505,7 @@ public final class Functional
     }
 
     /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
-    public final static <A, B>A fold(final Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
+    public final static <A, B>A fold(final BiFunction<A, B, A> f, final A initialValue, final Iterable<B> input)
     {
         A state = initialValue;
         for (final B b : input)
@@ -512,9 +513,9 @@ public final class Functional
         return state;
     }
 
-    public final static <A, B>Func<Iterable<B>,A> fold(final Func2<A, B, A> f, final A initialValue)
+    public final static <A, B>Function<Iterable<B>,A> fold(final BiFunction<A, B, A> f, final A initialValue)
     {
-        return new Func<Iterable<B>, A>() {
+        return new Function<Iterable<B>, A>() {
             @Override
             public A apply(Iterable<B> input) {
                 return Functional.fold(f,initialValue,input);
@@ -524,7 +525,7 @@ public final class Functional
 
     // http://en.wikipedia.org/wiki/Anamorphism
     // unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
-    public final static <A,B>List<A> unfold(final Func<B,Pair<A,B>> unspool, final Func<B,Boolean> finished, final B seed)
+    public final static <A,B>List<A> unfold(final Function<B,Pair<A,B>> unspool, final Function<B,Boolean> finished, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
         if(finished==null) throw new IllegalArgumentException("finished");
@@ -539,7 +540,7 @@ public final class Functional
         return results;
     }
 
-    public final static <A,B>List<A> unfold(final Func<B,Option<Pair<A,B>>> unspool, final B seed)
+    public final static <A,B>List<A> unfold(final Function<B,Option<Pair<A,B>>> unspool, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
 
@@ -554,7 +555,7 @@ public final class Functional
         return results;
     }
 
-    public final static <T,K,V>Map<K,V> toDictionary(final Func<T,K> keyFn, final Func<T,V> valueFn, Iterable<T> input)
+    public final static <T,K,V>Map<K,V> toDictionary(final Function<T,K> keyFn, final Function<T,V> valueFn, Iterable<T> input)
     {
         if(keyFn==null) throw new IllegalArgumentException("keyFn");
         if(valueFn==null) throw new IllegalArgumentException("valueFn");
@@ -658,9 +659,9 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
-    public static final<T>Func<Iterable<T>,List<T>> take(final int howMany)
+    public static final<T>Function<Iterable<T>,List<T>> take(final int howMany)
     {
-        return new Func<Iterable<T>, List<T>>() {
+        return new Function<Iterable<T>, List<T>>() {
             @Override
             public List<T> apply(Iterable<T> input) {
                 return Functional.take(howMany,input);
@@ -680,9 +681,9 @@ public final class Functional
         return Collections.unmodifiableList(list.subList(howMany,list.size()));
     }
 
-    public static final<T>Func<List<T>,List<T>> skip(final int howMany)
+    public static final<T>Function<List<T>,List<T>> skip(final int howMany)
     {
-        return new Func<List<T>, List<T>>() {
+        return new Function<List<T>, List<T>>() {
             @Override
             public List<T> apply(List<T> input) {
                 return Functional.skip(howMany,input);
@@ -690,9 +691,9 @@ public final class Functional
         };
     }
 
-    public static final <T>Func<Integer,T> constant(final T constant)
+    public static final <T>Function<Integer,T> constant(final T constant)
     {
-        return new Func<Integer, T>() {
+        return new Function<Integer, T>() {
             @Override
             public T apply(Integer integer) {
                 return constant;
@@ -700,9 +701,9 @@ public final class Functional
         };
     }
 
-    public static final Func<Integer,Integer> range(final Integer startFrom)
+    public static final Function<Integer,Integer> range(final Integer startFrom)
     {
-        return new Func<Integer,Integer>(){
+        return new Function<Integer,Integer>(){
             private final Integer start = startFrom;
             public Integer apply(final Integer input) {
                 return (start-1)+input; // because init starts counting from 1
@@ -778,7 +779,7 @@ public final class Functional
         return new Triplet(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2),Collections.unmodifiableList(l3));
     }
 
-    public static final <T,U>List<U> collect(final Func<T,? extends Iterable<U>> f, final Iterable<T> input)
+    public static final <T,U>List<U> collect(final Function<T,? extends Iterable<U>> f, final Iterable<T> input)
     {
         List<U> output = new ArrayList<U>();
         for(final T element : input)
@@ -786,9 +787,9 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
-    public static final <T,U>Func<Iterable<T>,List<U>> collect(final Func<T,? extends Iterable<U>> f)
+    public static final <T,U>Function<Iterable<T>,List<U>> collect(final Function<T,? extends Iterable<U>> f)
     {
-        return new Func<Iterable<T>, List<U>>() {
+        return new Function<Iterable<T>, List<U>>() {
             @Override
             public List<U> apply(Iterable<T> input) {
                 return Functional.collect(f,input);
@@ -850,7 +851,7 @@ public final class Functional
 
     public static final class seq
     {
-        public static final <T,U>Iterable<U> map(final Func<T,U> f, final Iterable<T> input)
+        public static final <T,U>Iterable<U> map(final Function<T,U> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -860,7 +861,7 @@ public final class Functional
                 public final Iterator<U> iterator() {
                     return new Iterator<U>() {
                         private final Iterator<T> _input=input.iterator();
-                        private final Func<T,U> _f = f;
+                        private final Function<T,U> _f = f;
                         @Override
                         public final boolean hasNext() {
                             return _input.hasNext();
@@ -873,16 +874,16 @@ public final class Functional
 
                         @Override
                         public void remove() {
-                            throw new UnsupportedOperationException("Functional.seq.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                            throw new UnsupportedOperationException("Functional.seq.map(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                         }
                     };
                 }
             };
         }
 
-        public static final <T,U>Func<Iterable<T>,Iterable<U>> map(final Func<T,U> f)
+        public static final <T,U>Function<Iterable<T>,Iterable<U>> map(final Function<T,U> f)
         {
-            return new Func<Iterable<T>, Iterable<U>>() {
+            return new Function<Iterable<T>, Iterable<U>>() {
                 @Override
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.map(f, input);
@@ -921,7 +922,7 @@ public final class Functional
             };
         }
 
-        public static final <T>Iterable<T> filter(final Func<T,Boolean> f, final Iterable<T> input) //throws NoSuchElementException, IllegalArgumentException, UnsupportedOperationException
+        public static final <T>Iterable<T> filter(final Function<T,Boolean> f, final Iterable<T> input) //throws NoSuchElementException, IllegalArgumentException, UnsupportedOperationException
         {
             if(f==null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -931,7 +932,7 @@ public final class Functional
                 public final Iterator<T> iterator() {
                     return new Iterator<T>() {
                         private final Iterator<T> _input=input.iterator();
-                        private final Func<T,Boolean> _f = f;
+                        private final Function<T,Boolean> _f = f;
                         private T _next = null;
                         @Override
                         public final boolean hasNext() {
@@ -961,16 +962,16 @@ public final class Functional
 
                         @Override
                         public void remove() {
-                            throw new UnsupportedOperationException("Functional.seq.filter(Func<T,Boolean>,Iterable<T>): Removing elements is strictly prohibited");
+                            throw new UnsupportedOperationException("Functional.seq.filter(Function<T,Boolean>,Iterable<T>): Removing elements is strictly prohibited");
                         }
                     };
                 }
             };
         }
 
-        public static final <T>Func<Iterable<T>,Iterable<T>> filter(final Func<T,Boolean> f)
+        public static final <T>Function<Iterable<T>,Iterable<T>> filter(final Function<T,Boolean> f)
         {
-            return new Func<Iterable<T>,Iterable<T>>(){
+            return new Function<Iterable<T>,Iterable<T>>(){
                 @Override
                 public Iterable<T> apply(Iterable<T> input) {
                     return Functional.seq.filter(f,input);
@@ -978,7 +979,7 @@ public final class Functional
             };
         }
 
-        public static final <T,U>Iterable<U> choose(final Func<T,Option<U>> f, final Iterable<T> input)
+        public static final <T,U>Iterable<U> choose(final Function<T,Option<U>> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -988,7 +989,7 @@ public final class Functional
                 public final Iterator<U> iterator() {
                     return new Iterator<U>() {
                         private final Iterator<T> _input=input.iterator();
-                        private final Func<T,Option<U>> _f = f;
+                        private final Function<T,Option<U>> _f = f;
                         private Option<U> _next = Option.<U>None();
                         @Override
                         public final boolean hasNext() {
@@ -1021,16 +1022,16 @@ public final class Functional
 
                         @Override
                         public void remove() {
-                            throw new UnsupportedOperationException("Functional.seq.choose(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                            throw new UnsupportedOperationException("Functional.seq.choose(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                         }
                     };
                 }
             };
         }
 
-        public static final <T,U>Func<Iterable<T>,Iterable<U>> choose(final Func<T,Option<U>> f)
+        public static final <T,U>Function<Iterable<T>,Iterable<U>> choose(final Function<T,Option<U>> f)
         {
-            return new Func<Iterable<T>, Iterable<U>>() {
+            return new Function<Iterable<T>, Iterable<U>>() {
                 @Override
                 public Iterable<U> apply(Iterable<T> input) {
                     return Functional.seq.choose(f,input);
@@ -1039,7 +1040,7 @@ public final class Functional
         }
 
         /// <summary> init: int -> (int -> A) -> A list</summary>
-        public final static <T>Iterable<T> init(final Func<Integer,T> f,final int howMany)
+        public final static <T>Iterable<T> init(final Function<Integer,T> f,final int howMany)
         {
             if(f==null) throw new IllegalArgumentException("f");
             if(howMany<1) throw new IllegalArgumentException("howMany");
@@ -1051,7 +1052,7 @@ public final class Functional
                     return new Iterator<T>()
                     {
                         private int _counter=1;
-                        private final Func<Integer,T> _f = f;
+                        private final Function<Integer,T> _f = f;
                         @Override
                         public boolean hasNext() {
                             return _counter<=howMany;
@@ -1064,7 +1065,7 @@ public final class Functional
 
                         @Override
                         public void remove() {
-                            throw new UnsupportedOperationException("Functional.seq.init(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                            throw new UnsupportedOperationException("Functional.seq.init(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                         }
                     };
                 }
@@ -1072,7 +1073,7 @@ public final class Functional
         }
 
         /// <summary> init: int -> (int -> A) -> A list</summary>
-        public final static <T>Iterable<T> init(final Func<Integer,T> f)
+        public final static <T>Iterable<T> init(final Function<Integer,T> f)
         {
             if(f==null) throw new IllegalArgumentException("f");
 
@@ -1083,7 +1084,7 @@ public final class Functional
                     return new Iterator<T>()
                     {
                         private int _counter=1;
-                        private final Func<Integer,T> _f = f;
+                        private final Function<Integer,T> _f = f;
                         @Override
                         public boolean hasNext() {
                             return true;
@@ -1096,14 +1097,14 @@ public final class Functional
 
                         @Override
                         public void remove() {
-                            throw new UnsupportedOperationException("Functional.seq.init(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                            throw new UnsupportedOperationException("Functional.seq.init(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                         }
                     };
                 }
             };
         }
 
-        public static final <T,U>Iterable<U> collect(final Func<T,? extends Iterable<U>> f, final Iterable<T> input)
+        public static final <T,U>Iterable<U> collect(final Function<T,? extends Iterable<U>> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("Functional.seq.collect: f is null");
             if(input==null) throw new IllegalArgumentException("Functional.seq.collect: input is null");
@@ -1138,9 +1139,9 @@ public final class Functional
             };
         }
 
-        public static final <T,U>Func<Iterable<T>,Iterable<U>> collect(final Func<T,? extends Iterable<U>> f)
+        public static final <T,U>Function<Iterable<T>,Iterable<U>> collect(final Function<T,? extends Iterable<U>> f)
         {
-            return new Func<Iterable<T>, Iterable<U>>() {
+            return new Function<Iterable<T>, Iterable<U>>() {
                 @Override
                 public Iterable<U> apply(Iterable<T> input) {
                     return Functional.seq.collect(f,input);
@@ -1190,7 +1191,7 @@ public final class Functional
     // Recursive implementations of the functions
     public final static class rec
     {
-        private static final <A>Iterable<A> filter(Func<A,Boolean> f, Iterator<A> input, List<A> accumulator)
+        private static final <A>Iterable<A> filter(Function<A,Boolean> f, Iterator<A> input, List<A> accumulator)
         {
             if(input.hasNext())
             {
@@ -1200,12 +1201,12 @@ public final class Functional
             }
             else return accumulator;
         }
-        public static final <A>Iterable<A> filter(Func<A,Boolean> f, Iterable<A> input)
+        public static final <A>Iterable<A> filter(Function<A,Boolean> f, Iterable<A> input)
         {
             return filter(f,input.iterator(),new ArrayList<A>());
         }
 
-        private static final <A,B>Iterable<B> map(Func<A,B> f, Iterator<A> input, List<B> accumulator)
+        private static final <A,B>Iterable<B> map(Function<A,B> f, Iterator<A> input, List<B> accumulator)
         {
             if(input.hasNext())
             {
@@ -1214,12 +1215,12 @@ public final class Functional
             }
             else return accumulator;
         }
-        public static final <A,B>Iterable<B> map(Func<A,B> f, Iterable<A> input)
+        public static final <A,B>Iterable<B> map(Function<A,B> f, Iterable<A> input)
         {
             return map(f,input.iterator(),new ArrayList<B>());
         }
 
-        private final static <A,B>A fold(final Func2<A,B,A> f, final A initialValue, final Iterator<B> input)
+        private final static <A,B>A fold(final BiFunction<A,B,A> f, final A initialValue, final Iterator<B> input)
         {
             if(input.hasNext())
             {
@@ -1229,31 +1230,31 @@ public final class Functional
             else return initialValue;
         }
         /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
-        public final static <A, B>A fold(final Func2<A, B, A> f, final A initialValue, final Iterable<B> input)
+        public final static <A, B>A fold(final BiFunction<A, B, A> f, final A initialValue, final Iterable<B> input)
         {
             return fold(f,initialValue,input.iterator());
         }
 
-        private final static <A,B>List<A> unfold(final Func<B,Pair<A,B>> unspool, final Func<B,Boolean> finished, final B seed, final List<A> accumulator)
+        private final static <A,B>List<A> unfold(final Function<B,Pair<A,B>> unspool, final Function<B,Boolean> finished, final B seed, final List<A> accumulator)
         {
             if(finished.apply(seed)) return accumulator;
             final Pair<A,B> p = unspool.apply(seed);
             accumulator.add(p.getValue0());
             return unfold(unspool,finished,p.getValue1(),accumulator);
         }
-        public final static <A,B>List<A> unfold(final Func<B,Pair<A,B>> unspool, final Func<B,Boolean> finished, final B seed)
+        public final static <A,B>List<A> unfold(final Function<B,Pair<A,B>> unspool, final Function<B,Boolean> finished, final B seed)
         {
             return unfold(unspool,finished,seed,new ArrayList<A>());
         }
 
-        private final static <A,B>List<A> unfold(final Func<B,Option<Pair<A,B>>> unspool, final B seed, final List<A> accumulator)
+        private final static <A,B>List<A> unfold(final Function<B,Option<Pair<A,B>>> unspool, final B seed, final List<A> accumulator)
         {
             final Option<Pair<A,B>> p = unspool.apply(seed);
             if(p.isNone()) return accumulator;
             accumulator.add(p.Some().getValue0());
             return unfold(unspool,p.Some().getValue1(),accumulator);
         }
-        public final static <A,B>List<A> unfold(final Func<B,Option<Pair<A,B>>> unspool, final B seed)
+        public final static <A,B>List<A> unfold(final Function<B,Option<Pair<A,B>>> unspool, final B seed)
         {
             return unfold(unspool,seed,new ArrayList<A>());
         }
@@ -1262,7 +1263,7 @@ public final class Functional
         // Following are functions for non-list collections
         */
 
-    public static final <A, B, C>Map<B, C> map_dict(Func<A,Map.Entry<B,C>> f, Iterable<A> input)
+    public static final <A, B, C>Map<B, C> map_dict(Function<A,Map.Entry<B,C>> f, Iterable<A> input)
     {
         final Map<B, C> results = new HashMap<B, C>();
         for (final A a : input)
@@ -1275,7 +1276,7 @@ public final class Functional
 
     public static final class set
     {
-        public final static <A>Set<A> filter(final Func<A,Boolean> pred, final Iterable<A> input)
+        public final static <A>Set<A> filter(final Function<A,Boolean> pred, final Iterable<A> input)
         {
             final Set<A> output = new HashSet<A>();
             for(final A element : input)
@@ -1286,7 +1287,7 @@ public final class Functional
             return Collections.unmodifiableSet(output);
         }
 
-        public static final <T,U>Set<U> collect(final Func<T,? extends Iterable<U>> f, final Iterable<T> input)
+        public static final <T,U>Set<U> collect(final Function<T,? extends Iterable<U>> f, final Iterable<T> input)
         {
             Set<U> output = new HashSet<U>();
             for(final T element : input)
@@ -1294,7 +1295,7 @@ public final class Functional
             return Collections.unmodifiableSet(output);
         }
 
-        public final static <A,B> Set<B> map(final Func<A, B> f, final Iterable<A> input)
+        public final static <A,B> Set<B> map(final Function<A, B> f, final Iterable<A> input)
         {
             final Set<B> output = new HashSet<B>();
             for(final A a : input)
@@ -1336,9 +1337,9 @@ public final class Functional
 
     public static final class inTermsOfFold
     {
-        public static final <T,U>List<T> map(final Func<U,T> f, final Iterable<U> l)
+        public static final <T,U>List<T> map(final Function<U,T> f, final Iterable<U> l)
         {
-            final List<T> l2 = Functional.fold(new Func2<List<T>,U,List<T>>() {
+            final List<T> l2 = Functional.fold(new BiFunction<List<T>,U,List<T>>() {
                 @Override
                 public List<T> apply(List<T> state, U o2) {
                     state.add(f.apply(o2));
@@ -1348,9 +1349,9 @@ public final class Functional
             return l2;
         }
 
-        public static final <T>List<T> filter(final Func<T,Boolean> predicate, final Iterable<T> l)
+        public static final <T>List<T> filter(final Function<T,Boolean> predicate, final Iterable<T> l)
         {
-            final List<T> l2 = Functional.fold(new Func2<List<T>, T, List<T>>() {
+            final List<T> l2 = Functional.fold(new BiFunction<List<T>, T, List<T>>() {
                 @Override
                 public List<T> apply(List<T> ts, T o) {
                     if(predicate.apply(o)) ts.add(o);
@@ -1360,9 +1361,9 @@ public final class Functional
             return l2;
         }
 
-        public static final <A>List<A> init(final Func<Integer,A> f, final int howMany)
+        public static final <A>List<A> init(final Function<Integer,A> f, final int howMany)
         {
-            return Functional.unfold(new Func<Integer, Option<Pair<A,Integer>>>() {
+            return Functional.unfold(new Function<Integer, Option<Pair<A,Integer>>>() {
                 @Override
                 public Option<Pair<A,Integer>> apply(final Integer a) {
                     return a<=howMany ? Option.toOption(Pair.with(f.apply(a), a + 1)) : Option.<Pair<A,Integer>>None();
@@ -1376,7 +1377,7 @@ public final class Functional
     // Following are control structures, eg if, switch
      */
 
-    public static final <A,B>B If(final A a, final Func<A,Boolean> predicate, final Func<A, B> thenClause, final Func<A, B> elseClause)
+    public static final <A,B>B If(final A a, final Function<A,Boolean> predicate, final Function<A, B> thenClause, final Function<A, B> elseClause)
     {
         if (a == null) throw new IllegalArgumentException("a");
         if (predicate == null) throw new IllegalArgumentException("predicate");
@@ -1386,7 +1387,7 @@ public final class Functional
         return predicate.apply(a) ? thenClause.apply(a) : elseClause.apply(a);
     }
 
-    public static final <A, B>Case<A, B> toCase(final Func<A,Boolean> pred, final Func<A, B> result)
+    public static final <A, B>Case<A, B> toCase(final Function<A,Boolean> pred, final Function<A, B> result)
     {
         if (pred == null) throw new IllegalArgumentException("pred");
         if (result == null) throw new IllegalArgumentException("res");
@@ -1394,12 +1395,12 @@ public final class Functional
         return new Case<A, B> ( pred, result );
     }
 
-    public static <A, B>B Switch(final A input, final Iterable<Case<A, B>> cases, final Func<A, B> defaultCase)
+    public static <A, B>B Switch(final A input, final Iterable<Case<A, B>> cases, final Function<A, B> defaultCase)
     {
         return Switch(input,IterableHelper.create(cases),defaultCase);
     }
 
-    public static <A, B>B Switch(final A input, final Iterable2<Case<A, B>> cases, final Func<A, B> defaultCase)
+    public static <A, B>B Switch(final A input, final Iterable2<Case<A, B>> cases, final Function<A, B> defaultCase)
     {
         if (input == null) throw new IllegalArgumentException("input");
         if (cases == null) throw new IllegalArgumentException("cases");
@@ -1407,7 +1408,7 @@ public final class Functional
 
         //return Try<InvalidOperationException>.ToTry(input, a => cases.First(chk => chk.check(a)).results(a), defaultCase);
         try {
-            return cases.find(new Func<Case<A, B>, Boolean>() {
+            return cases.find(new Function<Case<A, B>, Boolean>() {
                 @Override
                 public Boolean apply(Case<A, B> abCase) {
                     return abCase.predicate(input);
