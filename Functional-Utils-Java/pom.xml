@@ -9,14 +9,14 @@
     </parent>
 
     <scm>
-        <connection>scm:svn:http://functional-utils-csharp.googlecode.com/svn/trunk/Functional-Utils-Java/</connection>
-        <developerConnection>scm:svn:https://functional-utils-csharp.googlecode.com/svn/trunk/Functional-Utils-Java/</developerConnection>
-        <url>http://functional-utils-csharp.googlecode.com/svn/trunk/Functional-Utils-Java/</url>
+        <connection>scm:svn:http://functional-utils-csharp.googlecode.com/svn/tags/Functional-Utils-Java-1.7</connection>
+        <developerConnection>scm:svn:https://functional-utils-csharp.googlecode.com/svn/tags/Functional-Utils-Java-1.7</developerConnection>
+        <url>http://functional-utils-csharp.googlecode.com/svn/tags/Functional-Utils-Java-1.7</url>
     </scm>
 
     <groupId>me.shaftesbury</groupId>
     <artifactId>Functional-Utils-Java</artifactId>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.7</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
