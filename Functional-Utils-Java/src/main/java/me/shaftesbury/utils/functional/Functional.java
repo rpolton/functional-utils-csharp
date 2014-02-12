@@ -48,13 +48,13 @@ public final class Functional
         final Collection<String> indentation = init(
                 new Func<Integer, String>() {
                     @Override
-                    public String apply(Integer integer) {
+                    public String apply(final Integer integer) {
                         return unitOfIndentation;
                     }
                 }, howMany);
         return fold(new Func2<String, String, String>() {
             @Override
-            public String apply(String state, String str) {
+            public String apply(final String state, final String str) {
                 return str + state;
             }
         }, indentThis, indentation);
@@ -112,7 +112,7 @@ public final class Functional
     }
 
     /// <summary> find: (A -> bool) -> A list -> A</summary>
-    public final static <A>A find(Func<A,Boolean> f, Iterable<A> input)
+    public final static <A>A find(final Func<A,Boolean> f, final Iterable<? extends A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -123,18 +123,18 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
-    public final static <A>Func<Iterable<A>,A> find(final Func<A,Boolean> f)
+    public final static <A>Func<Iterable<? extends A>,A> find(final Func<A,Boolean> f)
     {
-        return new Func<Iterable<A>, A>() {
+        return new Func<Iterable<? extends A>, A>() {
             @Override
-            public A apply(Iterable<A> input) {
+            public A apply(final Iterable<? extends A> input) {
                 return Functional.find(f,input);
             }
         };
     }
 
     /// <summary> findIndex: (A -> bool) -> A list -> int</summary>
-    public static <A>int findIndex(Func<A,Boolean> f, Iterable<A> input)
+    public static <A>int findIndex(final Func<A,Boolean> f, final Iterable<? extends A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -179,7 +179,7 @@ public final class Functional
     {
         return new Func<List<A>, A>() {
             @Override
-            public A apply(List<A> input) {
+            public A apply(final List<A> input) {
                 return Functional.findLast(f,input);
             }
         };
@@ -220,7 +220,7 @@ public final class Functional
         return new Func<A, C>()
         {
             @Override
-            public C apply(A x)
+            public C apply(final A x)
             {
                 return g.apply(f.apply(x));
             }
@@ -231,7 +231,7 @@ public final class Functional
     {
         return new Func<T, T>() {
             @Override
-            public T apply(T t) {
+            public T apply(final T t) {
                 return t;
             }
         };
@@ -240,7 +240,7 @@ public final class Functional
     public static final Func<Integer,Boolean> isEven = new Func<Integer, Boolean>()
     {
         @Override
-        public Boolean apply(Integer i)
+        public Boolean apply(final Integer i)
         {
             return i % 2 == 0;
         }
@@ -248,20 +248,20 @@ public final class Functional
     public static final Func<Integer,Boolean> isOdd = new Func<Integer, Boolean>()
     {
         @Override
-        public Boolean apply(Integer i)
+        public Boolean apply(final Integer i)
         {
             return i % 2 != 0;
         }
     };
     public static final Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
                 @Override
-                public Integer apply(Integer state, Integer b) {
+                public Integer apply(final Integer state, final Integer b) {
                     return state + 1;
                 }
             };
     public static final Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer state, Integer b) {
+        public Integer apply(final Integer state, final Integer b) {
             return state + b;
         }
     };
@@ -339,7 +339,7 @@ public final class Functional
     {
         return new Func<Iterable<A>, List<B>>() {
             @Override
-            public List<B> apply(Iterable<A> input) {
+            public List<B> apply(final Iterable<A> input) {
                 return Functional.map(f,input);
             }
         };
@@ -359,7 +359,7 @@ public final class Functional
     }
     public final static Comparator<Integer> dSorter = new Comparator<Integer>()
     {
-        @Override public int compare(Integer i, Integer j) { return Sorter(i, j); }
+        @Override public int compare(final Integer i, final Integer j) { return Sorter(i, j); }
     };
 
     public final static <T> String Stringify(final T a) { return a.toString(); }
@@ -367,7 +367,7 @@ public final class Functional
     {
         return new Func<T, String>()
         {
-            @Override public String apply(T i) { return Stringify(i); }
+            @Override public String apply(final T i) { return Stringify(i); }
         };
     }
 
@@ -422,7 +422,7 @@ public final class Functional
     {
         return new Func<Iterable<A>, Boolean>() {
             @Override
-            public Boolean apply(Iterable<A> input) {
+            public Boolean apply(final Iterable<A> input) {
                 return Functional.exists(f,input);
             }
         };
@@ -431,7 +431,7 @@ public final class Functional
     /// <summary> not: (A -> bool) -> (A -> bool)</summary>
     public final static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
     {
-        return new Func<A,Boolean>(){@Override public Boolean apply(A a) { return !f.apply(a);}};
+        return new Func<A,Boolean>(){@Override public Boolean apply(final A a) { return !f.apply(a);}};
     }
 
     /// <summary> forAll: (A -> bool) -> A list -> bool</summary>
@@ -444,7 +444,7 @@ public final class Functional
     {
         return new Func<Iterable<A>, Boolean>() {
             @Override
-            public Boolean apply(Iterable<A> input) {
+            public Boolean apply(final Iterable<A> input) {
                 return Functional.forAll(f,input);
             }
         };
@@ -453,7 +453,7 @@ public final class Functional
     /// <summary> not2: (A -> B -> bool) -> (A -> B -> bool)</summary>
     public final static <A,B> me.shaftesbury.utils.functional.Func2<A,B,Boolean> not2(final me.shaftesbury.utils.functional.Func2<A,B,Boolean> f)
     {
-        return new Func2<A,B,Boolean>(){@Override public Boolean apply(A a, B b) { return !f.apply(a,b);}};
+        return new Func2<A,B,Boolean>(){@Override public Boolean apply(final A a, final B b) { return !f.apply(a,b);}};
     }
 
     /// <summary> partition: (A -> bool) -> A list -> A list * A list</summary>
@@ -474,7 +474,7 @@ public final class Functional
     {
         return new Func<Iterable<A>, Pair<List<A>, List<A>>>() {
             @Override
-            public Pair<List<A>, List<A>> apply(Iterable<A> input) {
+            public Pair<List<A>, List<A>> apply(final Iterable<A> input) {
                 return Functional.partition(f,input);
             }
         };
@@ -497,7 +497,7 @@ public final class Functional
     {
         return new Func<Iterable<A>, List<B>>() {
             @Override
-            public List<B> apply(Iterable<A> input) {
+            public List<B> apply(final Iterable<A> input) {
                 return Functional.choose(f,input);
             }
         };
@@ -516,7 +516,7 @@ public final class Functional
     {
         return new Func<Iterable<B>, A>() {
             @Override
-            public A apply(Iterable<B> input) {
+            public A apply(final Iterable<B> input) {
                 return Functional.fold(f,initialValue,input);
             }
         };
@@ -554,7 +554,7 @@ public final class Functional
         return results;
     }
 
-    public final static <T,K,V>Map<K,V> toDictionary(final Func<T,K> keyFn, final Func<T,V> valueFn, Iterable<T> input)
+    public final static <T,K,V>Map<K,V> toDictionary(final Func<T,K> keyFn, final Func<T,V> valueFn, final Iterable<T> input)
     {
         if(keyFn==null) throw new IllegalArgumentException("keyFn");
         if(valueFn==null) throw new IllegalArgumentException("valueFn");
@@ -575,7 +575,7 @@ public final class Functional
         return output.toArray(); // this needs to be output.toArray(new T[0]) but that doesn't appear to be allowable Java :-(
     }
 
-    public static final <T>List<T> toMutableList(Iterable<T> input)
+    public static final <T>List<T> toMutableList(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableList(Iterable<T>): input is null");
 
@@ -587,7 +587,7 @@ public final class Functional
         return output;
     }
 
-    public static final <T>Set<T> toMutableSet(Iterable<T> input)
+    public static final <T>Set<T> toMutableSet(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableSet(Iterable<T>): input is null");
 
@@ -599,13 +599,13 @@ public final class Functional
         return output;
     }
 
-    public static final <T>List<T> toList(Iterable<T> input)
+    public static final <T>List<T> toList(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toList(Iterable<T>): input is null");
         return Collections.unmodifiableList(toMutableList(input));
     }
 
-    public static final <T>Set<T> toSet(Iterable<T> input)
+    public static final <T>Set<T> toSet(final Iterable<T> input)
     {
         //Sets.newSetFromMap();
         if(input==null) throw new IllegalArgumentException("Functional.toSet(Iterable<T>): input is null");
@@ -662,7 +662,7 @@ public final class Functional
     {
         return new Func<Iterable<T>, List<T>>() {
             @Override
-            public List<T> apply(Iterable<T> input) {
+            public List<T> apply(final Iterable<T> input) {
                 return Functional.take(howMany,input);
             }
         };
@@ -684,7 +684,7 @@ public final class Functional
     {
         return new Func<List<T>, List<T>>() {
             @Override
-            public List<T> apply(List<T> input) {
+            public List<T> apply(final List<T> input) {
                 return Functional.skip(howMany,input);
             }
         };
@@ -694,7 +694,7 @@ public final class Functional
     {
         return new Func<Integer, T>() {
             @Override
-            public T apply(Integer integer) {
+            public T apply(final Integer integer) {
                 return constant;
             }
         };
@@ -790,7 +790,7 @@ public final class Functional
     {
         return new Func<Iterable<T>, List<U>>() {
             @Override
-            public List<U> apply(Iterable<T> input) {
+            public List<U> apply(final Iterable<T> input) {
                 return Functional.collect(f,input);
             }
         };
@@ -972,7 +972,7 @@ public final class Functional
         {
             return new Func<Iterable<T>,Iterable<T>>(){
                 @Override
-                public Iterable<T> apply(Iterable<T> input) {
+                public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.filter(f,input);
                 }
             };
@@ -1032,7 +1032,7 @@ public final class Functional
         {
             return new Func<Iterable<T>, Iterable<U>>() {
                 @Override
-                public Iterable<U> apply(Iterable<T> input) {
+                public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.choose(f,input);
                 }
             };
@@ -1142,7 +1142,7 @@ public final class Functional
         {
             return new Func<Iterable<T>, Iterable<U>>() {
                 @Override
-                public Iterable<U> apply(Iterable<T> input) {
+                public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.collect(f,input);
                 }
             };
@@ -1190,7 +1190,7 @@ public final class Functional
     // Recursive implementations of the functions
     public final static class rec
     {
-        private static final <A>Iterable<A> filter(Func<A,Boolean> f, Iterator<A> input, List<A> accumulator)
+        private static final <A>Iterable<A> filter(final Func<A,Boolean> f, final Iterator<A> input, final List<A> accumulator)
         {
             if(input.hasNext())
             {
@@ -1200,12 +1200,12 @@ public final class Functional
             }
             else return accumulator;
         }
-        public static final <A>Iterable<A> filter(Func<A,Boolean> f, Iterable<A> input)
+        public static final <A>Iterable<A> filter(final Func<A,Boolean> f, final Iterable<A> input)
         {
             return filter(f,input.iterator(),new ArrayList<A>());
         }
 
-        private static final <A,B>Iterable<B> map(Func<A,B> f, Iterator<A> input, List<B> accumulator)
+        private static final <A,B>Iterable<B> map(final Func<A,B> f, final Iterator<A> input, final List<B> accumulator)
         {
             if(input.hasNext())
             {
@@ -1214,7 +1214,7 @@ public final class Functional
             }
             else return accumulator;
         }
-        public static final <A,B>Iterable<B> map(Func<A,B> f, Iterable<A> input)
+        public static final <A,B>Iterable<B> map(final Func<A,B> f, final Iterable<A> input)
         {
             return map(f,input.iterator(),new ArrayList<B>());
         }
@@ -1262,7 +1262,7 @@ public final class Functional
         // Following are functions for non-list collections
         */
 
-    public static final <A, B, C>Map<B, C> map_dict(Func<A,Map.Entry<B,C>> f, Iterable<A> input)
+    public static final <A, B, C>Map<B, C> map_dict(final Func<A,Map.Entry<B,C>> f, final Iterable<A> input)
     {
         final Map<B, C> results = new HashMap<B, C>();
         for (final A a : input)
@@ -1340,7 +1340,7 @@ public final class Functional
         {
             final List<T> l2 = Functional.fold(new Func2<List<T>,U,List<T>>() {
                 @Override
-                public List<T> apply(List<T> state, U o2) {
+                public List<T> apply(final List<T> state, final U o2) {
                     state.add(f.apply(o2));
                     return state;
                 }
@@ -1352,7 +1352,7 @@ public final class Functional
         {
             final List<T> l2 = Functional.fold(new Func2<List<T>, T, List<T>>() {
                 @Override
-                public List<T> apply(List<T> ts, T o) {
+                public List<T> apply(final List<T> ts, final T o) {
                     if(predicate.apply(o)) ts.add(o);
                     return ts;
                 }
@@ -1409,7 +1409,7 @@ public final class Functional
         try {
             return cases.find(new Func<Case<A, B>, Boolean>() {
                 @Override
-                public Boolean apply(Case<A, B> abCase) {
+                public Boolean apply(final Case<A, B> abCase) {
                     return abCase.predicate(input);
                 }
             }).results(input);
