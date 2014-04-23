@@ -345,6 +345,26 @@ public final class Functional
         };
     }
 
+    /// <summary> map: (A -> B) -> A list -> B list</summary>
+    public final static <A,B> List<B> mapi(final Func2<Integer, A, ? extends B> f, final Iterable<? extends A> input)
+    {
+        final List<B> output = new ArrayList<B>();
+        int pos = 0;
+        for(final A a : input)
+            output.add(f.apply(pos++, a));
+        return Collections.unmodifiableList(output);
+    }
+
+    public final static <A,B> Func<Iterable<A>,List<B>> mapi(final Func2<Integer, ? super A, ? extends B> f)
+    {
+        return new Func<Iterable<A>, List<B>>() {
+            @Override
+            public List<B> apply(final Iterable<A> input) {
+                return Functional.mapi(f,input);
+            }
+        };
+    }
+
     /// <summary> sortWith: (A -> A -> int) -> A list -> A list</summary>
     public final static <A, AA extends A>List<AA> sortWith(final Comparator<A> f, final List<AA> input)
     {
