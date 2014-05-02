@@ -345,7 +345,7 @@ public final class Functional
         };
     }
 
-    /// <summary> map: (A -> B) -> A list -> B list</summary>
+    /// <summary> mapi: (int -> A -> B) -> A list -> B list</summary>
     public final static <A,B> List<B> mapi(final Func2<Integer, A, ? extends B> f, final Iterable<? extends A> input)
     {
         final List<B> output = new ArrayList<B>();
@@ -867,6 +867,27 @@ public final class Functional
                 };
             }
         };
+    }
+
+    public static final <T,U>List<List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
+    {
+        final Map<U,List<T>> intermediateResults = new HashMap<U,List<T>>();
+        for(final T element : input)
+        {
+            final U key = keyFn.apply(element);
+            if(intermediateResults.containsKey(key))
+                intermediateResults.get(key).add(element);
+            else
+            {
+                final List<T> list = new ArrayList<T>();
+                list.add(element);
+                intermediateResults.put(key, list);
+            }
+        }
+        final List<List<T>> output = new ArrayList<List<T>>();
+        for(final List<T> list : intermediateResults.values())
+             output.add(Collections.unmodifiableList(list));
+        return Collections.unmodifiableList(output);
     }
 
     public static final class seq
@@ -1440,5 +1461,25 @@ public final class Functional
                 }
             }).results(input);
         } catch(NoSuchElementException k) { return defaultCase.apply(input); }
+    }
+
+    public static final <A,B>Func<Pair<A,B>,A> first()
+    {
+        return new Func<Pair<A, B>, A>() {
+            @Override
+            public A apply(Pair<A, B> pair) {
+                return pair.getValue0();
+            }
+        };
+    }
+
+    public static final <A,B>Func<Pair<A,B>,B> second()
+    {
+        return new Func<Pair<A, B>, B>() {
+            @Override
+            public B apply(Pair<A, B> pair) {
+                return pair.getValue1();
+            }
+        };
     }
 }

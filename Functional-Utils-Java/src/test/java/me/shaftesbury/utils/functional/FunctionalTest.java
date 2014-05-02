@@ -1976,4 +1976,47 @@ public class FunctionalTest
         final List<Integer> input = Arrays.asList(1,2,3,4);
         Functional.seq.skip(-1,input);
     }
+
+    @Test
+    public void extractFirstOfPair()
+    {
+        final List<Pair<Integer,String>> input = new ArrayList<Pair<Integer,String>>();
+        for(int i=0;i<5;++i) input.add(Pair.with(i, new Integer(i).toString()));
+        final List<Integer> output = Functional.map(Functional.<Integer,String>first(),input);
+        final List<Integer> expected = Arrays.asList(0,1,2,3,4);
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void extractSecondOfPair()
+    {
+        final List<Pair<Integer,String>> input = new ArrayList<Pair<Integer,String>>();
+        for(int i=0;i<5;++i) input.add(Pair.with(i, new Integer(i).toString()));
+        final List<String> output = Functional.map(Functional.<Integer,String>second(),input);
+        final List<String> expected = Arrays.asList("0","1","2","3","4");
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void groupByOddVsEvenInt()
+    {
+        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<List<Integer>> output = Functional.groupBy(Functional.isEven,input);
+        final List<List<Integer>> expected = Arrays.asList(Arrays.asList(1,3,5,7,9),Arrays.asList(2,4,6,8,10));
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void groupByStringFirstTwoChar()
+    {
+        final List<String> input = Arrays.asList("aa","aab","aac","def");
+        final List<List<String>> output = Functional.groupBy(new Func<String, String>() {
+            @Override
+            public String apply(final String s) {
+                return s.substring(0,1);
+            }
+        },input);
+        final List<List<String>> expected = Arrays.asList(Arrays.asList("aa","aab","aac"),Arrays.asList("def"));
+        AssertIterable.assertIterableEquals(expected,output);
+    }
 }
