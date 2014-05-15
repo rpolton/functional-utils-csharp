@@ -23,7 +23,7 @@ public class MException<U>
         if(!hasException())
             try {
                 return f.apply(state);
-            } catch(RuntimeException ex) {
+            } catch(final RuntimeException ex) {
                 return new MException<B>(ex, new Throwable().getStackTrace());
             }
         else
@@ -60,7 +60,7 @@ public class MException<U>
         {
             try {
                 state = fn.apply();
-            } catch(RuntimeException ex) {
+            } catch(final RuntimeException ex) {
                 exception = ex;
                 stacktrace = new Throwable().getStackTrace();
             }

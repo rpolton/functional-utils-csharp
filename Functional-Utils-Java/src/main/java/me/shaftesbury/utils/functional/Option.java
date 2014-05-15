@@ -44,7 +44,7 @@ public final class Option<T>
             {
                 return isSome()==other.isSome() && Some().equals(other.Some());
             }
-            catch(OptionNoValueAccessException ex)
+            catch(final OptionNoValueAccessException ex)
             {
                 return isNone() && other.isNone(); // every None is considered to be the same
             }

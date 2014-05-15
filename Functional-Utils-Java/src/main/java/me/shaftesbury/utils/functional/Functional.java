@@ -1056,7 +1056,7 @@ public final class Functional
                                 _next=Option.None();
                                 try {
                                     return next.Some();
-                                } catch(OptionNoValueAccessException e) { throw new java.util.NoSuchElementException(); }
+                                } catch(final OptionNoValueAccessException e) { throw new java.util.NoSuchElementException(); }
                             }
                             throw new java.util.NoSuchElementException();
                         }
@@ -1460,7 +1460,7 @@ public final class Functional
                     return abCase.predicate(input);
                 }
             }).results(input);
-        } catch(NoSuchElementException k) { return defaultCase.apply(input); }
+        } catch(final NoSuchElementException k) { return defaultCase.apply(input); }
     }
 
     public static final <A,B>Func<Pair<A,B>,A> first()

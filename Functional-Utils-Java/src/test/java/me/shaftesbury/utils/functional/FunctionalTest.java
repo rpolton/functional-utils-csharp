@@ -142,7 +142,7 @@ public class FunctionalTest
                         }
                     }, l, m));
         }
-        catch (Exception e)
+        catch (final Exception e)
         {}
     }
 
@@ -295,7 +295,7 @@ public class FunctionalTest
                                 return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
                             }
                         }, li));
-        }catch(Exception e){}
+        }catch(final Exception e){}
         final Map<Integer,String> expected = new HashMap<Integer,String>();
         expected.put(6, "6");
         expected.put(12, "12");
@@ -932,7 +932,7 @@ public class FunctionalTest
                     public Iterable<String> apply(Iterable<Integer> integers) {
                         try {
                             return Functional.seq.map(Functional.<Integer>dStringify(), integers);
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                             return null; // Argh!!!
                         }
