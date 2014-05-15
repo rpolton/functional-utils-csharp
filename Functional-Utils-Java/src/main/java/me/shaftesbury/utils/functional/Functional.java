@@ -871,6 +871,9 @@ public final class Functional
 
     public static final <T,U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
     {
+        if (keyFn == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): keyFn is null");
+        if (input == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): input is null");
+
         final Map<U,List<T>> intermediateResults = new HashMap<U,List<T>>();
         for(final T element : input)
         {
