@@ -4,6 +4,7 @@ import org.javatuples.Triplet;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,4 +35,6 @@ public interface Iterable2<T> extends java.lang.Iterable<T>
     //<U>org.javatuples.Pair<List<T>,List<U>> unzip();
     <U,V>Iterable2<Triplet<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3);
     <U>U in(final Func<Iterable2<T>, U> f);
+
+    <U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn);
 }

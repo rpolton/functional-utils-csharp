@@ -41,6 +41,8 @@ public class IterableHelper
 
             public final <U>Iterable2<U> collect(final Func<? super T,? extends Iterable<U>> f){return create(Functional.collect(f,i));}
             public <U>U in(final Func<Iterable2<T>, U> f){ return f.apply(this); }
+
+            public <U> Map<U, List<T>> groupBy(Func<? super T, ? extends U> keyFn) { return Functional.groupBy(keyFn,i); }
         };
     }
 
@@ -77,6 +79,8 @@ public class IterableHelper
 
         public final <U>Iterable2<U> collect(final Func<? super T,? extends Iterable<U>> f){return new EmptyList<U>();}
         public <U>U in(final Func<Iterable2<T>, U> f){ return f.apply(this); }
+
+        public <U> Map<U, List<T>> groupBy(Func<? super T, ? extends U> keyFn) { return Collections.EMPTY_MAP; }
 
         public boolean equals(Object o) { return false; }
 

@@ -869,7 +869,7 @@ public final class Functional
         };
     }
 
-    public static final <T,U>List<List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
+    public static final <T,U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
     {
         final Map<U,List<T>> intermediateResults = new HashMap<U,List<T>>();
         for(final T element : input)
@@ -884,10 +884,10 @@ public final class Functional
                 intermediateResults.put(key, list);
             }
         }
-        final List<List<T>> output = new ArrayList<List<T>>();
-        for(final List<T> list : intermediateResults.values())
-             output.add(Collections.unmodifiableList(list));
-        return Collections.unmodifiableList(output);
+        final Map<U,List<T>> output = new HashMap<U,List<T>>();
+        for(final Map.Entry<U,List<T>> entry : intermediateResults.entrySet())
+             output.put(entry.getKey(),Collections.unmodifiableList(entry.getValue()));
+        return Collections.unmodifiableMap(output);
     }
 
     public static final class seq
