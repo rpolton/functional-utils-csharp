@@ -1,17 +1,3 @@
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 16/10/13
- * Time: 20:04
- * To change this template use File | Settings | File Templates.
- */
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 16/10/13
- * Time: 20:04
- * To change this template use File | Settings | File Templates.
- */
 package me.shaftesbury.utils.functional;
 
 import org.javatuples.Pair;
@@ -19,10 +5,19 @@ import org.javatuples.Triplet;
 
 import java.util.*;
 
+/**
+ * Herein are contained some classic algorithms from functional programming. See http://en.wikipedia.org/wiki/Functional_programming
+ * for more information
+ */
 public final class Functional
 {
     private Functional() {}
 
+    /**
+     * A simple predicate which checks the contents of the string parameter.
+     * @param s - a string
+     * @return true if s is either null or s is the empty string; false otherwise.
+     */
     public final static boolean isNullOrEmpty(final String s)
     {
         return s==null || s.isEmpty();
@@ -87,14 +82,15 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
-    /// <summary>
-    /// Analogue of string.Join for List&lt;T&gt; with the addition of a user-defined map function
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="separator"></param>
-    /// <param name="l"></param>
-    /// <param name="fn"></param>
-    /// <returns></returns>
+    /**
+     * Analogue of string.Join for List<T> with the addition of a user-defined map function
+     *
+     * @param <T>
+     * @param separator
+     * @param l
+     * @param fn
+     * @returns
+     */
     public final static <T>String join(final String separator, final Iterable<T> l, final Func<? super T, String> fn)
     {
         if (l == null) throw new IllegalArgumentException("l");
@@ -326,7 +322,16 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
-    /// <summary> map: (A -> B) -> A list -> B list</summary>
+    /**
+     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
+     * map: (A -> B) -> A list -> B list
+     * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
+     * @param input - a sequence to be fed into f
+     * @param <A>
+     * @param <B>
+     * @return a list of type B containing the transformed values.
+     */
     public final static <A,B> List<B> map(final Func<A, ? extends B> f, final Iterable<? extends A> input)
     {
         final List<B> output = new ArrayList<B>();
@@ -335,6 +340,17 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
+    /**
+     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
+     * map: (A -> B) -> A list -> B list
+     * http://en.wikipedia.org/wiki/Currying
+     * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
+     * @param <A>
+     * @param <B>
+     * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a list of type B
+     *          containing the transformed values.
+     */
     public final static <A,B> Func<Iterable<A>,List<B>> map(final Func<? super A, ? extends B> f)
     {
         return new Func<Iterable<A>, List<B>>() {
@@ -345,7 +361,17 @@ public final class Functional
         };
     }
 
-    /// <summary> mapi: (int -> A -> B) -> A list -> B list</summary>
+    /**
+     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
+     * mapi: (int -> A -> B) -> A list -> B list
+     * @param f - a transformation function which is passed each input object of type A along with its position in the input sequence
+     *          (starting from zero) and returns an object, presumably related, of type B
+     * @param input - a sequence to be fed into f
+     * @param <A>
+     * @param <B>
+     * @return a list of type B containing the transformed values.
+     */
     public final static <A,B> List<B> mapi(final Func2<Integer, A, ? extends B> f, final Iterable<? extends A> input)
     {
         final List<B> output = new ArrayList<B>();
@@ -355,6 +381,18 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
+    /**
+     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
+     * mapi: (int -> A -> B) -> A list -> B list
+     * http://en.wikipedia.org/wiki/Currying
+     * @param f - a transformation function which is passed each input object of type A along with its position in the input sequence
+     *          (starting from zero) and returns an object, presumably related, of type B
+     * @param <A>
+     * @param <B>
+     * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a list of type B
+     *          containing the transformed values.
+     */
     public final static <A,B> Func<Iterable<A>,List<B>> mapi(final Func2<Integer, ? super A, ? extends B> f)
     {
         return new Func<Iterable<A>, List<B>>() {
@@ -410,6 +448,15 @@ public final class Functional
         return true;
     }
 
+    /**
+     * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
+     * @param pred - a filter function. This is passed each input element in turn and returns either true or false. If true then
+     *             the input element is passed through to the output otherwise it is ignored.
+     * @param input - a sequence of objects
+     * @param <A>
+     * @return a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
+     *          function returns true for the element.
+     */
     public final static <A>List<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
     {
         final List<A> output = new ArrayList<A>();
@@ -420,6 +467,16 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
+    /**
+     * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
+     * http://en.wikipedia.org/wiki/Currying
+     * @param f - a filter function. This is passed each input element in turn and returns either true or false. If true then
+     *             the input element is passed through to the output otherwise it is ignored.
+     * @param <T>
+     * @return a curried function that expects an input sequence which it feeds to the filter predicate which then returns
+     *          a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
+     *          function returns true for the element.
+     */
     public static final <T>Func<Iterable<T>,List<T>> filter(final Func<? super T,Boolean> f)
     {
         return new Func<Iterable<T>, List<T>>() {
@@ -524,6 +581,15 @@ public final class Functional
         };
     }
 
+    /**
+     * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     * @param f
+     * @param initialValue
+     * @param input
+     * @param <A>
+     * @param <B>
+     * @return
+     */
     /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
     public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
     {
@@ -533,6 +599,14 @@ public final class Functional
         return state;
     }
 
+    /**
+     * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     * @param f
+     * @param initialValue
+     * @param <A>
+     * @param <B>
+     * @return
+     */
     public final static <A, B>Func<Iterable<B>,A> fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue)
     {
         return new Func<Iterable<B>, A>() {
@@ -543,7 +617,9 @@ public final class Functional
         };
     }
 
-    // http://en.wikipedia.org/wiki/Anamorphism
+    /**
+     * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+      */
     // unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
     public final static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
     {
@@ -731,7 +807,17 @@ public final class Functional
         };
     }
 
-
+    /**
+     * The Convolution operator
+     * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
+     * @param l1 input sequence
+     * @param l2 input sequence
+     * @param <A>
+     * @param <B>
+     * @throws java.lang.IllegalArgumentException if either input sequence is null or if the sequences have differing lengths.
+     * @return list of pairs; the first element from each of the two input sequences is the first pair in the output sequence and so on,
+     *          in order. If the sequences do not have the same number of elements then an exception is thrown.
+     */
     public static final <A,B>List<Pair<A,B>> zip(final Iterable<? extends A> l1, final Iterable<? extends B> l2)
     {
         if(l1==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 is null");
@@ -747,6 +833,19 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
+    /**
+     * The Convolution operator
+     * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
+     * @param l1 input sequence
+     * @param l2 input sequence
+     * @param l3 input sequence
+     * @param <A>
+     * @param <B>
+     * @param <C>
+     * @throws java.lang.IllegalArgumentException if any input sequence is null or if the sequences have differing lengths.
+     * @return list of triplets; the first element from each of the input sequences is the first triplet in the output sequence and so on,
+     *          in order. If the sequences do not have the same number of elements then an exception is thrown.
+     */
     public static final <A,B,C>List<Triplet<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
     {
         if(l1==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1 is null");
@@ -765,6 +864,16 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
+    /**
+     * The inverse of the Convolution operator
+     * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
+     * @param input - sequence of pairs
+     * @param <A>
+     * @param <B>
+     * @throws java.lang.IllegalArgumentException if the input sequence is null
+     * @return pair of lists; the first element from each of the two output sequences is the first pair in the input sequence and so on,
+     *          in order.
+     */
     public static final <A,B>Pair<List<A>,List<B>> unzip(final Iterable<Pair<A,B>> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
@@ -781,6 +890,16 @@ public final class Functional
         return new Pair(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2));
     }
 
+    /**
+     * The inverse of the Convolution operator
+     * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
+     * @param input - sequence of triplets
+     * @param <A>
+     * @param <B>
+     * @throws java.lang.IllegalArgumentException if the input sequence is null
+     * @return triplet of lists; the first element from each of the output sequences is the first triplet in the input sequence and so on,
+     *          in order.
+     */
     public static final <A,B,C>Triplet<List<A>,List<B>,List<C>> unzip3(final Iterable<Triplet<A,B,C>> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
@@ -799,6 +918,17 @@ public final class Functional
         return new Triplet(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2),Collections.unmodifiableList(l3));
     }
 
+    /**
+     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
+     * These sequences are concatenated into one final output sequence at the end of the transformation.
+     * map: (T -> U list) -> T list -> U list
+     * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+     * @param input - a sequence to be fed into f
+     * @param <T>
+     * @param <U>
+     * @return a list of type U containing the concatenated sequences of transformed values.
+     */
     public static final <T,U>List<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
     {
         List<U> output = new ArrayList<U>();
@@ -807,6 +937,19 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
+    /**
+     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
+     * These sequences are concatenated into one final output sequence at the end of the transformation.
+     * map: (T -> U list) -> T list -> U list
+     * http://en.wikipedia.org/wiki/Currying
+     * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+     * @param <T>
+     * @param <U>
+     * @return a list of type U containing the concatenated sequences of transformed values.
+     * @param f - a curried function that expects an input sequence which it feeds to the transformation function which takes a object
+     *          of type A and returns an object, presumably related, of type B
+     */
     public static final <T,U>Func<Iterable<T>,List<U>> collect(final Func<? super T,? extends Iterable<U>> f)
     {
         return new Func<Iterable<T>, List<U>>() {
