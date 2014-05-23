@@ -99,7 +99,13 @@ public final class Functional
         return join(separator, map(fn,l));
     }
 
-    /// <summary>return lowerBound &lt; val &lt; upperBound</summary>
+    /**
+     * @param lowerBound
+     * @param upperBound
+     * @param val
+     * @param <T>
+     * @return lowerBound < val < upperBound
+     */
     public final static <T extends Comparable<T>>boolean between(final T lowerBound, final T upperBound, final T val)
     {
         if (val == null) throw new IllegalArgumentException("val");
@@ -107,7 +113,16 @@ public final class Functional
         return val.compareTo(lowerBound) == 1 && val.compareTo(upperBound) == -1;
     }
 
-    /// <summary> find: (A -> bool) -> A list -> A</summary>
+    /**
+     * Find the first element from the input sequence for which the supplied predicate returns true
+     * find: (A -> bool) -> A list -> A
+     * @param f - predicate
+     * @param input sequence
+     * @param <A>
+     * @throws java.lang.IllegalArgumentException if f or input are null
+     * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
+     * @return the first element from the input sequence for which the supplied predicate returns true
+     */
     public final static <A>A find(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
@@ -119,6 +134,19 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
+    /**
+     * Curried find.
+     * Find the first element from the input sequence for which the supplied predicate returns true
+     * find: (A -> bool) -> A list -> A
+     * http://en.wikipedia.org/wiki/Currying
+     * @param f - predicate
+     * @param <A>
+     * @throws java.lang.IllegalArgumentException if f or input are null
+     * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
+     * @return
+     * @return a curried function that expects an input sequence which it feeds to the predicate f
+     *          which returns the first element from the input sequence for which the supplied predicate returns true
+     */
     public final static <A>Func<Iterable<A>,A> find(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, A>() {
@@ -206,11 +234,32 @@ public final class Functional
         };
     }
 
+    /**
+     * In, used for functional composition. This is the simple reversal function. y(x) is equivalent to x.In(y)
+     * http://en.wikipedia.org/wiki/Function_composition_(computer_science)
+     * @param input - the object which we wish to pass to the function parameter
+     * @param f - the function we wish to evaluate
+     * @param <A>
+     * @param <B>
+     * @param <AA>
+     * @return f(input)
+     */
     public final static <A, B, AA extends A> B in(final AA input, final Func<A, B> f)
     {
         return f.apply(input);
     }
 
+    /**
+     * Then, the functional composition operator. Execute the first function then execute the second, passing the results
+     * of the first as the input to the second.
+     * http://en.wikipedia.org/wiki/Function_composition_(computer_science)
+     * @param f - the first function to execute.
+     * @param g - the second function to execute. The input to this function will be the result of the first function, f
+     * @param <A>
+     * @param <B>
+     * @param <C>
+     * @return a function equivalent to g(f(x))
+     */
     public final static <A, B, C> Func<A, C> then(final Func<A, ? extends B> f, final Func<B, C> g)
     {
         return new Func<A, C>()
