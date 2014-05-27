@@ -23,6 +23,13 @@ public final class Functional
         return s==null || s.isEmpty();
     }
 
+    /**
+     * Concatenate all of the input elements into a single string where each element is separated from the next by the supplied delimiter
+     * @param delimiter used to separate consecutive elements in the output
+     * @param strs - input sequence, each element of which must be convertible to a string
+     * @param <T>
+     * @return a string containing the string representation of each input element separated by the supplied delimiter
+     */
     public final static <T>String join(final String delimiter, final Iterable<T> strs)
     {
         if(strs==null) return "";
@@ -38,6 +45,13 @@ public final class Functional
         return sb.toString();
     }
 
+    /**
+     * A string function: generate a string that contains the 'unitOfIndentation' repeated 'howMany' times prepended to 'indentThis'
+     * @param howMany times should the unitOfIndentation be prefixed to the supplied 'indentThis' string
+     * @param unitOfIndentation - the indentation
+     * @param indentThis - the input string that should be indented
+     * @return a string indenting the input string by the indicated number of units
+     */
     public final static String indentBy(final int howMany, final String unitOfIndentation, final String indentThis)
     {
         final Collection<String> indentation = init(
@@ -55,6 +69,17 @@ public final class Functional
         }, indentThis, indentation);
     }
 
+    /**
+     * foldAndChoose: <tt>fold</tt> except that instead of folding every element in the input sequence, <tt>fold</tt>
+     * only those for which the fold function 'f' returns a Some value (see <tt>Option</tt>)
+     * @param f is the fold function modified such that the return value contains an Option in addition to the state
+     * @param initialValue - the seed for the fold function
+     * @param input - the input sequence
+     * @param <A>
+     * @param <B>
+     * @return the folded value paired with those transformed elements which are Some
+     * @throws OptionNoValueAccessException
+     */
     public final static <A, B>Pair<A,List<B>> foldAndChoose(
             final Func2<A, B, Pair<A,Option<B>>> f,
             final A initialValue, final Iterable<B> input) throws OptionNoValueAccessException
@@ -86,10 +111,10 @@ public final class Functional
      * Analogue of string.Join for List<T> with the addition of a user-defined map function
      *
      * @param <T>
-     * @param separator
-     * @param l
-     * @param fn
-     * @returns
+     * @param separator inserted between each transformed element
+     * @param l - the input sequence
+     * @param fn - map function (see <tt>map</tt>) which is used to transform the input sequence
+     * @returns a string containing the transformed string value of each input element separated by the supplied separator
      */
     public final static <T>String join(final String separator, final Iterable<T> l, final Func<? super T, String> fn)
     {
@@ -157,7 +182,17 @@ public final class Functional
         };
     }
 
-    /// <summary> findIndex: (A -> bool) -> A list -> int</summary>
+    /**
+     * As <tt>find</tt> except that here we return the zero-based position in the input sequence of the found element
+     * findIndex: (A -> bool) -> A list -> int
+     * @param f - predicate
+     * @param input sequence
+     * @param <A>
+     * @throws java.lang.IllegalArgumentException if f or input are null
+     * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
+     * @return the position in the input sequence of the first element from the input sequence for which the supplied predicate
+     * returns true
+     */
     public static <A>int findIndex(final Func<A,Boolean> f, final Iterable<? extends A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
@@ -676,6 +711,7 @@ public final class Functional
 
     /**
      * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     * fold: (A -> B -> A) -> A -> B list -> A
      * @param f
      * @param initialValue
      * @param input
@@ -683,7 +719,6 @@ public final class Functional
      * @param <B>
      * @return
      */
-    /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
     public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
     {
         A state = initialValue;
