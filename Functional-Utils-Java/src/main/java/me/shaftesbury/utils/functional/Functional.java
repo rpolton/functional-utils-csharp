@@ -862,7 +862,17 @@ public final class Functional
         };
     }
 
-    /// <summary> choose: (A -> B option) -> A list -> B list</summary>
+    /**
+     * choose: this is a map transformation with the difference being that the number of elements in the output sequence may
+     * be between zero and the number of elements in the input sequence.
+     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * choose: (A -> B option) -> A list -> B list
+     * @param f - map function. This transforms the input element into an Option
+     * @param input - input sequence
+     * @param <A>
+     * @param <B>
+     * @return a list of transformed elements, numbering less than or equal to the number of input elements
+     */
     public final static <A, B>List<B> choose(final Func<? super A, Option<B>> f, final Iterable<A> input)
     {
         final List<B> results = new ArrayList<B>();
@@ -875,6 +885,18 @@ public final class Functional
         return Collections.unmodifiableList(results);
     }
 
+    /**
+     * choose: this is a curried implementation of choose.
+     * choose is a map transformation with the difference being that the number of elements in the output sequence may
+     * be between zero and the number of elements in the input sequence.
+     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * http://en.wikipedia.org/wiki/Currying
+     * choose: (A -> B option) -> A list -> B list
+     * @param f - map function. This transforms the input element into an Option
+     * @param <A>
+     * @param <B>
+     * @return a list of transformed elements, numbering less than or equal to the number of input elements
+     */
     public final static <A, B>Func<Iterable<A>,List<B>> choose(final Func<? super A, Option<B>> f)
     {
         return new Func<Iterable<A>, List<B>>() {
@@ -923,8 +945,8 @@ public final class Functional
 
     /**
      * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
-      */
-    // unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
+     * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
+     */
     public final static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
@@ -940,6 +962,10 @@ public final class Functional
         return results;
     }
 
+    /**
+     * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+     * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
+     */
     public final static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
@@ -955,6 +981,19 @@ public final class Functional
         return results;
     }
 
+    /**
+     * toDictionary: given each element from the input sequence apply the keyFn and valueFn to generate a (key,value) pair.
+     * The resulting dictionary (java.util.Map) contains all these pairs.
+     * @param keyFn - function used to generate the key
+     * @param valueFn - function used to generate the value
+     * @param input - input sequence
+     * @param <T>
+     * @param <K>
+     * @param <V>
+     * @return a java.util.Map containing the transformed input sequence
+     * @throws IllegalArgumentException if some property of the specified key
+     *         or value prevents it from being stored in this map
+     */
     public final static <T,K,V>Map<K,V> toDictionary(final Func<? super T,? extends K> keyFn, final Func<? super T,? extends V> valueFn, final Iterable<T> input)
     {
         if(keyFn==null) throw new IllegalArgumentException("keyFn");
@@ -965,8 +1004,14 @@ public final class Functional
         return Collections.unmodifiableMap(output);
     }
 
-    //public final static <T>T[] toArray(final Iterable<T> input)
+    /**
+     * toArray: create an array containing all the objects in the input sequence
+     * @param input - input sequence
+     * @param <T>
+     * @return an array containing all the elements of the input sequence
+     */
     public final static <T>Object[] toArray(final Iterable<T> input)
+    //public final static <T>T[] toArray(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toArray(Iterable<T>): input is null");
 
@@ -1000,12 +1045,24 @@ public final class Functional
         return output;
     }
 
+    /**
+     * Create a java.util.List which contains all of the elements in the input sequence
+     * @param input - input sequence
+     * @param <T>
+     * @return a list containing the elements of the input sequence
+     */
     public static final <T>List<T> toList(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toList(Iterable<T>): input is null");
         return Collections.unmodifiableList(toMutableList(input));
     }
 
+    /**
+     * Create a java.util.Set which contains all of the elements in the input sequence
+     * @param input - input sequence
+     * @param <T>
+     * @return a set containing the elements of the input sequence
+     */
     public static final <T>Set<T> toSet(final Iterable<T> input)
     {
         //Sets.newSetFromMap();
@@ -1013,6 +1070,12 @@ public final class Functional
         return Collections.unmodifiableSet(toMutableSet(input));
     }
 
+    /**
+     * Return the final element from the input sequence
+     * @param input - input sequence
+     * @param <T>
+     * @return the last element from the input sequence
+     */
     public static final <T>T last(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null");
@@ -1023,6 +1086,12 @@ public final class Functional
         return state;
     }
 
+    /**
+     * Return the final element from the input array
+     * @param input - input array
+     * @param <T>
+     * @return the last element from the input array
+     */
     public static final <T>T last(final T[] input)
     {
         if(input==null||input.length==0) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null or empty");
