@@ -206,7 +206,16 @@ public final class Functional
         throw new IllegalArgumentException();
     }
 
-    /// <summary> findLast: (A -> bool) -> A list -> A</summary>
+    /**
+     * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
+     * findLast: (A -> bool) -> A seq -> A
+     * @param f - predicate
+     * @param input sequence
+     * @param <A>
+     * @throws java.lang.IllegalArgumentException if f or input are null
+     * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
+     * @return the last element in the input sequence for which the supplied predicate returns true
+     */
     public final static <A>A findLast(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
@@ -222,7 +231,16 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
-    /// <summary> findLast: (A -> bool) -> A list -> A</summary>
+    /**
+     * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
+     * findLast: (A -> bool) -> A list -> A
+     * @param f - predicate
+     * @param input sequence
+     * @param <A>
+     * @throws java.lang.IllegalArgumentException if f or input are null
+     * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
+     * @return the last element in the input sequence for which the supplied predicate returns true
+     */
     public final static <A>A findLast(final Func<? super A,Boolean> f, final List<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
@@ -234,6 +252,17 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
+    /**
+     * A curried version of findLast.
+     * http://en.wikipedia.org/wiki/Currying
+     * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
+     * findLast: (A -> bool) -> A list -> A
+     * @param f - predicate
+     * @param <A>
+     * @throws java.lang.IllegalArgumentException if f or input are null
+     * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
+     * @return the last element in the input sequence for which the supplied predicate returns true
+     */
     public final static <A>Func<List<A>,A> findLast(final Func<A,Boolean> f)
     {
         return new Func<List<A>, A>() {
@@ -244,7 +273,18 @@ public final class Functional
         };
     }
 
-    /// <summary> pick: (A -> B option) -> A list -> B</summary>
+    /**
+     * 'pick' is an analogue of <tt>find</tt>. Instead of a predicate, 'pick' is passed a map function which returns an <tt>Option</tt>.
+     * Each element of the input sequence is supplied in turn to the map function 'f' and the first non-None Option to be returned from
+     * the map function is returned by 'pick' to the calling code.
+     * pick: (A -> B option) -> A seq -> B
+     *
+     * @param f - the map function.
+     * @param input - the input sequence
+     * @param <A>
+     * @param <B>
+     * @return the first non-None transformed element of the input sequence
+     */
     public static <A, B>B pick(final Func<A,Option<B>> f, final Iterable<? extends A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
@@ -259,6 +299,21 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
+    /**
+     * 'pick' is an analogue of <tt>find</tt>. Instead of a predicate, 'pick' is passed a map function which returns an <tt>Option</tt>.
+     * Each element of the input sequence is supplied in turn to the map function 'f' and the first non-None Option to be returned from
+     * the map function is returned by 'pick' to the calling code.
+     *
+     * This is a curried implementation of 'pick'
+     * http://en.wikipedia.org/wiki/Currying
+     *
+     * pick: (A -> B option) -> A seq -> B
+     *
+     * @param f - the map function.
+     * @param <A>
+     * @param <B>
+     * @return the first non-None transformed element of the input sequence
+     */
     public static <A,B>Func<Iterable<A>,B> pick(final Func<? super A,Option<B>> f)
     {
         return new Func<Iterable<A>, B>() {
@@ -307,6 +362,11 @@ public final class Functional
         };
     }
 
+    /**
+     * The identity transformation function: that is, the datum supplied as input is returned as output
+     * @param <T>
+     * @return a function which is the identity transformation
+     */
     public final static <T>Func<T,T> identity()
     {
         return new Func<T, T>() {
@@ -532,6 +592,15 @@ public final class Functional
     }
 
     /// <summary> sortWith: (A -> A -> int) -> A list -> A list</summary>
+
+    /**
+     * sortWith: a wrapper for <tt>Collections.sort</tt> which preserves the input sequence.
+     * @param f - the <tt>Comparator</tt> to use for the sort
+     * @param input - the input
+     * @param <A>
+     * @param <AA>
+     * @return a sorted list containing all the elements of 'input' sorted using <tt>Collections.sort</tt> and 'f'
+     */
     public final static <A, AA extends A>List<AA> sortWith(final Comparator<A> f, final List<AA> input)
     {
         final List<AA> output = new ArrayList<AA>(input);
@@ -539,17 +608,39 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
+    /**
+     * A simple function which wraps left.compareTo(right) so that this can be used as a sort function.
+     * @param left - input element
+     * @param right - input element
+     * @param <A>
+     * @return left.compareTo(right)
+     */
     public final static <A extends Comparable<A>>int Sorter(final A left, final A right)
     {
         return left.compareTo(right);
     }
 
+    /**
+     * A Comparator that encapsulates <tt>Sorter</tt> above
+     */
     public final static Comparator<Integer> dSorter = new Comparator<Integer>()
     {
         @Override public int compare(final Integer i, final Integer j) { return Sorter(i, j); }
     };
 
+    /**
+     * A wrapper around <tt>toString()</tt>
+     * @param a - the element to be turned into a string using T.toString()
+     * @param <T> - the type of element 'a'
+     * @return a.toString()
+     */
     public final static <T> String Stringify(final T a) { return a.toString(); }
+
+    /**
+     * A transformation function that wraps <tt>Stringify</tt>
+     * @param <T>
+     * @return
+     */
     public final static <T>Func<T, String> dStringify()
     {
         return new Func<T, String>()
@@ -558,7 +649,22 @@ public final class Functional
         };
     }
 
-    /// <summary> forAll2: (A -> B -> bool) -> A list -> B list -> bool</summary>
+    /**
+     * forAll2: the predicate 'f' is applied to all elements in the input sequences input1 and input2 as pairs. If the predicate returns
+     * true for all pairs and there is the same number of elements in both input sequences then forAll2 returns true. If the predicate
+     * returns false at any point then the traversal of the input sequences halts and forAll2 returns false.
+     * forAll2: (A -> B -> bool) -> A list -> B list -> bool
+     * @param f - predicate to which each successive pair (input1_i, input2_i) is applied
+     * @param input1 - input sequence
+     * @param input2 - input sequence
+     * @param <A>
+     * @param <B>
+     * @param <AA>
+     * @param <BB>
+     * @return true if the predicate 'f' evaluates true for all pairs, false otherwise
+     * @throws java.lang.IllegalArgumentException if the predicate returns true for all pairs and the sequences contain differing numbers
+     * of elements
+     */
     public final static <A, B,AA extends A,BB extends B>boolean forAll2(final Func2<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
     {
         final Iterator<AA> enum1 = input1.iterator();
@@ -615,7 +721,15 @@ public final class Functional
         };
     }
 
-    /// <summary> exists: (A -> bool) -> A list -> bool</summary>
+    /**
+     * The converse operation to <tt>forAll</tt>. If the predicate returns true then 'exists' returns true and halts the traveral of the
+     * input sequence. Otherwise return false.
+     * exists: (A -> bool) -> A list -> bool
+     * @param f - predicate
+     * @param input - input sequence
+     * @param <A>
+     * @return true if the predicate returns true for any element in the input sequence, false otherwise
+     */
     public final static <A>boolean exists(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
         for(final A a : input)
@@ -624,6 +738,16 @@ public final class Functional
         return false;
     }
 
+    /**
+     * The converse operation to <tt>forAll</tt>. If the predicate returns true then 'exists' returns true and halts the traveral of the
+     * input sequence. Otherwise return false.
+     * exists: (A -> bool) -> A list -> bool
+     * This is the curried implementation.
+     * http://en.wikipedia.org/wiki/Currying
+     * @param f - predicate
+     * @param <A>
+     * @return true if the predicate returns true for any element in the input sequence, false otherwise
+     */
     public final static <A>Func<Iterable<A>,Boolean> exists(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Boolean>() {
@@ -634,18 +758,42 @@ public final class Functional
         };
     }
 
-    /// <summary> not: (A -> bool) -> (A -> bool)</summary>
+    /**
+     * not reverses the result of the applied predicate
+     * not: (A -> bool) -> (A -> bool)
+     * @param f - the applied predicate
+     * @param <A>
+     * @return true if f returns false, false if f returns true
+     */
     public final static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
     {
         return new Func<A,Boolean>(){@Override public Boolean apply(final A a) { return !f.apply(a);}};
     }
 
-    /// <summary> forAll: (A -> bool) -> A list -> bool</summary>
+    /**
+     * The converse operation to <tt>exists</tt>. If the predicate returns true for all elements in the input sequence then 'forAll'
+     * returns true otherwise return false.
+     * forAll: (A -> bool) -> A list -> bool
+     * @param f - predicate
+     * @param input - input sequence
+     * @param <A>
+     * @return true if the predicate returns true for all elements in the input sequence, false otherwise
+     */
     public final static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<? extends A> input)
     {
         return !exists(not(f), input);
     }
 
+    /**
+     * The converse operation to <tt>exists</tt>. If the predicate returns true for all elements in the input sequence then 'forAll'
+     * returns true otherwise return false.
+     * forAll: (A -> bool) -> A list -> bool
+     * This is a curried implementation of 'forAll
+     * http://en.wikipedia.org/wiki/Currying
+     * @param f - predicate
+     * @param <A>
+     * @return true if the predicate returns true for all elements in the input sequence, false otherwise
+     */
     public final static <A>Func<Iterable<A>,Boolean> forAll(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Boolean>() {
@@ -656,14 +804,31 @@ public final class Functional
         };
     }
 
-    /// <summary> not2: (A -> B -> bool) -> (A -> B -> bool)</summary>
+    /**
+     * not2 reverses the result of the applied predicate
+     * not2: (A -> B -> bool) -> (A -> B -> bool)
+     * @param f - the applied predicate
+     * @param <A>
+     * @return true if f returns false, false if f returns true
+     */
     public final static <A,B> Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
     {
         return new Func2<A,B,Boolean>(){@Override public Boolean apply(final A a, final B b) { return !f.apply(a,b);}};
     }
 
-    /// <summary> partition: (A -> bool) -> A list -> A list * A list</summary>
+    /// <summary> </summary>
     /// <returns> (list * list). The first list contains all items for which f(a) is true. The second list contains the remainder.</returns>
+
+    /**
+     * partition is a group function. Given a predicate and an input sequence, 'partition' returns a pair of lists, the first list
+     * containing those elements from the input sequence for which the predicate returned true, the second list containing those
+     * elements from the input sequence for which the predicate returned false.
+     * partition: (A -> bool) -> A list -> A list * A list
+     * @param f - predicate used to split the input sequence into two groups
+     * @param input - the input sequence
+     * @param <A>
+     * @return a pair of lists, the first being the 'true' and the second being the 'false'
+     */
     public final static <A>Pair<List<A>,List<A>> partition(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
         final List<A> left = new ArrayList<A>();
@@ -676,6 +841,17 @@ public final class Functional
         return new Pair<List<A>,List<A>>(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
     }
 
+    /**
+     * partition is a group function. Given a predicate and an input sequence, 'partition' returns a pair of lists, the first list
+     * containing those elements from the input sequence for which the predicate returned true, the second list containing those
+     * elements from the input sequence for which the predicate returned false.
+     * partition: (A -> bool) -> A list -> A list * A list
+     * This is a curried implementation of 'forAll
+     * http://en.wikipedia.org/wiki/Currying
+     * @param f - predicate used to split the input sequence into two groups
+     * @param <A>
+     * @return a pair of lists, the first being the 'true' and the second being the 'false'
+     */
     public final static <A>Func<Iterable<A>,Pair<List<A>,List<A>>> partition(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Pair<List<A>, List<A>>>() {
