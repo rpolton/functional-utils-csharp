@@ -3,6 +3,7 @@ package me.shaftesbury.utils.functional;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static me.shaftesbury.utils.functional.FunctionalHelper.*;
@@ -92,5 +93,21 @@ public final class FunctionalHelperTest
         final List<Option<Object>> output = areSome(input).toList();
 
         Assert.assertEquals(1, output.size());
+    }
+
+    @Test
+    public void theValueOfJustTheOnesThatAreSome()
+    {
+        final List<Option<Object>> input = Functional.init(new Func<Integer, Option<Object>>() {
+            @Override
+            public Option<Object> apply(Integer integer) {
+                return integer==1 ? Option.<Object>toOption(new Integer(1)) : Option.None();
+            }
+        }, 5);
+
+        final Iterable2<Option<Object>> output = areSome(input);
+        final List<Object> finalOutput = some(output).toList();
+
+        AssertIterable.assertIterableEquals(Arrays.asList((Object)1),finalOutput);
     }
 }
