@@ -114,7 +114,7 @@ public final class Functional
      * @param separator inserted between each transformed element
      * @param l - the input sequence
      * @param fn - map function (see <tt>map</tt>) which is used to transform the input sequence
-     * @returns a string containing the transformed string value of each input element separated by the supplied separator
+     * @return a string containing the transformed string value of each input element separated by the supplied separator
      */
     public final static <T>String join(final String separator, final Iterable<T> l, final Func<? super T, String> fn)
     {
@@ -378,7 +378,7 @@ public final class Functional
     }
 
     /**
-     * @return a function that accepts an integer and returns a boolean that indicates whether the passed integer
+     * <tt>isEven</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an even integer
      */
     public static final Func<Integer,Boolean> isEven = new Func<Integer, Boolean>()
@@ -390,7 +390,7 @@ public final class Functional
         }
     };
     /**
-     * @return a function that accepts an integer and returns a boolean that indicates whether the passed integer
+     * <tt>isOdd</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an odd integer
      */
     public static final Func<Integer,Boolean> isOdd = new Func<Integer, Boolean>()
@@ -402,7 +402,7 @@ public final class Functional
         }
     };
     /**
-     * @return a function that accepts a counter and another integer and returns 1 + counter
+     * <tt>count</tt> a function that accepts a counter and another integer and returns 1 + counter
      */
     public static final Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
                 @Override
@@ -411,7 +411,7 @@ public final class Functional
                 }
             };
     /**
-     * @return a function that accepts two integers and returns the sum of them
+     * <tt>sum</tt> a function that accepts two integers and returns the sum of them
      */
     public static final Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
         @Override
@@ -639,7 +639,7 @@ public final class Functional
     /**
      * A transformation function that wraps <tt>Stringify</tt>
      * @param <T>
-     * @return
+     * @return a function that calls <tt>Stringify</tt>
      */
     public final static <T>Func<T, String> dStringify()
     {
@@ -1378,13 +1378,12 @@ public final class Functional
      * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
      * These sequences are concatenated into one final output sequence at the end of the transformation.
      * map: (T -> U list) -> T list -> U list
+     * This is a curried implementation of 'collect'
      * http://en.wikipedia.org/wiki/Currying
      * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
      * @param <T>
      * @param <U>
      * @return a list of type U containing the concatenated sequences of transformed values.
-     * @param f - a curried function that expects an input sequence which it feeds to the transformation function which takes a object
-     *          of type A and returns an object, presumably related, of type B
      */
     public static final <T,U>Func<Iterable<T>,List<U>> collect(final Func<? super T,? extends Iterable<U>> f)
     {
@@ -2049,11 +2048,11 @@ public final class Functional
          * fold: (A -> B -> A) -> A -> B list -> A
          * This is a recursive implementation of fold
          * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
-         * @param f
-         * @param initialValue
+         * @param f - the aggregation function
+         * @param initialValue - the seed for the aggregation
          * @param <A>
          * @param <B>
-         * @return
+         * @return the aggregated value
          */
         public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
         {
@@ -2399,7 +2398,7 @@ public final class Functional
      * Helper function to return the first element in a Pair
      * @param <A>
      * @param <B>
-     * @return
+     * @return a function that returns the first element in a Pair
      */
     public static final <A,B>Func<Pair<A,B>,A> first()
     {
@@ -2415,7 +2414,7 @@ public final class Functional
      *  Helper function to return the second element in a Pair
      * @param <A>
      * @param <B>
-     * @return
+     * @return a function that returns the second element in a Pair
      */
     public static final <A,B>Func<Pair<A,B>,B> second()
     {
