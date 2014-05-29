@@ -6,7 +6,8 @@ import org.javatuples.Triplet;
 import java.util.*;
 
 /**
- * Herein are contained some standard algorithms from functional programming. See http://en.wikipedia.org/wiki/Functional_programming
+ * Herein are contained some standard algorithms from functional programming.
+ * See <a href="http://en.wikipedia.org/wiki/Functional_programming">Functional Programming</a>
  * for more information
  */
 public final class Functional
@@ -15,7 +16,7 @@ public final class Functional
 
     /**
      * A simple predicate which checks the contents of the string parameter.
-     * @param s - a string
+     * @param s the input string
      * @return true if s is either null or s is the empty string; false otherwise.
      */
     public final static boolean isNullOrEmpty(final String s)
@@ -26,8 +27,8 @@ public final class Functional
     /**
      * Concatenate all of the input elements into a single string where each element is separated from the next by the supplied delimiter
      * @param delimiter used to separate consecutive elements in the output
-     * @param strs - input sequence, each element of which must be convertible to a string
-     * @param <T>
+     * @param strs input sequence, each element of which must be convertible to a string
+     * @param <T> the type of the element in the input sequence
      * @return a string containing the string representation of each input element separated by the supplied delimiter
      */
     public final static <T>String join(final String delimiter, final Iterable<T> strs)
@@ -48,8 +49,8 @@ public final class Functional
     /**
      * A string function: generate a string that contains the 'unitOfIndentation' repeated 'howMany' times prepended to 'indentThis'
      * @param howMany times should the unitOfIndentation be prefixed to the supplied 'indentThis' string
-     * @param unitOfIndentation - the indentation
-     * @param indentThis - the input string that should be indented
+     * @param unitOfIndentation the indentation
+     * @param indentThis the input string that should be indented
      * @return a string indenting the input string by the indicated number of units
      */
     public final static String indentBy(final int howMany, final String unitOfIndentation, final String indentThis)
@@ -73,10 +74,10 @@ public final class Functional
      * foldAndChoose: <tt>fold</tt> except that instead of folding every element in the input sequence, <tt>fold</tt>
      * only those for which the fold function 'f' returns a Some value (see <tt>Option</tt>)
      * @param f is the fold function modified such that the return value contains an Option in addition to the state
-     * @param initialValue - the seed for the fold function
-     * @param input - the input sequence
-     * @param <A>
-     * @param <B>
+     * @param initialValue the seed for the fold function
+     * @param input the input sequence
+     * @param <A> the type of the initialValue / seed
+     * @param <B> the type of the element in the input sequence
      * @return the folded value paired with those transformed elements which are Some
      * @throws OptionNoValueAccessException
      */
@@ -110,10 +111,10 @@ public final class Functional
     /**
      * Analogue of string.Join for List<T> with the addition of a user-defined map function
      *
-     * @param <T>
+     * @param <T> the type of the element in the input sequence
      * @param separator inserted between each transformed element
-     * @param l - the input sequence
-     * @param fn - map function (see <tt>map</tt>) which is used to transform the input sequence
+     * @param l the input sequence
+     * @param fn map function (see <tt>map</tt>) which is used to transform the input sequence
      * @return a string containing the transformed string value of each input element separated by the supplied separator
      */
     public final static <T>String join(final String separator, final Iterable<T> l, final Func<? super T, String> fn)
@@ -128,7 +129,7 @@ public final class Functional
      * @param lowerBound
      * @param upperBound
      * @param val
-     * @param <T>
+     * @param <T> the type of the input element
      * @return lowerBound < val < upperBound
      */
     public final static <T extends Comparable<T>>boolean between(final T lowerBound, final T upperBound, final T val)
@@ -141,9 +142,9 @@ public final class Functional
     /**
      * Find the first element from the input sequence for which the supplied predicate returns true
      * find: (A -> bool) -> A list -> A
-     * @param f - predicate
+     * @param f predicate
      * @param input sequence
-     * @param <A>
+     * @param <A> the type of the element in the input sequence
      * @throws java.lang.IllegalArgumentException if f or input are null
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the first element from the input sequence for which the supplied predicate returns true
@@ -163,14 +164,13 @@ public final class Functional
      * Curried find.
      * Find the first element from the input sequence for which the supplied predicate returns true
      * find: (A -> bool) -> A list -> A
-     * http://en.wikipedia.org/wiki/Currying
-     * @param f - predicate
-     * @param <A>
+     * @param f predicate
+     * @param <A> the type of the element in the input sequence
      * @throws java.lang.IllegalArgumentException if f or input are null
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
-     * @return
      * @return a curried function that expects an input sequence which it feeds to the predicate f
      *          which returns the first element from the input sequence for which the supplied predicate returns true
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A>Func<Iterable<A>,A> find(final Func<? super A,Boolean> f)
     {
@@ -185,9 +185,9 @@ public final class Functional
     /**
      * As <tt>find</tt> except that here we return the zero-based position in the input sequence of the found element
      * findIndex: (A -> bool) -> A list -> int
-     * @param f - predicate
+     * @param f predicate
      * @param input sequence
-     * @param <A>
+     * @param <A> the type of the element in the input sequence
      * @throws java.lang.IllegalArgumentException if f or input are null
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the position in the input sequence of the first element from the input sequence for which the supplied predicate
@@ -209,9 +209,9 @@ public final class Functional
     /**
      * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
      * findLast: (A -> bool) -> A seq -> A
-     * @param f - predicate
+     * @param f predicate
      * @param input sequence
-     * @param <A>
+     * @param <A> the type of the element in the input sequence
      * @throws java.lang.IllegalArgumentException if f or input are null
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the last element in the input sequence for which the supplied predicate returns true
@@ -234,9 +234,9 @@ public final class Functional
     /**
      * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
      * findLast: (A -> bool) -> A list -> A
-     * @param f - predicate
+     * @param f predicate
      * @param input sequence
-     * @param <A>
+     * @param <A> the type of the element in the input sequence
      * @throws java.lang.IllegalArgumentException if f or input are null
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the last element in the input sequence for which the supplied predicate returns true
@@ -254,14 +254,14 @@ public final class Functional
 
     /**
      * A curried version of findLast.
-     * http://en.wikipedia.org/wiki/Currying
      * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
      * findLast: (A -> bool) -> A list -> A
-     * @param f - predicate
-     * @param <A>
+     * @param f predicate
+     * @param <A> the type of the element in the input sequence
      * @throws java.lang.IllegalArgumentException if f or input are null
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the last element in the input sequence for which the supplied predicate returns true
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A>Func<List<A>,A> findLast(final Func<A,Boolean> f)
     {
@@ -279,10 +279,10 @@ public final class Functional
      * the map function is returned by 'pick' to the calling code.
      * pick: (A -> B option) -> A seq -> B
      *
-     * @param f - the map function.
-     * @param input - the input sequence
-     * @param <A>
-     * @param <B>
+     * @param f the map function.
+     * @param input the input sequence
+     * @param <A> the type of the element in the input sequence
+     * @param <B> the type of the output element
      * @return the first non-None transformed element of the input sequence
      */
     public static <A, B>B pick(final Func<A,Option<B>> f, final Iterable<? extends A> input)
@@ -305,14 +305,14 @@ public final class Functional
      * the map function is returned by 'pick' to the calling code.
      *
      * This is a curried implementation of 'pick'
-     * http://en.wikipedia.org/wiki/Currying
      *
      * pick: (A -> B option) -> A seq -> B
      *
-     * @param f - the map function.
-     * @param <A>
-     * @param <B>
+     * @param f the map function.
+     * @param <A> the type of the element in the input sequence
+     * @param <B> the type of the output element
      * @return the first non-None transformed element of the input sequence
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public static <A,B>Func<Iterable<A>,B> pick(final Func<? super A,Option<B>> f)
     {
@@ -326,12 +326,12 @@ public final class Functional
 
     /**
      * In, used for functional composition. This is the simple reversal function. y(x) is equivalent to x.In(y)
-     * http://en.wikipedia.org/wiki/Function_composition_(computer_science)
-     * @param input - the object which we wish to pass to the function parameter
-     * @param f - the function we wish to evaluate
-     * @param <A>
-     * @param <B>
-     * @param <AA>
+     * See <a href="http://en.wikipedia.org/wiki/Function_composition_(computer_science)">Function Composition</a>
+     * @param input the object which we wish to pass to the function parameter
+     * @param f the function we wish to evaluate
+     * @param <A> the base type of the input element. That is <tt>AA extends A</tt>
+     * @param <B> the type of the output of the function <tt>f</tt>
+     * @param <AA> the type of the input
      * @return f(input)
      */
     public final static <A, B, AA extends A> B in(final AA input, final Func<A, B> f)
@@ -342,12 +342,12 @@ public final class Functional
     /**
      * Then, the functional composition operator. Execute the first function then execute the second, passing the results
      * of the first as the input to the second.
-     * http://en.wikipedia.org/wiki/Function_composition_(computer_science)
-     * @param f - the first function to execute.
-     * @param g - the second function to execute. The input to this function will be the result of the first function, f
-     * @param <A>
-     * @param <B>
-     * @param <C>
+     * See <a href="http://en.wikipedia.org/wiki/Function_composition_(computer_science)">Function Composition</a>
+     * @param f the first function to execute.
+     * @param g the second function to execute. The input to this function will be the result of the first function, f
+     * @param <A> the type of the input to <tt>f</tt>
+     * @param <B> the type of the input to <tt>g</tt> and a base class of the output of <tt>f</tt>
+     * @param <C> the type of the output of <tt>g</tt>
      * @return a function equivalent to g(f(x))
      */
     public final static <A, B, C> Func<A, C> then(final Func<A, ? extends B> f, final Func<B, C> g)
@@ -364,7 +364,7 @@ public final class Functional
 
     /**
      * The identity transformation function: that is, the datum supplied as input is returned as output
-     * @param <T>
+     * @param <T> the type of the input element
      * @return a function which is the identity transformation
      */
     public final static <T>Func<T,T> identity()
@@ -421,7 +421,7 @@ public final class Functional
     };
 
     /**
-     * @param <T> 'that' - input argument
+     * @param <T> the type of <tt>that</tt>, the input argument
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is greater than
      * 'that' or false otherwise
      */
@@ -438,7 +438,7 @@ public final class Functional
     }
 
     /**
-     * @param <T> 'that' - input argument
+     * @param <T> the type of <tt>that</tt>, the input argument
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is greater than
      * or equal to 'that' or false otherwise
      */
@@ -455,7 +455,7 @@ public final class Functional
     }
 
     /**
-     * @param <T> 'that' - input argument
+     * @param <T> the type of <tt>that</tt>, the input argument
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is less than
      * 'that' or false otherwise
      */
@@ -472,7 +472,7 @@ public final class Functional
     }
 
     /**
-     * @param <T> 'that' - input argument
+     * @param <T> the type of <tt>that</tt>, the input argument
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is less than
      * or equal to 'that' or false otherwise
      */
@@ -492,11 +492,11 @@ public final class Functional
      * The init function, not dissimilar to list comprehensions, which is used to return a new finite list whose contents are
      * determined by successive calls to the function f.
      * init: (int -> A) -> int -> A list
-     * @param f - generator function used to produce the individual elements of the output list. This function is called by init
+     * @param f generator function used to produce the individual elements of the output list. This function is called by init
      *          with the unity-based position of the current element in the output list being produced. Therefore, the first time
      *          f is called it will receive a literal '1' as its argument; the second time '2'; etc.
-     * @param howMany - the number of elements in the output list
-     * @param <T>
+     * @param howMany the number of elements in the output list
+     * @param <T> the type of the element in the output sequence
      * @return a list of 'howMany' elements of type 'T' which were generated by the function 'f'
      */
     public final static <T>List<T> init(final Func<Integer,T> f,final int howMany)
@@ -511,13 +511,13 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
      * map: (A -> B) -> A list -> B list
-     * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
-     * @param input - a sequence to be fed into f
-     * @param <A>
-     * @param <B>
+     * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+     * @param input a sequence to be fed into f
+     * @param <A> the type of the element in the input sequence
+     * @param <B> the type of the element in the output sequence
      * @return a list of type B containing the transformed values.
      */
     public final static <A,B> List<B> map(final Func<A, ? extends B> f, final Iterable<? extends A> input)
@@ -529,15 +529,15 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
      * map: (A -> B) -> A list -> B list
-     * http://en.wikipedia.org/wiki/Currying
-     * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
-     * @param <A>
-     * @param <B>
+     * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+     * @param <A> the type of the element in the input sequence
+     * @param <B> the type of the element in the output sequence
      * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a list of type B
      *          containing the transformed values.
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A,B> Func<Iterable<A>,List<B>> map(final Func<? super A, ? extends B> f)
     {
@@ -550,14 +550,14 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
      * mapi: (int -> A -> B) -> A list -> B list
-     * @param f - a transformation function which is passed each input object of type A along with its position in the input sequence
+     * @param f a transformation function which is passed each input object of type A along with its position in the input sequence
      *          (starting from zero) and returns an object, presumably related, of type B
-     * @param input - a sequence to be fed into f
-     * @param <A>
-     * @param <B>
+     * @param input a sequence to be fed into f
+     * @param <A> the type of the element in the input sequence
+     * @param <B> the type of the element in the output sequence
      * @return a list of type B containing the transformed values.
      */
     public final static <A,B> List<B> mapi(final Func2<Integer, A, ? extends B> f, final Iterable<? extends A> input)
@@ -570,16 +570,16 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
      * mapi: (int -> A -> B) -> A list -> B list
-     * http://en.wikipedia.org/wiki/Currying
-     * @param f - a transformation function which is passed each input object of type A along with its position in the input sequence
+     * @param f a transformation function which is passed each input object of type A along with its position in the input sequence
      *          (starting from zero) and returns an object, presumably related, of type B
-     * @param <A>
-     * @param <B>
+     * @param <A> the type of the element in the input sequence
+     * @param <B> the type of the element in the output sequence
      * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a list of type B
      *          containing the transformed values.
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A,B> Func<Iterable<A>,List<B>> mapi(final Func2<Integer, ? super A, ? extends B> f)
     {
@@ -595,10 +595,10 @@ public final class Functional
 
     /**
      * sortWith: a wrapper for <tt>Collections.sort</tt> which preserves the input sequence.
-     * @param f - the <tt>Comparator</tt> to use for the sort
-     * @param input - the input
-     * @param <A>
-     * @param <AA>
+     * @param f the <tt>Comparator</tt> to use for the sort
+     * @param input the input
+     * @param <A> the type of the <tt>Comparator</tt>
+     * @param <AA> the type of the element in the input sequence
      * @return a sorted list containing all the elements of 'input' sorted using <tt>Collections.sort</tt> and 'f'
      */
     public final static <A, AA extends A>List<AA> sortWith(final Comparator<A> f, final List<AA> input)
@@ -610,9 +610,9 @@ public final class Functional
 
     /**
      * A simple function which wraps left.compareTo(right) so that this can be used as a sort function.
-     * @param left - input element
-     * @param right - input element
-     * @param <A>
+     * @param left input element
+     * @param right input element
+     * @param <A> the type of the elements to be compared
      * @return left.compareTo(right)
      */
     public final static <A extends Comparable<A>>int Sorter(final A left, final A right)
@@ -630,15 +630,15 @@ public final class Functional
 
     /**
      * A wrapper around <tt>toString()</tt>
-     * @param a - the element to be turned into a string using T.toString()
-     * @param <T> - the type of element 'a'
+     * @param a the element to be turned into a string using T.toString()
+     * @param <T> the type of element 'a'
      * @return a.toString()
      */
     public final static <T> String Stringify(final T a) { return a.toString(); }
 
     /**
      * A transformation function that wraps <tt>Stringify</tt>
-     * @param <T>
+     * @param <T> the type of the element which we will render as a String
      * @return a function that calls <tt>Stringify</tt>
      */
     public final static <T>Func<T, String> dStringify()
@@ -654,13 +654,13 @@ public final class Functional
      * true for all pairs and there is the same number of elements in both input sequences then forAll2 returns true. If the predicate
      * returns false at any point then the traversal of the input sequences halts and forAll2 returns false.
      * forAll2: (A -> B -> bool) -> A list -> B list -> bool
-     * @param f - predicate to which each successive pair (input1_i, input2_i) is applied
-     * @param input1 - input sequence
-     * @param input2 - input sequence
-     * @param <A>
-     * @param <B>
-     * @param <AA>
-     * @param <BB>
+     * @param f predicate to which each successive pair (input1_i, input2_i) is applied
+     * @param input1 input sequence
+     * @param input2 input sequence
+     * @param <A> the base type of the element in the first input sequence
+     * @param <B> the base type of the element in the second input sequence
+     * @param <AA> the type of the element in the first input sequence
+     * @param <BB> the type of the element in the second input sequence
      * @return true if the predicate 'f' evaluates true for all pairs, false otherwise
      * @throws java.lang.IllegalArgumentException if the predicate returns true for all pairs and the sequences contain differing numbers
      * of elements
@@ -683,11 +683,11 @@ public final class Functional
     }
 
     /**
-     * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
-     * @param pred - a filter function. This is passed each input element in turn and returns either true or false. If true then
+     * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+     * @param pred a filter function. This is passed each input element in turn and returns either true or false. If true then
      *             the input element is passed through to the output otherwise it is ignored.
-     * @param input - a sequence of objects
-     * @param <A>
+     * @param input a sequence of objects
+     * @param <A> the type of the element in the input sequence
      * @return a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
      *          function returns true for the element.
      */
@@ -702,14 +702,14 @@ public final class Functional
     }
 
     /**
-     * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
-     * http://en.wikipedia.org/wiki/Currying
-     * @param f - a filter function. This is passed each input element in turn and returns either true or false. If true then
+     * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+     * @param f a filter function. This is passed each input element in turn and returns either true or false. If true then
      *             the input element is passed through to the output otherwise it is ignored.
-     * @param <T>
+     * @param <T> the type of the element in the input sequence
      * @return a curried function that expects an input sequence which it feeds to the filter predicate which then returns
      *          a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
      *          function returns true for the element.
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public static final <T>Func<Iterable<T>,List<T>> filter(final Func<? super T,Boolean> f)
     {
@@ -725,9 +725,9 @@ public final class Functional
      * The converse operation to <tt>forAll</tt>. If the predicate returns true then 'exists' returns true and halts the traveral of the
      * input sequence. Otherwise return false.
      * exists: (A -> bool) -> A list -> bool
-     * @param f - predicate
-     * @param input - input sequence
-     * @param <A>
+     * @param f predicate
+     * @param input input sequence
+     * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for any element in the input sequence, false otherwise
      */
     public final static <A>boolean exists(final Func<? super A,Boolean> f, final Iterable<A> input)
@@ -743,10 +743,10 @@ public final class Functional
      * input sequence. Otherwise return false.
      * exists: (A -> bool) -> A list -> bool
      * This is the curried implementation.
-     * http://en.wikipedia.org/wiki/Currying
-     * @param f - predicate
-     * @param <A>
+     * @param f predicate
+     * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for any element in the input sequence, false otherwise
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A>Func<Iterable<A>,Boolean> exists(final Func<? super A,Boolean> f)
     {
@@ -761,8 +761,8 @@ public final class Functional
     /**
      * not reverses the result of the applied predicate
      * not: (A -> bool) -> (A -> bool)
-     * @param f - the applied predicate
-     * @param <A>
+     * @param f the applied predicate
+     * @param <A> the type of the input to the function <tt>f</tt>
      * @return true if f returns false, false if f returns true
      */
     public final static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
@@ -774,9 +774,9 @@ public final class Functional
      * The converse operation to <tt>exists</tt>. If the predicate returns true for all elements in the input sequence then 'forAll'
      * returns true otherwise return false.
      * forAll: (A -> bool) -> A list -> bool
-     * @param f - predicate
-     * @param input - input sequence
-     * @param <A>
+     * @param f predicate
+     * @param input input sequence
+     * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for all elements in the input sequence, false otherwise
      */
     public final static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<? extends A> input)
@@ -789,10 +789,10 @@ public final class Functional
      * returns true otherwise return false.
      * forAll: (A -> bool) -> A list -> bool
      * This is a curried implementation of 'forAll
-     * http://en.wikipedia.org/wiki/Currying
-     * @param f - predicate
-     * @param <A>
+     * @param f predicate
+     * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for all elements in the input sequence, false otherwise
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A>Func<Iterable<A>,Boolean> forAll(final Func<? super A,Boolean> f)
     {
@@ -807,8 +807,9 @@ public final class Functional
     /**
      * not2 reverses the result of the applied predicate
      * not2: (A -> B -> bool) -> (A -> B -> bool)
-     * @param f - the applied predicate
-     * @param <A>
+     * @param f the applied predicate
+     * @param <A> the type of the first input to the function <tt>f</tt>
+     * @param <B> the type of the second input to the function <tt>f</tt>
      * @return true if f returns false, false if f returns true
      */
     public final static <A,B> Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
@@ -824,9 +825,9 @@ public final class Functional
      * containing those elements from the input sequence for which the predicate returned true, the second list containing those
      * elements from the input sequence for which the predicate returned false.
      * partition: (A -> bool) -> A list -> A list * A list
-     * @param f - predicate used to split the input sequence into two groups
-     * @param input - the input sequence
-     * @param <A>
+     * @param f predicate used to split the input sequence into two groups
+     * @param input the input sequence
+     * @param <A> the type of the element in the input sequence
      * @return a pair of lists, the first being the 'true' and the second being the 'false'
      */
     public final static <A>Pair<List<A>,List<A>> partition(final Func<? super A,Boolean> f, final Iterable<A> input)
@@ -847,10 +848,10 @@ public final class Functional
      * elements from the input sequence for which the predicate returned false.
      * partition: (A -> bool) -> A list -> A list * A list
      * This is a curried implementation of 'forAll
-     * http://en.wikipedia.org/wiki/Currying
-     * @param f - predicate used to split the input sequence into two groups
-     * @param <A>
+     * @param f predicate used to split the input sequence into two groups
+     * @param <A> the type of the element in the input sequence
      * @return a pair of lists, the first being the 'true' and the second being the 'false'
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A>Func<Iterable<A>,Pair<List<A>,List<A>>> partition(final Func<? super A,Boolean> f)
     {
@@ -865,12 +866,12 @@ public final class Functional
     /**
      * choose: this is a map transformation with the difference being that the number of elements in the output sequence may
      * be between zero and the number of elements in the input sequence.
-     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * choose: (A -> B option) -> A list -> B list
-     * @param f - map function. This transforms the input element into an Option
-     * @param input - input sequence
-     * @param <A>
-     * @param <B>
+     * @param f map function. This transforms the input element into an Option
+     * @param input input sequence
+     * @param <A> the type of the element in the input sequence
+     * @param <B> the type of the element in the output sequence
      * @return a list of transformed elements, numbering less than or equal to the number of input elements
      */
     public final static <A, B>List<B> choose(final Func<? super A, Option<B>> f, final Iterable<A> input)
@@ -889,13 +890,13 @@ public final class Functional
      * choose: this is a curried implementation of choose.
      * choose is a map transformation with the difference being that the number of elements in the output sequence may
      * be between zero and the number of elements in the input sequence.
-     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
-     * http://en.wikipedia.org/wiki/Currying
+     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * choose: (A -> B option) -> A list -> B list
-     * @param f - map function. This transforms the input element into an Option
-     * @param <A>
-     * @param <B>
+     * @param f map function. This transforms the input element into an Option
+     * @param <A> the type of the element in the input sequence
+     * @param <B> the type of the element in the output sequence
      * @return a list of transformed elements, numbering less than or equal to the number of input elements
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A, B>Func<Iterable<A>,List<B>> choose(final Func<? super A, Option<B>> f)
     {
@@ -908,14 +909,14 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
      * fold: aggregate the elements of the input sequence given a seed and an aggregation function.
      * fold: (A -> B -> A) -> A -> B list -> A
-     * @param f - aggregation function
-     * @param initialValue - seed for the algorithm
-     * @param input - input sequence
-     * @param <A>
-     * @param <B>
+     * @param f aggregation function
+     * @param initialValue seed for the algorithm
+     * @param input input sequence
+     * @param <A> the type of the initialValue / seed
+     * @param <B> the type of the element in the input sequence
      * @return aggregated value
      */
     public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
@@ -927,16 +928,16 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
      * fold: aggregate the elements of the input sequence given a seed and an aggregation function.
      * This is the curried implementation
-     * http://en.wikipedia.org/wiki/Currying
      * fold: (A -> B -> A) -> A -> B list -> A
-     * @param f - aggregation function
-     * @param initialValue - seed for the algorithm
-     * @param <A>
-     * @param <B>
+     * @param f aggregation function
+     * @param initialValue seed for the algorithm
+     * @param <A> the type of the initialValue / seed
+     * @param <B> the type of the element in the output sequence
      * @return aggregated value
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public final static <A, B>Func<Iterable<B>,A> fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue)
     {
@@ -949,7 +950,8 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+     * See <a href="http://en.wikipedia.org/wiki/Unfold_(higher-order_function)">Unfold</a> and
+     * <a href="http://en.wikipedia.org/wiki/Anamorphism">Anamorphism</a>
      * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
@@ -969,7 +971,8 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+     * See <a href="http://en.wikipedia.org/wiki/Unfold_(higher-order_function)">Unfold</a>
+     * and <a href="http://en.wikipedia.org/wiki/Anamorphism">Anamorphism</a>
      * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
@@ -991,12 +994,12 @@ public final class Functional
     /**
      * toDictionary: given each element from the input sequence apply the keyFn and valueFn to generate a (key,value) pair.
      * The resulting dictionary (java.util.Map) contains all these pairs.
-     * @param keyFn - function used to generate the key
-     * @param valueFn - function used to generate the value
-     * @param input - input sequence
-     * @param <T>
-     * @param <K>
-     * @param <V>
+     * @param keyFn function used to generate the key
+     * @param valueFn function used to generate the value
+     * @param input input sequence
+     * @param <T> the type of the element in the input sequence
+     * @param <K> the type of the key elements
+     * @param <V> the type of the value elements
      * @return a java.util.Map containing the transformed input sequence
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
@@ -1013,8 +1016,8 @@ public final class Functional
 
     /**
      * toArray: create an array containing all the objects in the input sequence
-     * @param input - input sequence
-     * @param <T>
+     * @param input input sequence
+     * @param <T> the type of the element in the input sequence
      * @return an array containing all the elements of the input sequence
      */
     public final static <T>Object[] toArray(final Iterable<T> input)
@@ -1054,8 +1057,8 @@ public final class Functional
 
     /**
      * Create a java.util.List which contains all of the elements in the input sequence
-     * @param input - input sequence
-     * @param <T>
+     * @param input input sequence
+     * @param <T> the type of the element in the input sequence
      * @return a list containing the elements of the input sequence
      */
     public static final <T>List<T> toList(final Iterable<T> input)
@@ -1066,8 +1069,8 @@ public final class Functional
 
     /**
      * Create a java.util.Set which contains all of the elements in the input sequence
-     * @param input - input sequence
-     * @param <T>
+     * @param input input sequence
+     * @param <T> the type of the element in the input sequence
      * @return a set containing the elements of the input sequence
      */
     public static final <T>Set<T> toSet(final Iterable<T> input)
@@ -1079,8 +1082,8 @@ public final class Functional
 
     /**
      * Return the final element from the input sequence
-     * @param input - input sequence
-     * @param <T>
+     * @param input input sequence
+     * @param <T> the type of the element in the input sequence
      * @return the last element from the input sequence
      */
     public static final <T>T last(final Iterable<T> input)
@@ -1095,8 +1098,8 @@ public final class Functional
 
     /**
      * Return the final element from the input array
-     * @param input - input array
-     * @param <T>
+     * @param input input array
+     * @param <T> the type of the element in the input sequence
      * @return the last element from the input array
      */
     public static final <T>T last(final T[] input)
@@ -1108,9 +1111,9 @@ public final class Functional
 
     /**
      * Concatenate two sequences and return a new list containing the concatenation.
-     * @param list1 - first input sequence
-     * @param list2 - second input sequence
-     * @param <T>
+     * @param list1 first input sequence
+     * @param list2 second input sequence
+     * @param <T> the type of the element in the input sequences
      * @return a list containing the elements of the first sequence followed by the elements of the second sequence
      */
     public static final <T>List<T> concat(final Iterable<? extends T> list1, final Iterable<? extends T> list2)
@@ -1125,9 +1128,9 @@ public final class Functional
 
     /**
      * take: given a list return another list containing the first 'howMany' elements
-     * @param howMany - a positive number of elements to be returned from the input sequence
-     * @param list - the input sequence
-     * @param <T>
+     * @param howMany a positive number of elements to be returned from the input sequence
+     * @param list the input sequence
+     * @param <T> the type of the element in the input sequence
      * @return a list containing the first 'howMany' elements of 'list'
      * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
      */
@@ -1153,11 +1156,11 @@ public final class Functional
     /**
      * take: given a list return another list containing the first 'howMany' elements
      * This is the curried implementation
-     * http://en.wikipedia.org/wiki/Currying
-     * @param howMany - a positive number of elements to be returned from the input sequence
-     * @param <T>
+     * @param howMany a positive number of elements to be returned from the input sequence
+     * @param <T> the type of the element in the input sequence
      * @return a list containing the first 'howMany' elements of 'list'
      * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public static final<T>Func<Iterable<? extends T>,List<T>> take(final int howMany)
     {
@@ -1172,9 +1175,9 @@ public final class Functional
     /**
      * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
      * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
-     * @param howMany - a non-negative number of elements to be discarded from the input sequence
-     * @param list - the input sequence
-     * @param <T>
+     * @param howMany a non-negative number of elements to be discarded from the input sequence
+     * @param list the input sequence
+     * @param <T> the type of the element in the input sequence
      * @return a list containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
      * are skipped than are present in the 'list'
      */
@@ -1194,11 +1197,11 @@ public final class Functional
      * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
      * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
      * This is the curried implementation
-     * http://en.wikipedia.org/wiki/Currying
-     * @param howMany - a non-negative number of elements to be discarded from the input sequence
-     * @param <T>
+     * @param howMany a non-negative number of elements to be discarded from the input sequence
+     * @param <T> the type of the element in the input sequence
      * @return a list containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
      * are skipped than are present in the 'list'
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public static final<T>Func<List<? extends T>,List<T>> skip(final int howMany)
     {
@@ -1213,8 +1216,8 @@ public final class Functional
     /**
      * constant: a function that returns a map function f(n) that returns the supplied 'constant'. Typically this would be
      * used in <tt>init</tt>
-     * @param constant - the desired constant value to be returned
-     * @param <T>
+     * @param constant the desired constant value to be returned
+     * @param <T> the type of the constant
      * @return a function that returns a function that returns the supplied constant
      */
     public static final <T>Func<Integer,T> constant(final T constant)
@@ -1230,7 +1233,7 @@ public final class Functional
     /**
      * range: a function that returns a map function f(n) that returns an integer from the open-ended range [startFrom+n, infinity).
      * Typically this would be used in <tt>init</tt>
-     * @param startFrom - the lower bound of the range
+     * @param startFrom the lower bound of the range
      * @return a function that returns a function that returns an integer from the range [startFrom+n, infinity)
      */
     public static final Func<Integer,Integer> range(final Integer startFrom)
@@ -1245,11 +1248,11 @@ public final class Functional
 
     /**
      * The Convolution operator
-     * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
      * @param l1 input sequence
      * @param l2 input sequence
-     * @param <A>
-     * @param <B>
+     * @param <A> the type of the element in the first input sequence
+     * @param <B> the type of the element in the second input sequence
      * @throws java.lang.IllegalArgumentException if either input sequence is null or if the sequences have differing lengths.
      * @return list of pairs; the first element from each of the two input sequences is the first pair in the output sequence and so on,
      *          in order. If the sequences do not have the same number of elements then an exception is thrown.
@@ -1271,13 +1274,13 @@ public final class Functional
 
     /**
      * The Convolution operator
-     * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
      * @param l1 input sequence
      * @param l2 input sequence
      * @param l3 input sequence
-     * @param <A>
-     * @param <B>
-     * @param <C>
+     * @param <A> the type of the element in the first input sequence
+     * @param <B> the type of the element in the second input sequence
+     * @param <C> the type of the element in the third input sequence
      * @throws java.lang.IllegalArgumentException if any input sequence is null or if the sequences have differing lengths.
      * @return list of triplets; the first element from each of the input sequences is the first triplet in the output sequence and so on,
      *          in order. If the sequences do not have the same number of elements then an exception is thrown.
@@ -1302,10 +1305,10 @@ public final class Functional
 
     /**
      * The converse of the Convolution operator
-     * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
-     * @param input - sequence of pairs
-     * @param <A>
-     * @param <B>
+     * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
+     * @param input sequence of pairs
+     * @param <A> the type of the first element in the pair
+     * @param <B> the type of the second element in the pair
      * @throws java.lang.IllegalArgumentException if the input sequence is null
      * @return pair of lists; the first element from each of the two output sequences is the first pair in the input sequence and so on,
      *          in order.
@@ -1328,10 +1331,11 @@ public final class Functional
 
     /**
      * The converse of the Convolution operator
-     * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
-     * @param input - sequence of triplets
-     * @param <A>
-     * @param <B>
+     * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
+     * @param input sequence of triplets
+     * @param <A> the type of the first element in the triplet
+     * @param <B> the type of the second element in the triplet
+     * @param <C> the type of the third element in the triplet
      * @throws java.lang.IllegalArgumentException if the input sequence is null
      * @return triplet of lists; the first element from each of the output sequences is the first triplet in the input sequence and so on,
      *          in order.
@@ -1355,14 +1359,14 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
      * These sequences are concatenated into one final output sequence at the end of the transformation.
      * map: (T -> U list) -> T list -> U list
-     * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
-     * @param input - a sequence to be fed into f
-     * @param <T>
-     * @param <U>
+     * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+     * @param input a sequence to be fed into f
+     * @param <T> the type of the element in the input sequence
+     * @param <U> the type of the element in the output sequence
      * @return a list of type U containing the concatenated sequences of transformed values.
      */
     public static final <T,U>List<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
@@ -1374,16 +1378,16 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
      * These sequences are concatenated into one final output sequence at the end of the transformation.
      * map: (T -> U list) -> T list -> U list
      * This is a curried implementation of 'collect'
-     * http://en.wikipedia.org/wiki/Currying
-     * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
-     * @param <T>
-     * @param <U>
+     * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+     * @param <T> the type of the element in the input sequence
+     * @param <U> the type of the element in the output sequence
      * @return a list of type U containing the concatenated sequences of transformed values.
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
     public static final <T,U>Func<Iterable<T>,List<U>> collect(final Func<? super T,? extends Iterable<U>> f)
     {
@@ -1403,9 +1407,9 @@ public final class Functional
      * 'input' then the output list will contain all the elements of the input and the output sequence will be empty.
      * This is like <tt>take</tt> but leaves the user with the ability to continue the traversal of the input sequence from the point
      * at which the 'take' stopped.
-     * @param input - the input sequence
-     * @param howMany - the number of elements to be included in the first output list
-     * @param <A>
+     * @param input the input sequence
+     * @param howMany the number of elements to be included in the first output list
+     * @param <A> the type of the element in the input sequence
      * @return a pair: (list, seq) - the list contains 'howMany' elements of 'input' and the sequence contains the remainder
      */
     public static final <A>Pair<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
@@ -1436,11 +1440,11 @@ public final class Functional
     /**
      * append: given the input sequence and an item, return a new, lazily-evaluated sequence containing the input with the item
      * as the final element.
-     * http://en.wikipedia.org/wiki/Lazy_evaluation
-     * @param t - the item to be appended
-     * @param input - the input sequence
-     * @param <T>
+     * @param t the item to be appended
+     * @param input the input sequence
+     * @param <T> the type of the element in the input sequence
      * @return a sequence containing all the elements of 'input' followed by 't'
+     * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
      */
     public static final <T>Iterable<T> append(final T t, final Iterable<T> input)
     {
@@ -1470,14 +1474,14 @@ public final class Functional
     }
 
     /**
-     * groupBy: similar to <tt>partition</tt> in that the input is grouped according to a fucntion. This is more general than
+     * groupBy: similar to {@link #partition(Func,Iterable)} in that the input is grouped according to a function. This is more general than
      * <tt>partition</tt> though as the output can be an arbitrary number of groups, up to and including one group per item in the
      * input data set. The 'keyFn' is the grouping operator and it is used to determine the key at which any given element from
      * the input data set should be added to the output dictionary / map.
-     * @param keyFn - the grouping function. Given an element return the key to be used when storing this element in the dictionary
-     * @param input - the input sequence
-     * @param <T>
-     * @param <U>
+     * @param keyFn the grouping function. Given an element return the key to be used when storing this element in the dictionary
+     * @param input the input sequence
+     * @param <T> the type of the element in the input sequence
+     * @param <U> the type of the element in the key
      * @return a java.util.Map containing a list of elements for each key
      */
     public static final <T,U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
@@ -1506,20 +1510,20 @@ public final class Functional
 
     /**
      * Lazily-evaluated implementations of various of the algorithms
-     * http://en.wikipedia.org/wiki/Lazy_evaluation
+     * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
      */
     public static final class seq
     {
         /**
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <A href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</A>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (T -> U) -> T seq -> U seq
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param input - a sequence to be fed into f
-         * @param <T>
-         * @param <U>
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param input a sequence to be fed into f
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
          * @return a lazily-evaluated sequence of type B containing the transformed values.
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T,U>Iterable<U> map(final Func<? super T,? extends U> f, final Iterable<T> input)
         {
@@ -1552,16 +1556,16 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (T -> U) -> T seq -> U seq
-         * http://en.wikipedia.org/wiki/Currying
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param <T>
-         * @param <U>
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
          * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a lazily-evaluated
          * sequence of type U containing the transformed values.
+         * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T,U>Func<Iterable<T>,Iterable<U>> map(final Func<? super T,? extends U> f)
         {
@@ -1575,11 +1579,11 @@ public final class Functional
 
         /**
          * Concatenate two sequences and return a new sequence containing the concatenation.
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param list1 - first input sequence
-         * @param list2 - second input sequence
-         * @param <T>
+         * @param list1 first input sequence
+         * @param list2 second input sequence
+         * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence containing the elements of the first sequence followed by the elements of the second sequence
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T>Iterable<T> concat(final Iterable<? extends T> list1, final Iterable<? extends T> list2)
         {
@@ -1613,14 +1617,14 @@ public final class Functional
         }
 
         /**
-         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+         * @param f a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
-         * @param input - a sequence of objects
-         * @param <T>
+         * @param input a sequence of objects
+         * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence which contains zero or more of the elements of the input sequence. Each element is included only if
          * the filter function returns true for the element.
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T>Iterable<T> filter(final Func<? super T,Boolean> f, final Iterable<T> input) //throws NoSuchElementException, IllegalArgumentException, UnsupportedOperationException
         {
@@ -1670,13 +1674,13 @@ public final class Functional
         }
 
         /**
-         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+         * @param f a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
-         * @param <T>
+         * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence which contains zero or more of the elements of the input sequence. Each element is included only if
          * the filter function returns true for the element.
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T>Func<Iterable<T>,Iterable<T>> filter(final Func<? super T,Boolean> f)
         {
@@ -1691,14 +1695,14 @@ public final class Functional
         /**
          * choose: this is a map transformation with the difference being that the number of elements in the output sequence may
          * be between zero and the number of elements in the input sequence.
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * choose: (A -> B option) -> A list -> B list
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - map function. This transforms the input element into an Option
-         * @param input - input sequence
-         * @param <T>
-         * @param <U>
+         * @param f map function. This transforms the input element into an Option
+         * @param input input sequence
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
          * @return a lazily-evaluated sequence of transformed elements, numbering less than or equal to the number of input elements
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T,U>Iterable<U> choose(final Func<? super T,Option<U>> f, final Iterable<T> input)
         {
@@ -1753,13 +1757,13 @@ public final class Functional
         /**
          * choose: this is a map transformation with the difference being that the number of elements in the output sequence may
          * be between zero and the number of elements in the input sequence.
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * choose: (A -> B option) -> A list -> B list
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - map function. This transforms the input element into an Option
-         * @param <T>
-         * @param <U>
+         * @param f map function. This transforms the input element into an Option
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
          * @return a lazily-evaluated sequence of transformed elements, numbering less than or equal to the number of input elements
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T,U>Func<Iterable<T>,Iterable<U>> choose(final Func<? super T,Option<U>> f)
         {
@@ -1775,14 +1779,14 @@ public final class Functional
          * The init function, not dissimilar to list comprehensions, which is used to return a new finite sequence whose contents are
          * determined by successive calls to the function f.
          * init: (int -> T) -> int -> T seq
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - generator function used to produce the individual elements of the output sequence.
+         * @param f generator function used to produce the individual elements of the output sequence.
          *          This function is called by init with the unity-based position of the current element in the output sequence being
          *          produced. Therefore, the first time f is called it will receive a literal '1' as its argument; the second time
          *          '2'; etc.
-         * @param howMany - the number of elements in the output sequence
-         * @param <T>
+         * @param howMany the number of elements in the output sequence
+         * @param <T> the type of the element in the output sequence
          * @return a lazily-evaluated sequence which will contain no more than 'howMany' elements of type 'T' which were generated by the function 'f'
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public final static <T>Iterable<T> init(final Func<Integer,? extends T> f,final int howMany)
         {
@@ -1820,13 +1824,13 @@ public final class Functional
          * The init function, not dissimilar to list comprehensions, which is used to return a new infinite sequence whose contents are
          * determined by successive calls to the function f.
          * init: (int -> T) -> T seq
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - generator function used to produce the individual elements of the output sequence.
+         * @param f generator function used to produce the individual elements of the output sequence.
          *          This function is called by init with the unity-based position of the current element in the output sequence being
          *          produced. Therefore, the first time f is called it will receive a literal '1' as its argument; the second time
          *          '2'; etc.
-         * @param <T>
+         * @param <T> the type of the element in the output sequence
          * @return a potentially infinite sequence containing elements of type 'T' which were generated by the function 'f'
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public final static <T>Iterable<T> init(final Func<Integer,? extends T> f)
         {
@@ -1860,16 +1864,16 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
          * These sequences are concatenated into one final output sequence at the end of the transformation.
          * map: (T -> U list) -> T list -> U list
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
-         * @param input - a sequence to be fed into f
-         * @param <T>
-         * @param <U>
+         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+         * @param input a sequence to be fed into f
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
          * @return a lazily-evaluated sequence of type U containing the concatenated sequences of transformed values.
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T,U>Iterable<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
         {
@@ -1907,15 +1911,15 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
          * These sequences are concatenated into one final output sequence at the end of the transformation.
          * map: (T -> U list) -> T list -> U list
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
-         * @param <T>
-         * @param <U>
+         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
          * @return a function returning a lazily-evaluated sequence of type U containing the concatenated sequences of transformed values.
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T,U>Func<Iterable<T>,Iterable<U>> collect(final Func<? super T,? extends Iterable<U>> f)
         {
@@ -1930,11 +1934,11 @@ public final class Functional
         /**
          * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
          * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
-         * http://en.wikipedia.org/wiki/Lazy_evaluation
-         * @param howMany - a non-negative number of elements to be discarded from the input sequence
-         * @param <T>
+         * @param howMany a non-negative number of elements to be discarded from the input sequence
+         * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
          * are skipped than are present in the 'list'
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
         public static final <T>Iterable<T> skip(final int howMany, final Iterable<T> input)
         {
@@ -1975,7 +1979,7 @@ public final class Functional
     }
 
     /**
-     * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
+     * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
      * Recursive implementations of (some of) the algorithms contained herein
      */
     public final static class rec
@@ -1992,12 +1996,12 @@ public final class Functional
         }
 
         /**
-         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
+         * See <A href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</A>
          * This is a recursive implementation of filter.
-         * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
-         * @param f - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
+         * @param f a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
-         * @param <A>
+         * @param <A> the type of the element in the input sequence
          * @return a sequence which contains zero or more of the elements of the input sequence. Each element is included only if
          * the filter function returns true for the element.
          */
@@ -2017,15 +2021,15 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a recursive implementation of the map function. It is a 1-to-1 transformation.
          * Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (A -> B) -> A seq -> B seq
-         * http://en.wikipedia.org/wiki/Recursion_(computer_science)
-         * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param input - a sequence to be fed into f
-         * @param <A>
-         * @param <B>
+         * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param input a sequence to be fed into f
+         * @param <A> the type of the element in the input sequence
+         * @param <B> the type of the element in the output sequence
          * @return a seq of type B containing the transformed values.
          */
         public static final <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterable<A> input)
@@ -2044,14 +2048,14 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
          * fold: (A -> B -> A) -> A -> B list -> A
          * This is a recursive implementation of fold
-         * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
-         * @param f - the aggregation function
-         * @param initialValue - the seed for the aggregation
-         * @param <A>
-         * @param <B>
+         * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
+         * @param f the aggregation function
+         * @param initialValue the seed for the aggregation
+         * @param <A> the type of the initialValue / seed
+         * @param <B> the type of the element in the output sequence
          * @return the aggregated value
          */
         public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
@@ -2068,10 +2072,11 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+         * See <a href="http://en.wikipedia.org/wiki/Unfold_(higher-order_function)">Unfold</a>
+         * and <a href="http://en.wikipedia.org/wiki/Anamorphism">Anamorphism</a>
          * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
          * This is a recursive implementation of unfold
-         * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
+         * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
          */
         public final static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
         {
@@ -2087,10 +2092,11 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+         * See <a href="http://en.wikipedia.org/wiki/Unfold_(higher-order_function)">Unfold</a>
+         * and <a href="http://en.wikipedia.org/wiki/Anamorphism">Anamorphism</a>
          * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
          * This is a recursive implementation of unfold
-         * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
+         * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
          */
         public final static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
         {
@@ -2114,16 +2120,16 @@ public final class Functional
 
     /**
      * Implementations of the algorithms contained herein which return sets
-     * http://en.wikipedia.org/wiki/Set_(computer_science)
+     * See <a href="http://en.wikipedia.org/wiki/Set_(computer_science)">Set</a>
      */
     public static final class set
     {
         /**
-         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
-         * @param pred - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+         * @param pred a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
-         * @param input - a sequence of objects
-         * @param <A>
+         * @param input a sequence of objects
+         * @param <A> the type of the element in the input sequence
          * @return a set which contains zero or more of the elements of the input sequence. Each element is included only if the filter
          *          function returns true for the element.
          */
@@ -2139,14 +2145,14 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
          * These sequences are concatenated into one final output sequence at the end of the transformation.
          * map: (T -> U list) -> T list -> U list
-         * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
-         * @param input - a sequence to be fed into f
-         * @param <T>
-         * @param <U>
+         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+         * @param input a sequence to be fed into f
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
          * @return a set of type U containing the concatenated sequences of transformed values.
          */
         public static final <T,U>Set<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
@@ -2158,14 +2164,14 @@ public final class Functional
         }
 
         /**
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This implementation of the map function returns a set instead of an ordered sequence. It is a 1-to-1 transformation.
          * Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (A -> B) -> A seq -> B set
-         * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param input - a sequence to be fed into f
-         * @param <A>
-         * @param <B>
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param input a sequence to be fed into f
+         * @param <A> the type of the element in the input sequence
+         * @param <B> the type of the element in the output sequence
          * @return a set of type B containing the transformed values.
          * @throws UnsupportedOperationException if the <tt>add</tt> operation
          *         is not supported by this set
@@ -2186,9 +2192,9 @@ public final class Functional
 
         /**
          * Concatenate two sequences and return a new list containing the concatenation.
-         * @param list1 - first input sequence
-         * @param list2 - second input sequence
-         * @param <T>
+         * @param list1 first input sequence
+         * @param list2 second input sequence
+         * @param <T> the type of the element in the input sequence
          * @return a set containing the elements of the first sequence and the elements of the second sequence
          */
         public static final <T>Set<T> concat(final Set<? extends T> list1, final Set<? extends T> list2)
@@ -2210,8 +2216,8 @@ public final class Functional
 
         /**
          * Non-destructive wrapper for set intersection
-         * @param e1 - input set
-         * @param e2 - input set
+         * @param e1 input set
+         * @param e2 input set
          * @param <E>
          * @return a set containing those elements which are contained within both sets 'e1' and 'e2'
          */
@@ -2224,8 +2230,8 @@ public final class Functional
 
         /**
          * Non-destructive wrapper for set difference
-         * @param inSet - input set
-         * @param notInSet - input set
+         * @param inSet input set
+         * @param notInSet input set
          * @param <E>
          * @return a set of those elements which are in 'inSet' and not in 'notInSet'
          */
@@ -2239,21 +2245,21 @@ public final class Functional
 
     /**
      * Implementations of the algorithms contained herein in terms of 'fold'
-     * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     * See <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
      */
     public static final class inTermsOfFold
     {
         /**
-         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output
          * sequence.
          * map: (A -> B) -> A seq -> B list
-         * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
-         * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param l - a sequence to be fed into f
-         * @param <T>
-         * @param <U>
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param l a sequence to be fed into f
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
          * @return a list of type B containing the transformed values.
+         * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
          */
         public static final <T,U>List<T> map(final Func<? super U,? extends T> f, final Iterable<U> l)
         {
@@ -2268,14 +2274,14 @@ public final class Functional
         }
 
         /**
-         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
-         * @param predicate - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+         * @param predicate a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
-         * @param l - a sequence of objects
-         * @param <T>
+         * @param l a sequence of objects
+         * @param <T> the type of the element in the input sequence
          * @return a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
          *          function returns true for the element.
-         * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+         * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
          */
         public static final <T>List<T> filter(final Func<? super T,Boolean> predicate, final Iterable<T> l)
         {
@@ -2293,13 +2299,13 @@ public final class Functional
          * The init function, not dissimilar to list comprehensions, which is used to return a new finite list whose contents are
          * determined by successive calls to the function f.
          * init: (int -> A) -> int -> A list
-         * @param f - generator function used to produce the individual elements of the output list. This function is called by init
+         * @param f generator function used to produce the individual elements of the output list. This function is called by init
          *          with the unity-based position of the current element in the output list being produced. Therefore, the first time
          *          f is called it will receive a literal '1' as its argument; the second time '2'; etc.
-         * @param howMany - the number of elements in the output list
-         * @param <A>
+         * @param howMany the number of elements in the output list
+         * @param <A> the type of the element in the output sequence
          * @return a list of 'howMany' elements of type 'T' which were generated by the function 'f'
-         * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+         * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
          */
         public static final <A>List<A> init(final Func<Integer,? extends A> f, final int howMany)
         {
@@ -2319,12 +2325,12 @@ public final class Functional
     /**
      * A functional 'if' statement. Given 'a', evaluate the predicate. If the predicate evaluates to true then return the value of
      * evaluating the 'thenClause' with 'a' otherwise return the value of evaluating the 'elseClause' with 'a'
-     * @param a - value to be tested with the predicate and thence passed to one of the 'thenClause' and 'elseClause'
-     * @param predicate - function
-     * @param thenClause - function
-     * @param elseClause - function
-     * @param <A>
-     * @param <B>
+     * @param a value to be tested with the predicate and thence passed to one of the 'thenClause' and 'elseClause'
+     * @param predicate function
+     * @param thenClause function
+     * @param elseClause function
+     * @param <A> the type of the element which we are passing to the predicate
+     * @param <B> the type of the result of the <tt>thenClause</tt> and <tt>elseClause</tt>
      * @return the results of evaluating the 'thenClause' or the 'elseClause', depending on whether the 'predicate' evaluates to true
      * or false respectively
      */
@@ -2340,10 +2346,10 @@ public final class Functional
 
     /**
      * toCase: a Case builder function.
-     * @param pred - predicate
-     * @param result - the result function to be applied if the predicate evaluates to true
-     * @param <A>
-     * @param <B>
+     * @param pred predicate
+     * @param result the result function to be applied if the predicate evaluates to true
+     * @param <A> the type of the element being passed to the predicate
+     * @param <B> the type of the result of the transformation function
      * @return a new Case object
      */
     public static final <A,B>Case<A,B> toCase(final Func<A,Boolean> pred, final Func<A, B> result)
@@ -2356,11 +2362,11 @@ public final class Functional
 
     /**
      * Functional switch statement. Provide a sequence of Cases and a function which will be evaluated if none of the Cases are true.
-     * @param input - the value to be tested
-     * @param cases - sequence of Case objects
-     * @param defaultCase - function to be evaluated if none of the Cases are true
-     * @param <A>
-     * @param <B>
+     * @param input the value to be tested
+     * @param cases sequence of Case objects
+     * @param defaultCase function to be evaluated if none of the Cases are true
+     * @param <A> the type of the element being passed to the predicates in the {@link me.shaftesbury.utils.functional.Case}
+     * @param <B> the type of the result
      * @return the result of the appropriate Case or the result of the 'defaultCase' function
      */
     public static <A, B>B Switch(final A input, final Iterable<Case<A, B>> cases, final Func<A,B> defaultCase)
@@ -2370,11 +2376,11 @@ public final class Functional
 
     /**
      * Functional switch statement. Provide a sequence of Cases and a function which will be evaluated if none of the Cases are true.
-     * @param input - the value to be tested
-     * @param cases - sequence of Case objects
-     * @param defaultCase - function to be evaluated if none of the Cases are true
-     * @param <A>
-     * @param <B>
+     * @param input the value to be tested
+     * @param cases sequence of Case objects
+     * @param defaultCase function to be evaluated if none of the Cases are true
+     * @param <A> the type of the element passed to the predicate in the {@link me.shaftesbury.utils.functional.Case}
+     * @param <B> the type of the result
      * @return the result of the appropriate Case or the result of the 'defaultCase' function
      */
     public static <A, B>B Switch(final A input, final Iterable2<Case<A, B>> cases, final Func<A, B> defaultCase)
@@ -2396,8 +2402,8 @@ public final class Functional
 
     /**
      * Helper function to return the first element in a Pair
-     * @param <A>
-     * @param <B>
+     * @param <A> the type of the first element in the pair
+     * @param <B> the type of the second element in the pair
      * @return a function that returns the first element in a Pair
      */
     public static final <A,B>Func<Pair<A,B>,A> first()
@@ -2412,8 +2418,8 @@ public final class Functional
 
     /**
      *  Helper function to return the second element in a Pair
-     * @param <A>
-     * @param <B>
+     * @param <A> the type of the first element in the pair
+     * @param <B> the type of the second element in the pair
      * @return a function that returns the second element in a Pair
      */
     public static final <A,B>Func<Pair<A,B>,B> second()
