@@ -6,7 +6,7 @@ import org.javatuples.Triplet;
 import java.util.*;
 
 /**
- * Herein are contained some classic algorithms from functional programming. See http://en.wikipedia.org/wiki/Functional_programming
+ * Herein are contained some standard algorithms from functional programming. See http://en.wikipedia.org/wiki/Functional_programming
  * for more information
  */
 public final class Functional
@@ -909,13 +909,14 @@ public final class Functional
 
     /**
      * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     * fold: aggregate the elements of the input sequence given a seed and an aggregation function.
      * fold: (A -> B -> A) -> A -> B list -> A
-     * @param f
-     * @param initialValue
-     * @param input
+     * @param f - aggregation function
+     * @param initialValue - seed for the algorithm
+     * @param input - input sequence
      * @param <A>
      * @param <B>
-     * @return
+     * @return aggregated value
      */
     public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
     {
@@ -927,11 +928,15 @@ public final class Functional
 
     /**
      * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
-     * @param f
-     * @param initialValue
+     * fold: aggregate the elements of the input sequence given a seed and an aggregation function.
+     * This is the curried implementation
+     * http://en.wikipedia.org/wiki/Currying
+     * fold: (A -> B -> A) -> A -> B list -> A
+     * @param f - aggregation function
+     * @param initialValue - seed for the algorithm
      * @param <A>
      * @param <B>
-     * @return
+     * @return aggregated value
      */
     public final static <A, B>Func<Iterable<B>,A> fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue)
     {
@@ -945,6 +950,7 @@ public final class Functional
 
     /**
      * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+     * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
     public final static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
@@ -964,6 +970,7 @@ public final class Functional
 
     /**
      * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+     * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
     public final static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
@@ -1099,6 +1106,13 @@ public final class Functional
         return input[input.length-1];
     }
 
+    /**
+     * Concatenate two sequences and return a new list containing the concatenation.
+     * @param list1 - first input sequence
+     * @param list2 - second input sequence
+     * @param <T>
+     * @return a list containing the elements of the first sequence followed by the elements of the second sequence
+     */
     public static final <T>List<T> concat(final Iterable<? extends T> list1, final Iterable<? extends T> list2)
     {
         if(list1==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list1 is null");
@@ -1109,6 +1123,14 @@ public final class Functional
         return Collections.unmodifiableList(newList);
     }
 
+    /**
+     * take: given a list return another list containing the first 'howMany' elements
+     * @param howMany - a positive number of elements to be returned from the input sequence
+     * @param list - the input sequence
+     * @param <T>
+     * @return a list containing the first 'howMany' elements of 'list'
+     * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
+     */
     public static final<T>List<T> take(final int howMany, final Iterable<? extends T> list)
     {
         if(howMany<0) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): howMany is negative");
@@ -1128,6 +1150,15 @@ public final class Functional
         return Collections.unmodifiableList(output);
     }
 
+    /**
+     * take: given a list return another list containing the first 'howMany' elements
+     * This is the curried implementation
+     * http://en.wikipedia.org/wiki/Currying
+     * @param howMany - a positive number of elements to be returned from the input sequence
+     * @param <T>
+     * @return a list containing the first 'howMany' elements of 'list'
+     * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
+     */
     public static final<T>Func<Iterable<? extends T>,List<T>> take(final int howMany)
     {
         return new Func<Iterable<? extends T>, List<T>>() {
@@ -1138,6 +1169,15 @@ public final class Functional
         };
     }
 
+    /**
+     * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
+     * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
+     * @param howMany - a non-negative number of elements to be discarded from the input sequence
+     * @param list - the input sequence
+     * @param <T>
+     * @return a list containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
+     * are skipped than are present in the 'list'
+     */
     public static final <T>List<T> skip(final int howMany, final List<? extends T> list)
     {
         if(howMany<0) throw new IllegalArgumentException("Functional.skip(int,List<T>): howMany is negative");
@@ -1150,6 +1190,16 @@ public final class Functional
         return Collections.unmodifiableList(list.subList(howMany,list.size()));
     }
 
+    /**
+     * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
+     * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
+     * This is the curried implementation
+     * http://en.wikipedia.org/wiki/Currying
+     * @param howMany - a non-negative number of elements to be discarded from the input sequence
+     * @param <T>
+     * @return a list containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
+     * are skipped than are present in the 'list'
+     */
     public static final<T>Func<List<? extends T>,List<T>> skip(final int howMany)
     {
         return new Func<List<? extends T>, List<T>>() {
@@ -1160,6 +1210,13 @@ public final class Functional
         };
     }
 
+    /**
+     * constant: a function that returns a map function f(n) that returns the supplied 'constant'. Typically this would be
+     * used in <tt>init</tt>
+     * @param constant - the desired constant value to be returned
+     * @param <T>
+     * @return a function that returns a function that returns the supplied constant
+     */
     public static final <T>Func<Integer,T> constant(final T constant)
     {
         return new Func<Integer, T>() {
@@ -1170,6 +1227,12 @@ public final class Functional
         };
     }
 
+    /**
+     * range: a function that returns a map function f(n) that returns an integer from the open-ended range [startFrom+n, infinity).
+     * Typically this would be used in <tt>init</tt>
+     * @param startFrom - the lower bound of the range
+     * @return a function that returns a function that returns an integer from the range [startFrom+n, infinity)
+     */
     public static final Func<Integer,Integer> range(final Integer startFrom)
     {
         return new Func<Integer,Integer>(){
@@ -1238,7 +1301,7 @@ public final class Functional
     }
 
     /**
-     * The inverse of the Convolution operator
+     * The converse of the Convolution operator
      * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
      * @param input - sequence of pairs
      * @param <A>
@@ -1264,7 +1327,7 @@ public final class Functional
     }
 
     /**
-     * The inverse of the Convolution operator
+     * The converse of the Convolution operator
      * http://en.wikipedia.org/wiki/Zip_(higher-order_function)
      * @param input - sequence of triplets
      * @param <A>
@@ -1333,6 +1396,19 @@ public final class Functional
         };
     }
 
+    /**
+     * takeNAndYield: given an input sequence and an integer, return two sequences. The first output sequence returned is a list
+     * containing the first 'howMany' elements of the 'input' sequence and the second output sequence contains all the remaining
+     * elements of the 'input' sequence. The 'input' sequence is traversed only as far as is required to produce the first list
+     * and so the remainder of the 'input' sequence remains unevaluated. If 'howMany' is greater than the number of elements in
+     * 'input' then the output list will contain all the elements of the input and the output sequence will be empty.
+     * This is like <tt>take</tt> but leaves the user with the ability to continue the traversal of the input sequence from the point
+     * at which the 'take' stopped.
+     * @param input - the input sequence
+     * @param howMany - the number of elements to be included in the first output list
+     * @param <A>
+     * @return a pair: (list, seq) - the list contains 'howMany' elements of 'input' and the sequence contains the remainder
+     */
     public static final <A>Pair<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
     {
         if (input == null) throw new IllegalArgumentException("Functional.takeNAndYield: input is null");
@@ -1358,6 +1434,15 @@ public final class Functional
         return Pair.with(output, input);
     }
 
+    /**
+     * append: given the input sequence and an item, return a new, lazily-evaluated sequence containing the input with the item
+     * as the final element.
+     * http://en.wikipedia.org/wiki/Lazy_evaluation
+     * @param t - the item to be appended
+     * @param input - the input sequence
+     * @param <T>
+     * @return a sequence containing all the elements of 'input' followed by 't'
+     */
     public static final <T>Iterable<T> append(final T t, final Iterable<T> input)
     {
         return new Iterable<T>(){
@@ -1385,6 +1470,17 @@ public final class Functional
         };
     }
 
+    /**
+     * groupBy: similar to <tt>partition</tt> in that the input is grouped according to a fucntion. This is more general than
+     * <tt>partition</tt> though as the output can be an arbitrary number of groups, up to and including one group per item in the
+     * input data set. The 'keyFn' is the grouping operator and it is used to determine the key at which any given element from
+     * the input data set should be added to the output dictionary / map.
+     * @param keyFn - the grouping function. Given an element return the key to be used when storing this element in the dictionary
+     * @param input - the input sequence
+     * @param <T>
+     * @param <U>
+     * @return a java.util.Map containing a list of elements for each key
+     */
     public static final <T,U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
     {
         if (keyFn == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): keyFn is null");
@@ -1409,17 +1505,22 @@ public final class Functional
         return Collections.unmodifiableMap(output);
     }
 
+    /**
+     * Lazily-evaluated implementations of various of the algorithms
+     * http://en.wikipedia.org/wiki/Lazy_evaluation
+     */
     public static final class seq
     {
         /**
          * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (T -> U) -> T seq -> U seq
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
          * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
          * @param input - a sequence to be fed into f
          * @param <T>
          * @param <U>
-         * @return a sequence of type B containing the transformed values.
+         * @return a lazily-evaluated sequence of type B containing the transformed values.
          */
         public static final <T,U>Iterable<U> map(final Func<? super T,? extends U> f, final Iterable<T> input)
         {
@@ -1456,11 +1557,12 @@ public final class Functional
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (T -> U) -> T seq -> U seq
          * http://en.wikipedia.org/wiki/Currying
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
          * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
          * @param <T>
          * @param <U>
-         * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a sequence
-         * of type B containing the transformed values.
+         * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a lazily-evaluated
+         * sequence of type U containing the transformed values.
          */
         public static final <T,U>Func<Iterable<T>,Iterable<U>> map(final Func<? super T,? extends U> f)
         {
@@ -1472,6 +1574,14 @@ public final class Functional
             };
         }
 
+        /**
+         * Concatenate two sequences and return a new sequence containing the concatenation.
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
+         * @param list1 - first input sequence
+         * @param list2 - second input sequence
+         * @param <T>
+         * @return a lazily-evaluated sequence containing the elements of the first sequence followed by the elements of the second sequence
+         */
         public static final <T>Iterable<T> concat(final Iterable<? extends T> list1, final Iterable<? extends T> list2)
         {
             if(list1==null) throw new IllegalArgumentException("Functional.seq.concat(Iterable<T>,Iterable<T>): list1 is null");
@@ -1503,6 +1613,16 @@ public final class Functional
             };
         }
 
+        /**
+         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
+         * @param f - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         *             the input element is passed through to the output otherwise it is ignored.
+         * @param input - a sequence of objects
+         * @param <T>
+         * @return a lazily-evaluated sequence which contains zero or more of the elements of the input sequence. Each element is included only if
+         * the filter function returns true for the element.
+         */
         public static final <T>Iterable<T> filter(final Func<? super T,Boolean> f, final Iterable<T> input) //throws NoSuchElementException, IllegalArgumentException, UnsupportedOperationException
         {
             if(f==null) throw new IllegalArgumentException("f");
@@ -1550,6 +1670,15 @@ public final class Functional
             };
         }
 
+        /**
+         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
+         * @param f - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         *             the input element is passed through to the output otherwise it is ignored.
+         * @param <T>
+         * @return a lazily-evaluated sequence which contains zero or more of the elements of the input sequence. Each element is included only if
+         * the filter function returns true for the element.
+         */
         public static final <T>Func<Iterable<T>,Iterable<T>> filter(final Func<? super T,Boolean> f)
         {
             return new Func<Iterable<T>,Iterable<T>>(){
@@ -1560,6 +1689,18 @@ public final class Functional
             };
         }
 
+        /**
+         * choose: this is a map transformation with the difference being that the number of elements in the output sequence may
+         * be between zero and the number of elements in the input sequence.
+         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * choose: (A -> B option) -> A list -> B list
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
+         * @param f - map function. This transforms the input element into an Option
+         * @param input - input sequence
+         * @param <T>
+         * @param <U>
+         * @return a lazily-evaluated sequence of transformed elements, numbering less than or equal to the number of input elements
+         */
         public static final <T,U>Iterable<U> choose(final Func<? super T,Option<U>> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("f");
@@ -1610,6 +1751,17 @@ public final class Functional
             };
         }
 
+        /**
+         * choose: this is a map transformation with the difference being that the number of elements in the output sequence may
+         * be between zero and the number of elements in the input sequence.
+         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * choose: (A -> B option) -> A list -> B list
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
+         * @param f - map function. This transforms the input element into an Option
+         * @param <T>
+         * @param <U>
+         * @return a lazily-evaluated sequence of transformed elements, numbering less than or equal to the number of input elements
+         */
         public static final <T,U>Func<Iterable<T>,Iterable<U>> choose(final Func<? super T,Option<U>> f)
         {
             return new Func<Iterable<T>, Iterable<U>>() {
@@ -1624,13 +1776,14 @@ public final class Functional
          * The init function, not dissimilar to list comprehensions, which is used to return a new finite sequence whose contents are
          * determined by successive calls to the function f.
          * init: (int -> T) -> int -> T seq
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
          * @param f - generator function used to produce the individual elements of the output sequence.
          *          This function is called by init with the unity-based position of the current element in the output sequence being
          *          produced. Therefore, the first time f is called it will receive a literal '1' as its argument; the second time
          *          '2'; etc.
          * @param howMany - the number of elements in the output sequence
          * @param <T>
-         * @return a sequence which will contain no more than 'howMany' elements of type 'T' which were generated by the function 'f'
+         * @return a lazily-evaluated sequence which will contain no more than 'howMany' elements of type 'T' which were generated by the function 'f'
          */
         public final static <T>Iterable<T> init(final Func<Integer,? extends T> f,final int howMany)
         {
@@ -1668,6 +1821,7 @@ public final class Functional
          * The init function, not dissimilar to list comprehensions, which is used to return a new infinite sequence whose contents are
          * determined by successive calls to the function f.
          * init: (int -> T) -> T seq
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
          * @param f - generator function used to produce the individual elements of the output sequence.
          *          This function is called by init with the unity-based position of the current element in the output sequence being
          *          produced. Therefore, the first time f is called it will receive a literal '1' as its argument; the second time
@@ -1706,6 +1860,18 @@ public final class Functional
             };
         }
 
+        /**
+         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
+         * These sequences are concatenated into one final output sequence at the end of the transformation.
+         * map: (T -> U list) -> T list -> U list
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
+         * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+         * @param input - a sequence to be fed into f
+         * @param <T>
+         * @param <U>
+         * @return a lazily-evaluated sequence of type U containing the concatenated sequences of transformed values.
+         */
         public static final <T,U>Iterable<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("Functional.seq.collect: f is null");
@@ -1741,6 +1907,17 @@ public final class Functional
             };
         }
 
+        /**
+         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
+         * These sequences are concatenated into one final output sequence at the end of the transformation.
+         * map: (T -> U list) -> T list -> U list
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
+         * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+         * @param <T>
+         * @param <U>
+         * @return a function returning a lazily-evaluated sequence of type U containing the concatenated sequences of transformed values.
+         */
         public static final <T,U>Func<Iterable<T>,Iterable<U>> collect(final Func<? super T,? extends Iterable<U>> f)
         {
             return new Func<Iterable<T>, Iterable<U>>() {
@@ -1751,6 +1928,15 @@ public final class Functional
             };
         }
 
+        /**
+         * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
+         * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
+         * http://en.wikipedia.org/wiki/Lazy_evaluation
+         * @param howMany - a non-negative number of elements to be discarded from the input sequence
+         * @param <T>
+         * @return a lazily-evaluated sequence containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
+         * are skipped than are present in the 'list'
+         */
         public static final <T>Iterable<T> skip(final int howMany, final Iterable<T> input)
         {
             if(howMany<0) throw new IllegalArgumentException("Functional.skip(int,Iterable<T>): howMany is negative");
@@ -1806,6 +1992,16 @@ public final class Functional
             else return accumulator;
         }
 
+        /**
+         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
+         * This is a recursive implementation of filter.
+         * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
+         * @param f - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         *             the input element is passed through to the output otherwise it is ignored.
+         * @param <A>
+         * @return a sequence which contains zero or more of the elements of the input sequence. Each element is included only if
+         * the filter function returns true for the element.
+         */
         public static final <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterable<A> input)
         {
             return filter(f,input.iterator(),new ArrayList<A>());
@@ -1848,7 +2044,17 @@ public final class Functional
             else return initialValue;
         }
 
-        /// <summary> fold: (A -> B -> A) -> A -> B list -> A</summary>
+        /**
+         * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+         * fold: (A -> B -> A) -> A -> B list -> A
+         * This is a recursive implementation of fold
+         * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
+         * @param f
+         * @param initialValue
+         * @param <A>
+         * @param <B>
+         * @return
+         */
         public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
         {
             return fold(f,initialValue,input.iterator());
@@ -1862,6 +2068,12 @@ public final class Functional
             return unfold(unspool,finished,p.getValue1(),accumulator);
         }
 
+        /**
+         * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+         * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
+         * This is a recursive implementation of unfold
+         * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
+         */
         public final static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
         {
             return unfold(unspool,finished,seed,new ArrayList<A>());
@@ -1875,6 +2087,12 @@ public final class Functional
             return unfold(unspool,p.Some().getValue1(),accumulator);
         }
 
+        /**
+         * See http://en.wikipedia.org/wiki/Unfold_(higher-order_function) and http://en.wikipedia.org/wiki/Anamorphism
+         * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
+         * This is a recursive implementation of unfold
+         * See http://en.wikipedia.org/wiki/Recursion_(computer_science)
+         */
         public final static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
         {
             return unfold(unspool,seed,new ArrayList<A>());
@@ -1901,6 +2119,15 @@ public final class Functional
      */
     public static final class set
     {
+        /**
+         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
+         * @param pred - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         *             the input element is passed through to the output otherwise it is ignored.
+         * @param input - a sequence of objects
+         * @param <A>
+         * @return a set which contains zero or more of the elements of the input sequence. Each element is included only if the filter
+         *          function returns true for the element.
+         */
         public final static <A>Set<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
         {
             final Set<A> output = new HashSet<A>();
@@ -1912,6 +2139,17 @@ public final class Functional
             return Collections.unmodifiableSet(output);
         }
 
+        /**
+         * See http://en.wikipedia.org/wiki/Map_(higher-order_function)
+         * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
+         * These sequences are concatenated into one final output sequence at the end of the transformation.
+         * map: (T -> U list) -> T list -> U list
+         * @param f - a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+         * @param input - a sequence to be fed into f
+         * @param <T>
+         * @param <U>
+         * @return a set of type U containing the concatenated sequences of transformed values.
+         */
         public static final <T,U>Set<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
         {
             Set<U> output = new HashSet<U>();
@@ -1947,6 +2185,13 @@ public final class Functional
             return Collections.unmodifiableSet(output);
         }
 
+        /**
+         * Concatenate two sequences and return a new list containing the concatenation.
+         * @param list1 - first input sequence
+         * @param list2 - second input sequence
+         * @param <T>
+         * @return a set containing the elements of the first sequence and the elements of the second sequence
+         */
         public static final <T>Set<T> concat(final Set<? extends T> list1, final Set<? extends T> list2)
         {
             if(list1==null) throw new IllegalArgumentException("Functional.concat(Set<T>,List<T>): list1 is null");
@@ -1964,6 +2209,13 @@ public final class Functional
         * Non-destructive wrappers for set intersection and set difference
          */
 
+        /**
+         * Non-destructive wrapper for set intersection
+         * @param e1 - input set
+         * @param e2 - input set
+         * @param <E>
+         * @return a set containing those elements which are contained within both sets 'e1' and 'e2'
+         */
         public final static <E>Set<E> intersection(final Set<? extends E> e1, final Set<? extends E> e2)
         {
             Set<E> i = new HashSet<E>(e1);
@@ -1971,6 +2223,13 @@ public final class Functional
             return Collections.unmodifiableSet(i);
         }
 
+        /**
+         * Non-destructive wrapper for set difference
+         * @param inSet - input set
+         * @param notInSet - input set
+         * @param <E>
+         * @return a set of those elements which are in 'inSet' and not in 'notInSet'
+         */
         public final static <E>Set<E> asymmetricDifference(final Set<? extends E> inSet, final Set<? extends E> notInSet)
         {
             Set<E> i = new HashSet<E>(inSet);
@@ -1990,6 +2249,7 @@ public final class Functional
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output
          * sequence.
          * map: (A -> B) -> A seq -> B list
+         * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
          * @param f - a transformation function which takes a object of type A and returns an object, presumably related, of type B
          * @param l - a sequence to be fed into f
          * @param <T>
@@ -2008,6 +2268,16 @@ public final class Functional
             return l2;
         }
 
+        /**
+         * http://en.wikipedia.org/wiki/Filter_(higher-order_function)
+         * @param predicate - a filter function. This is passed each input element in turn and returns either true or false. If true then
+         *             the input element is passed through to the output otherwise it is ignored.
+         * @param l - a sequence of objects
+         * @param <T>
+         * @return a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
+         *          function returns true for the element.
+         * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+         */
         public static final <T>List<T> filter(final Func<? super T,Boolean> predicate, final Iterable<T> l)
         {
             final List<T> l2 = Functional.fold(new Func2<List<T>, T, List<T>>() {
@@ -2020,6 +2290,18 @@ public final class Functional
             return l2;
         }
 
+        /**
+         * The init function, not dissimilar to list comprehensions, which is used to return a new finite list whose contents are
+         * determined by successive calls to the function f.
+         * init: (int -> A) -> int -> A list
+         * @param f - generator function used to produce the individual elements of the output list. This function is called by init
+         *          with the unity-based position of the current element in the output list being produced. Therefore, the first time
+         *          f is called it will receive a literal '1' as its argument; the second time '2'; etc.
+         * @param howMany - the number of elements in the output list
+         * @param <A>
+         * @return a list of 'howMany' elements of type 'T' which were generated by the function 'f'
+         * See http://en.wikipedia.org/wiki/Fold_(higher-order_function)
+         */
         public static final <A>List<A> init(final Func<Integer,? extends A> f, final int howMany)
         {
             return Functional.unfold(new Func<Integer, Option<Pair<A,Integer>>>() {
@@ -2029,13 +2311,24 @@ public final class Functional
                 }
             }, new Integer(1));
         }
-
     }
 
     /*
     // Following are control structures, eg if, switch
      */
 
+    /**
+     * A functional 'if' statement. Given 'a', evaluate the predicate. If the predicate evaluates to true then return the value of
+     * evaluating the 'thenClause' with 'a' otherwise return the value of evaluating the 'elseClause' with 'a'
+     * @param a - value to be tested with the predicate and thence passed to one of the 'thenClause' and 'elseClause'
+     * @param predicate - function
+     * @param thenClause - function
+     * @param elseClause - function
+     * @param <A>
+     * @param <B>
+     * @return the results of evaluating the 'thenClause' or the 'elseClause', depending on whether the 'predicate' evaluates to true
+     * or false respectively
+     */
     public static final <A,B>B If(final A a, final Func<? super A,Boolean> predicate, final Func<? super A, ? extends B> thenClause, final Func<? super A, ? extends B> elseClause)
     {
         if (a == null) throw new IllegalArgumentException("a");
@@ -2046,6 +2339,14 @@ public final class Functional
         return predicate.apply(a) ? thenClause.apply(a) : elseClause.apply(a);
     }
 
+    /**
+     * toCase: a Case builder function.
+     * @param pred - predicate
+     * @param result - the result function to be applied if the predicate evaluates to true
+     * @param <A>
+     * @param <B>
+     * @return a new Case object
+     */
     public static final <A,B>Case<A,B> toCase(final Func<A,Boolean> pred, final Func<A, B> result)
     {
         if (pred == null) throw new IllegalArgumentException("pred");
@@ -2054,11 +2355,29 @@ public final class Functional
         return new Case<A, B> ( pred, result );
     }
 
+    /**
+     * Functional switch statement. Provide a sequence of Cases and a function which will be evaluated if none of the Cases are true.
+     * @param input - the value to be tested
+     * @param cases - sequence of Case objects
+     * @param defaultCase - function to be evaluated if none of the Cases are true
+     * @param <A>
+     * @param <B>
+     * @return the result of the appropriate Case or the result of the 'defaultCase' function
+     */
     public static <A, B>B Switch(final A input, final Iterable<Case<A, B>> cases, final Func<A,B> defaultCase)
     {
         return Switch(input,IterableHelper.create(cases),defaultCase);
     }
 
+    /**
+     * Functional switch statement. Provide a sequence of Cases and a function which will be evaluated if none of the Cases are true.
+     * @param input - the value to be tested
+     * @param cases - sequence of Case objects
+     * @param defaultCase - function to be evaluated if none of the Cases are true
+     * @param <A>
+     * @param <B>
+     * @return the result of the appropriate Case or the result of the 'defaultCase' function
+     */
     public static <A, B>B Switch(final A input, final Iterable2<Case<A, B>> cases, final Func<A, B> defaultCase)
     {
         if (input == null) throw new IllegalArgumentException("input");
@@ -2076,6 +2395,12 @@ public final class Functional
         } catch(final NoSuchElementException k) { return defaultCase.apply(input); }
     }
 
+    /**
+     * Helper function to return the first element in a Pair
+     * @param <A>
+     * @param <B>
+     * @return
+     */
     public static final <A,B>Func<Pair<A,B>,A> first()
     {
         return new Func<Pair<A, B>, A>() {
@@ -2086,6 +2411,12 @@ public final class Functional
         };
     }
 
+    /**
+     *  Helper function to return the second element in a Pair
+     * @param <A>
+     * @param <B>
+     * @return
+     */
     public static final <A,B>Func<Pair<A,B>,B> second()
     {
         return new Func<Pair<A, B>, B>() {
