@@ -1,12 +1,17 @@
 package me.shaftesbury.utils.functional;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 14/11/13
- * Time: 13:58
- * To change this template use File | Settings | File Templates.
+ * The Func interface is designed to represent lambda / anonymous functions which are defined and used in situ.
+ * See <a href="http://en.wikipedia.org/wiki/Anonymous_function">Lambda function</a>
+ * @param <A> the type of the input argument
+ * @param <R> the type of the return value
+ * @see <a href="http://en.wikipedia.org/wiki/Closure_(computer_programming)">Closure</a>
  */
 public interface Func<A, R> {
+    /**
+     * Call <tt>apply</tt> to evaluate the function object
+     * @param a the input value
+     * @return an element of type R
+     */
     R apply(A a);
 }
