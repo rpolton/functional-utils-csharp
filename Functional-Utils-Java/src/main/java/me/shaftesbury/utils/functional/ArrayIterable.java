@@ -1,20 +1,21 @@
 package me.shaftesbury.utils.functional;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 31/10/13
- * Time: 09:14
- * To change this template use File | Settings | File Templates.
- */
-
 import java.util.Iterator;
 
+/**
+ * ArrayIterable exists because the native Java array does not implement {@link java.lang.Iterable}. This, therefore, is
+ * a helpful wrapper so that arrays can be used almost transparently within this functional library.
+ * @param <T> type of the underlying data element
+ */
 public final class ArrayIterable<T> implements  Iterable<T>
 {
     private final T[] _a;
     private ArrayIterable(final T[] array) { _a = array; }
 
+    /**
+     * Expose a new {@link java.util.Iterator} to the underlying data array
+     * @return a {@link java.util.Iterator}
+     */
     public final Iterator<T> iterator()
     {
         return new Iterator<T>()
@@ -28,5 +29,11 @@ public final class ArrayIterable<T> implements  Iterable<T>
         };
     }
 
+    /**
+     * Factory method to create a new <tt>ArrayIterable</tt> given an array of <tt>T</tt>.
+     * @param array the input array
+     * @param <T> the type of the elements in the input array
+     * @return an ArrayIterable object which wraps the input array
+     */
     public final static <T>ArrayIterable<T> create(final T[] array) { return new ArrayIterable<T>(array); }
 }
