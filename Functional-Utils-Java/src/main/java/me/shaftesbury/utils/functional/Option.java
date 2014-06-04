@@ -17,8 +17,10 @@ public final class Option<T>
     }
 
     /**
+     * If this Option has a value then return it otherwise throw an exception. It is not intended that this method is called
+     * without a prior call to {@link #isSome()}
      * @throws me.shaftesbury.utils.functional.OptionNoValueAccessException
-     * @return
+     * @return the underlying value of the Option
      */
     public T Some()
     {
@@ -27,9 +29,10 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @param t
-     * @return
+     * Factory method similar to {@link #toOption(Object)}. The difference between them is that this method throws an exception
+     * if a null is passed as the argument. {@link #toOption(Object)} returns a None.
+     * @param t the object which is to be wrapped in an Option
+     * @return the Option containing <tt>t</tt>
      * @throws me.shaftesbury.utils.functional.OptionNoValueAccessException
      */
     public static <U>Option<U> Some(final U t)
@@ -39,9 +42,9 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @param <U>
-     * @return
+     * Factory method which returns an Option with no underlying value, ie a None
+     * @param <U> the type of the underlying data, had there been any.
+     * @return the Option None
      */
     public static <U>Option<U> None()
     {
@@ -49,8 +52,8 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @return
+     * Predicate. Does this Option object have a value?
+     * @return true if this Option has a value, false otherwise
      */
     public boolean isSome()
     {
@@ -58,8 +61,8 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @return
+     * Predicate. Does this Option have a value?
+     * @return true if this Option does not have a value, false otherwise.
      */
     public boolean isNone()
     {
@@ -67,9 +70,13 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @param o
-     * @return
+     * Equality operator. If the two Options are of the same type, they are both {@link #isSome()} and {@link #Some()} are
+     * both equal then the two Options are considered to be equal. If one or both is {@link #None()}, <tt>o</tt> is not an
+     * Option, <tt>o</tt> is an Option of another type or <tt>o</tt> is an Option of the same type but having a non-equal
+     * underlying value (as determined using the underlying value's {@link #equals(Object)} function) then the two are not
+     * considered equal.
+     * @param o the Option which we wish to compare for equality with <tt>this</tt>.
+     * @return true if they compare equally, false otherwise
      */
     public boolean equals(final Object o)
     {
@@ -89,8 +96,8 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @return
+     * Return the hashCode of this Option
+     * @return an integer hashcode
      */
     public int hashCode()
     {
@@ -98,8 +105,8 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @return
+     * Return a rendering of this Option as a String. That is, "Option( value.toString() )" or "None"
+     * @return the string representation of the Option.
      */
     public String toString()
     {
@@ -109,10 +116,10 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @param t
-     * @param <U>
-     * @return
+     * Factory method similar to {@link #Some(Object)}. The difference between them is that this method returns a None
+     * if a null is passed as the argument. {@link #toOption(Object)} throws an exception.
+     * @param t the object which is to be wrapped in an Option
+     * @return the Option containing <tt>t</tt>
      */
     public static <U>Option<U> toOption(U t)
     {
