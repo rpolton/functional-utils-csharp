@@ -266,4 +266,45 @@ public class OptionTest
 
         Assert.assertTrue(c.isNone());
     }
+
+    @Test
+    public void OptionToStringTest()
+    {
+        final Option<String> a = Option.toOption("string");
+        final Option<Integer> b = Option.toOption(10);
+        final Option<Boolean> c = Option.toOption(false);
+        final Option<String> d = Option.None();
+
+        Assert.assertEquals("Option( string )",a.toString());
+        Assert.assertEquals("Option( 10 )",b.toString());
+        Assert.assertEquals("Option( false )",c.toString());
+        Assert.assertEquals("None",d.toString());
+    }
+
+    @Test
+    public void OptionSomeCreatorTestValueType1()
+    {
+        final int expected = 10;
+        final Option<Integer> a = Option.Some(expected);
+        Assert.assertTrue(a.isSome());
+        Assert.assertFalse(a.isNone());
+        Assert.assertEquals((Integer)expected, a.Some());
+    }
+
+    @Test
+    public void OptionSomeCreatorTestStringType1()
+    {
+        final String expected = "ll";
+        final Option<String> a = Option.Some(expected);
+        Assert.assertTrue(a.isSome());
+        Assert.assertFalse(a.isNone());
+        Assert.assertEquals(expected, a.Some());
+    }
+
+    @Test(expected = OptionNoValueAccessException.class)
+    public void OptionSomeCreatorTestValueType2()
+    {
+        final Option<Integer> a = Option.Some(null);
+    }
+
 }

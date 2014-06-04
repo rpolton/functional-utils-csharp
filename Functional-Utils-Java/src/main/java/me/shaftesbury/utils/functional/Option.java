@@ -1,11 +1,8 @@
 package me.shaftesbury.utils.functional;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 22/10/13
- * Time: 13:19
- * To change this template use File | Settings | File Templates.
+ * Option is an implementation of the <tt>option monad</tt>.
+ * See http://en.wikipedia.org/wiki/Option_type
  */
 public final class Option<T>
 {
@@ -18,24 +15,63 @@ public final class Option<T>
     {
         _t = t;
     }
-    public final T Some() throws OptionNoValueAccessException
+
+    /**
+     * @throws me.shaftesbury.utils.functional.OptionNoValueAccessException
+     * @return
+     */
+    public T Some()
     {
         if(_t!=null) return _t;
         else throw new OptionNoValueAccessException();
     }
-    public static final <T>Option<T> None()
+
+    /**
+     *
+     * @param t
+     * @return
+     * @throws me.shaftesbury.utils.functional.OptionNoValueAccessException
+     */
+    public static <U>Option<U> Some(final U t)
     {
-        return new Option<T>();
+        if(t==null) throw new OptionNoValueAccessException();
+        return toOption(t);
     }
-    public final boolean isSome()
+
+    /**
+     *
+     * @param <U>
+     * @return
+     */
+    public static <U>Option<U> None()
+    {
+        return new Option<U>();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isSome()
     {
         return _t!=null;
     }
-    public final boolean isNone()
+
+    /**
+     *
+     * @return
+     */
+    public boolean isNone()
     {
         return _t==null;
     }
-    public final boolean equals(final Object o)
+
+    /**
+     *
+     * @param o
+     * @return
+     */
+    public boolean equals(final Object o)
     {
         if(o instanceof Option<?>)
         {
@@ -51,23 +87,61 @@ public final class Option<T>
         }
         else return false;
     }
-    public final int hashCode()
+
+    /**
+     *
+     * @return
+     */
+    public int hashCode()
     {
         return isNone() ? 0 : 31 * _t.hashCode();
     }
 
-    public final static <U>Option<U> toOption(U t)
+    /**
+     *
+     * @return
+     */
+    public String toString()
+    {
+        return isSome()
+                ? "Option( "+ Some().toString() + " )"
+                : "None";
+    }
+
+    /**
+     *
+     * @param t
+     * @param <U>
+     * @return
+     */
+    public static <U>Option<U> toOption(U t)
     {
         return new Option<U>(t);
     }
 
-    public final <U>Option<U> bind(final Func<T,Option<U>> f)
+    /**
+     *
+     * @param f
+     * @param <U>
+     * @return
+     */
+    public <U>Option<U> bind(final Func<T,Option<U>> f)
     {
         if(isSome()) return f.apply(Some());
         else return Option.None();
     }
 
-    public final static <A,B,C>Option<C>lift(final Func2<A,B,C> f, final Option<A> o1, final Option<B> o2)
+    /**
+     *
+     * @param f
+     * @param o1
+     * @param o2
+     * @param <A>
+     * @param <B>
+     * @param <C>
+     * @return
+     */
+    public static <A,B,C>Option<C>lift(final Func2<A,B,C> f, final Option<A> o1, final Option<B> o2)
     {
         if(o1.isSome() && o2.isSome()) return toOption(f.apply(o1.Some(),o2.Some()));
         else return None();
