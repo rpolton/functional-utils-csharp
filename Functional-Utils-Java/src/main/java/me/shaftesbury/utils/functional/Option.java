@@ -3,6 +3,7 @@ package me.shaftesbury.utils.functional;
 /**
  * Option is an implementation of the <tt>option monad</tt>.
  * See http://en.wikipedia.org/wiki/Option_type
+ * {@see http://en.wikipedia.org/wiki/Monad_(functional_programming)}
  */
 public final class Option<T>
 {
@@ -127,10 +128,11 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @param f
-     * @param <U>
-     * @return
+     * Apply a function to the underlying data if {@link #isSome()} and return the result otherwise return {@link #None()}
+     * {@see http://en.wikipedia.org/wiki/Monad_(functional_programming)}
+     * @param f the function to be bound
+     * @param <U> the type of the resulting Option type
+     * @return an Option containing either {@link #None()} or the result of the function <tt>f</tt>
      */
     public <U>Option<U> bind(final Func<T,Option<U>> f)
     {
@@ -139,14 +141,15 @@ public final class Option<T>
     }
 
     /**
-     *
-     * @param f
-     * @param o1
-     * @param o2
-     * @param <A>
-     * @param <B>
-     * @param <C>
-     * @return
+     * Given two monadic Options apply the supplied binary function to them if they are both {@link #isSome()} and return
+     * a wrapped Option containing the result or {@link #None()}.
+     * @param f the binary function to be lifted
+     * @param o1 the first Option to be passed to the lift function <tt>f</tt>
+     * @param o2 the second Option to be passed to the lift function <tt>f</tt>
+     * @param <A> the type of the first Option
+     * @param <B> the type of the second Option
+     * @param <C> the type of the resulting Option
+     * @return an Option containing the result of the lifted function as applied to <tt>o1</tt> and <tt>o2</tt> or {@link #None()}
      */
     public static <A,B,C>Option<C>lift(final Func2<A,B,C> f, final Option<A> o1, final Option<B> o2)
     {
