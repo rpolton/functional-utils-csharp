@@ -1940,23 +1940,24 @@ public final class Functional
          * are skipped than are present in the 'list'
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static final <T>Iterable<T> skip(final int howMany, final Iterable<T> input)
-        {
-            if(howMany<0) throw new IllegalArgumentException("Functional.skip(int,Iterable<T>): howMany is negative");
-            if(input==null) throw new IllegalArgumentException("Functional.skip(int,Iterable<T>): input is null");
+        public static final <T>Iterable<T> skip(final int howMany, final Iterable<T> input) {
+            if (howMany < 0)
+                throw new IllegalArgumentException("Functional.skip(int,Iterable<T>): howMany is negative");
+            if (input == null) throw new IllegalArgumentException("Functional.skip(int,Iterable<T>): input is null");
 
-            return new Iterable<T>(){
+            return new Iterable<T>() {
                 @Override
                 public Iterator<T> iterator() {
                     return new Iterator<T>() {
                         private final Iterator<T> it = input.iterator();
                         private boolean haveWeSkipped = false;
+
                         @Override
                         public boolean hasNext() {
-                            if(haveWeSkipped && it.hasNext()) return true;
-                            if(haveWeSkipped) return false;
-                            for(int i=0;i<howMany;++i)
-                                if(it.hasNext()) it.next();
+                            if (haveWeSkipped && it.hasNext()) return true;
+                            if (haveWeSkipped) return false;
+                            for (int i = 0; i < howMany; ++i)
+                                if (it.hasNext()) it.next();
                                 else return false;
                             haveWeSkipped = true;
                             return it.hasNext();
@@ -1971,6 +1972,71 @@ public final class Functional
                         @Override
                         public void remove() {
                             throw new UnsupportedOperationException("Functional.seq.skip: remove is not supported");
+                        }
+                    };
+                }
+            };
+        }
+
+        /**
+         * See <a href="http://en.wikipedia.org/wiki/Unfold_(higher-order_function)">Unfold</a> and
+         * <a href="http://en.wikipedia.org/wiki/Anamorphism">Anamorphism</a>
+         * This is the converse of <tt>fold</tt>
+         * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
+         */
+        public final static <A,B>Iterable<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
+        {
+            if(unspool==null) throw new IllegalArgumentException("unspool");
+            if(finished==null) throw new IllegalArgumentException("finished");
+
+            return new Iterable<A>() {
+                @Override
+                public Iterator<A> iterator() {
+                    return new Iterator<A>() {
+                        B next = seed;
+                        @Override
+                        public boolean hasNext() {
+                            return !finished.apply(next);
+                        }
+
+                        @Override
+                        public A next() {
+                            final Pair<A,B> t = unspool.apply(next);
+                            next = t.getValue1();
+                            return t.getValue0();
+                        }
+                    };
+                }
+            };
+        }
+
+        /**
+         * See <a href="http://en.wikipedia.org/wiki/Unfold_(higher-order_function)">Unfold</a>
+         * and <a href="http://en.wikipedia.org/wiki/Anamorphism">Anamorphism</a>
+         * This is the converse of <tt>fold</tt>
+         * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
+         */
+        public final static <A,B>Iterable<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
+        {
+            if(unspool==null) throw new IllegalArgumentException("unspool");
+
+            return new Iterable<A>() {
+                @Override
+                public Iterator<A> iterator() {
+                    return new Iterator<A>() {
+                        B next = seed;
+                        final List<A> results = new ArrayList<A>();
+                        Option<Pair<A,B>> temp;
+                        @Override
+                        public boolean hasNext() {
+                            temp = unspool.apply(next);
+                            return temp.isSome();
+                        }
+
+                        @Override
+                        public A next() {
+                            next = temp.Some().getValue1();
+                            return temp.Some().getValue0();
                         }
                     };
                 }
