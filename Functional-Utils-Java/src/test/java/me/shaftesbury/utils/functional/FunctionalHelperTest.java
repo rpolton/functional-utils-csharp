@@ -1,5 +1,6 @@
 package me.shaftesbury.utils.functional;
 
+import org.javatuples.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -109,5 +110,26 @@ public final class FunctionalHelperTest
         final List<Object> finalOutput = some(output).toList();
 
         AssertIterable.assertIterableEquals(Arrays.asList((Object)1),finalOutput);
+    }
+
+    @Test
+    public void partitionRanges()
+    {
+        final int noElems = 13;
+        final int noPartitions = 5;
+        final List<Range> partitions = FunctionalHelper.partition(noElems,noPartitions);
+
+        final List<Integer> expectedStart = Arrays.asList(0,3,6,9,11);
+        final List<Integer> expectedEnd = Arrays.asList(3,6,9,11,13);
+        final List<Pair<Integer,Integer>> expected = Functional.zip(expectedStart,expectedEnd);
+
+        final List<Pair<Integer,Integer>> output = Functional.map(new Func<Range, Pair<Integer,Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(Range range) {
+                return Pair.with(range.from(), range.to());
+            }
+        }, partitions);
+
+        AssertIterable.assertIterableEquals(expected,output);
     }
 }

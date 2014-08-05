@@ -1,5 +1,7 @@
 package me.shaftesbury.utils.functional;
 
+import java.util.List;
+
 /**
  * Created by Bob on 16/05/14.
  *
@@ -85,6 +87,62 @@ public final class FunctionalHelper
                 return tOption.Some();
             }
         });
+    }
+
+    /**
+     * The Range class holds an inclusive lower bound and an exclusive upper bound. That is lower <= pos < upper
+     */
+    public static class Range
+    {
+        private final int lowerBound;
+        private final int upperExBound;
+
+        /**
+         * Create a new Range object
+         * @param lower the inclusive lower bound of the Range
+         * @param upperEx the exclusive upper bound of the Range
+         */
+        public Range(final int lower, final int upperEx)
+        {
+            this.lowerBound=lower;
+            this.upperExBound=upperEx;
+        }
+
+        /**
+         * Return the inclusive lower bound
+         * @return the inclusive lower bound
+         */
+        public int from(){return lowerBound;}
+
+        /**
+         * return the exclusive upper bound
+         * @return the exclusive upper bound
+         */
+        public int to(){return upperExBound;}
+    }
+
+    /**
+     * This list generator returns a list of Range objects which split the interval [1-'howManyElements') into 'howManyPartitions' Range objects.
+     * If the interval cannot be divided exactly then the remainder is allocated evenly across the first
+     * 'howManyElements' % 'howManyPartitions' Range objects.
+     * @param howManyElements defines the exclusive upper bound of the interval to be split
+     * @param howManyPartitions defines the number of Range objects to generate to cover the interval
+     * @return a list of Range objects
+     */
+    public static List<Range> partition(final int howManyElements, final int howManyPartitions)
+    {
+        final int size = howManyElements/howManyPartitions;
+        final int remainder = howManyElements % howManyPartitions;
+
+        assert size*howManyPartitions + remainder == howManyElements;
+
+        return Functional.init(new Func<Integer, Range>() {
+            @Override
+            public Range apply(final Integer integer) {
+                return new Range((integer-1)*size+(integer<=remainder+1?integer-1:remainder),
+                        integer*size+(integer<=remainder?integer:remainder));
+            }
+        }, howManyPartitions);
     }
 
     private FunctionalHelper(){}
