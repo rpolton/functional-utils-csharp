@@ -117,15 +117,15 @@ public final class FunctionalHelperTest
     {
         final int noElems = 13;
         final int noPartitions = 5;
-        final List<Range> partitions = FunctionalHelper.partition(noElems,noPartitions);
+        final List<Range<Integer>> partitions = FunctionalHelper.partition(noElems,noPartitions);
 
         final List<Integer> expectedStart = Arrays.asList(0,3,6,9,11);
         final List<Integer> expectedEnd = Arrays.asList(3,6,9,11,13);
         final List<Pair<Integer,Integer>> expected = Functional.zip(expectedStart,expectedEnd);
 
-        final List<Pair<Integer,Integer>> output = Functional.map(new Func<Range, Pair<Integer,Integer>>() {
+        final List<Pair<Integer,Integer>> output = Functional.map(new Func<Range<Integer>, Pair<Integer,Integer>>() {
             @Override
-            public Pair<Integer, Integer> apply(Range range) {
+            public Pair<Integer, Integer> apply(final Range<Integer> range) {
                 return Pair.with(range.from(), range.to());
             }
         }, partitions);
