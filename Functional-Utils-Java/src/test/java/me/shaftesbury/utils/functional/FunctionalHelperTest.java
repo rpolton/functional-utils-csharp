@@ -113,7 +113,7 @@ public final class FunctionalHelperTest
     }
 
     @Test
-    public void partitionRanges()
+    public void partitionRangesOfInt()
     {
         final int noElems = 13;
         final int noPartitions = 5;
@@ -126,6 +126,30 @@ public final class FunctionalHelperTest
         final List<Pair<Integer,Integer>> output = Functional.map(new Func<Range<Integer>, Pair<Integer,Integer>>() {
             @Override
             public Pair<Integer, Integer> apply(final Range<Integer> range) {
+                return Pair.with(range.from(), range.to());
+            }
+        }, partitions);
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void partitionRangesOfString()
+    {
+        final int noElems = 13;
+        final int noPartitions = 5;
+        final List<Range<String>> partitions = Functional.toList(
+                FunctionalHelper.partition(
+                        new Func<Integer,String>(){public String apply(final Integer i) {return new Integer(i-1).toString(); }},
+                        noElems,noPartitions));
+
+        final List<String> expectedStart = Arrays.asList("0","3","6","9","11");
+        final List<String> expectedEnd = Arrays.asList("3","6","9","11","13");
+        final List<Pair<String,String>> expected = Functional.zip(expectedStart,expectedEnd);
+
+        final List<Pair<String,String>> output = Functional.map(new Func<Range<String>, Pair<String,String>>() {
+            @Override
+            public Pair<String, String> apply(final Range<String> range) {
                 return Pair.with(range.from(), range.to());
             }
         }, partitions);
