@@ -2123,6 +2123,11 @@ public final class Functional
                             next = t.getValue1();
                             return t.getValue0();
                         }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.unfold(Func,Func,B): it is not possible to remove elements from this sequence");
+                        }
                     };
                 }
             };
@@ -2155,6 +2160,11 @@ public final class Functional
                         public A next() {
                             next = temp.Some().getValue1();
                             return temp.Some().getValue0();
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.unfold(Func,B): it is not possible to remove elements from this sequence");
                         }
                     };
                 }
@@ -2228,6 +2238,11 @@ public final class Functional
                             final Range<T> retval = new Range(last, next);
                             last = next;
                             return retval;
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.partition(Func,int,int): it is not possible to remove elements from this sequence");
                         }
                     };
                 }
