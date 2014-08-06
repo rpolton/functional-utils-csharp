@@ -2149,13 +2149,6 @@ public class FunctionalTest
                         }, Functional.zip(expectedStart, expectedEnd)),
                     Functional.init(Functional.constant(new Functional.Range<Integer>(7,7)),3));
 
-        final List<Pair<Integer,Integer>> output = Functional.map(new Func<Functional.Range<Integer>, Pair<Integer,Integer>>() {
-            @Override
-            public Pair<Integer, Integer> apply(final Functional.Range<Integer> range) {
-                return Pair.with(range.from(), range.to());
-            }
-        }, partitions);
-
         AssertIterable.assertIterableEquals(expected,partitions);
     }
 
