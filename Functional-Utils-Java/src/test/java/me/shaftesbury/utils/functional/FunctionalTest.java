@@ -1534,7 +1534,7 @@ public class FunctionalTest
     public void IfTest1()
     {
         final Integer input = 1;
-        final Iterable2<Integer> i = IterableHelper.asList(0,1,2);
+        final Iterable2<Integer> i = IterableHelper.asList(0, 1, 2);
         final Iterable2<Integer> result = i.map(
                 new Func<Integer, Integer>() {
                     public Integer apply(Integer ii) {
@@ -1749,10 +1749,10 @@ public class FunctionalTest
     {
         final Integer i = 1;
         final Collection<Integer> l = Functional.init(DoublingGenerator,5);
-        final Iterable<Integer> output = Functional.append(i,l);
-        final List<Integer> expected = Arrays.asList(1,2,4,6,8,10);
+        final Iterable<Integer> output = Functional.append(i, l);
+        final List<Integer> expected = Arrays.asList(1, 2, 4, 6, 8, 10);
 
-        AssertIterable.assertIterableEquals(expected,output);
+        AssertIterable.assertIterableEquals(expected, output);
     }
 
     @Test
@@ -1772,9 +1772,9 @@ public class FunctionalTest
             }
         };
 
-        final List<Integer> expected = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         final List<Integer> output = Functional.unfold(unspool,finished,seed);
-        AssertIterable.assertIterableEquals(expected,output);
+        AssertIterable.assertIterableEquals(expected, output);
     }
 
     @Test
@@ -1924,7 +1924,7 @@ public class FunctionalTest
     @Test
     public void FilterInTermsOfFoldTest1()
     {
-        final Collection<Integer> l = Functional.init(DoublingGenerator,5);
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
         final Iterable<Integer> oddElems = Functional.inTermsOfFold.filter(Functional.isOdd, l);
         AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
     }
@@ -1938,13 +1938,13 @@ public class FunctionalTest
                 return integer * 2;
             }
         }, 5);
-        Assert.assertArrayEquals(new Integer[]{2,4,6,8,10}, output.toArray());
+        Assert.assertArrayEquals(new Integer[]{2, 4, 6, 8, 10}, output.toArray());
     }
 
     @Test
     public void skipTest1()
     {
-        final List<Integer> l = Arrays.asList(1,2,3,4,5);
+        final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
         {
             final List<Integer> expected = Arrays.asList(1,2,3,4,5);
             final List<Integer> output = Functional.skip(0,l);
@@ -1985,8 +1985,8 @@ public class FunctionalTest
     @Test(expected = IllegalArgumentException.class)
     public void skipTest2()
     {
-        final List<Integer> input = Arrays.asList(1,2,3,4);
-        Functional.skip(-1,input);
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4);
+        Functional.skip(-1, input);
     }
 
     @Test
@@ -2034,7 +2034,7 @@ public class FunctionalTest
     public void seqSkipTest2()
     {
         final List<Integer> input = Arrays.asList(1,2,3,4);
-        Functional.seq.skip(-1,input);
+        Functional.seq.skip(-1, input);
     }
 
     @Test
@@ -2044,7 +2044,7 @@ public class FunctionalTest
         for(int i=0;i<5;++i) input.add(Pair.with(i, new Integer(i).toString()));
         final List<Integer> output = Functional.map(Functional.<Integer,String>first(),input);
         final List<Integer> expected = Arrays.asList(0,1,2,3,4);
-        AssertIterable.assertIterableEquals(expected,output);
+        AssertIterable.assertIterableEquals(expected, output);
     }
 
     @Test
@@ -2054,7 +2054,7 @@ public class FunctionalTest
         for(int i=0;i<5;++i) input.add(Pair.with(i, new Integer(i).toString()));
         final List<String> output = Functional.map(Functional.<Integer,String>second(),input);
         final List<String> expected = Arrays.asList("0","1","2","3","4");
-        AssertIterable.assertIterableEquals(expected,output);
+        AssertIterable.assertIterableEquals(expected, output);
     }
 
     @Test
@@ -2064,7 +2064,7 @@ public class FunctionalTest
         final Map<Boolean,List<Integer>> output = Functional.groupBy(Functional.isEven,input);
         final Map<Boolean,List<Integer>> expected = new HashMap<Boolean, List<Integer>>();
         expected.put(false,Arrays.asList(1,3,5,7,9));
-        expected.put(true,Arrays.asList(2,4,6,8,10));
+        expected.put(true, Arrays.asList(2, 4, 6, 8, 10));
         AssertIterable.assertIterableEquals(expected.get(true), output.get(true));
         AssertIterable.assertIterableEquals(expected.get(false),output.get(false));
     }
@@ -2082,8 +2082,148 @@ public class FunctionalTest
         final Map<String,List<String>> expected = new HashMap<String, List<String>>();
         expected.put("a",Arrays.asList("aa","aab","aac"));
         expected.put("d",Arrays.asList("def"));
-        AssertIterable.assertIterableEquals(expected.get("a"),output.get("a"));
+        AssertIterable.assertIterableEquals(expected.get("a"), output.get("a"));
         AssertIterable.assertIterableEquals(expected.get("d"),output.get("d"));
         AssertIterable.assertIterableEquals(expected.keySet(),output.keySet());
+    }
+
+    @Test
+    public void partitionRangesOfInt()
+    {
+        final int noElems = 13;
+        final int noPartitions = 5;
+        final List<Functional.Range<Integer>> partitions = Functional.partition(noElems,noPartitions);
+
+        final List<Integer> expectedStart = Arrays.asList(0,3,6,9,11);
+        final List<Integer> expectedEnd = Arrays.asList(3,6,9,11,13);
+        final List<Pair<Integer,Integer>> expected = Functional.zip(expectedStart,expectedEnd);
+
+        final List<Pair<Integer,Integer>> output = Functional.map(new Func<Functional.Range<Integer>, Pair<Integer,Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(final Functional.Range<Integer> range) {
+                return Pair.with(range.from(), range.to());
+            }
+        }, partitions);
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void exactlyEvenPartitionRangesOfInt()
+    {
+        final int noElems = 10;
+        final int noPartitions = 5;
+        final List<Functional.Range<Integer>> partitions = Functional.partition(noElems,noPartitions);
+
+        final List<Integer> expectedStart = Arrays.asList(0,2,4,6,8);
+        final List<Integer> expectedEnd = Arrays.asList(2,4,6,8,10);
+        final List<Pair<Integer,Integer>> expected = Functional.zip(expectedStart,expectedEnd);
+
+        final List<Pair<Integer,Integer>> output = Functional.map(new Func<Functional.Range<Integer>, Pair<Integer,Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(final Functional.Range<Integer> range) {
+                return Pair.with(range.from(), range.to());
+            }
+        }, partitions);
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void partitionFewerRangesOfIntThanPartitionsRequested()
+    {
+        final int noElems = 7;
+        final int noPartitions = 10;
+        final List<Functional.Range<Integer>> partitions = Functional.partition(noElems,noPartitions);
+
+        final List<Integer> expectedStart = Arrays.asList(0,1,2,3,4,5,6);
+        final List<Integer> expectedEnd = Arrays.asList(1,2,3,4,5,6,7);
+        final List<Functional.Range<Integer>> expected =
+                Functional.concat(
+                    Functional.map(
+                        new Func<Pair<Integer,Integer>, Functional.Range<Integer>>() {
+                            public Functional.Range<Integer> apply(final Pair<Integer,Integer> pair)
+                            {
+                                return new Functional.Range<Integer>(pair.getValue0(), pair.getValue1());
+                            }
+                        }, Functional.zip(expectedStart, expectedEnd)),
+                    Functional.init(Functional.constant(new Functional.Range<Integer>(7,7)),3));
+
+        final List<Pair<Integer,Integer>> output = Functional.map(new Func<Functional.Range<Integer>, Pair<Integer,Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(final Functional.Range<Integer> range) {
+                return Pair.with(range.from(), range.to());
+            }
+        }, partitions);
+
+        AssertIterable.assertIterableEquals(expected,partitions);
+    }
+
+    @Test
+    public void partitionRangesOfString()
+    {
+        final int noElems = 13;
+        final int noPartitions = 5;
+        final List<Functional.Range<String>> partitions =
+                Functional.partition(
+                        new Func<Integer, String>() {
+                            public String apply(final Integer i) {
+                                return new Integer(i - 1).toString();
+                            }
+                        },
+                        noElems, noPartitions);
+
+        final List<String> expectedStart = Arrays.asList("0","3","6","9","11");
+        final List<String> expectedEnd = Arrays.asList("3","6","9","11","13");
+        final List<Pair<String,String>> expected = Functional.zip(expectedStart,expectedEnd);
+
+        final List<Pair<String,String>> output = Functional.map(new Func<Functional.Range<String>, Pair<String,String>>() {
+            @Override
+            public Pair<String, String> apply(final Functional.Range<String> range) {
+                return Pair.with(range.from(), range.to());
+            }
+        }, partitions);
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void partitionWithEmptySource()
+    {
+        Functional.partition(0,1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void partitionWithZeroOutputRanges()
+    {
+        Functional.partition(1,0);
+    }
+
+    @Test
+    public void seqPartitionRangesOfString()
+    {
+        final int noElems = 13;
+        final int noPartitions = 5;
+        final List<Functional.Range<String>> partitions = Functional.toList(
+                Functional.seq.partition(
+                        new Func<Integer, String>() {
+                            public String apply(final Integer i) {
+                                return new Integer(i - 1).toString();
+                            }
+                        },
+                        noElems, noPartitions));
+
+        final List<String> expectedStart = Arrays.asList("0","3","6","9","11");
+        final List<String> expectedEnd = Arrays.asList("3","6","9","11","13");
+        final List<Pair<String,String>> expected = Functional.zip(expectedStart,expectedEnd);
+
+        final List<Pair<String,String>> output = Functional.map(new Func<Functional.Range<String>, Pair<String,String>>() {
+            @Override
+            public Pair<String, String> apply(final Functional.Range<String> range) {
+                return Pair.with(range.from(), range.to());
+            }
+        }, partitions);
+
+        AssertIterable.assertIterableEquals(expected,output);
     }
 }

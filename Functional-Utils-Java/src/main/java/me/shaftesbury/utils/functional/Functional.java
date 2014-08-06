@@ -1035,7 +1035,7 @@ public final class Functional
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableList(Iterable<T>): input is null");
 
-        if(input instanceof List<?>) return Collections.unmodifiableList((List<T>)input);
+        if(input instanceof List<?>) return Collections.unmodifiableList((List<T>) input);
 
         final List<T> output = new ArrayList<T>();
         for(final T element: input) output.add(element);
@@ -1047,7 +1047,7 @@ public final class Functional
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableSet(Iterable<T>): input is null");
 
-        if(input instanceof Set<?>) return Collections.unmodifiableSet((Set<T>)input);
+        if(input instanceof Set<?>) return Collections.unmodifiableSet((Set<T>) input);
 
         final Set<T> output = new HashSet<T>();
         for(final T element: input) output.add(element);
@@ -1506,6 +1506,124 @@ public final class Functional
         for(final Map.Entry<U,List<T>> entry : intermediateResults.entrySet())
              output.put(entry.getKey(),Collections.unmodifiableList(entry.getValue()));
         return Collections.unmodifiableMap(output);
+    }
+
+    /**
+     * The Range class holds an inclusive lower bound and an exclusive upper bound. That is lower <= pos < upper
+     */
+    public static class Range<T>
+    {
+        private final T lowerBound;
+        private final T upperExBound;
+
+        /**
+         * Create a new Range object
+         * @param lower the inclusive lower bound of the Range
+         * @param upperEx the exclusive upper bound of the Range
+         */
+        public Range(final T lower, final T upperEx)
+        {
+            this.lowerBound=lower;
+            this.upperExBound=upperEx;
+        }
+
+        /**
+         * Return the inclusive lower bound
+         * @return the inclusive lower bound
+         */
+        public T from(){return lowerBound;}
+
+        /**
+         * return the exclusive upper bound
+         * @return the exclusive upper bound
+         */
+        public T to(){return upperExBound;}
+
+        public boolean equals(final Object other)
+        {
+            if(! (other instanceof Range<?>)) return false;
+            final Range<?> otherRange = (Range<?>)other;
+            return from().equals(otherRange.from()) && to().equals(otherRange.to());
+        }
+
+        public int hashCode()
+        {
+            return 13 * from().hashCode() + 7 * to().hashCode();
+        }
+    }
+
+    /**
+     * This list generator returns a list of Range objects which split the interval [1-'howManyElements') into 'howManyPartitions' Range objects.
+     * If the interval cannot be divided exactly then the remainder is allocated evenly across the first
+     * 'howManyElements' % 'howManyPartitions' Range objects.
+     * @param howManyElements defines the exclusive upper bound of the interval to be split
+     * @param howManyPartitions defines the number of Range objects to generate to cover the interval
+     * @return a list of Range objects
+     */
+    public static List<Range<Integer>> partition(final int howManyElements, final int howManyPartitions)
+    {
+        return partition(Functional.range(0), howManyElements, howManyPartitions);
+    }
+
+    /**
+     * This sequence generator returns a sequence of Range objects which split the interval [1-'howManyElements') into 'howManyPartitions'
+     * Range objects. If the interval cannot be divided exactly then the remainder is allocated evenly across the first
+     * 'howManyElements' % 'howManyPartitions' Range objects.
+     * @param generator a function which generates members of the input sequence
+     * @param howManyElements defines the exclusive upper bound of the interval to be split
+     * @param howManyPartitions defines the number of Range objects to generate to cover the interval
+     * @return a list of Range objects
+     */
+    public static <T>List<Range<T>> partition(final Func<Integer,T> generator, final int howManyElements, final int howManyPartitions)
+    {
+        if(howManyElements<=0) throw new IllegalArgumentException("Functional.partition() howManyElements cannot be non-positive");
+        if(howManyPartitions<=0) throw new IllegalArgumentException("Functional.partition() howManyPartitions cannot be non-positive");
+
+        final int size = howManyElements/howManyPartitions;
+        final int remainder = howManyElements % howManyPartitions;
+
+        assert size*howManyPartitions + remainder == howManyElements;
+
+        final Integer seed = 0;
+        final Func<Integer,Pair<T,Integer>> boundsCalculator = new Func<Integer, Pair<T, Integer>>() {
+            @Override
+            public Pair<T, Integer> apply(final Integer integer) {
+                return Pair.with(
+                        generator.apply(1 + (integer * size + (integer <= remainder ? integer : remainder))),
+                        integer+1);
+            }
+        };
+        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+            @Override
+            public Boolean apply(Integer integer) {
+                return integer>howManyPartitions;
+            }
+        };
+
+        final Iterable<T> output = Functional.seq.unfold(boundsCalculator,finished,seed);
+
+        final Iterator<T> iterator = output.iterator();
+        if(iterator==null || !iterator.hasNext()) throw new IllegalStateException("Somehow we have no entries in our sequence of bounds");
+        T last = iterator.next();
+        final List<Range<T>> retval = new ArrayList<Range<T>>(howManyPartitions);
+        for(int i=0;i<howManyPartitions;++i)
+        {
+            if(!iterator.hasNext()) throw new IllegalStateException(String.format("Somehow we have fewer entries (%d) in our sequence of bounds than expected (%d)",i,howManyPartitions));
+            final T next = iterator.next();
+            retval.add(new Range(last, next));
+            last = next;
+        }
+        return retval;
+
+//        return Functional.seq.init(new Func<Integer, Range<T>>() {
+//            @Override
+//            public Range<T> apply(final Integer integer) {
+//// inefficient - the upper bound is computed twice (once at the end of an iteration and once at the beginning of the next iteration)
+//                return new Range<T>( // 1 + the value because the init function expects the control range to start from one.
+//                        generator.apply(1 + ((integer - 1) * size + (integer <= remainder + 1 ? integer - 1 : remainder))),
+//                        generator.apply(1 + (integer * size + (integer <= remainder ? integer : remainder))));
+//            }
+//        }, howManyPartitions);
     }
 
     /**
@@ -2037,6 +2155,79 @@ public final class Functional
                         public A next() {
                             next = temp.Some().getValue1();
                             return temp.Some().getValue0();
+                        }
+                    };
+                }
+            };
+        }
+
+        /**
+         * This sequence generator returns a list of Range objects which split the interval [1-'howManyElements') into 'howManyPartitions' Range objects.
+         * If the interval cannot be divided exactly then the remainder is allocated evenly across the first
+         * 'howManyElements' % 'howManyPartitions' Range objects.
+         * @param howManyElements defines the exclusive upper bound of the interval to be split
+         * @param howManyPartitions defines the number of Range objects to generate to cover the interval
+         * @return a list of Range objects
+         */
+        public static Iterable<Range<Integer>> partition(final int howManyElements, final int howManyPartitions)
+        {
+            return partition(Functional.range(0), howManyElements, howManyPartitions);
+        }
+
+        /**
+         * This sequence generator returns a sequence of Range objects which split the interval [1-'howManyElements') into 'howManyPartitions'
+         * Range objects. If the interval cannot be divided exactly then the remainder is allocated evenly across the first
+         * 'howManyElements' % 'howManyPartitions' Range objects.
+         * @param generator a function which generates members of the input sequence
+         * @param howManyElements defines the exclusive upper bound of the interval to be split
+         * @param howManyPartitions defines the number of Range objects to generate to cover the interval
+         * @return a list of Range objects
+         */
+        public static <T>Iterable<Range<T>> partition(final Func<Integer,T> generator, final int howManyElements, final int howManyPartitions)
+        {
+            if(howManyElements<=0) throw new IllegalArgumentException("Functional.partition() howManyElements cannot be non-positive");
+            if(howManyPartitions<=0) throw new IllegalArgumentException("Functional.partition() howManyPartitions cannot be non-positive");
+
+            final int size = howManyElements/howManyPartitions;
+            final int remainder = howManyElements % howManyPartitions;
+
+            assert size*howManyPartitions + remainder == howManyElements;
+
+            final Integer seed = 0;
+            final Func<Integer,Pair<T,Integer>> boundsCalculator = new Func<Integer, Pair<T, Integer>>() {
+                @Override
+                public Pair<T, Integer> apply(final Integer integer) {
+                    return Pair.with(
+                            generator.apply(1 + (integer * size + (integer <= remainder ? integer : remainder))),
+                            integer+1);
+                }
+            };
+            final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+                @Override
+                public Boolean apply(Integer integer) {
+                    return integer>howManyPartitions;
+                }
+            };
+
+            final Iterable<T> output = Functional.seq.unfold(boundsCalculator,finished,seed);
+
+            return new Iterable<Range<T>>() {
+                @Override
+                public Iterator<Range<T>> iterator() {
+                    return new Iterator<Range<T>>() {
+                        final Iterator<T> iterator = output.iterator();
+                        T last = iterator.next();
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Range<T> next() {
+                            final T next = iterator.next();
+                            final Range<T> retval = new Range(last, next);
+                            last = next;
+                            return retval;
                         }
                     };
                 }
