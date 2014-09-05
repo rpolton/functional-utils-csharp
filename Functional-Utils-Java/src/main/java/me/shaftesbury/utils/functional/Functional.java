@@ -2190,8 +2190,8 @@ public final class Functional
          */
         public static final<T>Iterable<T> take(final int howMany, final Iterable<? extends T> list)
         {
-            if(howMany<0) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): howMany is negative");
-            if(list==null) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): list is null");
+            if(howMany<0) throw new IllegalArgumentException("Functional.seq.take(int,Iterable<T>): howMany is negative");
+            if(list==null) throw new IllegalArgumentException("Functional.seq.take(int,Iterable<T>): list is null");
 
             if(howMany==0) return new ArrayList<T>(0);
 
@@ -2390,6 +2390,65 @@ public final class Functional
                             throw new UnsupportedOperationException("Functional.seq.partition(Func,int,int): it is not possible to remove elements from this sequence");
                         }
                     };
+                }
+            };
+        }
+
+        /**
+         * The Convolution operator
+         * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
+         * @param l1 input sequence
+         * @param l2 input sequence
+         * @param <A> the type of the element in the first input sequence
+         * @param <B> the type of the element in the second input sequence
+         * @throws java.lang.IllegalArgumentException if either input sequence is null or if the sequences have differing lengths.
+         * @return list of pairs; the first element from each of the two input sequences is the first pair in the output sequence and so on,
+         *          in order. If the sequences do not have the same number of elements then an exception is thrown.
+         */
+        public static final <A,B>Iterable<Pair<A,B>> zip(final Iterable<? extends A> l1, final Iterable<? extends B> l2)
+        {
+            if(l1==null) throw new IllegalArgumentException("Functional.seq.zip(Iterable<A>,Iterable<B>): l1 is null");
+            if(l2==null) throw new IllegalArgumentException("Functional.seq.zip(Iterable<A>,Iterable<B>): l2 is null");
+
+            return new Iterable<Pair<A, B>>() {
+                @Override
+                public Iterator<Pair<A, B>> iterator() {
+                    return new Iterator<Pair<A, B>>() {
+                        private final Iterator<? extends A> l1_it = l1.iterator();
+                        private final Iterator<? extends B> l2_it = l2.iterator();
+                        @Override
+                        public boolean hasNext() {
+                            final boolean l1_it_hasNext = l1_it.hasNext();
+                            final boolean l2_it_hasNext = l2_it.hasNext();
+                            if(l1_it_hasNext != l2_it_hasNext) throw new IllegalArgumentException("Functional.seq.zip(Iterable<A>,Iterable<B>): l1 and l2 have differing numbers of elements");
+                            return l1_it_hasNext && l2_it_hasNext;
+                        }
+
+                        @Override
+                        public Pair<A, B> next() {
+                            return Pair.with(l1_it.next(),l2_it.next());
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.zip(Iterable,Iterable): it is not possible to remove elements from this sequence");
+                        }
+
+//                        @Override
+//                        public void forEachRemaining(Consumer<? super Pair<A, B>> action) {
+//
+//                        }
+                    };
+                }
+            };
+        }
+
+        public static final <A,B>Func<Iterable<B>,Iterable<Pair<A,B>>> zip(final Iterable<? extends A> l1)
+        {
+            return new Func<Iterable<B>,Iterable<Pair<A,B>>>() {
+                @Override
+                public Iterable<Pair<A,B>> apply(final Iterable<B> l2) {
+                    return Functional.seq.zip(l1, l2);
                 }
             };
         }

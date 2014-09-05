@@ -1270,6 +1270,24 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqZipTest1()
+    {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+
+        final Collection<Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
+        expected.add(new Pair<Integer, Character>(1, 'a'));
+        expected.add(new Pair<Integer, Character>(2, 'b'));
+        expected.add(new Pair<Integer, Character>(3, 'c'));
+        expected.add(new Pair<Integer, Character>(4, 'd'));
+        expected.add(new Pair<Integer, Character>(5, 'e'));
+
+        final Collection<Pair<Integer,Character>> output = Functional.toList(Functional.seq.zip(input1, input2));
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
     public void Zip3Test1()
     {
         final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
