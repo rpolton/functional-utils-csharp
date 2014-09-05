@@ -1696,6 +1696,70 @@ public final class Functional
         }
 
         /**
+         * See <A href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</A>
+         * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
+         * mapi: (Integer -> T -> U) -> T seq -> U seq
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param input a sequence to be fed into f
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
+         * @return a lazily-evaluated sequence of type B containing the transformed values.
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
+         */
+        public static final <T,U>Iterable<U> mapi(final Func2<Integer,? super T,? extends U> f, final Iterable<T> input)
+        {
+            if(f==null) throw new IllegalArgumentException("f");
+            if (input == null) throw new IllegalArgumentException("input");
+
+            return new Iterable<U>() {
+                @Override
+                public final Iterator<U> iterator() {
+                    return new Iterator<U>() {
+                        private final Iterator<T> _input=input.iterator();
+                        private final Func2<Integer,? super T,? extends U> _f = f;
+                        private int counter = 0;
+                        @Override
+                        public final boolean hasNext() {
+                            return _input.hasNext();
+                        }
+
+                        @Override
+                        public final U next() {
+                            return _f.apply(counter++,_input.next());
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                        }
+                    };
+                }
+            };
+        }
+
+        /**
+         * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
+         * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
+         * mapi: (int -> T -> U) -> T seq -> U seq
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param <T> the type of the element in the input sequence
+         * @param <U> the type of the element in the output sequence
+         * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a lazily-evaluated
+         * sequence of type U containing the transformed values.
+         * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
+         */
+        public static final <T,U>Func<Iterable<T>,Iterable<U>> mapi(final Func2<Integer,? super T,? extends U> f)
+        {
+            return new Func<Iterable<T>, Iterable<U>>() {
+                @Override
+                public Iterable<U> apply(final Iterable<T> input) {
+                    return Functional.seq.mapi(f, input);
+                }
+            };
+        }
+
+        /**
          * Concatenate two sequences and return a new sequence containing the concatenation.
          * @param list1 first input sequence
          * @param list2 second input sequence

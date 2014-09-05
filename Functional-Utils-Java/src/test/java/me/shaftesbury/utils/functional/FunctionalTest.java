@@ -48,12 +48,36 @@ public class FunctionalTest
     public void MapiTest1()
     {
         final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        final Collection<Pair<Integer,String>> output = Functional.mapi(new Func2<Integer, Integer, Pair<Integer,String>>() {
+        final Collection<Pair<Integer,String>> output = Functional.mapi(new Func2<Integer, Integer, Pair<Integer, String>>() {
             @Override
-            public Pair<Integer,String> apply(Integer pos, Integer i) {
-                return Pair.with(pos,i.toString());
+            public Pair<Integer, String> apply(Integer pos, Integer i) {
+                return Pair.with(pos, i.toString());
             }
         }, input);
+        Assert.assertArrayEquals(new String[]{"1","2","3","4","5"},Functional.map(new Func<Pair<Integer,String>, String>() {
+            @Override
+            public String apply(Pair<Integer,String> o) {
+                return o.getValue1();
+            }
+        },output).toArray());
+        Assert.assertArrayEquals(new Integer[]{0,1,2,3,4},Functional.map(new Func<Pair<Integer,String>, Integer>() {
+            @Override
+            public Integer apply(Pair<Integer,String> o) {
+                return o.getValue0();
+            }
+        },output).toArray());
+    }
+
+    @Test
+    public void seqMapiTest1()
+    {
+        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Collection<Pair<Integer,String>> output = Functional.toList(Functional.seq.mapi(new Func2<Integer, Integer, Pair<Integer, String>>() {
+            @Override
+            public Pair<Integer, String> apply(Integer pos, Integer i) {
+                return Pair.with(pos, i.toString());
+            }
+        }, input));
         Assert.assertArrayEquals(new String[]{"1","2","3","4","5"},Functional.map(new Func<Pair<Integer,String>, String>() {
             @Override
             public String apply(Pair<Integer,String> o) {
