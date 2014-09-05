@@ -2053,6 +2053,7 @@ public final class Functional
          * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
          * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
          * @param howMany a non-negative number of elements to be discarded from the input sequence
+         * @param input the input sequence
          * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
          * are skipped than are present in the 'list'
@@ -2092,6 +2093,86 @@ public final class Functional
                             throw new UnsupportedOperationException("Functional.seq.skip: remove is not supported");
                         }
                     };
+                }
+            };
+        }
+
+        /**
+         * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
+         * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
+         * @param howMany a non-negative number of elements to be discarded from the input sequence
+         * @param <T> the type of the element in the input sequence
+         * @return a lazily-evaluated sequence containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
+         * are skipped than are present in the 'list'
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
+         */
+        public static final <T>Func<Iterable<T>,Iterable<T>> skip(final int howMany)
+        {
+            return new Func<Iterable<T>, Iterable<T>>() {
+                @Override
+                public Iterable<T> apply(final Iterable<T> input) {
+                    return Functional.seq.skip(howMany, input);
+                }
+            };
+        }
+
+        /**
+         * take: given a sequence return another sequence containing the first 'howMany' elements
+         * @param howMany a positive number of elements to be returned from the input sequence
+         * @param list the input sequence
+         * @param <T> the type of the element in the input sequence
+         * @return a sequence containing the first 'howMany' elements of 'list'
+         * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
+         */
+        public static final<T>Iterable<T> take(final int howMany, final Iterable<? extends T> list)
+        {
+            if(howMany<0) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): howMany is negative");
+            if(list==null) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): list is null");
+
+            if(howMany==0) return new ArrayList<T>(0);
+
+            return new Iterable<T>() {
+                @Override
+                public Iterator<T> iterator() {
+                    return new Iterator<T>(){
+                        private final Iterator<? extends T> it = list.iterator();
+                        private int howManyHaveWeRetrievedAlready = 0;
+                        @Override
+                        public boolean hasNext() {
+                            return howManyHaveWeRetrievedAlready<howMany && it.hasNext();
+                        }
+
+                        @Override
+                        public T next() {
+                            if(howManyHaveWeRetrievedAlready>=howMany)
+                                throw new java.util.NoSuchElementException("Cannot request additional elements from input");
+                            final T next = it.next();
+                            howManyHaveWeRetrievedAlready++;
+                            return next;
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.take: remove is not supported");
+                        }
+                    };
+                }
+            };
+        }
+
+        /**
+         * take: given a sequence return another sequence containing the first 'howMany' elements
+         * @param howMany a positive number of elements to be returned from the input sequence
+         * @param <T> the type of the element in the input sequence
+         * @return a sequence containing the first 'howMany' elements of 'list'
+         * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
+         */
+        public static final <T>Func<Iterable<T>,Iterable<T>> take(final int howMany)
+        {
+            return new Func<Iterable<T>, Iterable<T>>() {
+                @Override
+                public Iterable<T> apply(final Iterable<T> input) {
+                    return Functional.seq.take(howMany, input);
                 }
             };
         }

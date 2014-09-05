@@ -1023,6 +1023,21 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqTakeTest1()
+    {
+        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer o) {
+                return Functional.toList(Functional.seq.take(o, input));
+            }
+        }, input);
+        final List<Integer> expected = Arrays.asList(1,1,2,1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,10);
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
     public void ConstantInitialiserTest1()
     {
         final int howMany = 6;
