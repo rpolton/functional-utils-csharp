@@ -504,7 +504,7 @@ public final class Functional
         if (f == null) throw new IllegalArgumentException("f");
         if(howMany<1) throw new IllegalArgumentException("howMany");
 
-        final List<T> output = new ArrayList<T>();
+        final List<T> output = new ArrayList<T>(howMany);
         for(int i=1; i<=howMany; ++i)
             output.add(f.apply(i));
         return Collections.unmodifiableList(output);
@@ -1417,7 +1417,7 @@ public final class Functional
         if (input == null) throw new IllegalArgumentException("Functional.takeNAndYield: input is null");
 
         int counter = 0;
-        final List<A> output = new ArrayList<A>();
+        final List<A> output = new ArrayList<A>(howMany);
         final Iterator<A> position = input.iterator();
         if(howMany>0&&position.hasNext())
         {
