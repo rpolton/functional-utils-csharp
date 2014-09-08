@@ -2305,6 +2305,9 @@ public class FunctionalTest
         final Map<Integer,String> output = Functional.toMutableDictionary(expected);
         Assert.assertTrue(expected.entrySet().containsAll(output.entrySet()));
         Assert.assertTrue(output.entrySet().containsAll(expected.entrySet()));
+        output.put(24, "24");
+        Assert.assertTrue(output.containsKey(24));
+        Assert.assertTrue(output.containsValue("24"));
    }
 
     @Test
@@ -2313,6 +2316,8 @@ public class FunctionalTest
         final List<String> expected = Arrays.asList("0","3","6","9","11");
         final List<String> output = Functional.toMutableList(expected);
         AssertIterable.assertIterableEquals(output,expected);
+        output.add("24");
+        Assert.assertTrue(output.contains("24"));
     }
 
     @Test
@@ -2322,6 +2327,8 @@ public class FunctionalTest
         final Set<String> output = Functional.toMutableSet(expected);
         Assert.assertTrue(expected.containsAll(output));
         Assert.assertTrue(output.containsAll(expected));
+        output.add("24");
+        Assert.assertTrue(output.contains("24"));
     }
 
 }
