@@ -16,7 +16,7 @@
 
     <groupId>me.shaftesbury</groupId>
     <artifactId>Functional-Utils-Java</artifactId>
-    <version>1.15-SNAPSHOT</version>
+    <version>1.14-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
