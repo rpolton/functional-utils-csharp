@@ -1306,6 +1306,25 @@ public class FunctionalTest
         AssertIterable.assertIterableEquals(expected, output);
     }
 
+    @Test
+    public void seqZip3Test1()
+    {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+        final Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
+
+        final Collection<Triplet<Integer,Character,Double>> expected = new ArrayList<Triplet<Integer, Character, Double>>();
+        expected.add(new Triplet<Integer, Character, Double>(1, 'a', 1.0));
+        expected.add(new Triplet<Integer, Character, Double>(2, 'b', 2.0));
+        expected.add(new Triplet<Integer, Character, Double>(3, 'c', 2.5));
+        expected.add(new Triplet<Integer, Character, Double>(4, 'd', 3.0));
+        expected.add(new Triplet<Integer, Character, Double>(5, 'e', 3.5));
+
+        final Collection<Triplet<Integer,Character,Double>> output = Functional.toList(Functional.seq.zip3(input1, input2, input3));
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
     /*[ExpectedException(typeof(ArgumentException))]
         [Test]
     public void Zip3Test2()

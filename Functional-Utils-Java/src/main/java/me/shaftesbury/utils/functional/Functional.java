@@ -2452,6 +2452,70 @@ public final class Functional
                 }
             };
         }
+
+        /**
+         * The Convolution operator
+         * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
+         * @param l1 input sequence
+         * @param l2 input sequence
+         * @param l3 input sequence
+         * @param <A> the type of the element in the first input sequence
+         * @param <B> the type of the element in the second input sequence
+         * @param <C> the type of the element in the third input sequence
+         * @throws java.lang.IllegalArgumentException if either input sequence is null or if the sequences have differing lengths.
+         * @return list of pairs; the first element from each of the two input sequences is the first pair in the output sequence and so on,
+         *          in order. If the sequences do not have the same number of elements then an exception is thrown.
+         */
+        public static final <A,B,C>Iterable<Triplet<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
+        {
+            if(l1==null) throw new IllegalArgumentException("Functional.seq.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1 is null");
+            if(l2==null) throw new IllegalArgumentException("Functional.seq.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l2 is null");
+            if(l3==null) throw new IllegalArgumentException("Functional.seq.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l3 is null");
+
+            return new Iterable<Triplet<A, B, C>>() {
+                @Override
+                public Iterator<Triplet<A, B, C>> iterator() {
+                    return new Iterator<Triplet<A, B, C>>() {
+                        private final Iterator<? extends A> l1_it = l1.iterator();
+                        private final Iterator<? extends B> l2_it = l2.iterator();
+                        private final Iterator<? extends C> l3_it = l3.iterator();
+                        @Override
+                        public boolean hasNext() {
+                            final boolean l1_it_hasNext = l1_it.hasNext();
+                            final boolean l2_it_hasNext = l2_it.hasNext();
+                            final boolean l3_it_hasNext = l3_it.hasNext();
+                            if(l1_it_hasNext != l2_it_hasNext || l1_it_hasNext != l3_it_hasNext) throw new IllegalArgumentException("Functional.seq.zip3(Iterable<A>,Iterable<B>,Iterable<C>): the input sequences have differing numbers of elements");
+                            return l1_it_hasNext && l2_it_hasNext && l3_it_hasNext;
+                        }
+
+                        @Override
+                        public Triplet<A, B, C> next() {
+                            return Triplet.with(l1_it.next(),l2_it.next(),l3_it.next());
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.zip3(Iterable,Iterable,Iterable): it is not possible to remove elements from this sequence");
+                        }
+
+//                        @Override
+//                        public void forEachRemaining(Consumer<? super Pair<A, B>> action) {
+//
+//                        }
+                    };
+                }
+            };
+        }
+
+        public static final <A,B,C>Func<Iterable<C>,Iterable<Triplet<A,B,C>>> zip3(final Iterable<? extends A> l1,final Iterable<? extends B> l2)
+        {
+            return new Func<Iterable<C>,Iterable<Triplet<A,B,C>>>() {
+                @Override
+                public Iterable<Triplet<A,B,C>> apply(final Iterable<C> l3) {
+                    return Functional.seq.zip3(l1, l2, l3);
+                }
+            };
+        }
     }
 
     /**
