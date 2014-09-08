@@ -2295,4 +2295,33 @@ public class FunctionalTest
 
         AssertIterable.assertIterableEquals(expected,output);
     }
+
+    @Test
+    public void toMutableDictionaryTest()
+    {
+        final Map<Integer,String> expected = new HashMap<Integer,String>();
+        expected.put(6, "6");
+        expected.put(12, "12");
+        final Map<Integer,String> output = Functional.toMutableDictionary(expected);
+        Assert.assertTrue(expected.entrySet().containsAll(output.entrySet()));
+        Assert.assertTrue(output.entrySet().containsAll(expected.entrySet()));
+   }
+
+    @Test
+    public void toMutableListTest()
+    {
+        final List<String> expected = Arrays.asList("0","3","6","9","11");
+        final List<String> output = Functional.toMutableList(expected);
+        AssertIterable.assertIterableEquals(output,expected);
+    }
+
+    @Test
+    public void toMutableSetTest()
+    {
+        final List<String> expected = Arrays.asList("0","3","6","9","11");
+        final Set<String> output = Functional.toMutableSet(expected);
+        Assert.assertTrue(expected.containsAll(output));
+        Assert.assertTrue(output.containsAll(expected));
+    }
+
 }

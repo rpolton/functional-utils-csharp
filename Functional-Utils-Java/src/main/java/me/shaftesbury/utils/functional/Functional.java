@@ -1035,7 +1035,13 @@ public final class Functional
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableList(Iterable<T>): input is null");
 
-        if(input instanceof List<?>) return Collections.unmodifiableList((List<T>) input);
+        if(input instanceof Collection<?>)
+        {
+            final Collection<T> input_ = (Collection<T>)input;
+            final List<T> output = new ArrayList<T>(input_.size());
+            output.addAll(input_);
+            return output;
+        }
 
         final List<T> output = new ArrayList<T>();
         for(final T element: input) output.add(element);
@@ -1043,11 +1049,26 @@ public final class Functional
         return output;
     }
 
+    public static final <K,V>Map<K,V> toMutableDictionary(final Map<K,V> input)
+    {
+        if(input==null) throw new IllegalArgumentException("Functional.toMutableDictionary(Map<K,V>): input is null");
+
+        final Map<K,V> output = new HashMap<K,V>(input.size());
+        output.putAll(input);
+        return output;
+    }
+
     public static final <T>Set<T> toMutableSet(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableSet(Iterable<T>): input is null");
 
-        if(input instanceof Set<?>) return Collections.unmodifiableSet((Set<T>) input);
+        if(input instanceof Collection<?>)
+        {
+            final Collection<T> input_ = (Collection<T>)input;
+            final Set<T> output = new HashSet<T>(input_.size());
+            output.addAll(input_);
+            return output;
+        }
 
         final Set<T> output = new HashSet<T>();
         for(final T element: input) output.add(element);
