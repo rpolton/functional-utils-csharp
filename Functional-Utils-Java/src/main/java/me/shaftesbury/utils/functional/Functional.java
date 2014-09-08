@@ -2879,6 +2879,244 @@ public final class Functional
         }
     }
 
+    /**
+     * This class provides alternative implementations of those standard functions which would ordinarily throw an exception
+     * in the event of an unexpected failure. The functions in this class will indicate the failure in a different manner, typically
+     * using the Option type.
+     */
+    public final static class noException
+    {
+        /**
+         * Find the first element from the input sequence for which the supplied predicate returns true
+         * find: (A -> bool) -> A list -> A option
+         * @param f predicate
+         * @param input sequence
+         * @param <A> the type of the element in the input sequence
+         * @throws java.lang.IllegalArgumentException if f or input are null
+         * @return the first element from the input sequence for which the supplied predicate returns true or None
+         * if no element is found that satisfies the predicate
+         */
+        public final static <A>Option<A> find(final Func<? super A,Boolean> f, final Iterable<A> input)
+        {
+            if (f == null) throw new IllegalArgumentException("f");
+            if (input == null) throw new IllegalArgumentException("input");
+
+            for(final A a : input)
+                if(f.apply((a)))
+                    return Option.toOption(a);
+            return Option.None();
+        }
+
+        /**
+         * As <tt>find</tt> except that here we return the zero-based position in the input sequence of the found element
+         * findIndex: (A -> bool) -> A list -> int option
+         * @param f predicate
+         * @param input sequence
+         * @param <A> the type of the element in the input sequence
+         * @throws java.lang.IllegalArgumentException if f or input are null
+         * @return the position in the input sequence of the first element from the input sequence for which the supplied predicate
+         * returns true or None if no element is found that satisfies the predicate
+         */
+        public static <A>Option<Integer> findIndex(final Func<A,Boolean> f, final Iterable<? extends A> input)
+        {
+            if (f == null) throw new IllegalArgumentException("f");
+            if (input == null) throw new IllegalArgumentException("input");
+
+            int pos = 0;
+            for (final A a : input)
+                if (f.apply(a))
+                    return Option.toOption(pos);
+                else pos++;
+            return Option.None();
+        }
+
+        /**
+         * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
+         * findLast: (A -> bool) -> A seq -> A option
+         * @param f predicate
+         * @param input sequence
+         * @param <A> the type of the element in the input sequence
+         * @throws java.lang.IllegalArgumentException if f or input are null
+         * @return the last element in the input sequence for which the supplied predicate returns true or None
+         * if no element is found that satisfies the predicate
+         */
+        public final static <A>Option<A> findLast(final Func<? super A,Boolean> f, final Iterable<A> input)
+        {
+            if (f == null) throw new IllegalArgumentException("f");
+            if (input == null) throw new IllegalArgumentException("input");
+
+            final Pair<List<A>,Iterable<A>> p = takeNAndYield(input,1);
+            final Pair<A,Boolean> seed = Pair.with(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
+            final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
+                @Override public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.with(item,true):state;}
+            },seed,p.getValue1());
+
+            if(result.getValue1()) return Option.toOption(result.getValue0());
+            return Option.None();
+        }
+
+        /**
+         * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
+         * findLast: (A -> bool) -> A list -> A option
+         * @param f predicate
+         * @param input sequence
+         * @param <A> the type of the element in the input sequence
+         * @throws java.lang.IllegalArgumentException if f or input are null
+         * @return the last element in the input sequence for which the supplied predicate returns true or None
+         * if no element is found that satisfies the predicate
+         */
+        public final static <A>Option<A> findLast(final Func<? super A,Boolean> f, final List<A> input)
+        {
+            if (f == null) throw new IllegalArgumentException("f");
+            if (input == null) throw new IllegalArgumentException("input");
+
+            for (final A a : Iterators.reverse(input))
+                if (f.apply(a))
+                    return Option.toOption(a);
+            return Option.None();
+        }
+
+        /**
+         * 'pick' is an analogue of <tt>find</tt>. Instead of a predicate, 'pick' is passed a map function which returns an <tt>Option</tt>.
+         * Each element of the input sequence is supplied in turn to the map function 'f' and the first non-None Option to be returned from
+         * the map function is returned by 'pick' to the calling code.
+         * pick: (A -> B option) -> A seq -> B option
+         *
+         * @param f the map function.
+         * @param input the input sequence
+         * @param <A> the type of the element in the input sequence
+         * @param <B> the type of the output element
+         * @return the first non-None transformed element of the input sequence or None if no such element exists
+         */
+        public static <A, B>Option<B> pick(final Func<A,Option<B>> f, final Iterable<? extends A> input)
+        {
+            if (f == null) throw new IllegalArgumentException("f");
+            if (input == null) throw new IllegalArgumentException("input");
+
+            for(final A a : input)
+            {
+                final Option<B> intermediate = f.apply(a); // which is, effectively, if(f(a)) return f(a), but without evaluating f twice
+                if (!intermediate.isNone())
+                    return intermediate;
+            }
+            return Option.None();
+        }
+
+        /**
+         * forAll2: the predicate 'f' is applied to all elements in the input sequences input1 and input2 as pairs. If the predicate returns
+         * true for all pairs and there is the same number of elements in both input sequences then forAll2 returns true. If the predicate
+         * returns false at any point then the traversal of the input sequences halts and forAll2 returns false.
+         * forAll2: (A -> B -> bool) -> A list -> B list -> bool option
+         * @param f predicate to which each successive pair (input1_i, input2_i) is applied
+         * @param input1 input sequence
+         * @param input2 input sequence
+         * @param <A> the base type of the element in the first input sequence
+         * @param <B> the base type of the element in the second input sequence
+         * @param <AA> the type of the element in the first input sequence
+         * @param <BB> the type of the element in the second input sequence
+         * @return true if the predicate 'f' evaluates true for all pairs, false otherwise or None
+         * if the predicate returns true for all pairs and the sequences contain differing numbers
+         * of elements
+         */
+        public final static <A, B,AA extends A,BB extends B>Option<Boolean> forAll2(final Func2<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
+        {
+            final Iterator<AA> enum1 = input1.iterator();
+            final Iterator<BB> enum2 = input2.iterator();
+            boolean enum1Moved = false, enum2Moved = false;
+            do
+            {
+                enum1Moved = enum1.hasNext();
+                enum2Moved = enum2.hasNext();
+                if (enum1Moved && enum2Moved && !f.apply(enum1.next(), enum2.next()))
+                    return Option.toOption(false);
+            } while (enum1Moved && enum2Moved);
+            if( enum1Moved != enum2Moved)
+                return Option.None();
+            return Option.toOption(true);
+        }
+
+        /**
+         * take: given a list return another list containing the first 'howMany' elements or fewer if there are not enough elements
+         * in the input sequence
+         * @param howMany a positive upper bound for the number of elements to be returned from the input sequence
+         * @param list the input sequence
+         * @param <T> the type of the element in the input sequence
+         * @return a list containing the first 'howMany' elements of 'list'
+         */
+        public static final<T>List<T> take(final int howMany, final Iterable<? extends T> list)
+        {
+            if(howMany<0) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): howMany is negative");
+            if(list==null) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): list is null");
+
+            if(howMany==0) return new ArrayList<T>(0);
+
+            final List<T> output = new ArrayList<T>(howMany);
+            final Iterator<? extends T> iterator = list.iterator();
+            for(int i=0;i<howMany;++i)
+            {
+                if(iterator.hasNext())
+                    output.add(iterator.next());
+                else
+                    break;
+            }
+            return Collections.unmodifiableList(output);
+        }
+
+        /**
+         * The Convolution operator
+         * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
+         * @param l1 input sequence
+         * @param l2 input sequence
+         * @param <A> the type of the element in the first input sequence
+         * @param <B> the type of the element in the second input sequence
+         * @throws java.lang.IllegalArgumentException
+         * @return list of pairs; the first element from each of the two input sequences is the first pair in the output sequence and so on,
+         *          in order. If the sequences do not have the same number of elements the results thus far are returned
+         */
+        public static final <A,B>List<Pair<A,B>> zip(final Iterable<? extends A> l1, final Iterable<? extends B> l2)
+        {
+            if(l1==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 is null");
+            if(l2==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l2 is null");
+
+            final List<Pair<A,B>> output = new ArrayList<Pair<A, B>>();
+            final Iterator<? extends A> l1_it = l1.iterator();
+            final Iterator<? extends B> l2_it = l2.iterator();
+
+            while(l1_it.hasNext() && l2_it.hasNext()) output.add(new Pair(l1_it.next(),l2_it.next()));
+
+            return Collections.unmodifiableList(output);
+        }
+
+        /**
+         * The Convolution operator
+         * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
+         * @param l1 input sequence
+         * @param l2 input sequence
+         * @param l3 input sequence
+         * @param <A> the type of the element in the first input sequence
+         * @param <B> the type of the element in the second input sequence
+         * @param <C> the type of the element in the third input sequence
+         * @throws java.lang.IllegalArgumentException if any input sequence is null or if the sequences have differing lengths.
+         * @return list of triplets; the first element from each of the input sequences is the first triplet in the output sequence and so on,
+         *          in order. If the sequences do not have the same number of elements then the results thus far are returned
+         */
+        public static final <A,B,C>List<Triplet<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
+        {
+            if(l1==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1 is null");
+            if(l2==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l2 is null");
+            if(l3==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l3 is null");
+
+            final List<Triplet<A,B,C>> output = new ArrayList<Triplet<A, B,C>>();
+            final Iterator<? extends A> l1_it = l1.iterator();
+            final Iterator<? extends B> l2_it = l2.iterator();
+            final Iterator<? extends C> l3_it = l3.iterator();
+
+            while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(new Triplet(l1_it.next(),l2_it.next(),l3_it.next()));
+
+            return Collections.unmodifiableList(output);
+        }
+    }
+
     /*
     // Following are control structures, eg if, switch
      */

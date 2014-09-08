@@ -167,7 +167,30 @@ public class FunctionalTest
                     }, l, m));
         }
         catch (final Exception e)
-        {}
+        {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void ForAll2NoExceptionTest1()
+    {
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> m = Functional.init(QuadruplingGenerator, 5);
+        try
+        {
+            Assert.assertTrue(Functional.noException.forAll2(
+                    new Func2<Integer, Integer, Boolean>() {
+                        @Override
+                        public Boolean apply(Integer a, Integer b) {
+                            return BothAreEven(a, b);
+                        }
+                    }, l, m).Some());
+        }
+        catch (final Exception e)
+        {
+            Assert.fail();
+        }
     }
 
     private static boolean BothAreLessThan10(int a, int b)
@@ -206,6 +229,31 @@ public class FunctionalTest
                         return BothAreEven(a, b);
                     }
                 }, l, m);
+    }
+
+    @Test
+    public void ForAll2NoExceptionTest2()
+    {
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> m = Functional.init(TriplingGenerator, 5);
+
+        Assert.assertFalse(Functional.noException.forAll2(dBothAreLessThan10
+                , l, m).Some());
+    }
+
+    @Test
+    public void ForAll2NoExceptionTest3()
+    {
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Collection<Integer> m = Functional.init(QuadruplingGenerator, 7);
+
+        Assert.assertTrue(Functional.noException.forAll2(
+                new Func2<Integer, Integer, Boolean>() {
+                    @Override
+                    public Boolean apply(Integer a, Integer b) {
+                        return BothAreEven(a, b);
+                    }
+                }, l, m).isNone());
     }
 
     @Test
@@ -812,6 +860,20 @@ public class FunctionalTest
         Assert.assertEquals((Integer)10, Functional.findLast(Functional.isEven, l));
     }
 
+    @Test
+    public void findLastNoExceptionTest1()
+    {
+        final List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
+        Assert.assertTrue(Functional.noException.findLast(Functional.isOdd, l).isNone());
+    }
+
+    @Test
+    public void findLastNoExceptionTest2()
+    {
+        final List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
+        Assert.assertEquals((Integer)10, Functional.noException.findLast(Functional.isEven, l).Some());
+    }
+
     @Test(expected=NoSuchElementException.class)
     public void findLastIterableTest1()
     {
@@ -1034,7 +1096,7 @@ public class FunctionalTest
     @Test
     public void takeTest1()
     {
-        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
             @Override
             public List<Integer> apply(Integer o) {
@@ -1042,6 +1104,36 @@ public class FunctionalTest
             }
         }, input);
         final List<Integer> expected = Arrays.asList(1,1,2,1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,10);
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void takeNoExceptionTest1()
+    {
+        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer o) {
+                return Functional.noException.take(o, input);
+            }
+        }, input);
+        final List<Integer> expected = Arrays.asList(1,1,2,1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,10);
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void takeNoExceptionTest2()
+    {
+        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer o) {
+                return Functional.noException.take(o+5, input);
+            }
+        }, input);
+        final List<Integer> expected = Arrays.asList(1,2,3,4,5,6,1,2,3,4,5,6,7,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10);
 
         AssertIterable.assertIterableEquals(expected,output);
     }
@@ -1270,6 +1362,42 @@ public class FunctionalTest
     }
 
     @Test
+    public void ZipNoExceptionTest1()
+    {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+
+        final Collection<Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
+        expected.add(new Pair<Integer, Character>(1, 'a'));
+        expected.add(new Pair<Integer, Character>(2, 'b'));
+        expected.add(new Pair<Integer, Character>(3, 'c'));
+        expected.add(new Pair<Integer, Character>(4, 'd'));
+        expected.add(new Pair<Integer, Character>(5, 'e'));
+
+        final Collection<Pair<Integer,Character>> output = Functional.noException.zip(input1, input2);
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void ZipNoExceptionTest2()
+    {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5, 6});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+
+        final Collection<Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
+        expected.add(new Pair<Integer, Character>(1, 'a'));
+        expected.add(new Pair<Integer, Character>(2, 'b'));
+        expected.add(new Pair<Integer, Character>(3, 'c'));
+        expected.add(new Pair<Integer, Character>(4, 'd'));
+        expected.add(new Pair<Integer, Character>(5, 'e'));
+
+        final Collection<Pair<Integer,Character>> output = Functional.noException.zip(input1, input2);
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
     public void seqZipTest1()
     {
         final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
@@ -1302,6 +1430,44 @@ public class FunctionalTest
         expected.add(new Triplet<Integer, Character, Double>(5, 'e', 3.5));
 
         final Collection<Triplet<Integer,Character,Double>> output = Functional.zip3(input1, input2, input3);
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void Zip3NoExceptionTest1()
+    {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+        final Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
+
+        final Collection<Triplet<Integer,Character,Double>> expected = new ArrayList<Triplet<Integer, Character, Double>>();
+        expected.add(new Triplet<Integer, Character, Double>(1, 'a', 1.0));
+        expected.add(new Triplet<Integer, Character, Double>(2, 'b', 2.0));
+        expected.add(new Triplet<Integer, Character, Double>(3, 'c', 2.5));
+        expected.add(new Triplet<Integer, Character, Double>(4, 'd', 3.0));
+        expected.add(new Triplet<Integer, Character, Double>(5, 'e', 3.5));
+
+        final Collection<Triplet<Integer,Character,Double>> output = Functional.noException.zip3(input1, input2, input3);
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void Zip3NoExceptionTest2()
+    {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5, 6});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+        final Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
+
+        final Collection<Triplet<Integer,Character,Double>> expected = new ArrayList<Triplet<Integer, Character, Double>>();
+        expected.add(new Triplet<Integer, Character, Double>(1, 'a', 1.0));
+        expected.add(new Triplet<Integer, Character, Double>(2, 'b', 2.0));
+        expected.add(new Triplet<Integer, Character, Double>(3, 'c', 2.5));
+        expected.add(new Triplet<Integer, Character, Double>(4, 'd', 3.0));
+        expected.add(new Triplet<Integer, Character, Double>(5, 'e', 3.5));
+
+        final Collection<Triplet<Integer,Character,Double>> output = Functional.noException.zip3(input1, input2, input3);
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -1393,6 +1559,37 @@ public class FunctionalTest
     }
 
     @Test
+    public void findNoExceptionTest1()
+    {
+        final String trueMatch = "6";
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        Assert.assertEquals(trueMatch,
+                Functional.noException.find(
+                        new Func<String, Boolean>() {
+                            @Override
+                            public Boolean apply(String s) {
+                                return s.equals(trueMatch);
+                            }
+                        }, ls).Some());
+    }
+
+    @Test
+    public void findNoExceptionTest2()
+    {
+        final String falseMatch = "7";
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        Assert.assertTrue(Functional.noException.find(
+                new Func<String, Boolean>() {
+                    @Override
+                    public Boolean apply(String s) {
+                        return s.equals(falseMatch);
+                    }
+                }, ls).isNone());
+    }
+
+    @Test
     public void findIndexTest1()
     {
         final String trueMatch = "6";
@@ -1424,6 +1621,37 @@ public class FunctionalTest
     }
 
     @Test
+    public void findIndexNoExceptionTest1()
+    {
+        final String trueMatch = "6";
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        Assert.assertEquals((Integer)2,
+                Functional.noException.findIndex(
+                        new Func<String, Boolean>() {
+                            @Override
+                            public Boolean apply(String s) {
+                                return s.equals(trueMatch);
+                            }
+                        }, ls).Some());
+    }
+
+    @Test
+    public void findIndexNoExceptionTest2()
+    {
+        final String falseMatch = "7";
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
+        Assert.assertTrue(Functional.noException.findIndex(
+                new Func<String, Boolean>() {
+                    @Override
+                    public Boolean apply(String s) {
+                        return s.equals(falseMatch);
+                    }
+                }, ls).isNone());
+    }
+
+    @Test
     public void pickTest1()
     {
         final int trueMatch = 6;
@@ -1450,6 +1678,35 @@ public class FunctionalTest
                         return a == falseMatch ? Option.toOption(a.toString()) : Option.<String>None();
                     }
                 }, li);
+    }
+
+    @Test
+    public void pickNoExceptionTest1()
+    {
+        final int trueMatch = 6;
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        Assert.assertEquals(((Integer) trueMatch).toString(),
+                Functional.noException.pick(
+                        new Func<Integer, Option<String>>() {
+                            @Override
+                            public Option<String> apply(Integer a) {
+                                return a == trueMatch ? Option.toOption(a.toString()) : Option.<String>None();
+                            }
+                        }, li).Some());
+    }
+
+    @Test
+    public void pickNoExceptionTest2()
+    {
+        final int falseMatch = 7;
+        final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
+        Assert.assertTrue(Functional.noException.pick(
+                new Func<Integer, Option<String>>() {
+                    @Override
+                    public Option<String> apply(Integer a) {
+                        return a == falseMatch ? Option.toOption(a.toString()) : Option.<String>None();
+                    }
+                }, li).isNone());
     }
 
     @Test
