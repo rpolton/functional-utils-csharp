@@ -40,16 +40,16 @@ public class IterableHelper
             public final T find(final Func<? super T,Boolean> f) { return Functional.find(f,i);}
             public int findIndex(final Func<? super T,Boolean> f) { return Functional.findIndex(f,i);}
             public final <B>B pick(final Func<? super T,Option<B>> f){return Functional.pick(f,i);}
-            public final Iterable2<T> take(final int howMany){return create(Functional.take(howMany, i));}
+            public final Iterable2<T> take(final int howMany){return create(Functional.seq.take(howMany, i));}
             public Iterable2<T> skip(int howMany) { return create(Functional.seq.skip(howMany, i)); }
             public String join(String delimiter) { return Functional.join(delimiter,i); }
             public T findLast(Func<? super T, Boolean> f) { return Functional.findLast(f,i); }
             public Pair<List<T>, List<T>> partition(Func<? super T, Boolean> f) { return Functional.partition(f, i); }
-            public final <U>Iterable2<org.javatuples.Pair<T,U>> zip(final Iterable2<? extends U> l2) { return create(Functional.zip(i,l2));}
+            public final <U>Iterable2<org.javatuples.Pair<T,U>> zip(final Iterable2<? extends U> l2) { return create(Functional.seq.zip(i, l2));}
             //public final <U>org.javatuples.Pair<List<T>,List<U>> unzip(){return Functional.unzip(i);}
-            public final <U,V>Iterable2<Triplet<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3){return create(Functional.zip3(i,l2,l3));}
+            public final <U,V>Iterable2<Triplet<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3){return create(Functional.seq.zip3(i, l2, l3));}
 
-            public final <U>Iterable2<U> collect(final Func<? super T,? extends Iterable<U>> f){return create(Functional.collect(f,i));}
+            public final <U>Iterable2<U> collect(final Func<? super T,? extends Iterable<U>> f){return create(Functional.seq.collect(f, i));}
             public <U>U in(final Func<Iterable2<T>, U> f){ return f.apply(this); }
 
             public <U> Map<U, List<T>> groupBy(Func<? super T, ? extends U> keyFn) { return Functional.groupBy(keyFn,i); }
