@@ -2417,7 +2417,7 @@ public class FunctionalTest
         expected.put("d",Arrays.asList("def"));
         AssertIterable.assertIterableEquals(expected.get("a"), output.get("a"));
         AssertIterable.assertIterableEquals(expected.get("d"),output.get("d"));
-        AssertIterable.assertIterableEquals(expected.keySet(),output.keySet());
+        AssertIterable.assertIterableEquals(new TreeSet<String>(expected.keySet()),new TreeSet<String>(output.keySet()));
     }
 
     @Test

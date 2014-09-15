@@ -522,7 +522,7 @@ public final class Functional
      */
     public final static <A,B> List<B> map(final Func<A, ? extends B> f, final Iterable<? extends A> input)
     {
-        final List<B> output = new ArrayList<B>();
+        final List<B> output = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
         for(final A a : input)
             output.add(f.apply(a));
         return Collections.unmodifiableList(output);
@@ -562,7 +562,7 @@ public final class Functional
      */
     public final static <A,B> List<B> mapi(final Func2<Integer, A, ? extends B> f, final Iterable<? extends A> input)
     {
-        final List<B> output = new ArrayList<B>();
+        final List<B> output = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
         int pos = 0;
         for(final A a : input)
             output.add(f.apply(pos++, a));
@@ -1010,7 +1010,7 @@ public final class Functional
         if(valueFn==null) throw new IllegalArgumentException("valueFn");
 
         final Map<K,V> output = new HashMap<K,V>();
-        for(final T element : input) output.put(keyFn.apply(element),valueFn.apply(element));
+        for(final T element : input) output.put(keyFn.apply(element), valueFn.apply(element));
         return Collections.unmodifiableMap(output);
     }
 
@@ -1024,6 +1024,9 @@ public final class Functional
     //public final static <T>T[] toArray(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toArray(Iterable<T>): input is null");
+
+        if(input instanceof Collection<?>)
+            return ((Collection<T>)input).toArray();
 
         final List<T> output = new ArrayList<T>();
         for(final T element: input) output.add(element);
@@ -1125,7 +1128,7 @@ public final class Functional
      */
     public static final <T>T last(final T[] input)
     {
-        if(input==null||input.length==0) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null or empty");
+        if(input==null||input.length==0) throw new IllegalArgumentException("Functional.last(T[]): input is null or empty");
 
         return input[input.length-1];
     }
@@ -1142,8 +1145,8 @@ public final class Functional
         if(list1==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list1 is null");
         if(list2==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list2 is null");
 
-        final List<T> newList = new ArrayList<T>(Functional.toList(list1));
-        final boolean didItChange = newList.addAll(Functional.toList(list2));
+        final List<T> newList = new ArrayList<T>(toList(list1));
+        final boolean didItChange = newList.addAll(toList(list2));
         return Collections.unmodifiableList(newList);
     }
 
@@ -1283,7 +1286,14 @@ public final class Functional
         if(l1==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 is null");
         if(l2==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l2 is null");
 
-        final List<Pair<A,B>> output = new ArrayList<Pair<A, B>>();
+        final List<Pair<A,B>> output;
+        if(l1 instanceof Collection<?> && l2 instanceof Collection<?>) {
+            if (((Collection) l1).size() != ((Collection) l2).size())
+                throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 and l2 have differing numbers of elements");
+
+            output = new ArrayList<Pair<A, B>>(((Collection) l1).size());
+        }
+        else output = new ArrayList<Pair<A, B>>();
         final Iterator<? extends A> l1_it = l1.iterator();
         final Iterator<? extends B> l2_it = l2.iterator();
 
@@ -1312,7 +1322,14 @@ public final class Functional
         if(l2==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l2 is null");
         if(l3==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l3 is null");
 
-        final List<Triplet<A,B,C>> output = new ArrayList<Triplet<A, B,C>>();
+        final List<Triplet<A,B,C>> output;
+        if(l1 instanceof Collection<?> && l2 instanceof Collection<?> && l3 instanceof Collection<?>) {
+            if (((Collection) l1).size() != ((Collection) l2).size())
+                throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1, l2 and l3 have differing numbers of elements");
+
+            output = new ArrayList<Triplet<A, B,C>>(((Collection) l1).size());
+        }
+        else output = new ArrayList<Triplet<A, B,C>>();
         final Iterator<? extends A> l1_it = l1.iterator();
         final Iterator<? extends B> l2_it = l2.iterator();
         final Iterator<? extends C> l3_it = l3.iterator();
@@ -1338,9 +1355,17 @@ public final class Functional
     {
         if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
 
-        final List<A> l1 = new ArrayList<A>();
-        final List<B> l2 = new ArrayList<B>();
-
+        final List<A> l1;
+        final List<B> l2;
+        if(input instanceof Collection<?>) {
+            final int size = ((Collection) input).size();
+            l1 = new ArrayList<A>(size);
+            l2 = new ArrayList<B>(size);
+        }
+        else {
+            l1 = new ArrayList<A>();
+            l2 = new ArrayList<B>();
+        }
         for(final Pair<A,B> pair:input)
         {
             l1.add(pair.getValue0());
@@ -1365,9 +1390,20 @@ public final class Functional
     {
         if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
 
-        final List<A> l1 = new ArrayList<A>();
-        final List<B> l2 = new ArrayList<B>();
-        final List<C> l3 = new ArrayList<C>();
+        final List<A> l1;
+        final List<B> l2;
+        final List<C> l3;
+        if(input instanceof Collection<?>) {
+            final int size = ((Collection) input).size();
+            l1 = new ArrayList<A>(size);
+            l2 = new ArrayList<B>(size);
+            l3 = new ArrayList<C>(size);
+        }
+        else {
+            l1 = new ArrayList<A>();
+            l2 = new ArrayList<B>();
+            l3 = new ArrayList<C>();
+        }
 
         for(final Triplet<A,B,C> triplet:input)
         {
@@ -1392,7 +1428,7 @@ public final class Functional
      */
     public static final <T,U>List<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
     {
-        List<U> output = new ArrayList<U>();
+        List<U> output = input instanceof Collection<?> ? new ArrayList<U>(((Collection) input).size()) : new ArrayList<U>();
         for(final T element : input)
             output = Functional.concat(output, Functional.toList(f.apply(element)));
         return Collections.unmodifiableList(output);
@@ -1523,7 +1559,7 @@ public final class Functional
                 intermediateResults.put(key, list);
             }
         }
-        final Map<U,List<T>> output = new HashMap<U,List<T>>();
+        final Map<U,List<T>> output = new HashMap<U,List<T>>(intermediateResults.size());
         for(final Map.Entry<U,List<T>> entry : intermediateResults.entrySet())
              output.put(entry.getKey(),Collections.unmodifiableList(entry.getValue()));
         return Collections.unmodifiableMap(output);
@@ -2696,7 +2732,7 @@ public final class Functional
          */
         public final static <A>Set<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
         {
-            final Set<A> output = new HashSet<A>();
+            final Set<A> output = input instanceof Collection<?> ? new HashSet<A>(((Collection) input).size()) : new HashSet<A>();
             for(final A element : input)
             {
                 if(pred.apply(element))
@@ -2718,7 +2754,7 @@ public final class Functional
          */
         public static final <T,U>Set<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
         {
-            Set<U> output = new HashSet<U>();
+            Set<U> output = input instanceof Collection<?> ? new HashSet<U>(((Collection) input).size()) : new HashSet<U>();
             for(final T element : input)
                 output.addAll(Functional.toSet(f.apply(element)));
             return Collections.unmodifiableSet(output);
@@ -2745,7 +2781,7 @@ public final class Functional
          */
         public final static <A,B> Set<B> map(final Func<? super A, ? extends B> f, final Iterable<A> input)
         {
-            final Set<B> output = new HashSet<B>();
+            final Set<B> output = input instanceof Collection<?> ? new HashSet<B>(((Collection) input).size()) : new HashSet<B>();
             for(final A a : input)
                 output.add(f.apply(a));
             return Collections.unmodifiableSet(output);
@@ -3078,7 +3114,9 @@ public final class Functional
             if(l1==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 is null");
             if(l2==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l2 is null");
 
-            final List<Pair<A,B>> output = new ArrayList<Pair<A, B>>();
+            final List<Pair<A,B>> output = (l1 instanceof Collection<?> && l2 instanceof Collection<?>)
+                    ? new ArrayList<Pair<A,B>>(((Collection) l1).size())
+                    : new ArrayList<Pair<A, B>>();
             final Iterator<? extends A> l1_it = l1.iterator();
             final Iterator<? extends B> l2_it = l2.iterator();
 
@@ -3106,7 +3144,9 @@ public final class Functional
             if(l2==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l2 is null");
             if(l3==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l3 is null");
 
-            final List<Triplet<A,B,C>> output = new ArrayList<Triplet<A, B,C>>();
+            final List<Triplet<A,B,C>> output = (l1 instanceof Collection<?> && l2 instanceof Collection<?> && l3 instanceof Collection<?>)
+                    ? new ArrayList<Triplet<A,B,C>>(((Collection) l1).size())
+                    : new ArrayList<Triplet<A,B,C>>();
             final Iterator<? extends A> l1_it = l1.iterator();
             final Iterator<? extends B> l2_it = l2.iterator();
             final Iterator<? extends C> l3_it = l3.iterator();
