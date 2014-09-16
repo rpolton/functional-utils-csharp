@@ -693,7 +693,7 @@ public final class Functional
      */
     public final static <A>List<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
     {
-        final List<A> output = new ArrayList<A>();
+        final List<A> output = input instanceof Collection<?> ? new ArrayList<A>(((Collection) input).size()) : new ArrayList<A>();
         for(final A element : input)
             if(pred.apply(element))
                 output.add(element);
@@ -832,8 +832,18 @@ public final class Functional
      */
     public final static <A>Pair<List<A>,List<A>> partition(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
-        final List<A> left = new ArrayList<A>();
-        final List<A> right = new ArrayList<A>();
+        final List<A> left;
+        final List<A> right;
+        if(input instanceof Collection<?>)
+        {
+            left = new ArrayList<A>(((Collection) input).size());
+            right = new ArrayList<A>(((Collection) input).size());
+        }
+        else
+        {
+            left = new ArrayList<A>();
+            right = new ArrayList<A>();
+        }
         for (final A a : input)
             if (f.apply(a))
                 left.add(a);
@@ -876,7 +886,7 @@ public final class Functional
      */
     public final static <A, B>List<B> choose(final Func<? super A, Option<B>> f, final Iterable<A> input)
     {
-        final List<B> results = new ArrayList<B>();
+        final List<B> results = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
         for(final A a : input)
         {
             final Option<B> intermediate = f.apply(a);
@@ -2350,7 +2360,6 @@ public final class Functional
                 public Iterator<A> iterator() {
                     return new Iterator<A>() {
                         B next = seed;
-                        final List<A> results = new ArrayList<A>();
                         Option<Pair<A,B>> temp;
                         @Override
                         public boolean hasNext() {
@@ -2604,7 +2613,7 @@ public final class Functional
          */
         public static final <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterable<A> input)
         {
-            return filter(f,input.iterator(),new ArrayList<A>());
+            return filter(f,input.iterator(),input instanceof Collection<?> ? new ArrayList<A>(((Collection) input).size()) : new ArrayList<A>());
         }
 
         private static final <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterator<A> input, final List<B> accumulator)
@@ -2631,7 +2640,7 @@ public final class Functional
          */
         public static final <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterable<A> input)
         {
-            return map(f,input.iterator(),new ArrayList<B>());
+            return map(f,input.iterator(),input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>());
         }
 
         private final static <A,B>A fold(final Func2<? super A,? super B,? extends A> f, final A initialValue, final Iterator<B> input)
@@ -2866,7 +2875,7 @@ public final class Functional
                     state.add(f.apply(o2));
                     return state;
                 }
-            }, new ArrayList<T>(), l);
+            }, l instanceof Collection<?> ? new ArrayList<T>(((Collection) l).size()) : new ArrayList<T>(), l);
             return l2;
         }
 
@@ -2888,7 +2897,7 @@ public final class Functional
                     if(predicate.apply(o)) ts.add(o);
                     return ts;
                 }
-            }, new ArrayList<T>(), l);
+            }, l instanceof Collection<?> ? new ArrayList<T>(((Collection) l).size()) : new ArrayList<T>(), l);
             return l2;
         }
 
