@@ -122,7 +122,7 @@ public final class Functional
         if (l == null) throw new IllegalArgumentException("l");
         if (fn == null) throw new IllegalArgumentException("fn");
 
-        return join(separator, map(fn,l));
+        return join(separator, map(fn, l));
     }
 
     /**
@@ -360,6 +360,27 @@ public final class Functional
                 return g.apply(f.apply(x));
             }
         };
+    }
+
+    /**
+     * Convolution of functions. That is, apply two transformation functions 'simultaneously' and return a list of pairs,
+     * each of which contains one part of the results.
+     * @param f the transformation function that generates the first value in the resultant pair
+     * @param g the transformation function that generates the second value in the resultant pair
+     * @param input the input list to be transformed
+     * @param <A> a type that all the elements in the input list extend and that both of the transformation functions accept as input
+     * @param <B> the resulting type of the first transformation
+     * @param <C> the resulting type of the second transformation
+     * @return a list of pairs containing the two transformed sequences
+     */
+    public static <A,B,C>List<Pair<B,C>> zip(final Func<? super A,B> f, final Func<? super A,C> g, final Collection<? extends A> input)
+    {
+        final List<Pair<B,C>> output = new ArrayList<Pair<B,C>>(input.size());
+
+        for(final A element : input)
+            output.add(Pair.with(f.apply(element), g.apply(element)));
+
+        return output;
     }
 
     /**
@@ -601,7 +622,7 @@ public final class Functional
      * @param <AA> the type of the element in the input sequence
      * @return a sorted list containing all the elements of 'input' sorted using <tt>Collections.sort</tt> and 'f'
      */
-    public final static <A, AA extends A>List<AA> sortWith(final Comparator<A> f, final List<AA> input)
+    public final static <A, AA extends A>List<AA> sortWith(final Comparator<A> f, final Collection<AA> input)
     {
         final List<AA> output = new ArrayList<AA>(input);
         Collections.sort(output, f);
@@ -913,7 +934,7 @@ public final class Functional
         return new Func<Iterable<A>, List<B>>() {
             @Override
             public List<B> apply(final Iterable<A> input) {
-                return Functional.choose(f,input);
+                return Functional.choose(f, input);
             }
         };
     }
@@ -954,7 +975,7 @@ public final class Functional
         return new Func<Iterable<B>, A>() {
             @Override
             public A apply(final Iterable<B> input) {
-                return Functional.fold(f,initialValue,input);
+                return Functional.fold(f, initialValue, input);
             }
         };
     }
@@ -1207,6 +1228,52 @@ public final class Functional
     }
 
     /**
+     * takeWhile: given a list return another list containing the first elements up and not including the first element for which
+     * the predicate returns false
+     * @param predicate the predicate to use
+     * @param list the input sequence
+     * @param <T> the type of the element in the input sequence
+     * @return a list
+     */
+    public static final<T>List<T> takeWhile(final Func<? super T, Boolean> predicate, final List<? extends T> list)
+    {
+        if(predicate==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): predicate is null");
+        if(list==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): list is null");
+
+        if(list.size()==0) return new ArrayList<T>();
+
+        for(int i=0;i<list.size();++i)
+        {
+            final T element = list.get(i);
+            if(!predicate.apply(element))
+            {
+                if(i==0) return new ArrayList<T>();
+                return Collections.unmodifiableList(list.subList(0,i));
+            }
+        }
+        return Collections.unmodifiableList(list);
+    }
+
+    /**
+     * takeWhile: given a list return another list containing the first elements up and not including the first element for which
+     * the predicate returns false
+     * This is the curried implementation
+     * @param predicate the predicate to use
+     * @param <T> the type of the element in the input sequence
+     * @return a list
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
+     */
+    public static final<T>Func<List<? extends T>,List<T>> takeWhile(final Func<? super T, Boolean> predicate)
+    {
+        return new Func<List<? extends T>, List<T>>() {
+            @Override
+            public List<T> apply(final List<? extends T> input) {
+                return Functional.takeWhile(predicate, input);
+            }
+        };
+    }
+
+    /**
      * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
      * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
      * @param howMany a non-negative number of elements to be discarded from the input sequence
@@ -1242,7 +1309,45 @@ public final class Functional
         return new Func<List<? extends T>, List<T>>() {
             @Override
             public List<T> apply(final List<? extends T> input) {
-                return Functional.skip(howMany,input);
+                return Functional.skip(howMany, input);
+            }
+        };
+    }
+
+    /**
+     * skipWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
+     * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+     * @param predicate ignore elements in the input while the predicate is true.
+     * @param list the input sequence
+     * @param <T> the type of the element in the input sequence
+     * @return a list containing the remaining elements after and including the first element for which the predicate returns false
+     */
+    public static final <T>List<T> skipWhile(final Func<? super T, Boolean> predicate, final List<? extends T> list)
+    {
+        if(predicate==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): predicate is null");
+        if(list==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): list is null");
+
+        for(int counter=0; counter<list.size();++counter)
+            if(!predicate.apply(list.get(counter)))
+                return Collections.unmodifiableList(list.subList(counter,list.size()));
+
+        return Collections.unmodifiableList(new ArrayList<T>(0));
+    }
+
+    /**
+     * skipWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
+     * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+     * @param predicate ignore elements in the input while the predicate is true.
+     * @param <T> the type of the element in the input sequence
+     * @return a list containing the remaining elements after and including the first element for which the predicate returns false
+     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
+     */
+    public static final<T>Func<List<? extends T>,List<T>> skipWhile(final Func<? super T, Boolean> predicate)
+    {
+        return new Func<List<? extends T>, List<T>>() {
+            @Override
+            public List<T> apply(final List<? extends T> input) {
+                return Functional.skipWhile(predicate, input);
             }
         };
     }
@@ -2582,6 +2687,40 @@ public final class Functional
                 }
             };
         }
+
+        /**
+         * Convolution of functions
+         * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
+         * @param f the first transformation function
+         * @param g the second transformation function
+         * @param input the input sequence
+         * @param <A> the type of the input sequence
+         * @param <B> the result type of the first transformation
+         * @param <C> the result type of the second transformation
+         * @return a sequence of pairs. The first value of the pair is the result of the first transformation and the seocnd value of the
+         * pair of the result of the second transformation.
+         */
+        public static <A,B,C>Iterable<Pair<B,C>> zip(final Func<? super A,B> f, final Func<? super A,C> g, final Iterable<? extends A> input)
+        {
+            return new Iterable<Pair<B, C>>() {
+                @Override
+                public Iterator<Pair<B, C>> iterator() {
+                    return new Iterator<Pair<B, C>>() {
+                        private final Iterator<? extends A> iterator = input.iterator();
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Pair<B, C> next() {
+                            final A next = iterator.next();
+                            return Pair.with(f.apply(next), g.apply(next));
+                        }
+                    };
+                }
+            };
+        }
     }
 
     /**
@@ -2590,7 +2729,7 @@ public final class Functional
      */
     public final static class rec
     {
-        private static final <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterator<A> input, final List<A> accumulator)
+        private static final <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterator<A> input, final Collection<A> accumulator)
         {
             if(input.hasNext())
             {
@@ -2616,7 +2755,7 @@ public final class Functional
             return filter(f,input.iterator(),input instanceof Collection<?> ? new ArrayList<A>(((Collection) input).size()) : new ArrayList<A>());
         }
 
-        private static final <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterator<A> input, final List<B> accumulator)
+        private static final <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterator<A> input, final Collection<B> accumulator)
         {
             if(input.hasNext())
             {

@@ -1154,6 +1154,48 @@ public class FunctionalTest
     }
 
     @Test
+    public void takeWhileTest1()
+    {
+        final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
+        {
+            final List<Integer> expected = new ArrayList<Integer>();
+            final List<Integer> output = Functional.takeWhile(Functional.isEven, l);
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = Arrays.asList(1);
+            final List<Integer> output = Functional.takeWhile(Functional.isOdd, l);
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = Arrays.asList(1,2,3,4);
+            final List<Integer> output = Functional.takeWhile(new Func<Integer, Boolean>() {
+                public Boolean apply(final Integer i) {
+                    return i <= 4;
+                }
+            }, l);
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5);
+            final List<Integer> output = Functional.takeWhile(new Func<Integer, Boolean>() {
+                public Boolean apply(final Integer i) {
+                    return i <= 6;
+                }
+            }, l);
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void takeWhileTest2()
+    {
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4);
+        Functional.takeWhile(null, input);
+    }
+
+
+    @Test
     public void ConstantInitialiserTest1()
     {
         final int howMany = 6;
@@ -1411,6 +1453,23 @@ public class FunctionalTest
         expected.add(new Pair<Integer, Character>(5, 'e'));
 
         final Collection<Pair<Integer,Character>> output = Functional.toList(Functional.seq.zip(input1, input2));
+
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void seqZipFnTest1()
+    {
+        final Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+
+        final Collection<Pair<Integer,String>> expected = new ArrayList<Pair<Integer, String>>();
+        expected.add(new Pair<Integer, String>(1, "1"));
+        expected.add(new Pair<Integer, String>(2, "2"));
+        expected.add(new Pair<Integer, String>(3, "3"));
+        expected.add(new Pair<Integer, String>(4, "4"));
+        expected.add(new Pair<Integer, String>(5, "5"));
+
+        final List<Pair<Integer, String>> output = Functional.toList(Functional.seq.zip(Functional.<Integer>identity(), Functional.dStringify(), input));
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -2368,6 +2427,43 @@ public class FunctionalTest
     {
         final List<Integer> input = Arrays.asList(1,2,3,4);
         Functional.seq.skip(-1, input);
+    }
+
+    @Test
+    public void skipWhileTest1()
+    {
+        final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
+        {
+            final List<Integer> expected = Arrays.asList(1,2,3,4,5);
+            final List<Integer> output = Functional.skipWhile(Functional.isEven, l);
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = Arrays.asList(2,3,4,5);
+            final List<Integer> output = Functional.skipWhile(Functional.isOdd, l);
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = Arrays.asList(3,4,5);
+            final List<Integer> output = Functional.skipWhile(new Func<Integer, Boolean>() {
+                public Boolean apply(final Integer i) {
+                    return i <=2;
+                }
+            }, l);
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = new ArrayList<Integer>();
+            final List<Integer> output = Functional.skipWhile(new Func<Integer,Boolean>() { public Boolean apply(final Integer i) { return i<=6;} },l);
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void skipWhileTest2()
+    {
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4);
+        Functional.skipWhile(null, input);
     }
 
     @Test
