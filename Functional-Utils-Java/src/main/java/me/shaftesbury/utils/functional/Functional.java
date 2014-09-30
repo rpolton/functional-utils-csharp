@@ -1235,7 +1235,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a list
      */
-    public static final<T>List<T> takeWhile(final Func<? super T, Boolean> predicate, final List<? extends T> list)
+    public static final<T>List<T> takeWhile(final Func<? super T, Boolean> predicate, final List<T> list)
     {
         if(predicate==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): list is null");
@@ -1263,11 +1263,11 @@ public final class Functional
      * @return a list
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static final<T>Func<List<? extends T>,List<T>> takeWhile(final Func<? super T, Boolean> predicate)
+    public static final<T>Func<List<T>,List<T>> takeWhile(final Func<? super T, Boolean> predicate)
     {
-        return new Func<List<? extends T>, List<T>>() {
+        return new Func<List<T>, List<T>>() {
             @Override
-            public List<T> apply(final List<? extends T> input) {
+            public List<T> apply(final List<T> input) {
                 return Functional.takeWhile(predicate, input);
             }
         };
@@ -1322,7 +1322,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a list containing the remaining elements after and including the first element for which the predicate returns false
      */
-    public static final <T>List<T> skipWhile(final Func<? super T, Boolean> predicate, final List<? extends T> list)
+    public static final <T>List<T> skipWhile(final Func<? super T, Boolean> predicate, final List<T> list)
     {
         if(predicate==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): list is null");
@@ -1342,11 +1342,11 @@ public final class Functional
      * @return a list containing the remaining elements after and including the first element for which the predicate returns false
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static final<T>Func<List<? extends T>,List<T>> skipWhile(final Func<? super T, Boolean> predicate)
+    public static final<T>Func<List<T>,List<T>> skipWhile(final Func<? super T, Boolean> predicate)
     {
-        return new Func<List<? extends T>, List<T>>() {
+        return new Func<List<T>, List<T>>() {
             @Override
-            public List<T> apply(final List<? extends T> input) {
+            public List<T> apply(final List<T> input) {
                 return Functional.skipWhile(predicate, input);
             }
         };
@@ -2348,6 +2348,90 @@ public final class Functional
                 @Override
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.skip(howMany, input);
+                }
+            };
+        }
+
+        /**
+         * skipWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
+         * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+         * @param predicate ignore elements in the input while the predicate is true.
+         * @param input the input sequence
+         * @param <T> the type of the element in the input sequence
+         * @return a lazily-evaluated sequence containing the remaining elements after and including the first element for which
+         * the predicate returns false
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
+         */
+        public static <T>Iterable<T> skipWhile(final Func<? super T,Boolean> predicate, final Iterable<T> input) {
+            if (predicate == null)
+                throw new IllegalArgumentException("Functional.skipWhile(Func,Iterable<T>): predicate is null");
+            if (input == null) throw new IllegalArgumentException("Functional.skipWhile(Func,Iterable<T>): input is null");
+
+            return new Iterable<T>() {
+                @Override
+                public Iterator<T> iterator() {
+                    return new Iterator<T>() {
+                        private final Iterator<T> it = input.iterator();
+                        private boolean haveWeSkipped = false;
+                        private boolean haveWeReadFirstValue = false;
+                        private T firstValue = null;
+
+                        @Override
+                        public boolean hasNext() {
+                            if (haveWeSkipped && it.hasNext()) return true;
+                            if (haveWeSkipped) return false;
+                            while(true)
+                            {
+                                if(it.hasNext())
+                                {
+                                    final T next = it.next();
+                                    if(!predicate.apply(next))
+                                    {
+                                        haveWeSkipped = true;
+                                        firstValue = next;
+                                        return true;
+                                    }
+                                }
+                                else
+                                {
+                                    haveWeSkipped = true;
+                                    return false;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public T next() {
+                            if(haveWeSkipped && !haveWeReadFirstValue && firstValue!=null)
+                            {
+                                haveWeReadFirstValue = true;
+                                return firstValue;
+                            }
+                            if(haveWeSkipped && !haveWeReadFirstValue) throw new NoSuchElementException();
+                            if(haveWeSkipped) return it.next();
+                            final boolean another = hasNext();
+                            return next();
+                        }
+                    };
+                }
+            };
+        }
+
+        /**
+         * skipWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
+         * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+         * @param predicate ignore elements in the input while the predicate is true.
+         * @param <T> the type of the element in the input sequence
+         * @return a lazily-evaluated sequence containing the remaining elements after and including the first element for which
+         * the predicate returns false
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
+         */
+        public static final <T>Func<Iterable<T>,Iterable<T>> skipWhile(final Func<? super T,Boolean> predicate)
+        {
+            return new Func<Iterable<T>, Iterable<T>>() {
+                @Override
+                public Iterable<T> apply(final Iterable<T> input) {
+                    return Functional.seq.skipWhile(predicate, input);
                 }
             };
         }
