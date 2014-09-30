@@ -15,11 +15,11 @@ public final class AssertIterable
 {
     private AssertIterable(){}
 
-    public static final <T>void assertIterableEquals(Iterable<T> it1, Iterable<T> it2)
+    public static final <T,T1 extends T,T2 extends T>void assertIterableEquals(Iterable<T1> it1, Iterable<T2> it2)
     {
         if(it1==null||it2==null) throw new AssertionError("Unexpected null iterable passed to Assert");
-        final Iterator<T> iterator1 = it1.iterator();
-        final Iterator<T> iterator2 = it2.iterator();
+        final Iterator<T1> iterator1 = it1.iterator();
+        final Iterator<T2> iterator2 = it2.iterator();
         assert iterator1!=null;
         assert iterator2!=null;
 
