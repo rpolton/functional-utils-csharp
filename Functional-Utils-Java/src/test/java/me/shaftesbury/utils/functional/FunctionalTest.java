@@ -1111,7 +1111,7 @@ public class FunctionalTest
     @Test
     public void takeNoExceptionTest1()
     {
-        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
             @Override
             public List<Integer> apply(Integer o) {
@@ -1159,17 +1159,17 @@ public class FunctionalTest
         final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
         {
             final List<Integer> expected = new ArrayList<Integer>();
-            final List<? extends Integer> output = Functional.takeWhile(Functional.isEven, l);
+            final List<Integer> output = Functional.takeWhile(Functional.isEven, l);
             AssertIterable.assertIterableEquals(expected, output);
         }
         {
             final List<Integer> expected = Arrays.asList(1);
-            final List<? extends Integer> output = Functional.takeWhile(Functional.isOdd, l);
+            final List<Integer> output = Functional.takeWhile(Functional.isOdd, l);
             AssertIterable.assertIterableEquals(expected, output);
         }
         {
             final List<Integer> expected = Arrays.asList(1,2,3,4);
-            final List<? extends Integer> output = Functional.takeWhile(new Func<Integer, Boolean>() {
+            final List<Integer> output = Functional.takeWhile(new Func<Integer, Boolean>() {
                 public Boolean apply(final Integer i) {
                     return i <= 4;
                 }
@@ -1178,7 +1178,7 @@ public class FunctionalTest
         }
         {
             final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5);
-            final List<? extends Integer> output = Functional.takeWhile(new Func<Integer, Boolean>() {
+            final List<Integer> output = Functional.takeWhile(new Func<Integer, Boolean>() {
                 public Boolean apply(final Integer i) {
                     return i <= 6;
                 }
@@ -1194,6 +1194,97 @@ public class FunctionalTest
         Functional.takeWhile(null, input);
     }
 
+    @Test
+    public void seqTakeWhileTest1()
+    {
+        final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
+        {
+            final List<Integer> expected = new ArrayList<Integer>();
+            final List<Integer> output = Functional.toList(Functional.seq.takeWhile(Functional.isEven, l));
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = Arrays.asList(1);
+            final List<Integer> output = Functional.toList(Functional.seq.takeWhile(Functional.isOdd, l));
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = Arrays.asList(1,2,3,4);
+            final List<Integer> output = Functional.toList(Functional.seq.takeWhile(new Func<Integer, Boolean>() {
+                public Boolean apply(final Integer i) {
+                    return i <= 4;
+                }
+            }, l));
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+        {
+            final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5);
+            final List<Integer> output = Functional.toList(Functional.seq.takeWhile(new Func<Integer, Boolean>() {
+                public Boolean apply(final Integer i) {
+                    return i <= 6;
+                }
+            }, l));
+            AssertIterable.assertIterableEquals(expected, output);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void seqTakeWhileTest2()
+    {
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4);
+        Functional.seq.takeWhile(null, input);
+    }
+
+    @Test
+    public void seqTakeWhileTest3()
+    {
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4);
+        int counter=10;
+        final Iterable<Integer> integers = Functional.seq.takeWhile(Functional.constant(true), input);
+        final Iterator<Integer> iterator = integers.iterator();
+        while(counter>=0)
+        {
+            Assert.assertTrue(iterator.hasNext());
+            --counter;
+        }
+        int next = iterator.next();
+        Assert.assertEquals(1,next);
+        next = iterator.next();
+        Assert.assertEquals(2,next);
+        next = iterator.next();
+        Assert.assertEquals(3,next);
+        next = iterator.next();
+        Assert.assertEquals(4,next);
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
+    public void iterableHasNextTest()
+    {
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4);
+        int counter=10;
+        final Iterator<Integer> iterator = input.iterator();
+        while(counter>=0)
+        {
+            Assert.assertTrue(iterator.hasNext());
+            --counter;
+        }
+        int next = iterator.next();
+        Assert.assertEquals(1,next);
+        next = iterator.next();
+        Assert.assertEquals(2,next);
+        next = iterator.next();
+        Assert.assertEquals(3,next);
+        next = iterator.next();
+        Assert.assertEquals(4,next);
+        Assert.assertFalse(iterator.hasNext());
+    }
 
     @Test
     public void ConstantInitialiserTest1()

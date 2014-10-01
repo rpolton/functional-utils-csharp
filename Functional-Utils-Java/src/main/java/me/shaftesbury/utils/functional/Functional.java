@@ -2124,7 +2124,7 @@ public final class Functional
             return new Func<Iterable<T>, Iterable<U>>() {
                 @Override
                 public Iterable<U> apply(final Iterable<T> input) {
-                    return Functional.seq.choose(f,input);
+                    return Functional.seq.choose(f, input);
                 }
             };
         }
@@ -2493,6 +2493,100 @@ public final class Functional
                 @Override
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.take(howMany, input);
+                }
+            };
+        }
+
+        /**
+         * takeWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
+         * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+         * @param predicate ignore elements in the input while the predicate is true.
+         * @param input the input sequence
+         * @param <T> the type of the element in the input sequence
+         * @return a lazily-evaluated sequence containing the remaining elements after and including the first element for which
+         * the predicate returns false
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
+         */
+        public static <T>Iterable<T> takeWhile(final Func<? super T,Boolean> predicate, final Iterable<T> input) {
+            if (predicate == null)
+                throw new IllegalArgumentException("Functional.takeWhile(Func,Iterable<T>): predicate is null");
+            if (input == null) throw new IllegalArgumentException("Functional.takeWhile(Func,Iterable<T>): input is null");
+
+            return new Iterable<T>() {
+                @Override
+                public Iterator<T> iterator() {
+                    return new Iterator<T>() {
+                        private final Iterator<T> it = input.iterator();
+                        private boolean haveWeFinished = false;
+                        private T next = null;
+                        private boolean haveWeCheckedTheCurrentElement = false;
+
+                        @Override
+                        public boolean hasNext() {
+                            if(!haveWeFinished)
+                            {
+                                if (!haveWeCheckedTheCurrentElement)
+                                {
+                                    if(it.hasNext()) {
+                                        next = it.next();
+                                        if (predicate.apply(next)) {
+                                            haveWeCheckedTheCurrentElement = true;
+                                            return true;
+                                        } else {
+                                            haveWeCheckedTheCurrentElement = true;
+                                            haveWeFinished = true;
+                                            return false;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        haveWeFinished = true;
+                                        return false;
+                                    }
+                                }
+                                else
+                                {
+                                    return true;
+                                }
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+
+                        @Override
+                        public T next() {
+                            if(!haveWeFinished)
+                            {
+                                if(hasNext()) {
+                                    haveWeCheckedTheCurrentElement = false;
+                                    return next;
+                                }
+                                else throw new NoSuchElementException();
+                            }
+                            throw new NoSuchElementException();
+                        }
+                    };
+                }
+            };
+        }
+
+        /**
+         * takeWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
+         * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+         * @param predicate ignore elements in the input while the predicate is true.
+         * @param <T> the type of the element in the input sequence
+         * @return a lazily-evaluated sequence containing the remaining elements after and including the first element for which
+         * the predicate returns false
+         * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
+         */
+        public static final <T>Func<Iterable<T>,Iterable<T>> takeWhile(final Func<? super T,Boolean> predicate)
+        {
+            return new Func<Iterable<T>, Iterable<T>>() {
+                @Override
+                public Iterable<T> apply(final Iterable<T> input) {
+                    return Functional.seq.takeWhile(predicate, input);
                 }
             };
         }
