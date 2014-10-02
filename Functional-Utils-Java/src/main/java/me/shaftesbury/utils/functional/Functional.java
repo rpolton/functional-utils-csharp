@@ -2414,6 +2414,11 @@ public final class Functional
                             final boolean another = hasNext();
                             return next();
                         }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.skipWhile(Func,Iterable): it is not possible to remove elements from this sequence");
+                        }
                     };
                 }
             };
@@ -2568,6 +2573,11 @@ public final class Functional
                                 else throw new NoSuchElementException();
                             }
                             throw new NoSuchElementException();
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.takeWhile(Func,Iterable): it is not possible to remove elements from this sequence");
                         }
                     };
                 }
@@ -2897,6 +2907,11 @@ public final class Functional
                         public Pair<B, C> next() {
                             final A next = iterator.next();
                             return Pair.with(f.apply(next), g.apply(next));
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Functional.seq.zip(Func,Func): it is not possible to remove elements from this sequence");
                         }
                     };
                 }
