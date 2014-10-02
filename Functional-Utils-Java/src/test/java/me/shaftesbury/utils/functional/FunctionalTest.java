@@ -93,6 +93,42 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqMapiTest2()
+    {
+        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Iterable<Pair<Integer, String>> mapi = Functional.seq.mapi(new Func2<Integer, Integer, Pair<Integer, String>>() {
+            @Override
+            public Pair<Integer, String> apply(Integer pos, Integer i) {
+                return Pair.with(pos, i.toString());
+            }
+        }, input);
+        final Iterator<Pair<Integer, String>> iterator = mapi.iterator();
+
+        for(int i=0;i<10;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        Pair<Integer, String> next = iterator.next();
+        Assert.assertEquals("1",next.getValue1());
+        next = iterator.next();
+        Assert.assertEquals("2",next.getValue1());
+        next = iterator.next();
+        Assert.assertEquals("3",next.getValue1());
+        next = iterator.next();
+        Assert.assertEquals("4",next.getValue1());
+        next = iterator.next();
+        Assert.assertEquals("5",next.getValue1());
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
     public void SortWithTest1()
     {
         final List<Integer> i = Arrays.asList(new Integer[]{1,6,23,7,4});
@@ -846,6 +882,41 @@ public class FunctionalTest
         AssertIterable.assertIterableEquals(expected, output);
     }
 
+    @Test
+    public void seqFilterTest6()
+    {
+        final Collection<Integer> input = Functional.init(DoublingGenerator, 10);
+        final Iterable<Integer> output = Functional.seq.filter(
+                new Func<Integer,Boolean>()
+                {
+                    @Override public Boolean apply(Integer a) {return a % 4 ==0;}
+                }, input);
+        final Iterator<Integer> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        int next = iterator.next();
+        Assert.assertEquals(4,next);
+        next = iterator.next();
+        Assert.assertEquals(8,next);
+        next = iterator.next();
+        Assert.assertEquals(12,next);
+        next = iterator.next();
+        Assert.assertEquals(16,next);
+        next = iterator.next();
+        Assert.assertEquals(20,next);
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
+    }
+
     @Test(expected=NoSuchElementException.class)
     public void findLastTest1()
     {
@@ -895,8 +966,20 @@ public class FunctionalTest
         final List<String> expected = Arrays.asList(new String[] {"1", "2", "3", "4", "5"});
         final Iterable<String> output = Functional.seq.map(Functional.<Integer>dStringify(), input);
         final Iterator<String> it = output.iterator();
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(it.hasNext());
+
         for(int i=0; i<expected.size(); ++i)
             Assert.assertEquals(expected.get(i), it.next());
+
+        Assert.assertFalse(it.hasNext());
+        try {
+            it.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
     }
 
     @Test
@@ -955,6 +1038,55 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqConcatTest2()
+    {
+        final List<Integer> input = Arrays.asList(new Integer[]{1,2,3,4,5});
+        final Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer i) {
+                return i * 2;
+            }
+        };
+        final List<String> expected = Arrays.asList(new String[]{"1","2","3","4","5","2","4","6","8","10"});
+
+        final Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
+        final Iterable<String> output = Functional.seq.concat(strs, Functional.seq.map(Functional.<Integer>dStringify(), Functional.seq.map(doubler, input)));
+        final Iterator<String> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        String next = iterator.next();
+        Assert.assertEquals("1",next);
+        next = iterator.next();
+        Assert.assertEquals("2",next);
+        next = iterator.next();
+        Assert.assertEquals("3",next);
+        next = iterator.next();
+        Assert.assertEquals("4",next);
+        next = iterator.next();
+        Assert.assertEquals("5",next);
+        next = iterator.next();
+        Assert.assertEquals("2",next);
+        next = iterator.next();
+        Assert.assertEquals("4",next);
+        next = iterator.next();
+        Assert.assertEquals("6",next);
+        next = iterator.next();
+        Assert.assertEquals("8",next);
+        next = iterator.next();
+        Assert.assertEquals("10",next);
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
     public void arrayIterableTest1()
     {
         final Integer[] input = new Integer[]{1,2,3,4,5};
@@ -967,30 +1099,89 @@ public class FunctionalTest
     }
 
 
-        @Test
-        public void seqChooseTest1()
-        {
-            final Collection<Integer> li = Functional.init(TriplingGenerator,5);
-            final Iterable<String> output = Functional.seq.choose(
-                    new Func<Integer,Option<String>>()
-                    {
-                            @Override
-                            public Option<String> apply(Integer i)
-                            {
-                                return i%2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
-                            }
-                    }, li);
+    @Test
+    public void seqChooseTest1()
+    {
+        final Collection<Integer> li = Functional.init(TriplingGenerator,5);
+        final Iterable<String> output = Functional.seq.choose(
+                new Func<Integer,Option<String>>()
+                {
+                        @Override
+                        public Option<String> apply(Integer i)
+                        {
+                            return i%2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
+                        }
+                }, li);
 
-            final Collection<String> expected = Arrays.asList(new String[]{"6", "12"});
-            AssertIterable.assertIterableEquals(expected, output);
+        final Collection<String> expected = Arrays.asList(new String[]{"6", "12"});
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void seqChooseTest2()
+    {
+        final Collection<Integer> li = Functional.init(TriplingGenerator, 5);
+        final Iterable<String> output = Functional.seq.choose(
+                new Func<Integer, Option<String>>() {
+                    @Override
+                    public Option<String> apply(Integer i) {
+                        return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
+                    }
+                }, li);
+        final Iterator<String> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        String next = iterator.next();
+        Assert.assertEquals("6",next);
+        next = iterator.next();
+        Assert.assertEquals("12",next);
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
         }
 
-        @Test
-        public void seqInitTest1()
-        {
-            final Iterable<Integer> output = Functional.seq.init(DoublingGenerator, 5);
-            AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10}), output);
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
+    public void seqInitTest1()
+    {
+        final Iterable<Integer> output = Functional.seq.init(DoublingGenerator, 5);
+        AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10}), output);
+    }
+
+    @Test
+    public void seqInitTest3()
+    {
+        final Iterable<Integer> output = Functional.seq.init(DoublingGenerator, 5);
+        final Iterator<Integer> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        int next = iterator.next();
+        Assert.assertEquals(2,next);
+        next = iterator.next();
+        Assert.assertEquals(4,next);
+        next = iterator.next();
+        Assert.assertEquals(6,next);
+        next = iterator.next();
+        Assert.assertEquals(8,next);
+        next = iterator.next();
+        Assert.assertEquals(10,next);
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
         }
+
+        Assert.fail("Should not reach this point");
+    }
 
     @Test
     public void FwdPipelineTest3()
@@ -1154,6 +1345,38 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqTakeTest2()
+    {
+        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer o) {
+                return Functional.toList(Functional.seq.take(o, input));
+            }
+        }, input);
+        final List<Integer> expected = Arrays.asList(1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        final Iterator<Integer> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final int element : expected)
+        {
+            final int next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
     public void takeWhileTest1()
     {
         final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
@@ -1254,7 +1477,7 @@ public class FunctionalTest
         next = iterator.next();
         Assert.assertEquals(3,next);
         next = iterator.next();
-        Assert.assertEquals(4,next);
+        Assert.assertEquals(4, next);
         Assert.assertFalse(iterator.hasNext());
         try {
             iterator.next();
@@ -1549,6 +1772,41 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqZipTest2()
+    {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[]{'a', 'b', 'c', 'd', 'e'});
+
+        final Collection<Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
+        expected.add(new Pair<Integer, Character>(1, 'a'));
+        expected.add(new Pair<Integer, Character>(2, 'b'));
+        expected.add(new Pair<Integer, Character>(3, 'c'));
+        expected.add(new Pair<Integer, Character>(4, 'd'));
+        expected.add(new Pair<Integer, Character>(5, 'e'));
+
+        final Collection<Pair<Integer,Character>> output = Functional.toList(Functional.seq.zip(input1, input2));
+        final Iterator<Pair<Integer,Character>> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final Pair<Integer,Character> element : expected)
+        {
+            final Pair<Integer,Character> next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
     public void seqZipFnTest1()
     {
         final Collection<Integer> input = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
@@ -1639,6 +1897,42 @@ public class FunctionalTest
         final Collection<Triplet<Integer,Character,Double>> output = Functional.toList(Functional.seq.zip3(input1, input2, input3));
 
         AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void seqZip3Test2()
+    {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+        final Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
+
+        final Collection<Triplet<Integer,Character,Double>> expected = new ArrayList<Triplet<Integer, Character, Double>>();
+        expected.add(new Triplet<Integer, Character, Double>(1, 'a', 1.0));
+        expected.add(new Triplet<Integer, Character, Double>(2, 'b', 2.0));
+        expected.add(new Triplet<Integer, Character, Double>(3, 'c', 2.5));
+        expected.add(new Triplet<Integer, Character, Double>(4, 'd', 3.0));
+        expected.add(new Triplet<Integer, Character, Double>(5, 'e', 3.5));
+
+        final Collection<Triplet<Integer,Character,Double>> output = Functional.toList(Functional.seq.zip3(input1, input2, input3));
+        final Iterator<Triplet<Integer,Character,Double>> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final Triplet<Integer,Character,Double> element : expected)
+        {
+            final Triplet<Integer,Character,Double> next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
     }
 
     /*[ExpectedException(typeof(ArgumentException))]
@@ -1776,7 +2070,7 @@ public class FunctionalTest
         final String trueMatch = "6";
         final Collection<Integer> li = Functional.init(DoublingGenerator, 5);
         final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
-        Assert.assertEquals((Integer)2,
+        Assert.assertEquals((Integer) 2,
                 Functional.noException.findIndex(
                         new Func<String, Boolean>() {
                             @Override
@@ -1959,14 +2253,41 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqCollectTest3()
+    {
+        final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        final Iterable<Integer> output = Functional.seq.collect(repeat(3), input);
+        final List<Integer> expected = Arrays.asList(2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8, 10, 10, 10);
+        final Iterator<Integer> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final int element : expected)
+        {
+            final int next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
     public void takeNandYieldTest1()
     {
         final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
         final Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 2);
         final List<Integer> expectedList = Arrays.asList(2,4);
-        final List<Integer> expectedRemainder = Arrays.asList(6,8,10);
+        final List<Integer> expectedRemainder = Arrays.asList(6, 8, 10);
         AssertIterable.assertIterableEquals(expectedList,output.getValue0());
-        AssertIterable.assertIterableEquals(expectedRemainder,output.getValue1());
+        AssertIterable.assertIterableEquals(expectedRemainder, output.getValue1());
     }
 
     @Test
@@ -2321,6 +2642,46 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqUnfoldTest2()
+    {
+        final Integer seed = 0;
+        final Func<Integer,Pair<Integer,Integer>> unspool = new Func<Integer, Pair<Integer, Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(Integer integer) {
+                return Pair.with(integer+1,integer+1);
+            }
+        };
+        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+            @Override
+            public Boolean apply(Integer integer) {
+                return integer==10;
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        final Iterable<Integer> output = Functional.seq.unfold(unspool, finished, seed);
+        final Iterator<Integer> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final int element : expected)
+        {
+            final int next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
     public void seqUnfoldAsDoublingGeneratorTest1()
     {
         final Integer seed = 1;
@@ -2356,6 +2717,40 @@ public class FunctionalTest
         final List<Integer> expected = Arrays.asList(2,4,6,8,10,12,14,16,18,20);
         final Iterable<Integer> output = Functional.seq.unfold(doubler,seed);
         AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void seqUnfoldAsDoublingGeneratorTest3()
+    {
+        final Integer seed = 1;
+        final Func<Integer,Option<Pair<Integer,Integer>>> doubler = new Func<Integer, Option<Pair<Integer, Integer>>>() {
+            @Override
+            public Option<Pair<Integer, Integer>> apply(Integer integer) {
+                return integer>10 ? Option.<Pair<Integer, Integer>>None() : Option.toOption(Pair.with(integer * 2, integer+1));
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(2,4,6,8,10,12,14,16,18,20);
+        final Iterable<Integer> output = Functional.seq.unfold(doubler,seed);
+        final Iterator<Integer> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final int element : expected)
+        {
+            final int next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
     }
 
     @Test
@@ -2521,6 +2916,33 @@ public class FunctionalTest
     }
 
     @Test
+    public void seqSkipTest3()
+    {
+        final List<Integer> l = Arrays.asList(1,2,3,4,5);
+        final List<Integer> expected = Arrays.asList(3,4,5);
+        final Iterable<Integer> output = Functional.seq.skip(2,l);
+        final Iterator<Integer> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final int element : expected)
+        {
+            final int next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
+    }
+
+    @Test
     public void skipWhileTest1()
     {
         final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
@@ -2634,6 +3056,37 @@ public class FunctionalTest
         final List<Integer> expected = Arrays.asList(2,3,4,5,6,7,8,9);
 
         AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void seqSkipWhileTest4()
+    {
+        final List<Integer> l = Arrays.asList(1,2,3,4,5);
+        final List<Integer> expected = Arrays.asList(3,4,5);
+        final Iterable<Integer> output = Functional.seq.skipWhile(new Func<Integer, Boolean>() {
+            public Boolean apply(final Integer i) {
+                return i <= 2;
+            }
+        }, l);
+        final Iterator<Integer> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final int element : expected)
+        {
+            final int next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
     }
 
     @Test
@@ -2817,6 +3270,52 @@ public class FunctionalTest
         }, partitions);
 
         AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void seqPartitionRangesOfString2()
+    {
+        final int noElems = 13;
+        final int noPartitions = 5;
+        final Iterable<Functional.Range<String>> output =
+                Functional.seq.partition(
+                        new Func<Integer, String>() {
+                            public String apply(final Integer i) {
+                                return new Integer(i - 1).toString();
+                            }
+                        },
+                        noElems, noPartitions);
+
+        final List<String> expectedStart = Arrays.asList("0","3","6","9","11");
+        final List<String> expectedEnd = Arrays.asList("3","6","9","11","13");
+        final List<Pair<String,String>> expected_ = Functional.zip(expectedStart,expectedEnd);
+
+        final List<Functional.Range < String >> expected = Functional.map(new Func<Pair<String, String>, Functional.Range < String >> ()
+        {
+            @Override
+            public Functional.Range < String > apply(final Pair<String, String> pair) {
+                return new Functional.Range<String>(pair.getValue0(),pair.getValue1());
+            }
+        }, expected_);
+        final Iterator<Functional.Range<String>> iterator = output.iterator();
+
+        for(int i=0;i<20;++i)
+            Assert.assertTrue(iterator.hasNext());
+
+        for(final Functional.Range<String> element : expected)
+        {
+            final Functional.Range<String> next = iterator.next();
+            Assert.assertEquals(element,next);
+        }
+
+        Assert.assertFalse(iterator.hasNext());
+        try {
+            iterator.next();
+        } catch(final NoSuchElementException e) {
+            return;
+        }
+
+        Assert.fail("Should not reach this point");
     }
 
     @Test

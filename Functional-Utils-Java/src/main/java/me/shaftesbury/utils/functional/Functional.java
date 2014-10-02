@@ -2162,6 +2162,8 @@ public final class Functional
 
                         @Override
                         public T next() {
+                            if(!hasNext())
+                                throw new NoSuchElementException();
                             return _f.apply(_counter++);
                         }
 
@@ -2320,7 +2322,7 @@ public final class Functional
 
                         @Override
                         public T next() {
-                            final boolean another = hasNext();
+                            if(!hasNext()) throw new NoSuchElementException();
                             return it.next();
                         }
 
@@ -2614,6 +2616,7 @@ public final class Functional
 
                         @Override
                         public A next() {
+                            if(!hasNext()) throw new NoSuchElementException();
                             final Pair<A,B> t = unspool.apply(next);
                             next = t.getValue1();
                             return t.getValue0();
@@ -2643,15 +2646,15 @@ public final class Functional
                 public Iterator<A> iterator() {
                     return new Iterator<A>() {
                         B next = seed;
-                        Option<Pair<A,B>> temp;
                         @Override
                         public boolean hasNext() {
-                            temp = unspool.apply(next);
-                            return temp.isSome();
+                            return unspool.apply(next).isSome();
                         }
 
                         @Override
                         public A next() {
+                            final Option<Pair<A,B>> temp = unspool.apply(next);
+                            if(temp.isNone()) throw new NoSuchElementException();
                             next = temp.Some().getValue1();
                             return temp.Some().getValue0();
                         }
