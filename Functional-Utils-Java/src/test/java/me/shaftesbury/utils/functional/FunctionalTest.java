@@ -16,10 +16,10 @@ import java.util.*;
  */
 public class FunctionalTest
 {
-    private static final Func<Integer,Integer> DoublingGenerator =
+    public static final Func<Integer,Integer> DoublingGenerator =
             new Func<Integer,Integer>()
             {
-                @Override public Integer apply(Integer a) { return 2*a;}
+                @Override public Integer apply(final Integer a) { return 2*a;}
             };
 
     @Test
@@ -164,18 +164,18 @@ public class FunctionalTest
         Assert.assertArrayEquals(new Integer[]{1,4,6,7,23}, j.toArray());
     }
 
-    private static final Func<Integer, Integer> TriplingGenerator =
+    public static final Func<Integer, Integer> TriplingGenerator =
             new Func<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer a) {
+                public Integer apply(final Integer a) {
                     return 3 * a;
                 }
             };
 
-    private static final Func<Integer, Integer> QuadruplingGenerator =
+    public static final Func<Integer, Integer> QuadruplingGenerator =
             new Func<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer a) {
+                public Integer apply(final Integer a) {
                     return 4 * a;
                 }
             };

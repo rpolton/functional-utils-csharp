@@ -161,10 +161,10 @@ public final class Functional
      * <tt>isEven</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an even integer
      */
-    public static final Func<Integer,Boolean> isEven = new Func<Integer, Boolean>()
+    public static final Func_int_T<Boolean> isEven = new Func_int_T<Boolean>()
     {
         @Override
-        public Boolean apply(final Integer i)
+        public Boolean apply(final int i)
         {
             return i % 2 == 0;
         }
@@ -173,10 +173,10 @@ public final class Functional
      * <tt>isOdd</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an odd integer
      */
-    public static final Func<Integer,Boolean> isOdd = new Func<Integer, Boolean>()
+    public static final Func_int_T<Boolean> isOdd = new Func_int_T<Boolean>()
     {
         @Override
-        public Boolean apply(final Integer i)
+        public Boolean apply(final int i)
         {
             return i % 2 != 0;
         }

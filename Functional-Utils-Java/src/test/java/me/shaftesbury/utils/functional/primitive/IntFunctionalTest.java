@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +17,7 @@ import java.util.Collection;
  */
 public class IntFunctionalTest
 {
-    private static final Func_int_int DoublingGenerator =
+    public static final Func_int_int DoublingGenerator =
             new Func_int_int()
             {
                 @Override public int apply(final int a) { return 2*a;}
@@ -128,7 +129,7 @@ public class IntFunctionalTest
 //        Assert.fail("Should not reach this point");
 //    }
 
-    private static final Func_int_int TriplingGenerator =
+    public static final Func_int_int TriplingGenerator =
             new Func_int_int() {
                 @Override
                 public int apply(final int a) {
@@ -136,7 +137,7 @@ public class IntFunctionalTest
                 }
             };
 
-    private static final Func_int_int QuadruplingGenerator =
+    public static final Func_int_int QuadruplingGenerator =
             new Func_int_int() {
                 @Override
                 public int apply(final int a) {
@@ -881,19 +882,19 @@ public class IntFunctionalTest
 //        Assert.fail("Should not reach this point");
 //    }
 //
-//    @Test(expected=NoSuchElementException.class)
-//    public void findLastTest1()
-//    {
-//        final List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
-//        Assert.assertEquals((Integer) 5, Functional.findLast(Functional.isOdd, l));
-//    }
-//
-//    @Test
-//    public void findLastTest2()
-//    {
-//        final List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
-//        Assert.assertEquals((Integer)10, Functional.findLast(Functional.isEven, l));
-//    }
+    @Test(expected=NoSuchElementException.class)
+    public void findLastTest1()
+    {
+        final IntList l = Functional.init(DoublingGenerator, 5);
+        Assert.assertEquals( 5, Functional.findLast(Functional.isOdd, l));
+    }
+
+    @Test
+    public void findLastTest2()
+    {
+        final IntList l = Functional.init(DoublingGenerator, 5);
+        Assert.assertEquals(10, Functional.findLast(Functional.isEven, l));
+    }
 //
 //    @Test
 //    public void findLastNoExceptionTest1()
