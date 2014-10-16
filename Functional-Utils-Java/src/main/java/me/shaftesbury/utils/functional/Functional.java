@@ -19,7 +19,7 @@ public final class Functional
      * @param s the input string
      * @return true if s is either null or s is the empty string; false otherwise.
      */
-    public final static boolean isNullOrEmpty(final String s)
+    public static boolean isNullOrEmpty(final String s)
     {
         return s==null || s.isEmpty();
     }
@@ -31,7 +31,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a string containing the string representation of each input element separated by the supplied delimiter
      */
-    public final static <T>String join(final String delimiter, final Iterable<T> strs)
+    public static <T>String join(final String delimiter, final Iterable<T> strs)
     {
         if(strs==null) return "";
         final Iterator<T> it = strs.iterator();
@@ -53,7 +53,7 @@ public final class Functional
      * @param indentThis the input string that should be indented
      * @return a string indenting the input string by the indicated number of units
      */
-    public final static String indentBy(final int howMany, final String unitOfIndentation, final String indentThis)
+    public static String indentBy(final int howMany, final String unitOfIndentation, final String indentThis)
     {
         final Collection<String> indentation = init(
                 new Func<Integer, String>() {
@@ -81,7 +81,7 @@ public final class Functional
      * @return the folded value paired with those transformed elements which are Some
      * @throws OptionNoValueAccessException
      */
-    public final static <A, B>Pair<A,List<B>> foldAndChoose(
+    public static <A, B>Pair<A,List<B>> foldAndChoose(
             final Func2<A, B, Pair<A,Option<B>>> f,
             final A initialValue, final Iterable<B> input) throws OptionNoValueAccessException
     {
@@ -117,7 +117,7 @@ public final class Functional
      * @param fn map function (see <tt>map</tt>) which is used to transform the input sequence
      * @return a string containing the transformed string value of each input element separated by the supplied separator
      */
-    public final static <T>String join(final String separator, final Iterable<T> l, final Func<? super T, String> fn)
+    public static <T>String join(final String separator, final Iterable<T> l, final Func<? super T, String> fn)
     {
         if (l == null) throw new IllegalArgumentException("l");
         if (fn == null) throw new IllegalArgumentException("fn");
@@ -132,7 +132,7 @@ public final class Functional
      * @param <T> the type of the input element
      * @return lowerBound < val < upperBound
      */
-    public final static <T extends Comparable<T>>boolean between(final T lowerBound, final T upperBound, final T val)
+    public static <T extends Comparable<T>>boolean between(final T lowerBound, final T upperBound, final T val)
     {
         if (val == null) throw new IllegalArgumentException("val");
 
@@ -149,7 +149,7 @@ public final class Functional
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the first element from the input sequence for which the supplied predicate returns true
      */
-    public final static <A>A find(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static <A>A find(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -172,7 +172,7 @@ public final class Functional
      *          which returns the first element from the input sequence for which the supplied predicate returns true
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A>Func<Iterable<A>,A> find(final Func<? super A,Boolean> f)
+    public static <A>Func<Iterable<A>,A> find(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, A>() {
             @Override
@@ -216,7 +216,7 @@ public final class Functional
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the last element in the input sequence for which the supplied predicate returns true
      */
-    public final static <A>A findLast(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static <A>A findLast(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -241,7 +241,7 @@ public final class Functional
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the last element in the input sequence for which the supplied predicate returns true
      */
-    public final static <A>A findLast(final Func<? super A,Boolean> f, final List<A> input)
+    public static <A>A findLast(final Func<? super A,Boolean> f, final List<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -263,7 +263,7 @@ public final class Functional
      * @return the last element in the input sequence for which the supplied predicate returns true
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A>Func<List<A>,A> findLast(final Func<A,Boolean> f)
+    public static <A>Func<List<A>,A> findLast(final Func<A,Boolean> f)
     {
         return new Func<List<A>, A>() {
             @Override
@@ -334,7 +334,7 @@ public final class Functional
      * @param <AA> the type of the input
      * @return f(input)
      */
-    public final static <A, B, AA extends A> B in(final AA input, final Func<A, B> f)
+    public static <A, B, AA extends A> B in(final AA input, final Func<A, B> f)
     {
         return f.apply(input);
     }
@@ -350,7 +350,7 @@ public final class Functional
      * @param <C> the type of the output of <tt>g</tt>
      * @return a function equivalent to g(f(x))
      */
-    public final static <A, B, C> Func<A, C> then(final Func<A, ? extends B> f, final Func<B, C> g)
+    public static <A, B, C> Func<A, C> then(final Func<A, ? extends B> f, final Func<B, C> g)
     {
         return new Func<A, C>()
         {
@@ -388,7 +388,7 @@ public final class Functional
      * @param <T> the type of the input element
      * @return a function which is the identity transformation
      */
-    public final static <T>Func<T,T> identity()
+    public static <T>Func<T,T> identity()
     {
         return new Func<T, T>() {
             @Override
@@ -520,7 +520,7 @@ public final class Functional
      * @param <T> the type of the element in the output sequence
      * @return a list of 'howMany' elements of type 'T' which were generated by the function 'f'
      */
-    public final static <T>List<T> init(final Func<Integer,T> f,final int howMany)
+    public static <T>List<T> init(final Func<Integer,T> f,final int howMany)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if(howMany<1) throw new IllegalArgumentException("howMany");
@@ -541,7 +541,7 @@ public final class Functional
      * @param <B> the type of the element in the output sequence
      * @return a list of type B containing the transformed values.
      */
-    public final static <A,B> List<B> map(final Func<A, ? extends B> f, final Iterable<? extends A> input)
+    public static <A,B> List<B> map(final Func<A, ? extends B> f, final Iterable<? extends A> input)
     {
         final List<B> output = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
         for(final A a : input)
@@ -560,7 +560,7 @@ public final class Functional
      *          containing the transformed values.
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A,B> Func<Iterable<A>,List<B>> map(final Func<? super A, ? extends B> f)
+    public static <A,B> Func<Iterable<A>,List<B>> map(final Func<? super A, ? extends B> f)
     {
         return new Func<Iterable<A>, List<B>>() {
             @Override
@@ -581,7 +581,7 @@ public final class Functional
      * @param <B> the type of the element in the output sequence
      * @return a list of type B containing the transformed values.
      */
-    public final static <A,B> List<B> mapi(final Func2<Integer, A, ? extends B> f, final Iterable<? extends A> input)
+    public static <A,B> List<B> mapi(final Func2<Integer, A, ? extends B> f, final Iterable<? extends A> input)
     {
         final List<B> output = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
         int pos = 0;
@@ -602,7 +602,7 @@ public final class Functional
      *          containing the transformed values.
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A,B> Func<Iterable<A>,List<B>> mapi(final Func2<Integer, ? super A, ? extends B> f)
+    public static <A,B> Func<Iterable<A>,List<B>> mapi(final Func2<Integer, ? super A, ? extends B> f)
     {
         return new Func<Iterable<A>, List<B>>() {
             @Override
@@ -622,7 +622,7 @@ public final class Functional
      * @param <AA> the type of the element in the input sequence
      * @return a sorted list containing all the elements of 'input' sorted using <tt>Collections.sort</tt> and 'f'
      */
-    public final static <A, AA extends A>List<AA> sortWith(final Comparator<A> f, final Collection<AA> input)
+    public static <A, AA extends A>List<AA> sortWith(final Comparator<A> f, final Collection<AA> input)
     {
         final List<AA> output = new ArrayList<AA>(input);
         Collections.sort(output, f);
@@ -636,7 +636,7 @@ public final class Functional
      * @param <A> the type of the elements to be compared
      * @return left.compareTo(right)
      */
-    public final static <A extends Comparable<A>>int Sorter(final A left, final A right)
+    public static <A extends Comparable<A>>int Sorter(final A left, final A right)
     {
         return left.compareTo(right);
     }
@@ -644,7 +644,7 @@ public final class Functional
     /**
      * A Comparator that encapsulates <tt>Sorter</tt> above
      */
-    public final static Comparator<Integer> dSorter = new Comparator<Integer>()
+    public static Comparator<Integer> dSorter = new Comparator<Integer>()
     {
         @Override public int compare(final Integer i, final Integer j) { return Sorter(i, j); }
     };
@@ -655,14 +655,14 @@ public final class Functional
      * @param <T> the type of element 'a'
      * @return a.toString()
      */
-    public final static <T> String Stringify(final T a) { return a.toString(); }
+    public static <T> String Stringify(final T a) { return a.toString(); }
 
     /**
      * A transformation function that wraps <tt>Stringify</tt>
      * @param <T> the type of the element which we will render as a String
      * @return a function that calls <tt>Stringify</tt>
      */
-    public final static <T>Func<T, String> dStringify()
+    public static <T>Func<T, String> dStringify()
     {
         return new Func<T, String>()
         {
@@ -686,7 +686,7 @@ public final class Functional
      * @throws java.lang.IllegalArgumentException if the predicate returns true for all pairs and the sequences contain differing numbers
      * of elements
      */
-    public final static <A, B,AA extends A,BB extends B>boolean forAll2(final Func2<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
+    public static <A, B,AA extends A,BB extends B>boolean forAll2(final Func2<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
     {
         final Iterator<AA> enum1 = input1.iterator();
         final Iterator<BB> enum2 = input2.iterator();
@@ -712,7 +712,7 @@ public final class Functional
      * @return a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
      *          function returns true for the element.
      */
-    public final static <A>List<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
+    public static <A>List<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
     {
         final List<A> output = input instanceof Collection<?> ? new ArrayList<A>(((Collection) input).size()) : new ArrayList<A>();
         for(final A element : input)
@@ -751,7 +751,7 @@ public final class Functional
      * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for any element in the input sequence, false otherwise
      */
-    public final static <A>boolean exists(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static <A>boolean exists(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
         for(final A a : input)
             if(f.apply(a))
@@ -769,7 +769,7 @@ public final class Functional
      * @return true if the predicate returns true for any element in the input sequence, false otherwise
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A>Func<Iterable<A>,Boolean> exists(final Func<? super A,Boolean> f)
+    public static <A>Func<Iterable<A>,Boolean> exists(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Boolean>() {
             @Override
@@ -786,7 +786,7 @@ public final class Functional
      * @param <A> the type of the input to the function <tt>f</tt>
      * @return true if f returns false, false if f returns true
      */
-    public final static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
+    public static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
     {
         return new Func<A,Boolean>(){@Override public Boolean apply(final A a) { return !f.apply(a);}};
     }
@@ -800,7 +800,7 @@ public final class Functional
      * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for all elements in the input sequence, false otherwise
      */
-    public final static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<? extends A> input)
+    public static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<? extends A> input)
     {
         return !exists(not(f), input);
     }
@@ -815,7 +815,7 @@ public final class Functional
      * @return true if the predicate returns true for all elements in the input sequence, false otherwise
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A>Func<Iterable<A>,Boolean> forAll(final Func<? super A,Boolean> f)
+    public static <A>Func<Iterable<A>,Boolean> forAll(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Boolean>() {
             @Override
@@ -833,7 +833,7 @@ public final class Functional
      * @param <B> the type of the second input to the function <tt>f</tt>
      * @return true if f returns false, false if f returns true
      */
-    public final static <A,B> Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
+    public static <A,B> Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
     {
         return new Func2<A,B,Boolean>(){@Override public Boolean apply(final A a, final B b) { return !f.apply(a,b);}};
     }
@@ -851,7 +851,7 @@ public final class Functional
      * @param <A> the type of the element in the input sequence
      * @return a pair of lists, the first being the 'true' and the second being the 'false'
      */
-    public final static <A>Pair<List<A>,List<A>> partition(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static <A>Pair<List<A>,List<A>> partition(final Func<? super A,Boolean> f, final Iterable<A> input)
     {
         final List<A> left;
         final List<A> right;
@@ -884,7 +884,7 @@ public final class Functional
      * @return a pair of lists, the first being the 'true' and the second being the 'false'
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A>Func<Iterable<A>,Pair<List<A>,List<A>>> partition(final Func<? super A,Boolean> f)
+    public static <A>Func<Iterable<A>,Pair<List<A>,List<A>>> partition(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Pair<List<A>, List<A>>>() {
             @Override
@@ -905,7 +905,7 @@ public final class Functional
      * @param <B> the type of the element in the output sequence
      * @return a list of transformed elements, numbering less than or equal to the number of input elements
      */
-    public final static <A, B>List<B> choose(final Func<? super A, Option<B>> f, final Iterable<A> input)
+    public static <A, B>List<B> choose(final Func<? super A, Option<B>> f, final Iterable<A> input)
     {
         final List<B> results = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
         for(final A a : input)
@@ -929,7 +929,7 @@ public final class Functional
      * @return a list of transformed elements, numbering less than or equal to the number of input elements
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A, B>Func<Iterable<A>,List<B>> choose(final Func<? super A, Option<B>> f)
+    public static <A, B>Func<Iterable<A>,List<B>> choose(final Func<? super A, Option<B>> f)
     {
         return new Func<Iterable<A>, List<B>>() {
             @Override
@@ -950,7 +950,7 @@ public final class Functional
      * @param <B> the type of the element in the input sequence
      * @return aggregated value
      */
-    public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
+    public static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
     {
         A state = initialValue;
         for (final B b : input)
@@ -970,7 +970,7 @@ public final class Functional
      * @return aggregated value
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public final static <A, B>Func<Iterable<B>,A> fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue)
+    public static <A, B>Func<Iterable<B>,A> fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue)
     {
         return new Func<Iterable<B>, A>() {
             @Override
@@ -986,7 +986,7 @@ public final class Functional
      * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
-    public final static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
+    public static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
         if(finished==null) throw new IllegalArgumentException("finished");
@@ -1007,7 +1007,7 @@ public final class Functional
      * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
-    public final static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
+    public static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
 
@@ -1035,7 +1035,7 @@ public final class Functional
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    public final static <T,K,V>Map<K,V> toDictionary(final Func<? super T,? extends K> keyFn, final Func<? super T,? extends V> valueFn, final Iterable<T> input)
+    public static <T,K,V>Map<K,V> toDictionary(final Func<? super T,? extends K> keyFn, final Func<? super T,? extends V> valueFn, final Iterable<T> input)
     {
         if(keyFn==null) throw new IllegalArgumentException("keyFn");
         if(valueFn==null) throw new IllegalArgumentException("valueFn");
@@ -1051,8 +1051,8 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return an array containing all the elements of the input sequence
      */
-    public final static <T>Object[] toArray(final Iterable<T> input)
-    //public final static <T>T[] toArray(final Iterable<T> input)
+    public static <T>Object[] toArray(final Iterable<T> input)
+    //public static <T>T[] toArray(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toArray(Iterable<T>): input is null");
 
@@ -2142,7 +2142,7 @@ public final class Functional
          * @return a lazily-evaluated sequence which will contain no more than 'howMany' elements of type 'T' which were generated by the function 'f'
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public final static <T>Iterable<T> init(final Func<Integer,? extends T> f,final int howMany)
+        public static <T>Iterable<T> init(final Func<Integer,? extends T> f,final int howMany)
         {
             if(f==null) throw new IllegalArgumentException("f");
             if(howMany<1) throw new IllegalArgumentException("howMany");
@@ -2188,7 +2188,7 @@ public final class Functional
          * @return a potentially infinite sequence containing elements of type 'T' which were generated by the function 'f'
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public final static <T>Iterable<T> init(final Func<Integer,? extends T> f)
+        public static <T>Iterable<T> init(final Func<Integer,? extends T> f)
         {
             if(f==null) throw new IllegalArgumentException("f");
 
@@ -2609,7 +2609,7 @@ public final class Functional
          * This is the converse of <tt>fold</tt>
          * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
          */
-        public final static <A,B>Iterable<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
+        public static <A,B>Iterable<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
         {
             if(unspool==null) throw new IllegalArgumentException("unspool");
             if(finished==null) throw new IllegalArgumentException("finished");
@@ -2647,7 +2647,7 @@ public final class Functional
          * This is the converse of <tt>fold</tt>
          * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
          */
-        public final static <A,B>Iterable<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
+        public static <A,B>Iterable<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
         {
             if(unspool==null) throw new IllegalArgumentException("unspool");
 
@@ -2923,7 +2923,7 @@ public final class Functional
      * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
      * Recursive implementations of (some of) the algorithms contained herein
      */
-    public final static class rec
+    public static class rec
     {
         private static final <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterator<A> input, final Collection<A> accumulator)
         {
@@ -2999,7 +2999,7 @@ public final class Functional
          * @param <B> the type of the element in the output sequence
          * @return the aggregated value
          */
-        public final static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
+        public static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
         {
             return fold(f,initialValue,input.iterator());
         }
@@ -3019,7 +3019,7 @@ public final class Functional
          * This is a recursive implementation of unfold
          * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
          */
-        public final static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
+        public static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
         {
             return unfold(unspool,finished,seed,new ArrayList<A>());
         }
@@ -3039,7 +3039,7 @@ public final class Functional
          * This is a recursive implementation of unfold
          * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
          */
-        public final static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
+        public static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
         {
             return unfold(unspool,seed,new ArrayList<A>());
         }
@@ -3074,7 +3074,7 @@ public final class Functional
          * @return a set which contains zero or more of the elements of the input sequence. Each element is included only if the filter
          *          function returns true for the element.
          */
-        public final static <A>Set<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
+        public static <A>Set<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
         {
             final Set<A> output = input instanceof Collection<?> ? new HashSet<A>(((Collection) input).size()) : new HashSet<A>();
             for(final A element : input)
@@ -3123,7 +3123,7 @@ public final class Functional
          * @throws IllegalArgumentException if some property of the specified element
          *         prevents it from being added to this set
          */
-        public final static <A,B> Set<B> map(final Func<? super A, ? extends B> f, final Iterable<A> input)
+        public static <A,B> Set<B> map(final Func<? super A, ? extends B> f, final Iterable<A> input)
         {
             final Set<B> output = input instanceof Collection<?> ? new HashSet<B>(((Collection) input).size()) : new HashSet<B>();
             for(final A a : input)
@@ -3162,7 +3162,7 @@ public final class Functional
          * @param <E>
          * @return a set containing those elements which are contained within both sets 'e1' and 'e2'
          */
-        public final static <E>Set<E> intersection(final Set<? extends E> e1, final Set<? extends E> e2)
+        public static <E>Set<E> intersection(final Set<? extends E> e1, final Set<? extends E> e2)
         {
             Set<E> i = new HashSet<E>(e1);
             i.retainAll(e2);
@@ -3176,7 +3176,7 @@ public final class Functional
          * @param <E>
          * @return a set of those elements which are in 'inSet' and not in 'notInSet'
          */
-        public final static <E>Set<E> asymmetricDifference(final Set<? extends E> inSet, final Set<? extends E> notInSet)
+        public static <E>Set<E> asymmetricDifference(final Set<? extends E> inSet, final Set<? extends E> notInSet)
         {
             Set<E> i = new HashSet<E>(inSet);
             i.removeAll(notInSet);
@@ -3264,7 +3264,7 @@ public final class Functional
      * in the event of an unexpected failure. The functions in this class will indicate the failure in a different manner, typically
      * using the Option type.
      */
-    public final static class noException
+    public static class noException
     {
         /**
          * Find the first element from the input sequence for which the supplied predicate returns true
@@ -3276,7 +3276,7 @@ public final class Functional
          * @return the first element from the input sequence for which the supplied predicate returns true or None
          * if no element is found that satisfies the predicate
          */
-        public final static <A>Option<A> find(final Func<? super A,Boolean> f, final Iterable<A> input)
+        public static <A>Option<A> find(final Func<? super A,Boolean> f, final Iterable<A> input)
         {
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -3320,7 +3320,7 @@ public final class Functional
          * @return the last element in the input sequence for which the supplied predicate returns true or None
          * if no element is found that satisfies the predicate
          */
-        public final static <A>Option<A> findLast(final Func<? super A,Boolean> f, final Iterable<A> input)
+        public static <A>Option<A> findLast(final Func<? super A,Boolean> f, final Iterable<A> input)
         {
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -3345,7 +3345,7 @@ public final class Functional
          * @return the last element in the input sequence for which the supplied predicate returns true or None
          * if no element is found that satisfies the predicate
          */
-        public final static <A>Option<A> findLast(final Func<? super A,Boolean> f, final List<A> input)
+        public static <A>Option<A> findLast(final Func<? super A,Boolean> f, final List<A> input)
         {
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -3398,7 +3398,7 @@ public final class Functional
          * if the predicate returns true for all pairs and the sequences contain differing numbers
          * of elements
          */
-        public final static <A, B,AA extends A,BB extends B>Option<Boolean> forAll2(final Func2<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
+        public static <A, B,AA extends A,BB extends B>Option<Boolean> forAll2(final Func2<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
         {
             final Iterator<AA> enum1 = input1.iterator();
             final Iterator<BB> enum2 = input2.iterator();
