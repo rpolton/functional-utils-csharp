@@ -145,32 +145,32 @@ public class IntFunctionalTest
             };
 
 
-    private static boolean BothAreEven(int a, int b)
+    private static boolean BothAreEven(final int a, final int b)
     {
         return Functional.isEven.apply(a) && Functional.isEven.apply(b);
     }
 
 
-//    @Test
-//    public void ForAll2Test1()
-//    {
-//        final IntList l = Functional.init(DoublingGenerator, 5);
-//        final IntList m = Functional.init(QuadruplingGenerator, 5);
-//        try
-//        {
-//            Assert.assertTrue(Functional.forAll2(
-//                    new Func2<Integer, Integer, Boolean>() {
-//                        @Override
-//                        public Boolean apply(Integer a, Integer b) {
-//                            return BothAreEven(a, b);
-//                        }
-//                    }, l, m));
-//        }
-//        catch (final Exception e)
-//        {
-//            Assert.fail();
-//        }
-//    }
+    @Test
+    public void ForAll2Test1()
+    {
+        final IntList l = Functional.init(DoublingGenerator, 5);
+        final IntList m = Functional.init(QuadruplingGenerator, 5);
+        try
+        {
+            Assert.assertTrue(Functional.forAll2(
+                    new Func2_int_int_T<Boolean>() {
+                        @Override
+                        public Boolean apply(final int a, final int b) {
+                            return BothAreEven(a, b);
+                        }
+                    }, l, m));
+        }
+        catch (final Exception e)
+        {
+            Assert.fail();
+        }
+    }
 
 //    @Test
 //    public void ForAll2NoExceptionTest1()
@@ -193,43 +193,43 @@ public class IntFunctionalTest
 //        }
 //    }
 
-    private static boolean BothAreLessThan10(int a, int b)
+    private static boolean BothAreLessThan10(final int a, final int b)
     {
         return a < 10 && b < 10;
     }
 
-    private static Func2<Integer, Integer, Boolean> dBothAreLessThan10 =
-            new Func2<Integer, Integer, Boolean>() {
+    private static Func2_int_int_T<Boolean> dBothAreLessThan10 =
+            new Func2_int_int_T<Boolean>() {
     @Override
-    public Boolean apply(Integer a, Integer b) {
+    public Boolean apply(final int a, final int b) {
         return BothAreLessThan10(a, b);
     }
 }   ;
 
-//    @Test
-//    public void ForAll2Test2()
-//    {
-//        final IntList l = Functional.init(DoublingGenerator, 5);
-//        final IntList m = Functional.init(TriplingGenerator, 5);
-//
-//        Assert.assertFalse(Functional.forAll2(dBothAreLessThan10
-//                , l, m));
-//    }
+    @Test
+    public void ForAll2Test2()
+    {
+        final IntList l = Functional.init(DoublingGenerator, 5);
+        final IntList m = Functional.init(TriplingGenerator, 5);
 
-//    @Test(expected=Exception.class)
-//    public void ForAll2Test3()
-//    {
-//        final IntList l = Functional.init(DoublingGenerator, 5);
-//        final IntList m = Functional.init(QuadruplingGenerator, 7);
-//
-//        Functional.forAll2(
-//                new Func2<Integer, Integer, Boolean>() {
-//                    @Override
-//                    public Boolean apply(Integer a, Integer b) {
-//                        return BothAreEven(a, b);
-//                    }
-//                }, l, m);
-//    }
+        Assert.assertFalse(Functional.forAll2(dBothAreLessThan10
+                , l, m));
+    }
+
+    @Test(expected=Exception.class)
+    public void ForAll2Test3()
+    {
+        final IntList l = Functional.init(DoublingGenerator, 5);
+        final IntList m = Functional.init(QuadruplingGenerator, 7);
+
+        Functional.forAll2(
+                new Func2_int_int_T<Boolean>() {
+                    @Override
+                    public Boolean apply(final int a, final int b) {
+                        return BothAreEven(a, b);
+                    }
+                }, l, m);
+    }
 
 //    @Test
 //    public void ForAll2NoExceptionTest2()
