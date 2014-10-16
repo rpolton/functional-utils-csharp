@@ -10,7 +10,7 @@ public class IntList implements IntIterable
     private final int[] backingStore;
     public IntList(){backingStore=new int[0];}
     public IntList(final int size) {backingStore=new int[size];}
-    public IntList(final int[]array) {backingStore= Arrays.copyOf(array, array.length);}
+    public IntList(final int[]array) {backingStore = Arrays.copyOf(array, array.length);}
 
     public int size() {
         return backingStore.length;
