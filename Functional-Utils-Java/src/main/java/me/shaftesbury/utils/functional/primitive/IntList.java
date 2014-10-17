@@ -1,9 +1,6 @@
 package me.shaftesbury.utils.functional.primitive;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class IntList implements IntIterable
 {
@@ -33,8 +30,18 @@ public class IntList implements IntIterable
         return Arrays.copyOf(backingStore, backingStore.length);
     }
 
-    public <T> T[] toArray(T[] a) {
-        return null;
+    @SuppressWarnings("unchecked")
+    public <T>T[] toArray(T[] a) {
+        if (a.length < backingStore.length) {
+            // Make a new array of a's runtime type, but my contents:
+            final Integer[] temp = new Integer[backingStore.length];
+            for(int i=0;i<backingStore.length;++i) temp[i]=backingStore[i];
+            return (T[]) Arrays.copyOf(temp, backingStore.length, a.getClass());
+        }
+        System.arraycopy(backingStore, 0, a, 0, backingStore.length);
+        if (a.length > backingStore.length)
+            a[backingStore.length] = null;
+        return a;
     }
 
     public boolean add(final int integer) {
