@@ -1587,6 +1587,7 @@ public final class Functional
     public static final <A>Pair<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
     {
         if (input == null) throw new IllegalArgumentException("Functional.takeNAndYield: input is null");
+        if(howMany<0) throw new IllegalArgumentException("Functional.takeNAndYield: howMany is negative");
 
         int counter = 0;
         final List<A> output = new ArrayList<A>(howMany);
@@ -3326,6 +3327,7 @@ public final class Functional
             if (input == null) throw new IllegalArgumentException("input");
 
             final Pair<List<A>,Iterable<A>> p = takeNAndYield(input,1);
+            if(p.getValue0().isEmpty()) return Option.None();
             final Pair<A,Boolean> seed = Pair.with(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
             final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
                 @Override public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.with(item,true):state;}
@@ -3350,6 +3352,7 @@ public final class Functional
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
 
+            if(input.isEmpty()) return Option.None();
             for (final A a : Iterators.reverse(input))
                 if (f.apply(a))
                     return Option.toOption(a);
