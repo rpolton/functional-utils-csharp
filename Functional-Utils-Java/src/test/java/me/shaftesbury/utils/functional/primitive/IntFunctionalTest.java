@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -301,34 +302,34 @@ public class IntFunctionalTest
 //                        ), l, m));
 //    }
 //
-//    @Test
-//    public void PartitionTest1()
-//    {
-//        final IntList m = Functional.init(TriplingGenerator, 5);
-//        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isOdd, m);
-//
-//        final Integer[] left = {3, 9, 15};
-//        final Integer[] right = {6, 12};
-//        Assert.assertArrayEquals(left, r.getValue0().toArray());
-//        Assert.assertArrayEquals(right, r.getValue1().toArray());
-//    }
-//
-//    @Test
-//    public void PartitionTest2()
-//    {
-//        final IntList l = Functional.init(DoublingGenerator, 5);
-//        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
-//        Assert.assertArrayEquals(l.toArray(), r.getValue0().toArray());
-//        Assert.assertArrayEquals(new Integer[]{}, r.getValue1().toArray());
-//    }
-//
-//    @Test
-//    public void PartitionTest3()
-//    {
-//        final IntList l = Functional.init(DoublingGenerator, 5);
-//        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
-//        Assert.assertArrayEquals(Functional.filter(Functional.isEven, l).toArray(), r.getValue0().toArray());
-//    }
+    @Test
+    public void PartitionTest1()
+    {
+        final IntList m = Functional.init(TriplingGenerator, 5);
+        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isOdd, m);
+
+        final Integer[] left = {3, 9, 15};
+        final Integer[] right = {6, 12};
+        Assert.assertArrayEquals(left, r.getValue0().toArray());
+        Assert.assertArrayEquals(right, r.getValue1().toArray());
+    }
+
+    @Test
+    public void PartitionTest2()
+    {
+        final IntList l = Functional.init(DoublingGenerator, 5);
+        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
+        Assert.assertArrayEquals(l.toArray(new Integer[0]), r.getValue0().toArray());
+        Assert.assertArrayEquals(new Integer[]{}, r.getValue1().toArray());
+    }
+
+    @Test
+    public void PartitionTest3()
+    {
+        final IntList l = Functional.init(DoublingGenerator, 5);
+        final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
+        Assert.assertArrayEquals(Functional.filter(Functional.isEven, l).toArray(new Integer[0]), r.getValue0().toArray());
+    }
 //
 //    @Test
 //    public void ToStringTest1()

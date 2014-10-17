@@ -590,50 +590,31 @@ public final class Functional
      * partition: (A -> bool) -> A list -> A list * A list
      * @param f predicate used to split the input sequence into two groups
      * @param input the input sequence
-     * @param <A> the type of the element in the input sequence
      * @return a pair of lists, the first being the 'true' and the second being the 'false'
      */
-    public static <A>Pair<List<A>,List<A>> partition(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static Pair<List<Integer>,List<Integer>> partition(final Func_int_T<Boolean> f, final IntIterable input)
     {
-        final List<A> left;
-        final List<A> right;
-        if(input instanceof Collection<?>)
+        final List<Integer> left;
+        final List<Integer> right;
+        if(input instanceof IntList)
         {
-            left = new ArrayList<A>(((Collection) input).size());
-            right = new ArrayList<A>(((Collection) input).size());
+            left = new ArrayList<Integer>(((IntList) input).size());
+            right = new ArrayList<Integer>(((IntList) input).size());
         }
         else
         {
-            left = new ArrayList<A>();
-            right = new ArrayList<A>();
+            left = new ArrayList<Integer>();
+            right = new ArrayList<Integer>();
         }
-        for (final A a : input)
+        final IntIterator iterator = input.iterator();
+        while(iterator.hasNext()) {
+            final int a = iterator.next();
             if (f.apply(a))
                 left.add(a);
             else
                 right.add(a);
-        return new Pair<List<A>,List<A>>(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
-    }
-
-    /**
-     * partition is a group function. Given a predicate and an input sequence, 'partition' returns a pair of lists, the first list
-     * containing those elements from the input sequence for which the predicate returned true, the second list containing those
-     * elements from the input sequence for which the predicate returned false.
-     * partition: (A -> bool) -> A list -> A list * A list
-     * This is a curried implementation of 'forAll
-     * @param f predicate used to split the input sequence into two groups
-     * @param <A> the type of the element in the input sequence
-     * @return a pair of lists, the first being the 'true' and the second being the 'false'
-     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
-     */
-    public static <A>Func<Iterable<A>,Pair<List<A>,List<A>>> partition(final Func<? super A,Boolean> f)
-    {
-        return new Func<Iterable<A>, Pair<List<A>, List<A>>>() {
-            @Override
-            public Pair<List<A>, List<A>> apply(final Iterable<A> input) {
-                return Functional.partition(f,input);
-            }
-        };
+        }
+        return new Pair<List<Integer>,List<Integer>>(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
     }
 
     /**
@@ -1388,7 +1369,7 @@ public final class Functional
     }
 
     /**
-     * groupBy: similar to {@link #partition(Func,Iterable)} in that the input is grouped according to a function. This is more general than
+     * groupBy: similar to {@link #partition(Func_int_T,IntIterable)} in that the input is grouped according to a function. This is more general than
      * <tt>partition</tt> though as the output can be an arbitrary number of groups, up to and including one group per item in the
      * input data set. The 'keyFn' is the grouping operator and it is used to determine the key at which any given element from
      * the input data set should be added to the output dictionary / map.
