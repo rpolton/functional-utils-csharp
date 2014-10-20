@@ -489,47 +489,28 @@ public final class Functional
      * exists: (A -> bool) -> A list -> bool
      * @param f predicate
      * @param input input sequence
-     * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for any element in the input sequence, false otherwise
      */
-    public static <A>boolean exists(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static boolean exists(final Func_int_T<Boolean> f, final IntIterable input)
     {
-        for(final A a : input)
-            if(f.apply(a))
+        final IntIterator iterator = input.iterator();
+        while(iterator.hasNext()) {
+            final int a = iterator.next();
+            if (f.apply(a))
                 return true;
+        }
         return false;
-    }
-
-    /**
-     * The converse operation to <tt>forAll</tt>. If the predicate returns true then 'exists' returns true and halts the traveral of the
-     * input sequence. Otherwise return false.
-     * exists: (A -> bool) -> A list -> bool
-     * This is the curried implementation.
-     * @param f predicate
-     * @param <A> the type of the element in the input sequence
-     * @return true if the predicate returns true for any element in the input sequence, false otherwise
-     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
-     */
-    public static <A>Func<Iterable<A>,Boolean> exists(final Func<? super A,Boolean> f)
-    {
-        return new Func<Iterable<A>, Boolean>() {
-            @Override
-            public Boolean apply(final Iterable<A> input) {
-                return Functional.exists(f,input);
-            }
-        };
     }
 
     /**
      * not reverses the result of the applied predicate
      * not: (A -> bool) -> (A -> bool)
      * @param f the applied predicate
-     * @param <A> the type of the input to the function <tt>f</tt>
      * @return true if f returns false, false if f returns true
      */
-    public static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
+    public static Func_int_T<Boolean> not(final Func_int_T<Boolean> f)
     {
-        return new Func<A,Boolean>(){@Override public Boolean apply(final A a) { return !f.apply(a);}};
+        return new Func_int_T<Boolean>(){@Override public Boolean apply(final int a) { return !f.apply(a);}};
     }
 
     /**
@@ -541,29 +522,9 @@ public final class Functional
      * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for all elements in the input sequence, false otherwise
      */
-    public static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<? extends A> input)
+    public static <A>boolean forAll(final Func_int_T<Boolean> f, final IntIterable input)
     {
         return !exists(not(f), input);
-    }
-
-    /**
-     * The converse operation to <tt>exists</tt>. If the predicate returns true for all elements in the input sequence then 'forAll'
-     * returns true otherwise return false.
-     * forAll: (A -> bool) -> A list -> bool
-     * This is a curried implementation of 'forAll
-     * @param f predicate
-     * @param <A> the type of the element in the input sequence
-     * @return true if the predicate returns true for all elements in the input sequence, false otherwise
-     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
-     */
-    public static <A>Func<Iterable<A>,Boolean> forAll(final Func<? super A,Boolean> f)
-    {
-        return new Func<Iterable<A>, Boolean>() {
-            @Override
-            public Boolean apply(final Iterable<A> input) {
-                return Functional.forAll(f,input);
-            }
-        };
     }
 
     /**

@@ -258,18 +258,18 @@ public class IntFunctionalTest
 //                }, l, m).isNone());
 //    }
 
-//    @Test
-//    public void CompositionTest1A()
-//    {
-//        final IntList i = Arrays.asList(1, 2, 3, 45, 56, 6);
-//
-//        final boolean allOdd = Functional.forAll(Functional.isOdd, i);
-//        final boolean notAllOdd = Functional.exists(Functional.not(Functional.isOdd), i);
-//
-//        Assert.assertFalse(allOdd);
-//        Assert.assertTrue(notAllOdd);
-//    }
-//
+    @Test
+    public void CompositionTest1A()
+    {
+        final IntList i = new IntList(new int[]{1, 2, 3, 45, 56, 6});
+
+        final boolean allOdd = Functional.forAll(Functional.isOdd, i);
+        final boolean notAllOdd = Functional.exists(Functional.not(Functional.isOdd), i);
+
+        Assert.assertFalse(allOdd);
+        Assert.assertTrue(notAllOdd);
+    }
+
 //    @Test
 //    public void CompositionTest2()
 //    {
