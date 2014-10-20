@@ -8,6 +8,7 @@ public class IntList implements IntIterable
     public IntList(){backingStore=new int[0];}
     public IntList(final int size) {backingStore=new int[size];}
     public IntList(final int[]array) {backingStore = Arrays.copyOf(array, array.length);}
+    public IntList(final int[]array, final int size) {backingStore = Arrays.copyOf(array, size);}
 
     public int size() {
         return backingStore.length;

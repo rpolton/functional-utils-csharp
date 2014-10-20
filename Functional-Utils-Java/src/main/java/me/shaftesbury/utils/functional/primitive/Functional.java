@@ -144,14 +144,13 @@ public final class Functional
 
     /**
      * The identity transformation function: that is, the datum supplied as input is returned as output
-     * @param <T> the type of the input element
      * @return a function which is the identity transformation
      */
-    public static <T>Func<T,T> identity()
+    public static Func_int_T<Integer> identity()
     {
-        return new Func<T, T>() {
+        return new Func_int_T<Integer>() {
             @Override
-            public T apply(final T t) {
+            public Integer apply(final int t) {
                 return t;
             }
         };
@@ -481,7 +480,7 @@ public final class Functional
             if (pred.apply(element))
                 output[pos++]=element;
         }
-        return new IntList(output);
+        return new IntList(output,pos);
     }
 
     /**
@@ -624,42 +623,21 @@ public final class Functional
      * choose: (A -> B option) -> A list -> B list
      * @param f map function. This transforms the input element into an Option
      * @param input input sequence
-     * @param <A> the type of the element in the input sequence
      * @param <B> the type of the element in the output sequence
      * @return a list of transformed elements, numbering less than or equal to the number of input elements
      */
-    public static <A, B>List<B> choose(final Func<? super A, Option<B>> f, final Iterable<A> input)
+    public static <B>List<B> choose(final Func_int_T<Option<B>> f, final IntIterable input)
     {
-        final List<B> results = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
-        for(final A a : input)
+        final List<B> results = input instanceof IntList ? new ArrayList<B>(((IntList) input).size()) : new ArrayList<B>();
+        final IntIterator iterator = input.iterator();
+        while(iterator.hasNext())
         {
+            final int a = iterator.next();
             final Option<B> intermediate = f.apply(a);
             if (!intermediate.isNone())
                 results.add(intermediate.Some());
         }
         return Collections.unmodifiableList(results);
-    }
-
-    /**
-     * choose: this is a curried implementation of choose.
-     * choose is a map transformation with the difference being that the number of elements in the output sequence may
-     * be between zero and the number of elements in the input sequence.
-     * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
-     * choose: (A -> B option) -> A list -> B list
-     * @param f map function. This transforms the input element into an Option
-     * @param <A> the type of the element in the input sequence
-     * @param <B> the type of the element in the output sequence
-     * @return a list of transformed elements, numbering less than or equal to the number of input elements
-     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
-     */
-    public static <A, B>Func<Iterable<A>,List<B>> choose(final Func<? super A, Option<B>> f)
-    {
-        return new Func<Iterable<A>, List<B>>() {
-            @Override
-            public List<B> apply(final Iterable<A> input) {
-                return Functional.choose(f, input);
-            }
-        };
     }
 
     /**
@@ -758,13 +736,18 @@ public final class Functional
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    public static <T,K,V>Map<K,V> toDictionary(final Func<? super T,? extends K> keyFn, final Func<? super T,? extends V> valueFn, final Iterable<T> input)
+    public static <T,K,V>Map<K,V> toDictionary(final Func_int_T<? extends K> keyFn, final Func_int_T<? extends V> valueFn, final IntIterable input)
     {
         if(keyFn==null) throw new IllegalArgumentException("keyFn");
         if(valueFn==null) throw new IllegalArgumentException("valueFn");
 
         final Map<K,V> output = new HashMap<K,V>();
-        for(final T element : input) output.put(keyFn.apply(element), valueFn.apply(element));
+        final IntIterator iterator = input.iterator();
+        while(iterator.hasNext())
+        {
+            final int element = iterator.next();
+            output.put(keyFn.apply(element), valueFn.apply(element));
+        }
         return Collections.unmodifiableMap(output);
     }
 

@@ -1,13 +1,13 @@
 package me.shaftesbury.utils.functional.primitive;
 
 import me.shaftesbury.utils.functional.Func;
+import me.shaftesbury.utils.functional.Option;
+import me.shaftesbury.utils.functional.OptionNoValueAccessException;
 import org.javatuples.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -330,59 +330,59 @@ public class IntFunctionalTest
         final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
         Assert.assertArrayEquals(Functional.filter(Functional.isEven, l).toArray(new Integer[0]), r.getValue0().toArray());
     }
-//
-//    @Test
-//    public void ToStringTest1()
-//    {
-//        final IntList li = Functional.init(DoublingGenerator, 5);
-//        final Collection<String> ls = Functional.map(Functional.<Integer>dStringify(), li);
-//        //String s = String.Join(",", ls);
-//        Assert.assertArrayEquals(new String[]{"2","4","6","8","10"}, ls.toArray());
-//    }
-//
-//    @Test
-//    public void ChooseTest1B() throws OptionNoValueAccessException
-//    {
-//        final IntList li = Functional.init(TriplingGenerator, 5);
-//        final Collection<String> o = Functional.choose(
-//                new Func<Integer, Option<String>>() {
-//                    @Override
-//                    public Option<String> apply(Integer i) {
-//                        return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
-//                    }
-//                }, li);
-//        final String[] expected = {"6", "12"};
-//        Assert.assertArrayEquals(o.toArray(), expected);
-//    }
-//
-//    @Test
-//    public void ChooseTest2A() //throws OptionNoValueAccessException
-//    {
-//        Map<Integer,String> o=null;
-//        try{
-//            final IntList li = Functional.init(TriplingGenerator, 5);
-//        o = Functional.toDictionary(Functional.<Integer>identity(), Functional.<Integer>dStringify(),
-//                Functional.choose(
-//                        new Func<Integer, Option<Integer>>() {
-//                            @Override
-//                            public Option<Integer> apply(Integer i) {
-//                                return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
-//                            }
-//                        }, li));
-//        }catch(final Exception e){}
-//        final Map<Integer,String> expected = new HashMap<Integer,String>();
-//        expected.put(6, "6");
-//        expected.put(12, "12");
-//        Assert.assertTrue(expected.size()==o.size());
-//        for(final Integer expectedKey : expected.keySet())
-//        {
-//            Assert.assertTrue(o.containsKey(expectedKey));
-//            final String expectedValue=expected.get(expectedKey);
-//            //Assert.assertEquals(expectedValue,o.get(expectedKey),"Expected '"+expectedValue+"' but got '"+o.get(expectedKey)+"'");
-//            Assert.assertTrue(o.get(expectedKey).equals(expectedValue));
-//        }
-//    }
-//
+
+    @Test
+    public void ToStringTest1()
+    {
+        final IntList li = Functional.init(DoublingGenerator, 5);
+        final Collection<String> ls = Functional.map(Functional.dStringify(), li);
+        //String s = String.Join(",", ls);
+        Assert.assertArrayEquals(new String[]{"2","4","6","8","10"}, ls.toArray());
+    }
+
+    @Test
+    public void ChooseTest1B() throws OptionNoValueAccessException
+    {
+        final IntList li = Functional.init(TriplingGenerator, 5);
+        final Collection<String> o = Functional.choose(
+                new Func_int_T<Option<String>>() {
+                    @Override
+                    public Option<String> apply(final int i) {
+                        return i % 2 == 0 ? Option.toOption(Integer.toString(i)) : Option.<String>None();
+                    }
+                }, li);
+        final String[] expected = {"6", "12"};
+        Assert.assertArrayEquals(o.toArray(), expected);
+    }
+
+    @Test
+    public void ChooseTest2A() //throws OptionNoValueAccessException
+    {
+        Map<Integer,String> o=null;
+        try{
+            final IntList li = Functional.init(TriplingGenerator, 5);
+        o = Functional.toDictionary(Functional.identity(), Functional.dStringify(),
+                Functional.filter(
+                        new Func_int_T<Boolean>() {
+                            @Override
+                            public Boolean apply(final int i) {
+                                return i % 2 == 0;
+                            }
+                        }, li));
+        }catch(final Exception e){}
+        final Map<Integer,String> expected = new HashMap<Integer,String>();
+        expected.put(6, "6");
+        expected.put(12, "12");
+        Assert.assertTrue(expected.size()==o.size());
+        for(final Integer expectedKey : expected.keySet())
+        {
+            Assert.assertTrue(o.containsKey(expectedKey));
+            final String expectedValue=expected.get(expectedKey);
+            //Assert.assertEquals(expectedValue,o.get(expectedKey),"Expected '"+expectedValue+"' but got '"+o.get(expectedKey)+"'");
+            Assert.assertTrue(o.get(expectedKey).equals(expectedValue));
+        }
+    }
+
 //    private final static <B, C>boolean Fn(final B b, final C c)
 //    {
 //        return b.equals(c);
