@@ -535,9 +535,9 @@ public final class Functional
      * @param <B> the type of the second input to the function <tt>f</tt>
      * @return true if f returns false, false if f returns true
      */
-    public static <A,B> Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
+    public static <A,B> Func2_int_int_T<Boolean> not2(final Func2_int_int_T<Boolean> f)
     {
-        return new Func2<A,B,Boolean>(){@Override public Boolean apply(final A a, final B b) { return !f.apply(a,b);}};
+        return new Func2_int_int_T<Boolean>(){@Override public Boolean apply(final int a, final int b) { return !f.apply(a,b);}};
     }
 
     /// <summary> </summary>

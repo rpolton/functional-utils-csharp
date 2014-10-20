@@ -76,19 +76,19 @@ public class IntFunctionalTest
 //        final IntList input = new IntList(new int[]{1, 2, 3, 4, 5});
 //        final Collection<Pair<Integer,String>> output = Functional.toList(Functional.seq.mapi(new Func2<Integer, Integer, Pair<Integer, String>>() {
 //            @Override
-//            public Pair<Integer, String> apply(Integer pos, Integer i) {
+//            public Pair<Integer, String> apply(final Integer pos, final Integer i) {
 //                return Pair.with(pos, i.toString());
 //            }
 //        }, input));
 //        Assert.assertArrayEquals(new String[]{"1","2","3","4","5"},Functional.map(new Func<Pair<Integer,String>, String>() {
 //            @Override
-//            public String apply(Pair<Integer,String> o) {
+//            public String apply(final Pair<Integer,String> o) {
 //                return o.getValue1();
 //            }
 //        },output).toArray());
 //        Assert.assertArrayEquals(new Integer[]{0,1,2,3,4},Functional.map(new Func<Pair<Integer,String>, Integer>() {
 //            @Override
-//            public Integer apply(Pair<Integer,String> o) {
+//            public Integer apply(final Pair<Integer,String> o) {
 //                return o.getValue0();
 //            }
 //        },output).toArray());
@@ -100,7 +100,7 @@ public class IntFunctionalTest
 //        final IntList input = new IntList(new int[]{1, 2, 3, 4, 5});
 //        final Iterable<Pair<Integer, String>> mapi = Functional.seq.mapi(new Func2<Integer, Integer, Pair<Integer, String>>() {
 //            @Override
-//            public Pair<Integer, String> apply(Integer pos, Integer i) {
+//            public Pair<Integer, String> apply(final Integer pos, final Integer i) {
 //                return Pair.with(pos, i.toString());
 //            }
 //        }, input);
@@ -184,7 +184,7 @@ public class IntFunctionalTest
 //            Assert.assertTrue(Functional.noException.forAll2(
 //                    new Func2<Integer, Integer, Boolean>() {
 //                        @Override
-//                        public Boolean apply(Integer a, Integer b) {
+//                        public Boolean apply(final Integer a, final Integer b) {
 //                            return BothAreEven(a, b);
 //                        }
 //                    }, l, m).Some());
@@ -252,7 +252,7 @@ public class IntFunctionalTest
 //        Assert.assertTrue(Functional.noException.forAll2(
 //                new Func2<Integer, Integer, Boolean>() {
 //                    @Override
-//                    public Boolean apply(Integer a, Integer b) {
+//                    public Boolean apply(final Integer a, final Integer b) {
 //                        return BothAreEven(a, b);
 //                    }
 //                }, l, m).isNone());
@@ -270,38 +270,38 @@ public class IntFunctionalTest
         Assert.assertTrue(notAllOdd);
     }
 
-//    @Test
-//    public void CompositionTest2()
-//    {
-//        final IntList l = Functional.init(DoublingGenerator, 5);
-//        final IntList m = Functional.init(TriplingGenerator, 5);
-//        Assert.assertFalse(Functional.forAll2(Functional.not2(dBothAreLessThan10), l, m));
-//        // equivalent to BothAreGreaterThanOrEqualTo10
-//
-//        final int lowerLimit = 1;
-//        final int upperLimit = 16;
-//        Assert.assertFalse(
-//                Functional.forAll2(
-//                        Functional.not2(
-//                                new Func2<Integer, Integer, Boolean>() {
-//                                    @Override
-//                                    public Boolean apply(Integer a, Integer b) {
-//                                        return a > lowerLimit && b > lowerLimit;
-//                                    }
-//                                }
-//                        ), l, m));
-//        Assert.assertTrue(
-//                Functional.forAll2(
-//                        Functional.not2(
-//                                new Func2<Integer, Integer, Boolean>() {
-//                                    @Override
-//                                    public Boolean apply(Integer a, Integer b) {
-//                                        return a > upperLimit && b > upperLimit;
-//                                    }
-//                                }
-//                        ), l, m));
-//    }
-//
+    @Test
+    public void CompositionTest2()
+    {
+        final IntList l = Functional.init(DoublingGenerator, 5);
+        final IntList m = Functional.init(TriplingGenerator, 5);
+        Assert.assertFalse(Functional.forAll2(Functional.not2(dBothAreLessThan10), l, m));
+        // equivalent to BothAreGreaterThanOrEqualTo10
+
+        final int lowerLimit = 1;
+        final int upperLimit = 16;
+        Assert.assertFalse(
+                Functional.forAll2(
+                        Functional.not2(
+                                new Func2_int_int_T<Boolean>() {
+                                    @Override
+                                    public Boolean apply(final int a, final int b) {
+                                        return a > lowerLimit && b > lowerLimit;
+                                    }
+                                }
+                        ), l, m));
+        Assert.assertTrue(
+                Functional.forAll2(
+                        Functional.not2(
+                                new Func2_int_int_T<Boolean>() {
+                                    @Override
+                                    public Boolean apply(final int a, final int b) {
+                                        return a > upperLimit && b > upperLimit;
+                                    }
+                                }
+                        ), l, m));
+    }
+
     @Test
     public void PartitionTest1()
     {
@@ -392,7 +392,7 @@ public class IntFunctionalTest
 //    {
 //        return new Func<C, Boolean>() {
 //            @Override
-//            public Boolean apply(C c) {
+//            public Boolean apply(final C c) {
 //                return Fn(b,c);
 //            }
 //        };
@@ -412,7 +412,7 @@ public class IntFunctionalTest
 //    {
 //        return new Func<Integer, Integer>() {
 //            @Override
-//            public Integer apply(Integer p) {
+//            public Integer apply(final Integer p) {
 //                return adder_int(c, p);
 //            }
 //        };
@@ -447,7 +447,7 @@ public class IntFunctionalTest
 //        final String s2 = Functional.fold(
 //                new Func2<String, Integer, String>() {
 //                    @Override
-//                    public String apply(String s1, Integer s2) {
+//                    public String apply(final String s1, final Integer s2) {
 //                        return csv(s1, s2);
 //                    }
 //                }, "", li);
@@ -457,10 +457,10 @@ public class IntFunctionalTest
 //    private final Func<IntList, String> concatenate =
 //            new Func<IntList, String>() {
 //                @Override
-//                public String apply(IntList l) {
+//                public String apply(final IntList l) {
 //                    return Functional.fold(new Func2<String, Integer, String>() {
 //                        @Override
-//                        public String apply(String s1, Integer s2) {
+//                        public String apply(final String s1, final Integer s2) {
 //                            return csv(s1, s2);
 //                        }
 //                    }, "", l);
@@ -478,7 +478,7 @@ public class IntFunctionalTest
 //    private final Func<IntList, IntList> evens_f =
 //            new Func<IntList, IntList>() {
 //                @Override
-//                public IntList apply(IntList l) {
+//                public IntList apply(final IntList l) {
 //                    return Functional.filter(Functional.isEven, l);
 //                }
 //            };
@@ -526,7 +526,7 @@ public class IntFunctionalTest
 //        final Collection<String> indentation = Functional.init(
 //                new Func<Integer, String>() {
 //                    @Override
-//                    public String apply(Integer integer) {
+//                    public String apply(final Integer integer) {
 //                        return " ";
 //                    }
 //                }, level);
@@ -535,7 +535,7 @@ public class IntFunctionalTest
 //        final String s = Functional.fold(
 //                new Func2<String, String, String>() {
 //                    @Override
-//                    public String apply(String state, String str) {
+//                    public String apply(final String state, final String str) {
 //                        return state + str;
 //                    }
 //                }, "", indentation);
@@ -544,10 +544,10 @@ public class IntFunctionalTest
 //        final Func<Collection<String>, String> folder =
 //                new Func<Collection<String>, String>() {
 //                    @Override
-//                    public String apply(Collection<String> l) {
+//                    public String apply(final Collection<String> l) {
 //                        return Functional.fold(new Func2<String, String, String>() {
 //                            @Override
-//                            public String apply(String state, String str) {
+//                            public String apply(final String state, final String str) {
 //                                return state + str;
 //                            }
 //                        }, "", l);
@@ -574,7 +574,7 @@ public class IntFunctionalTest
 //        final IntList o =
 //                Functional.choose(
 //                        new Func<Integer, Option<Integer>>() {
-//                            public Option<Integer> apply(Integer i) {
+//                            public Option<Integer> apply(final Integer i) {
 //                                return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
 //                            }
 //                        }, li);
@@ -681,14 +681,14 @@ public class IntFunctionalTest
 //        final Collection<myInt> openedDays2 = Functional.init(
 //                new Func<Integer, myInt>() {
 //                    @Override
-//                    public myInt apply(Integer a) {
+//                    public myInt apply(final Integer a) {
 //                        return new myInt(3 * a);
 //                    }
 //                }, 5);
 //        final Pair<Double, List<myInt>> output = Functional.foldAndChoose(
 //                new Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
 //                    @Override
-//                    public Pair<Double, Option<myInt>> apply(Double state, myInt day) {
+//                    public Pair<Double, Option<myInt>> apply(final Double state, final myInt day) {
 //                        final Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
 //                        return value != null
 //                                ? new Pair<Double, Option<myInt>>(value, Option.<myInt>None())
@@ -703,7 +703,7 @@ public class IntFunctionalTest
 //                Functional.map(
 //                        new Func<myInt, Integer>() {
 //                            @Override
-//                            public Integer apply(myInt i) {
+//                            public Integer apply(final myInt i) {
 //                                return i.i();
 //                            }
 //                        }, output.getValue1()).toArray());
@@ -726,7 +726,7 @@ public class IntFunctionalTest
 //        final Func<Integer, String> f =
 //                new Func<Integer, String>() {
 //                    @Override
-//                    public String apply(Integer id) {
+//                    public String apply(final Integer id) {
 //                        return "'" + id + "'";
 //                    }
 //                };
@@ -781,7 +781,7 @@ public class IntFunctionalTest
 //        Functional.then(new Func<Integer,Integer>()
 //        {
 //            @Override
-//            public Integer apply(Integer i) { return }
+//            public Integer apply(final Integer i) { return }
 //        })
 //    } */
 //
@@ -813,7 +813,7 @@ public class IntFunctionalTest
 //                new Func<Integer,Boolean>()
 //                {
 //                    @Override
-//                    public Boolean apply(Integer a) { return a > limit;}
+//                    public Boolean apply(final Integer a) { return a > limit;}
 //                }, l);
 //
 //        final IntList expected = new int[]{6,8,10});
@@ -828,7 +828,7 @@ public class IntFunctionalTest
 //        final Iterable<Integer> output = Functional.seq.filter(
 //                new Func<Integer,Boolean>()
 //                {
-//                    @Override public Boolean apply(Integer a) {return a > limit;}
+//                    @Override public Boolean apply(final Integer a) {return a > limit;}
 //                }, li);
 //
 //        Assert.assertFalse(output.iterator().hasNext());
@@ -842,7 +842,7 @@ public class IntFunctionalTest
 //        final Iterable<Integer> output = Functional.seq.filter(
 //                new Func<Integer,Boolean>()
 //                {
-//                    @Override public Boolean apply(Integer a) {return a % 4 ==0;}
+//                    @Override public Boolean apply(final Integer a) {return a % 4 ==0;}
 //                }, li);
 //
 //        AssertIterable.assertIterableEquals(expected, output);
@@ -855,7 +855,7 @@ public class IntFunctionalTest
 //        final Iterable<Integer> output = Functional.seq.filter(
 //                new Func<Integer,Boolean>()
 //                {
-//                    @Override public Boolean apply(Integer a) {return a % 4 ==0;}
+//                    @Override public Boolean apply(final Integer a) {return a % 4 ==0;}
 //                }, input);
 //        final Iterator<Integer> iterator = output.iterator();
 //
@@ -991,7 +991,7 @@ public class IntFunctionalTest
 //        final List<Integer> input = new int[]{1,2,3,4,5});
 //        final Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
 //            @Override
-//            public Integer apply(Integer i) {
+//            public Integer apply(final Integer i) {
 //                return i * 2;
 //            }
 //        };
@@ -1009,7 +1009,7 @@ public class IntFunctionalTest
 //        final List<Integer> input = new int[]{1,2,3,4,5});
 //        final Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
 //            @Override
-//            public Integer apply(Integer i) {
+//            public Integer apply(final Integer i) {
 //                return i * 2;
 //            }
 //        };
@@ -1073,7 +1073,7 @@ public class IntFunctionalTest
 //                new Func<Integer,Option<String>>()
 //                {
 //                        @Override
-//                        public Option<String> apply(Integer i)
+//                        public Option<String> apply(final Integer i)
 //                        {
 //                            return i%2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
 //                        }
@@ -1090,7 +1090,7 @@ public class IntFunctionalTest
 //        final Iterable<String> output = Functional.seq.choose(
 //                new Func<Integer, Option<String>>() {
 //                    @Override
-//                    public Option<String> apply(Integer i) {
+//                    public Option<String> apply(final Integer i) {
 //                        return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
 //                    }
 //                }, li);
@@ -1156,7 +1156,7 @@ public class IntFunctionalTest
 //        final Collection<String> output = Functional.in(input,
 //                new Func<IntList, Collection<String>>() {
 //                    @Override
-//                    public Collection<String> apply(IntList integers) {
+//                    public Collection<String> apply(final IntList integers) {
 //                        return Functional.map(Functional.<Integer>dStringify(), integers);
 //                    }
 //                });
@@ -1172,7 +1172,7 @@ public class IntFunctionalTest
 //        final Iterable<String> output = Functional.in(input,
 //                new Func<Iterable<Integer>, Iterable<String>>() {
 //                    @Override
-//                    public Iterable<String> apply(Iterable<Integer> integers) {
+//                    public Iterable<String> apply(final Iterable<Integer> integers) {
 //                        try {
 //                            return Functional.seq.map(Functional.<Integer>dStringify(), integers);
 //                        } catch (final Exception e) {
@@ -1193,7 +1193,7 @@ public class IntFunctionalTest
 //        final Iterable<Integer> oddElems = Functional.in(l,
 //                new Func<Iterable<Integer>, Iterable<Integer>>() {
 //                    @Override
-//                    public Iterable<Integer> apply(Iterable<Integer> ints) {
+//                    public Iterable<Integer> apply(final Iterable<Integer> ints) {
 //                        return Functional.filter(Functional.isOdd, ints);
 //                    }
 //                });
@@ -1256,7 +1256,7 @@ public class IntFunctionalTest
 //        final List<Integer> input = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 //        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
 //            @Override
-//            public List<Integer> apply(Integer o) {
+//            public List<Integer> apply(final Integer o) {
 //                return Functional.take(o, input);
 //            }
 //        }, input);
@@ -1271,7 +1271,7 @@ public class IntFunctionalTest
 //        final List<Integer> input = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 //        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
 //            @Override
-//            public List<Integer> apply(Integer o) {
+//            public List<Integer> apply(final Integer o) {
 //                return Functional.noException.take(o, input);
 //            }
 //        }, input);
@@ -1286,7 +1286,7 @@ public class IntFunctionalTest
 //        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
 //        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
 //            @Override
-//            public List<Integer> apply(Integer o) {
+//            public List<Integer> apply(final Integer o) {
 //                return Functional.noException.take(o+5, input);
 //            }
 //        }, input);
@@ -1301,7 +1301,7 @@ public class IntFunctionalTest
 //        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
 //        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
 //            @Override
-//            public List<Integer> apply(Integer o) {
+//            public List<Integer> apply(final Integer o) {
 //                return Functional.toList(Functional.seq.take(o, input));
 //            }
 //        }, input);
@@ -1316,7 +1316,7 @@ public class IntFunctionalTest
 //        final List<Integer> input = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
 //        final List<Integer> output = Functional.collect(new Func<Integer, List<Integer>>() {
 //            @Override
-//            public List<Integer> apply(Integer o) {
+//            public List<Integer> apply(final Integer o) {
 //                return Functional.toList(Functional.seq.take(o, input));
 //            }
 //        }, input);
@@ -1553,7 +1553,7 @@ public class IntFunctionalTest
 //                Functional.choose(
 //                        new Func<Integer, Option<Integer>>() {
 //                            @Override
-//                            public Option<Integer> apply(Integer i) {
+//                            public Option<Integer> apply(final Integer i) {
 //                                return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
 //                            }
 //                        }, input);
@@ -1569,7 +1569,7 @@ public class IntFunctionalTest
 //                Functional.choose(
 //                        new Func<String, Option<Character>>() {
 //                            @Override
-//                            public Option<Character> apply(String str) {
+//                            public Option<Character> apply(final String str) {
 //                                return str.startsWith("a") ? Option.toOption('a') : Option.<Character>None();
 //                            }
 //                        }
@@ -1586,7 +1586,7 @@ public class IntFunctionalTest
 //        final IntList output = Functional.choose(
 //                new Func<Integer, Option<Integer>>() {
 //                    @Override
-//                    public Option<Integer> apply(Integer i) {
+//                    public Option<Integer> apply(final Integer i) {
 //                        return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
 //                    }
 //                }, input)  ;
@@ -1947,7 +1947,7 @@ public class IntFunctionalTest
 //                Functional.find(
 //                        new Func<String, Boolean>() {
 //                            @Override
-//                            public Boolean apply(String s) {
+//                            public Boolean apply(final String s) {
 //                                return s.equals(trueMatch);
 //                            }
 //                        }, ls));
@@ -1962,7 +1962,7 @@ public class IntFunctionalTest
 //        Functional.find(
 //                new Func<String, Boolean>() {
 //                    @Override
-//                    public Boolean apply(String s) {
+//                    public Boolean apply(final String s) {
 //                        return s.equals(falseMatch);
 //                    }
 //                }, ls);
@@ -1978,7 +1978,7 @@ public class IntFunctionalTest
 //                Functional.noException.find(
 //                        new Func<String, Boolean>() {
 //                            @Override
-//                            public Boolean apply(String s) {
+//                            public Boolean apply(final String s) {
 //                                return s.equals(trueMatch);
 //                            }
 //                        }, ls).Some());
@@ -1993,7 +1993,7 @@ public class IntFunctionalTest
 //        Assert.assertTrue(Functional.noException.find(
 //                new Func<String, Boolean>() {
 //                    @Override
-//                    public Boolean apply(String s) {
+//                    public Boolean apply(final String s) {
 //                        return s.equals(falseMatch);
 //                    }
 //                }, ls).isNone());
@@ -2009,7 +2009,7 @@ public class IntFunctionalTest
 //                Functional.findIndex(
 //                        new Func<String, Boolean>() {
 //                            @Override
-//                            public Boolean apply(String s) {
+//                            public Boolean apply(final String s) {
 //                                return s.equals(trueMatch);
 //                            }
 //                        }, ls));
@@ -2024,7 +2024,7 @@ public class IntFunctionalTest
 //        Functional.findIndex(
 //                new Func<String, Boolean>() {
 //                    @Override
-//                    public Boolean apply(String s) {
+//                    public Boolean apply(final String s) {
 //                        return s.equals(falseMatch);
 //                    }
 //                }, ls);
@@ -2040,7 +2040,7 @@ public class IntFunctionalTest
 //                Functional.noException.findIndex(
 //                        new Func<String, Boolean>() {
 //                            @Override
-//                            public Boolean apply(String s) {
+//                            public Boolean apply(final String s) {
 //                                return s.equals(trueMatch);
 //                            }
 //                        }, ls).Some());
@@ -2055,7 +2055,7 @@ public class IntFunctionalTest
 //        Assert.assertTrue(Functional.noException.findIndex(
 //                new Func<String, Boolean>() {
 //                    @Override
-//                    public Boolean apply(String s) {
+//                    public Boolean apply(final String s) {
 //                        return s.equals(falseMatch);
 //                    }
 //                }, ls).isNone());
@@ -2070,7 +2070,7 @@ public class IntFunctionalTest
 //                Functional.pick(
 //                        new Func<Integer, Option<String>>() {
 //                            @Override
-//                            public Option<String> apply(Integer a) {
+//                            public Option<String> apply(final Integer a) {
 //                                return a == trueMatch ? Option.toOption(a.toString()) : Option.<String>None();
 //                            }
 //                        }, li));
@@ -2084,7 +2084,7 @@ public class IntFunctionalTest
 //        Functional.pick(
 //                new Func<Integer, Option<String>>() {
 //                    @Override
-//                    public Option<String> apply(Integer a) {
+//                    public Option<String> apply(final Integer a) {
 //                        return a == falseMatch ? Option.toOption(a.toString()) : Option.<String>None();
 //                    }
 //                }, li);
@@ -2099,7 +2099,7 @@ public class IntFunctionalTest
 //                Functional.noException.pick(
 //                        new Func<Integer, Option<String>>() {
 //                            @Override
-//                            public Option<String> apply(Integer a) {
+//                            public Option<String> apply(final Integer a) {
 //                                return a == trueMatch ? Option.toOption(a.toString()) : Option.<String>None();
 //                            }
 //                        }, li).Some());
@@ -2113,7 +2113,7 @@ public class IntFunctionalTest
 //        Assert.assertTrue(Functional.noException.pick(
 //                new Func<Integer, Option<String>>() {
 //                    @Override
-//                    public Option<String> apply(Integer a) {
+//                    public Option<String> apply(final Integer a) {
 //                        return a == falseMatch ? Option.toOption(a.toString()) : Option.<String>None();
 //                    }
 //                }, li).isNone());
@@ -2124,7 +2124,7 @@ public class IntFunctionalTest
 //    {
 //        final int state=0;
 //        final Func<Integer,Boolean> testForPosInts = new Func<Integer, Boolean>() {
-//            @Override public Boolean apply(Integer integer) { return integer > state; }
+//            @Override public Boolean apply(final Integer integer) { return integer > state; }
 //        };
 //
 //        final Func<Iterable<Integer>,List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
@@ -2181,7 +2181,7 @@ public class IntFunctionalTest
 //                return Functional.init(
 //                        new Func<Integer, Integer>() {
 //                            @Override
-//                            public Integer apply(Integer counter) {
+//                            public Integer apply(final Integer counter) {
 //                                return integer;
 //                            }
 //                        }, howMany);
@@ -2293,7 +2293,7 @@ public class IntFunctionalTest
 //        final String s2 = Functional.rec.fold(
 //                new Func2<String, Integer, String>() {
 //                    @Override
-//                    public String apply(String s1, Integer s2) {
+//                    public String apply(final String s1, final Integer s2) {
 //                        return csv(s1, s2);
 //                    }
 //                }, "", li);
@@ -2307,7 +2307,7 @@ public class IntFunctionalTest
 //        final Iterable2<Integer> i = IterableHelper.asList(0, 1, 2);
 //        final Iterable2<Integer> result = i.map(
 //                new Func<Integer, Integer>() {
-//                    public Integer apply(Integer ii) {
+//                    public Integer apply(final Integer ii) {
 //                        return Functional.If(input, Functional.greaterThan(ii), DoublingGenerator, TriplingGenerator);
 //                    }
 //                });
@@ -2359,7 +2359,7 @@ public class IntFunctionalTest
 //                new Func<Integer,Boolean>()
 //                {
 //                    @Override
-//                    public Boolean apply(Integer a) { return a > limit;}
+//                    public Boolean apply(final Integer a) { return a > limit;}
 //                }, sl);
 //
 //        final IntList expected = new int[]{6,8,10});
@@ -2376,7 +2376,7 @@ public class IntFunctionalTest
 //        final Set<Integer> output = Functional.set.filter(
 //                new Func<Integer, Boolean>() {
 //                    @Override
-//                    public Boolean apply(Integer a) {
+//                    public Boolean apply(final Integer a) {
 //                        return a > limit;
 //                    }
 //                }, sl);
@@ -2393,7 +2393,7 @@ public class IntFunctionalTest
 //        final Set<Integer> output = Functional.set.filter(
 //                new Func<Integer,Boolean>()
 //                {
-//                    @Override public Boolean apply(Integer a) {return a % 4 ==0;}
+//                    @Override public Boolean apply(final Integer a) {return a % 4 ==0;}
 //                }, sl);
 //
 //        Assert.assertTrue(expected.containsAll(output));
@@ -2441,7 +2441,7 @@ public class IntFunctionalTest
 //        final Set<Integer> input = new HashSet<Integer>(Arrays.asList(1,2,3,4,5));
 //        final Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
 //            @Override
-//            public Integer apply(Integer i) {
+//            public Integer apply(final Integer i) {
 //                return i * 2;
 //            }
 //        };
@@ -2531,13 +2531,13 @@ public class IntFunctionalTest
 //        final Integer seed = 0;
 //        final Func<Integer,Pair<Integer,Integer>> unspool = new Func<Integer, Pair<Integer, Integer>>() {
 //            @Override
-//            public Pair<Integer, Integer> apply(Integer integer) {
+//            public Pair<Integer, Integer> apply(final Integer integer) {
 //                return Pair.with(integer+1,integer+1);
 //            }
 //        };
 //        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
 //            @Override
-//            public Boolean apply(Integer integer) {
+//            public Boolean apply(final Integer integer) {
 //                return integer==10;
 //            }
 //        };
@@ -2553,13 +2553,13 @@ public class IntFunctionalTest
 //        final Integer seed = 1;
 //        final Func<Integer,Pair<Integer,Integer>> doubler = new Func<Integer, Pair<Integer, Integer>>() {
 //            @Override
-//            public Pair<Integer, Integer> apply(Integer integer) {
+//            public Pair<Integer, Integer> apply(final Integer integer) {
 //                return Pair.with(integer * 2, integer+1);
 //            }
 //        };
 //        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
 //            @Override
-//            public Boolean apply(Integer integer) {
+//            public Boolean apply(final Integer integer) {
 //                return integer>10;
 //            }
 //        };
@@ -2575,7 +2575,7 @@ public class IntFunctionalTest
 //        final Integer seed = 1;
 //        final Func<Integer,Option<Pair<Integer,Integer>>> doubler = new Func<Integer, Option<Pair<Integer, Integer>>>() {
 //            @Override
-//            public Option<Pair<Integer, Integer>> apply(Integer integer) {
+//            public Option<Pair<Integer, Integer>> apply(final Integer integer) {
 //                return integer>10 ? Option.<Pair<Integer, Integer>>None() : Option.toOption(Pair.with(integer * 2, integer+1));
 //            }
 //        };
@@ -2591,13 +2591,13 @@ public class IntFunctionalTest
 //        final Integer seed = 0;
 //        final Func<Integer,Pair<Integer,Integer>> unspool = new Func<Integer, Pair<Integer, Integer>>() {
 //            @Override
-//            public Pair<Integer, Integer> apply(Integer integer) {
+//            public Pair<Integer, Integer> apply(final Integer integer) {
 //                return Pair.with(integer+1,integer+1);
 //            }
 //        };
 //        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
 //            @Override
-//            public Boolean apply(Integer integer) {
+//            public Boolean apply(final Integer integer) {
 //                return integer==10;
 //            }
 //        };
@@ -2613,13 +2613,13 @@ public class IntFunctionalTest
 //        final Integer seed = 0;
 //        final Func<Integer,Pair<Integer,Integer>> unspool = new Func<Integer, Pair<Integer, Integer>>() {
 //            @Override
-//            public Pair<Integer, Integer> apply(Integer integer) {
+//            public Pair<Integer, Integer> apply(final Integer integer) {
 //                return Pair.with(integer+1,integer+1);
 //            }
 //        };
 //        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
 //            @Override
-//            public Boolean apply(Integer integer) {
+//            public Boolean apply(final Integer integer) {
 //                return integer==10;
 //            }
 //        };
@@ -2653,13 +2653,13 @@ public class IntFunctionalTest
 //        final Integer seed = 1;
 //        final Func<Integer,Pair<Integer,Integer>> doubler = new Func<Integer, Pair<Integer, Integer>>() {
 //            @Override
-//            public Pair<Integer, Integer> apply(Integer integer) {
+//            public Pair<Integer, Integer> apply(final Integer integer) {
 //                return Pair.with(integer * 2, integer+1);
 //            }
 //        };
 //        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
 //            @Override
-//            public Boolean apply(Integer integer) {
+//            public Boolean apply(final Integer integer) {
 //                return integer>10;
 //            }
 //        };
@@ -2675,7 +2675,7 @@ public class IntFunctionalTest
 //        final Integer seed = 1;
 //        final Func<Integer,Option<Pair<Integer,Integer>>> doubler = new Func<Integer, Option<Pair<Integer, Integer>>>() {
 //            @Override
-//            public Option<Pair<Integer, Integer>> apply(Integer integer) {
+//            public Option<Pair<Integer, Integer>> apply(final Integer integer) {
 //                return integer>10 ? Option.<Pair<Integer, Integer>>None() : Option.toOption(Pair.with(integer * 2, integer+1));
 //            }
 //        };
@@ -2691,7 +2691,7 @@ public class IntFunctionalTest
 //        final Integer seed = 1;
 //        final Func<Integer,Option<Pair<Integer,Integer>>> doubler = new Func<Integer, Option<Pair<Integer, Integer>>>() {
 //            @Override
-//            public Option<Pair<Integer, Integer>> apply(Integer integer) {
+//            public Option<Pair<Integer, Integer>> apply(final Integer integer) {
 //                return integer>10 ? Option.<Pair<Integer, Integer>>None() : Option.toOption(Pair.with(integer * 2, integer+1));
 //            }
 //        };
@@ -2725,13 +2725,13 @@ public class IntFunctionalTest
 //        final Integer seed = 1;
 //        final Func<Integer,Pair<Integer,Integer>> doubler = new Func<Integer, Pair<Integer, Integer>>() {
 //            @Override
-//            public Pair<Integer, Integer> apply(Integer integer) {
+//            public Pair<Integer, Integer> apply(final Integer integer) {
 //                return Pair.with(integer * 2, integer+1);
 //            }
 //        };
 //        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
 //            @Override
-//            public Boolean apply(Integer integer) {
+//            public Boolean apply(final Integer integer) {
 //                return integer>10;
 //            }
 //        };
@@ -2747,7 +2747,7 @@ public class IntFunctionalTest
 //        final Integer seed = 1;
 //        final Func<Integer,Option<Pair<Integer,Integer>>> doubler = new Func<Integer, Option<Pair<Integer, Integer>>>() {
 //            @Override
-//            public Option<Pair<Integer, Integer>> apply(Integer integer) {
+//            public Option<Pair<Integer, Integer>> apply(final Integer integer) {
 //                return integer>10 ? Option.<Pair<Integer, Integer>>None() : Option.toOption(Pair.with(integer * 2, integer+1));
 //            }
 //        };
@@ -2778,7 +2778,7 @@ public class IntFunctionalTest
 //    {
 //        final IntList output = Functional.inTermsOfFold.init(new Func<Integer, Integer>() {
 //            @Override
-//            public Integer apply(Integer integer) {
+//            public Integer apply(final Integer integer) {
 //                return integer * 2;
 //            }
 //        }, 5);
