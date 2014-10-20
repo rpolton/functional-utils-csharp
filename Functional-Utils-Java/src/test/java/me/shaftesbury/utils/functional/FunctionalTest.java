@@ -319,7 +319,7 @@ public class FunctionalTest
                         Functional.not2(
                                 new Func2<Integer, Integer, Boolean>() {
                                     @Override
-                                    public Boolean apply(Integer a, Integer b) {
+                                    public Boolean apply(final Integer a, final Integer b) {
                                         return a > lowerLimit && b > lowerLimit;
                                     }
                                 }
@@ -329,7 +329,7 @@ public class FunctionalTest
                         Functional.not2(
                                 new Func2<Integer, Integer, Boolean>() {
                                     @Override
-                                    public Boolean apply(Integer a, Integer b) {
+                                    public Boolean apply(final Integer a, final Integer b) {
                                         return a > upperLimit && b > upperLimit;
                                     }
                                 }
