@@ -122,7 +122,7 @@ public final class Option<T>
      * @param t the object which is to be wrapped in an Option
      * @return the Option containing <tt>t</tt>
      */
-    public static <U>Option<U> toOption(U t)
+    public static <U>Option<U> toOption(final U t)
     {
         return new Option<U>(t);
     }
