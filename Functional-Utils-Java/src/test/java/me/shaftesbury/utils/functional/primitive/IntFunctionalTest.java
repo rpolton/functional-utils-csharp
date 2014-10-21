@@ -704,38 +704,38 @@ public class IntFunctionalTest
         Assert.assertEquals(expected, Functional.join(",", ids, f));
     }
 
-//    @Test
-//    public void betweenTest1()
-//    {
-//        final int lowerBound = 2, upperBound = 4;
-//        Assert.assertTrue(Functional.between(lowerBound, upperBound, 3));
-//    }
-//
-//    @Test
-//    public void betweenTest2()
-//    {
-//        final int lowerBound = 2, upperBound = 4;
-//        Assert.assertFalse(Functional.between(lowerBound, upperBound, 1));
-//    }
-//
+    @Test
+    public void betweenTest1()
+    {
+        final int lowerBound = 2, upperBound = 4;
+        Assert.assertTrue(Functional.between(lowerBound, upperBound, 3));
+    }
+
+    @Test
+    public void betweenTest2()
+    {
+        final int lowerBound = 2, upperBound = 4;
+        Assert.assertFalse(Functional.between(lowerBound, upperBound, 1));
+    }
+
 //    @Test
 //    public void betweenTest3()
 //    {
 //        final double lowerBound = 2.5, upperBound = 2.6;
 //        Assert.assertTrue(Functional.between(lowerBound, upperBound, 2.55));
 //    }
-//
-//    @Test
-//    public void testIsEven_withEvenNum()
-//    {
-//        Assert.assertTrue(Functional.isEven.apply(2));
-//    }
-//
+
+    @Test
+    public void testIsEven_withEvenNum()
+    {
+        Assert.assertTrue(Functional.isEven.apply(2));
+    }
+
 //    @Test
 //    public void testIn()
 //    {
-//        final Integer a = 10;
-//        Assert.assertTrue(Functional.in(a, Functional.isEven));
+//        final int a = 10;
+//        Assert.assertTrue(Functionalin(a, Functional.isEven));
 //    }
 //
 //
@@ -884,8 +884,8 @@ public class IntFunctionalTest
 //    @Test(expected=NoSuchElementException.class)
 //    public void findLastIterableTest1()
 //    {
-//        final Iterable<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
-//        Assert.assertEquals((Integer) 5, Functional.findLast(Functional.isOdd, l));
+//        final IntIterable l = Functional.init(DoublingGenerator, 5);
+//        Assert.assertEquals( 5, Functional.findLast(Functional.isOdd, l));
 //    }
 //
 //    @Test
@@ -894,7 +894,7 @@ public class IntFunctionalTest
 //        final Iterable<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
 //        Assert.assertEquals((Integer)10, Functional.findLast(Functional.isEven, l));
 //    }
-//
+
 //    @Test
 //    public void seqMapTest1()
 //    {
@@ -932,20 +932,28 @@ public class IntFunctionalTest
 //            Assert.assertEquals(expected.get(i), output[i]);
 //    }
 //
-//    @Test
-//    public void lastTest1()
-//    {
-//        final List<Integer> input = new int[]{1,2,3,4,5});
-//        Assert.assertEquals(5,(long) Functional.last(input));
-//    }
-//
+    @Test
+    public void lastTest1()
+    {
+        final IntList input = new IntList(new int[]{1,2,3,4,5});
+        Assert.assertEquals(5,(long) Functional.last(input));
+    }
+
 //    @Test
 //    public void lastTest2()
 //    {
-//        final List<Integer> input = new int[]{1,2,3,4,5});
+//        final List<Integer> input = new int[]{1,2,3,4,5};
 //        final Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
 //        Assert.assertEquals("5", Functional.last(strs));
 //    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void lastTest3()
+    {
+        final IntList input = new IntList(new int[]{});
+        Functional.last(input);
+    }
+
 //
 //    @Test
 //    public void concatTest1()

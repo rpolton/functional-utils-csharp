@@ -132,6 +132,30 @@ public final class Functional
         throw new NoSuchElementException();
     }
 
+//    /**
+//     * As <tt>find</tt> except that here we return the last element in the input sequence that satisfies the predicate 'f'
+//     * findLast: (A -> bool) -> A seq -> A
+//     * @param f predicate
+//     * @param input sequence
+//     * @throws java.lang.IllegalArgumentException if f or input are null
+//     * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
+//     * @return the last element in the input sequence for which the supplied predicate returns true
+//     */
+//    public static int findLast(final Func_int_T<Boolean> f, final IntIterable input)
+//    {
+//        if (f == null) throw new IllegalArgumentException("f");
+//        if (input == null) throw new IllegalArgumentException("input");
+//
+//        final Pair<IntList,IntIterable> p = takeNAndYield(input,1);
+//        final Pair<A,Boolean> seed = Pair.with(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
+//        final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
+//            @Override public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.with(item,true):state;}
+//        },seed,p.getValue1());
+//
+//        if(result.getValue1()) return result.getValue0();
+//        throw new NoSuchElementException();
+//    }
+
     /**
      * 'pick' is an analogue of <tt>find</tt>. Instead of a predicate, 'pick' is passed a map function which returns an <tt>Option</tt>.
      * Each element of the input sequence is supplied in turn to the map function 'f' and the first non-None Option to be returned from
@@ -727,6 +751,17 @@ public final class Functional
     }
 
     /**
+     * @param lowerBound
+     * @param upperBound
+     * @param val
+     * @return lowerBound < val < upperBound
+     */
+    public static boolean between(final int lowerBound, final int upperBound, final int val)
+    {
+        return lowerBound < val && val < upperBound;
+    }
+
+    /**
      * toDictionary: given each element from the input sequence apply the keyFn and valueFn to generate a (key,value) pair.
      * The resulting dictionary (java.util.Map) contains all these pairs.
      * @param keyFn function used to generate the key
@@ -847,15 +882,23 @@ public final class Functional
     /**
      * Return the final element from the input sequence
      * @param input input sequence
-     * @param <T> the type of the element in the input sequence
      * @return the last element from the input sequence
+     * @throws java.lang.IllegalArgumentException if the input sequence is null or empty
      */
-    public static final <T>T last(final Iterable<T> input)
+    public static final int last(final IntIterable input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null");
 
-        T state = null;
-        for(final T element: input) state = element;
+        boolean isSet=false;
+        int state = 0;
+        final IntIterator iterator = input.iterator();
+        if(!iterator.hasNext()) throw new IllegalArgumentException("Functional.last(Iterable): input is empty");
+        while(iterator.hasNext())
+        {
+            final int element = iterator.next();
+            state = element;
+            isSet=true;
+        }
 
         return state;
     }
