@@ -1,6 +1,7 @@
 package me.shaftesbury.utils.functional.primitive;
 
 import me.shaftesbury.utils.functional.Func;
+import me.shaftesbury.utils.functional.Func2;
 import me.shaftesbury.utils.functional.Option;
 import me.shaftesbury.utils.functional.OptionNoValueAccessException;
 import org.javatuples.Pair;
@@ -614,93 +615,95 @@ public class IntFunctionalTest
 //
 //     */
 //
-//    private class myInt
-//    {
-//        private final int _i;
-//
-//        public myInt(int i)
-//        {
-//            _i = i;
-//        }
-//
-//        public final int i()
-//        {
-//            return _i;
-//        }
-//    }
-//
-//
-//    @Test
-//    public void foldAndChooseTest1()
-//    {
-//        final Map<Integer, Double> missingPricesPerDate = new Hashtable<Integer, Double>();
-//        final IntList openedDays = Functional.init(TriplingGenerator, 5);
-//        Double last = 10.0;
-//        for (final int day : openedDays)
-//        {
-//            Double value = day%2 == 0 ? (Double)((double)(day/2)) : null;
-//            if (value!=null)
-//                last = value;
-//            else
-//                missingPricesPerDate.put(day, last);
-//        }
-//
-//        final Collection<myInt> openedDays2 = Functional.init(
-//                new Func<Integer, myInt>() {
-//                    @Override
-//                    public myInt apply(final Integer a) {
-//                        return new myInt(3 * a);
-//                    }
-//                }, 5);
-//        final Pair<Double, List<myInt>> output = Functional.foldAndChoose(
-//                new Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
-//                    @Override
-//                    public Pair<Double, Option<myInt>> apply(final Double state, final myInt day) {
-//                        final Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
-//                        return value != null
-//                                ? new Pair<Double, Option<myInt>>(value, Option.<myInt>None())
-//                                : new Pair<Double, Option<myInt>>(state, Option.toOption(day));
-//                    }
-//                }, 10.0, openedDays2);
-//
-//        Assert.assertEquals(last, output.getValue0());
-//        final List<Integer> keys = new ArrayList<Integer>(missingPricesPerDate.keySet());
-//        Collections.sort(keys);
-//        Assert.assertArrayEquals(keys.toArray(),
-//                Functional.map(
-//                        new Func<myInt, Integer>() {
-//                            @Override
-//                            public Integer apply(final myInt i) {
-//                                return i.i();
-//                            }
-//                        }, output.getValue1()).toArray());
-//    }
-//
-//    @Test
-//    public void joinTest1()
-//    {
-//        final IntList ids = Functional.init(TriplingGenerator, 5);
-//        final String expected = "3,6,9,12,15";
-//        Assert.assertEquals(expected, Functional.join(",", Functional.map(Functional.<Integer>dStringify(), ids)));
-//        Assert.assertEquals(expected, Functional.join(",", ids));
-//    }
-//
-//    @Test
-//    public void joinTest2()
-//    {
-//        final IntList ids = Functional.init(TriplingGenerator, 5);
-//        final String expected = "'3','6','9','12','15'";
-//        final Func<Integer, String> f =
-//                new Func<Integer, String>() {
-//                    @Override
-//                    public String apply(final Integer id) {
-//                        return "'" + id + "'";
-//                    }
-//                };
-//        Assert.assertEquals(expected, Functional.join(",", Functional.map(f, ids)));
-//        Assert.assertEquals(expected, Functional.join(",", ids, f));
-//    }
-//
+    private class myInt
+    {
+        private final int _i;
+
+        public myInt(final int i)
+        {
+            _i = i;
+        }
+
+        public final int i()
+        {
+            return _i;
+        }
+    }
+
+
+    @Test
+    public void foldAndChooseTest1()
+    {
+        final Map<Integer, Double> missingPricesPerDate = new Hashtable<Integer, Double>();
+        final IntList openedDays = Functional.init(TriplingGenerator, 5);
+        Double last = 10.0;
+        final IntIterator iterator = openedDays.iterator();
+        while(iterator.hasNext())
+        {
+            final int day = iterator.next();
+            Double value = day%2 == 0 ? (Double)((double)(day/2)) : null;
+            if (value!=null)
+                last = value;
+            else
+                missingPricesPerDate.put(day, last);
+        }
+
+        final Collection<myInt> openedDays2 = Functional.init(
+                new Func_int_T<myInt>() {
+                    @Override
+                    public myInt apply(final int a) {
+                        return new myInt(3 * a);
+                    }
+                }, 5);
+        final Pair<Double, List<myInt>> output = me.shaftesbury.utils.functional.Functional.foldAndChoose(
+                new Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
+                    @Override
+                    public Pair<Double, Option<myInt>> apply(final Double state, final myInt day) {
+                        final Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
+                        return value != null
+                                ? new Pair<Double, Option<myInt>>(value, Option.<myInt>None())
+                                : new Pair<Double, Option<myInt>>(state, Option.toOption(day));
+                    }
+                }, 10.0, openedDays2);
+
+        Assert.assertEquals(last, output.getValue0());
+        final List<Integer> keys = new ArrayList<Integer>(missingPricesPerDate.keySet());
+        Collections.sort(keys);
+        Assert.assertArrayEquals(keys.toArray(),
+                Functional.map(
+                        new Func_T_int<myInt>() {
+                            @Override
+                            public int apply(final myInt i) {
+                                return i.i();
+                            }
+                        }, output.getValue1()).toArray(new Integer[0]));
+    }
+
+    @Test
+    public void joinTest1()
+    {
+        final IntList ids = Functional.init(TriplingGenerator, 5);
+        final String expected = "3,6,9,12,15";
+        Assert.assertEquals(expected, me.shaftesbury.utils.functional.Functional.join(",", Functional.map(Functional.dStringify(), ids)));
+        Assert.assertEquals(expected, Functional.join(",", ids));
+    }
+
+    @Test
+    public void joinTest2()
+    {
+        final IntList ids = Functional.init(TriplingGenerator, 5);
+        final String expected = "'3','6','9','12','15'";
+        final Func_int_T<String> f =
+                new Func_int_T<String>() {
+                    @Override
+                    public String apply(final int id) {
+                        return "'" + id + "'";
+                    }
+                };
+        Assert.assertEquals(expected, me.shaftesbury.utils.functional.Functional.join(",", Functional.map(f, ids)));
+        Assert.assertEquals(expected, Functional.join(",", ids, f));
+    }
+
 //    @Test
 //    public void betweenTest1()
 //    {

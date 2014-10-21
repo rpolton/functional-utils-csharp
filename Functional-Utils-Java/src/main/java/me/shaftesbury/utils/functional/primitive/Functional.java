@@ -43,6 +43,23 @@ public final class Functional
     }
 
     /**
+     * Analogue of string.Join for List<T> with the addition of a user-defined map function
+     *
+     * @param <T> the type of the element in the input sequence
+     * @param separator inserted between each transformed element
+     * @param l the input sequence
+     * @param fn map function (see <tt>map</tt>) which is used to transform the input sequence
+     * @return a string containing the transformed string value of each input element separated by the supplied separator
+     */
+    public static <T>String join(final String separator, final IntIterable l, final Func_int_T<String> fn)
+    {
+        if (l == null) throw new IllegalArgumentException("l");
+        if (fn == null) throw new IllegalArgumentException("fn");
+
+        return me.shaftesbury.utils.functional.Functional.join(separator, map(fn, l));
+    }
+
+    /**
      * Find the first element from the input sequence for which the supplied predicate returns true
      * find: (A -> bool) -> A list -> A
      * @param f predicate
