@@ -1011,6 +1011,13 @@ public class FunctionalTest
         Assert.assertEquals("5", Functional.last(strs));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void lastTest3()
+    {
+        final List<Integer> input = new ArrayList<Integer>();
+        Functional.last(input);
+    }
+
     @Test
     public void concatTest1()
     {

@@ -1140,6 +1140,7 @@ public final class Functional
      * @param input input sequence
      * @param <T> the type of the element in the input sequence
      * @return the last element from the input sequence
+     * @throws java.lang.IllegalArgumentException if the input sequence is null or empty
      */
     public static final <T>T last(final Iterable<T> input)
     {
@@ -1148,6 +1149,7 @@ public final class Functional
         T state = null;
         for(final T element: input) state = element;
 
+        if(state==null) throw new IllegalArgumentException("Functional.last(Iterable): input is empty");
         return state;
     }
 
