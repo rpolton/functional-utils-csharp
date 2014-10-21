@@ -3362,6 +3362,23 @@ public final class Functional
         }
 
         /**
+         * Return the final element from the input sequence
+         * @param input input sequence
+         * @param <T> the type of the element in the input sequence
+         * @return the last element from the input sequence
+         * @throws java.lang.IllegalArgumentException if the input sequence is null or empty
+         */
+        public static final <T>Option<T> last(final Iterable<T> input)
+        {
+            if(input==null) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null");
+
+            T state = null;
+            for(final T element: input) state = element;
+
+            return state==null ? Option.<T>None() : Option.toOption(state);
+        }
+
+        /**
          * 'pick' is an analogue of <tt>find</tt>. Instead of a predicate, 'pick' is passed a map function which returns an <tt>Option</tt>.
          * Each element of the input sequence is supplied in turn to the map function 'f' and the first non-None Option to be returned from
          * the map function is returned by 'pick' to the calling code.
