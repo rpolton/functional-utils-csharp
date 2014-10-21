@@ -9,6 +9,9 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static me.shaftesbury.utils.functional.Functional.in;
+import static me.shaftesbury.utils.functional.Functional.then;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Bob
@@ -359,8 +362,7 @@ public class IntFunctionalTest
     public void ChooseTest2A() //throws OptionNoValueAccessException
     {
         Map<Integer,String> o=null;
-        try{
-            final IntList li = Functional.init(TriplingGenerator, 5);
+        final IntList li = Functional.init(TriplingGenerator, 5);
         o = Functional.toDictionary(Functional.identity(), Functional.dStringify(),
                 Functional.filter(
                         new Func_int_T<Boolean>() {
@@ -369,7 +371,6 @@ public class IntFunctionalTest
                                 return i % 2 == 0;
                             }
                         }, li));
-        }catch(final Exception e){}
         final Map<Integer,String> expected = new HashMap<Integer,String>();
         expected.put(6, "6");
         expected.put(12, "12");
@@ -453,137 +454,103 @@ public class IntFunctionalTest
                 }, "", li);
         Assert.assertEquals(s1, s2);
     }
-//
-//    private final Func<IntList, String> concatenate =
-//            new Func<IntList, String>() {
-//                @Override
-//                public String apply(final IntList l) {
-//                    return Functional.fold(new Func2<String, Integer, String>() {
-//                        @Override
-//                        public String apply(final String s1, final Integer s2) {
-//                            return csv(s1, s2);
-//                        }
-//                    }, "", l);
-//                }
-//            };
-//
-//    @Test
-//    public void FwdPipelineTest1()
-//    {
-//        final IntList li = Functional.init(DoublingGenerator, 5);
-//        final String s1 = Functional.in(li, concatenate);
-//        Assert.assertEquals("2,4,6,8,10", s1);
-//    }
-//
-//    private final Func<IntList, IntList> evens_f =
-//            new Func<IntList, IntList>() {
-//                @Override
-//                public IntList apply(final IntList l) {
-//                    return Functional.filter(Functional.isEven, l);
-//                }
-//            };
-//
-//    @Test
-//    public void FwdPipelineTest2()
-//    {
-//        final IntList li = Functional.init(TriplingGenerator, 5);
-//        final IntList evens = Functional.in(li, evens_f);
-//        final String s1 = Functional.in(evens, concatenate);
-//        final String s2 = Functional.in(li, Functional.then(evens_f, concatenate));
-//        Assert.assertEquals("6,12", s1);
-//        Assert.assertEquals(s1, s2);
-//    }
-//
-//    @Test
-//    public void CompositionTest3()
-//    {
-//        final IntList li = Functional.init(TriplingGenerator, 5);
-//        final String s = Functional.in(li, Functional.then(evens_f, concatenate));
-//        Assert.assertEquals("6,12", s);
-//    }
-//
-//    @Test
-//    public void CompositionTest4()
-//    {
-//        final IntList li = Functional.init(TriplingGenerator, 5);
-//        final String s = Functional.then(evens_f, concatenate).apply(li);
-//        Assert.assertEquals("6,12", s);
-//    }
-//
-//    @Test
-//    public void IndentTest1()
-//    {
-//        final int level = 5;
-//        final String expectedResult = "     ";
-//
-//        String indentedName = "";
-//        for (int i = 0; i < level; ++i)
-//        {
-//            indentedName += " ";
-//        }
-//        Assert.assertEquals(indentedName, expectedResult);
-//
-//        final Collection<String> indentation = Functional.init(
-//                new Func<Integer, String>() {
-//                    @Override
-//                    public String apply(final Integer integer) {
-//                        return " ";
-//                    }
-//                }, level);
-//        Assert.assertEquals(Functional.join("", indentation), "     ");
-//
-//        final String s = Functional.fold(
-//                new Func2<String, String, String>() {
-//                    @Override
-//                    public String apply(final String state, final String str) {
-//                        return state + str;
-//                    }
-//                }, "", indentation);
-//        Assert.assertEquals(s, expectedResult);
-//
-//        final Func<Collection<String>, String> folder =
-//                new Func<Collection<String>, String>() {
-//                    @Override
-//                    public String apply(final Collection<String> l) {
-//                        return Functional.fold(new Func2<String, String, String>() {
-//                            @Override
-//                            public String apply(final String state, final String str) {
-//                                return state + str;
-//                            }
-//                        }, "", l);
-//                    }
-//                };
-//
-//        final String s1 = Functional.in(indentation, folder);
-//        Assert.assertEquals(s1, expectedResult);
-//    }
-//
-//    @Test
-//    public void IndentTest2()
-//    {
-//        final int level = 5;
-//        final String expectedResult = "     BOB";
-//        Assert.assertEquals(expectedResult, Functional.indentBy(level, " ", "BOB"));
-//    }
-//
-//
-//    @Test
-//    public void ChooseTest3A() throws OptionNoValueAccessException
-//    {
-//        final IntList li = Functional.init(TriplingGenerator, 5);
-//        final IntList o =
-//                Functional.choose(
-//                        new Func<Integer, Option<Integer>>() {
-//                            public Option<Integer> apply(final Integer i) {
-//                                return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
-//                            }
-//                        }, li);
-//
-//        final Integer[] expected = new Integer[]{6,12};
-//        Assert.assertArrayEquals(expected, o.toArray());
-//    }
-//
-///*
+
+    private final Func<IntList, String> concatenate =
+            new Func<IntList, String>() {
+                @Override
+                public String apply(final IntList l) {
+                    return Functional.fold(new Func2_T_int_T<String, String>() {
+                        @Override
+                        public String apply(final String s1, final int s2) {
+                            return csv(s1, s2);
+                        }
+                    }, "", l);
+                }
+            };
+
+    @Test
+    public void FwdPipelineTest1()
+    {
+        final IntList li = Functional.init(DoublingGenerator, 5);
+        final String s1 = in(li, concatenate);
+        Assert.assertEquals("2,4,6,8,10", s1);
+    }
+
+    private final Func<IntList, IntList> evens_f =
+            new Func<IntList, IntList>() {
+                @Override
+                public IntList apply(final IntList l) {
+                    return Functional.filter(Functional.isEven, l);
+                }
+            };
+
+    @Test
+    public void FwdPipelineTest2()
+    {
+        final IntList li = Functional.init(TriplingGenerator, 5);
+        final IntList evens = me.shaftesbury.utils.functional.Functional.in(li, evens_f);
+        final String s1 = in(evens, concatenate);
+        final String s2 = in(li, then(evens_f, concatenate));
+        Assert.assertEquals("6,12", s1);
+        Assert.assertEquals(s1, s2);
+    }
+
+    @Test
+    public void CompositionTest3()
+    {
+        final IntList li = Functional.init(TriplingGenerator, 5);
+        final String s = in(li, then(evens_f, concatenate));
+        Assert.assertEquals("6,12", s);
+    }
+
+    @Test
+    public void CompositionTest4()
+    {
+        final IntList li = Functional.init(TriplingGenerator, 5);
+        final String s = then(evens_f, concatenate).apply(li);
+        Assert.assertEquals("6,12", s);
+    }
+
+    @Test
+    public void IndentTest1()
+    {
+        final int level = 5;
+        final String expectedResult = "     ";
+
+        String indentedName = "";
+        for (int i = 0; i < level; ++i)
+        {
+            indentedName += " ";
+        }
+        Assert.assertEquals(indentedName, expectedResult);
+
+        final Collection<String> indentation = Functional.init(
+                new Func_int_T<String>() {
+                    @Override
+                    public String apply(final int integer) {
+                        return " ";
+                    }
+                }, level);
+        Assert.assertEquals(me.shaftesbury.utils.functional.Functional.join("", indentation), "     ");
+    }
+
+    @Test
+    public void ChooseTest3A() throws OptionNoValueAccessException
+    {
+        final IntList li = Functional.init(TriplingGenerator, 5);
+        final IntList o =
+                Functional.choose(
+                        new Func_int_Option_int() {
+                            public Option_int apply(final int i) {
+                                return i % 2 == 0 ? Option_int.toOption(i) : Option_int.None();
+                            }
+                        }, li);
+
+        final int[] expected = new int[]{6,12};
+        Assert.assertArrayEquals(expected, o.toArray());
+    }
+
+/*
 //        [Test]
 //        public void TryGetValueTest1()
 //        {
