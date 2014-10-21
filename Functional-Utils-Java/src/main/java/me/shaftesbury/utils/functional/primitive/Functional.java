@@ -609,37 +609,17 @@ public final class Functional
      * @param initialValue seed for the algorithm
      * @param input input sequence
      * @param <A> the type of the initialValue / seed
-     * @param <B> the type of the element in the input sequence
      * @return aggregated value
      */
-    public static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
+    public static <A>A fold(final Func2_T_int_T<? super A, ? extends A> f, final A initialValue, final IntIterable input)
     {
         A state = initialValue;
-        for (final B b : input)
+        final IntIterator iterator = input.iterator();
+        while(iterator.hasNext()) {
+            final int b = iterator.next();
             state = f.apply(state, b);
+        }
         return state;
-    }
-
-    /**
-     * See <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
-     * fold: aggregate the elements of the input sequence given a seed and an aggregation function.
-     * This is the curried implementation
-     * fold: (A -> B -> A) -> A -> B list -> A
-     * @param f aggregation function
-     * @param initialValue seed for the algorithm
-     * @param <A> the type of the initialValue / seed
-     * @param <B> the type of the element in the output sequence
-     * @return aggregated value
-     * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
-     */
-    public static <A, B>Func<Iterable<B>,A> fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue)
-    {
-        return new Func<Iterable<B>, A>() {
-            @Override
-            public A apply(final Iterable<B> input) {
-                return Functional.fold(f, initialValue, input);
-            }
-        };
     }
 
     /**

@@ -432,27 +432,27 @@ public class IntFunctionalTest
 //        final IntList c = Functional.map(curried_adder_int(2), a);
 //        Assert.assertArrayEquals(b.toArray(), c.toArray());
 //    }
-//
-//    private static String csv(final String state, final Integer a)
-//    {
-//        return Functional.isNullOrEmpty(state) ? a.toString() : state + "," + a;
-//    }
-//
-//    @Test
-//    public void FoldvsMapTest1()
-//    {
-//        final IntList li = Functional.init(DoublingGenerator, 5);
-//        final String s1 = Functional.join(",", Functional.map(Functional.<Integer>dStringify(), li));
-//        Assert.assertEquals("2,4,6,8,10", s1);
-//        final String s2 = Functional.fold(
-//                new Func2<String, Integer, String>() {
-//                    @Override
-//                    public String apply(final String s1, final Integer s2) {
-//                        return csv(s1, s2);
-//                    }
-//                }, "", li);
-//        Assert.assertEquals(s1, s2);
-//    }
+
+    private static String csv(final String state, final int a)
+    {
+        return me.shaftesbury.utils.functional.Functional.isNullOrEmpty(state) ? ""+a : state + "," + a;
+    }
+
+    @Test
+    public void FoldvsMapTest1()
+    {
+        final IntList li = Functional.init(DoublingGenerator, 5);
+        final String s1 = me.shaftesbury.utils.functional.Functional.join(",", Functional.map(Functional.dStringify(), li));
+        Assert.assertEquals("2,4,6,8,10", s1);
+        final String s2 = Functional.fold(
+                new Func2_T_int_T<String, String>() {
+                    @Override
+                    public String apply(final String s1, final int s2) {
+                        return csv(s1, s2);
+                    }
+                }, "", li);
+        Assert.assertEquals(s1, s2);
+    }
 //
 //    private final Func<IntList, String> concatenate =
 //            new Func<IntList, String>() {
