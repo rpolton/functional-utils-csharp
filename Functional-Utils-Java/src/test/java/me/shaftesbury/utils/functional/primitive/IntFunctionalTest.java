@@ -1,9 +1,6 @@
 package me.shaftesbury.utils.functional.primitive;
 
-import me.shaftesbury.utils.functional.Func;
-import me.shaftesbury.utils.functional.Func2;
-import me.shaftesbury.utils.functional.Option;
-import me.shaftesbury.utils.functional.OptionNoValueAccessException;
+import me.shaftesbury.utils.functional.*;
 import org.javatuples.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -954,15 +951,15 @@ public class IntFunctionalTest
         Functional.last(input);
     }
 
-//
-//    @Test
-//    public void concatTest1()
-//    {
-//        final List<Integer> input = new int[]{1,2,3,4,5});
-//        final List<Integer> expected = new int[]{1,2,3,4,5,1,2,3,4,5});
-//        AssertIterable.assertIterableEquals(expected, Functional.concat(input, input));
-//    }
-//
+
+    @Test
+    public void concatTest1()
+    {
+        final IntList input = new IntList(new int[]{1,2,3,4,5});
+        final int[] expected = new int[]{1,2,3,4,5,1,2,3,4,5};
+        Assert.assertArrayEquals(expected, Functional.concat(input, input).toArray());
+    }
+
 //    @Test
 //    public void seqConcatTest1()
 //    {

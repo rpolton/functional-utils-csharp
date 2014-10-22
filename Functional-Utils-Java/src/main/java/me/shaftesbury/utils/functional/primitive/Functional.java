@@ -920,17 +920,16 @@ public final class Functional
      * Concatenate two sequences and return a new list containing the concatenation.
      * @param list1 first input sequence
      * @param list2 second input sequence
-     * @param <T> the type of the element in the input sequences
      * @return a list containing the elements of the first sequence followed by the elements of the second sequence
      */
-    public static final <T>List<T> concat(final Iterable<? extends T> list1, final Iterable<? extends T> list2)
+    public static final IntList concat(final IntList list1, final IntList list2)
     {
         if(list1==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list1 is null");
         if(list2==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list2 is null");
 
-        final List<T> newList = new ArrayList<T>(toList(list1));
-        final boolean didItChange = newList.addAll(toList(list2));
-        return Collections.unmodifiableList(newList);
+        final int[] first = list1.extractBackingStoreWithoutCopy();
+        final int[] second = list2.extractBackingStoreWithoutCopy();
+        return new IntList(first,second);
     }
 
     /**
@@ -1296,8 +1295,8 @@ public final class Functional
     public static final <T,U>List<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
     {
         List<U> output = input instanceof Collection<?> ? new ArrayList<U>(((Collection) input).size()) : new ArrayList<U>();
-        for(final T element : input)
-            output = Functional.concat(output, Functional.toList(f.apply(element)));
+//        for(final T element : input)
+//            output = Functional.concat(output, Functional.toList(f.apply(element)));
         return Collections.unmodifiableList(output);
     }
 
