@@ -1807,6 +1807,7 @@ public final class Functional
      */
     public static final class seq
     {
+        private seq() {}
         /**
          * See <A href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</A>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
@@ -2928,6 +2929,8 @@ public final class Functional
      */
     public static class rec
     {
+        private rec() {}
+
         private static final <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterator<A> input, final Collection<A> accumulator)
         {
             if(input.hasNext())
@@ -3068,6 +3071,7 @@ public final class Functional
      */
     public static final class set
     {
+        private set() {}
         /**
          * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
          * @param pred a filter function. This is passed each input element in turn and returns either true or false. If true then
@@ -3193,6 +3197,8 @@ public final class Functional
      */
     public static final class inTermsOfFold
     {
+        private inTermsOfFold() {}
+
         /**
          * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output
@@ -3269,6 +3275,8 @@ public final class Functional
      */
     public static class noException
     {
+        private noException() {}
+
         /**
          * Find the first element from the input sequence for which the supplied predicate returns true
          * find: (A -> bool) -> A list -> A option
