@@ -3762,17 +3762,20 @@ public class FunctionalTest {
         final List<Functional.Range<Integer>> partitions = Functional.partition(noElems, noPartitions);
 
         // Store the ranges in a map to exercise the hashCode()
-        final Map<Integer, Functional.Range<Integer>> map = Functional.toDictionary(new Func<Functional.Range<Integer>, Integer>() {
-            @Override
-            public Integer apply(final Functional.Range<Integer> range) {
-                return range.from();
-            }
-        }, Functional.<Functional.Range<Integer>>identity(), partitions);
+        final Map<Functional.Range<Integer>,Pair<Integer,Integer>> map =
+                Functional.toDictionary(
+                        Functional.<Functional.Range<Integer>>identity(),
+                        new Func<Functional.Range<Integer>, Pair<Integer,Integer>>() {
+                            @Override
+                            public Pair<Integer,Integer> apply(final Functional.Range<Integer> range) {
+                                return Pair.with(range.from(), range.to());
+                            }
+                        }, partitions);
 
-        final List<Functional.Range<Integer>> extractedRanges = Functional.map(new Func<Map.Entry<Integer, Functional.Range<Integer>>, Functional.Range<Integer>>() {
+        final List<Functional.Range<Integer>> extractedRanges = Functional.map(new Func<Map.Entry<Functional.Range<Integer>,Pair<Integer,Integer>>, Functional.Range<Integer>>() {
             @Override
-            public Functional.Range<Integer> apply(final Map.Entry<Integer, Functional.Range<Integer>> integerRangeEntry) {
-                return integerRangeEntry.getValue();
+            public Functional.Range<Integer> apply(final Map.Entry<Functional.Range<Integer>,Pair<Integer,Integer>> integerRangeEntry) {
+                return integerRangeEntry.getKey();
             }
         }, map.entrySet());
 
