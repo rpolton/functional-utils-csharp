@@ -1744,6 +1744,7 @@ public class FunctionalTest {
                 Assert.assertEquals(expected.get(0), iterator.next());
             } catch(final NoSuchElementException e){Assert.fail("Shouldn't reach this point");}
             Assert.assertFalse(iterator.hasNext());
+            Assert.assertFalse(iterator.hasNext());
         }
     }
 
