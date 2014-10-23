@@ -1051,13 +1051,25 @@ public class FunctionalTest {
 
     @Test
     public void findLastNoExceptionTest1() {
-        final List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
+        final List<Integer> l = Functional.init(DoublingGenerator, 5);
         Assert.assertTrue(Functional.noException.findLast(Functional.isOdd, l).isNone());
     }
 
     @Test
     public void findLastNoExceptionTest2() {
-        final List<Integer> l = new ArrayList<Integer>(Functional.init(DoublingGenerator, 5));
+        final List<Integer> l = Functional.init(DoublingGenerator, 5);
+        Assert.assertEquals((Integer) 10, Functional.noException.findLast(Functional.isEven, l).Some());
+    }
+
+    @Test
+    public void iterableFindLastNoExceptionTest1() {
+        final Iterable<Integer> l = Functional.seq.init(DoublingGenerator, 5);
+        Assert.assertTrue(Functional.noException.findLast(Functional.isOdd, l).isNone());
+    }
+
+    @Test
+    public void iterableFindLastNoExceptionTest2() {
+        final Iterable<Integer> l = Functional.seq.init(DoublingGenerator, 5);
         Assert.assertEquals((Integer) 10, Functional.noException.findLast(Functional.isEven, l).Some());
     }
 
@@ -4092,6 +4104,30 @@ public class FunctionalTest {
                 }, list2);
             }
         }, list1);
+
+        AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test
+    public void enumerationToListTest1()
+    {
+        final int[] ints = new int[]{1,2,3,4,5};
+        final Enumeration<Integer> enumeration = new Enumeration<Integer>() {
+            int counter=0;
+            @Override
+            public boolean hasMoreElements() {
+                return counter<ints.length;
+            }
+
+            @Override
+            public Integer nextElement() {
+                return ints[counter++];
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(1,2,3,4,5);
+
+        final List<Integer> output = Functional.toList(enumeration);
 
         AssertIterable.assertIterableEquals(expected,output);
     }
