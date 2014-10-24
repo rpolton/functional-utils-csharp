@@ -2096,9 +2096,11 @@ public final class Functional
                             {
                                 final Option<U> next = _next;
                                 _next=Option.None();
-//                                try {  this exception is not possible on the grounds that we have already called hasNext()
+                                // this exception is only possible (on the grounds that we have already called hasNext())
+                                // if next() is called on two separate threads for the same iterator, which shouldn't be possible.
+                                try {
                                     return next.Some();
-//                                } catch(final OptionNoValueAccessException e) { throw new java.util.NoSuchElementException(); }
+                                } catch(final OptionNoValueAccessException e) { throw new java.util.NoSuchElementException(); }
                             }
                             throw new java.util.NoSuchElementException();
                         }
