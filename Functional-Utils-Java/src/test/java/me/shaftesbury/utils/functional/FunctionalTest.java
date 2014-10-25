@@ -120,6 +120,21 @@ public class FunctionalTest {
         }, output).toArray());
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorInSeqMapiTest1() {
+        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Iterable<Pair<Integer, String>> output = Functional.seq.mapi(new Func2<Integer, Integer, Pair<Integer, String>>() {
+            @Override
+            public Pair<Integer, String> apply(final Integer pos, final Integer i) {
+                return Pair.with(pos, i.toString());
+            }
+        }, input);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
+    }
+
     @Test
     public void curriedSeqMapiTest1() {
         final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
@@ -939,6 +954,16 @@ public class FunctionalTest {
         oddElems.iterator().remove();
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqFilterTest1() {
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Iterable<Integer> oddElems = Functional.seq.filter(Functional.isOdd, l);
+        try {
+            oddElems.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        oddElems.iterator();
+    }
+
     @Test
     public void seqFilterTest2() {
         final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
@@ -1145,6 +1170,17 @@ public class FunctionalTest {
         output.iterator().remove();
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqMapTest1() {
+        final List<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5}); //Enumerable.Range(1, 5).ToList();
+        final List<String> expected = Arrays.asList(new String[]{"1", "2", "3", "4", "5"});
+        final Iterable<String> output = Functional.seq.map(Functional.<Integer>dStringify(), input);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
+    }
+
     @Test
     public void toArrayTest1() {
         final List<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
@@ -1235,6 +1271,25 @@ public class FunctionalTest {
         final Iterable<String> output = Functional.seq.concat(strs, Functional.seq.map(Functional.<Integer>dStringify(), Functional.seq.map(doubler, input)));
 
         output.iterator().remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqConcatTest1() {
+        final List<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Func<Integer, Integer> doubler = new Func<Integer, Integer>() {
+            @Override
+            public Integer apply(final Integer i) {
+                return i * 2;
+            }
+        };
+        final List<String> expected = Arrays.asList(new String[]{"1", "2", "3", "4", "5", "2", "4", "6", "8", "10"});
+
+        final Iterable<String> strs = Functional.seq.map(Functional.<Integer>dStringify(), input);
+        final Iterable<String> output = Functional.seq.concat(strs, Functional.seq.map(Functional.<Integer>dStringify(), Functional.seq.map(doubler, input)));
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
     }
 
     @Test
@@ -1338,6 +1393,22 @@ public class FunctionalTest {
                     }
                 }, li);
         output.iterator().remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqChooseTest1() {
+        final Collection<Integer> li = Functional.init(TriplingGenerator, 5);
+        final Iterable<String> output = Functional.seq.choose(
+                new Func<Integer, Option<String>>() {
+                    @Override
+                    public Option<String> apply(final Integer i) {
+                        return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
+                    }
+                }, li);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) {Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
     }
 
     @Test
@@ -1512,6 +1583,15 @@ public class FunctionalTest {
         output.iterator().remove();
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqInitTest2() {
+        final Iterable<Integer> output = Functional.seq.init(DoublingGenerator);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
+    }
+
     @Test(expected = NoSuchElementException.class)
     public void takeTooManyItemsTest() {
         Functional.take(100, Functional.init(DoublingGenerator, 10));
@@ -1606,6 +1686,16 @@ public class FunctionalTest {
         final List<Integer> input = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         final Iterable<Integer> output = Functional.seq.take(1, input);
         output.iterator().remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqTakeTest1() {
+        final List<Integer> input = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        final Iterable<Integer> output = Functional.seq.take(1, input);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -1766,9 +1856,20 @@ public class FunctionalTest {
     public void cantRemoveFromSeqTakeWhileTest1() {
         final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
         {
-            final List<Integer> expected = Arrays.asList(1);
             final Iterable<Integer> output = Functional.seq.takeWhile(Functional.isOdd, l);
             output.iterator().remove();
+        }
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqTakeWhileTest1() {
+        final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
+        {
+            final Iterable<Integer> output = Functional.seq.takeWhile(Functional.isOdd, l);
+            try {
+                output.iterator();
+            } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+            output.iterator();
         }
     }
 
@@ -2193,6 +2294,18 @@ public class FunctionalTest {
         zip.iterator().remove();
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqZipTest1() {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[]{'a', 'b', 'c', 'd', 'e'});
+
+        final Iterable<Pair<Integer, Character>> zip = Functional.seq.zip(input1, input2);
+        try {
+            zip.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        zip.iterator();
+    }
+
     @Test
     public void seqZipTest2() {
         final Collection<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
@@ -2248,6 +2361,17 @@ public class FunctionalTest {
 
         final Iterable<Pair<Integer, String>> output = Functional.seq.zip(Functional.<Integer>identity(), Functional.dStringify(), input);
         output.iterator().remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqZipFnTest1() {
+        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+
+        final Iterable<Pair<Integer, String>> output = Functional.seq.zip(Functional.<Integer>identity(), Functional.dStringify(), input);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
     }
 
     @Test
@@ -2387,6 +2511,19 @@ public class FunctionalTest {
         final Iterable<Triplet<Integer, Character, Double>> output = Functional.seq.zip3(input1, input2, input3);
 
         output.iterator().remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqZip3Test1() {
+        final Collection<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Collection<Character> input2 = Arrays.asList(new Character[]{'a', 'b', 'c', 'd', 'e'});
+        final Collection<Double> input3 = Arrays.asList(new Double[]{1.0, 2.0, 2.5, 3.0, 3.5});
+
+        final Iterable<Triplet<Integer, Character, Double>> output = Functional.seq.zip3(input1, input2, input3);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
     }
 
     @Test
@@ -2761,22 +2898,21 @@ public class FunctionalTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
+    public void seqCollectTest2() {
+        final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
+        final Iterable<Integer> output = Functional.seq.collect(repeat(3), input);
+        try {
+            final Iterator<Integer> iterator1 = output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        final Iterator<Integer> iterator2 = output.iterator();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
     public void cantRemoveFromSeqCollectTest1() {
         final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
         final Iterable<Integer> output = Functional.seq.collect(repeat(3), input);
         output.iterator().remove();
     }
-
-    @Test
-    public void seqCollectTest2() {
-        final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
-        final Iterable<Integer> output1 = Functional.seq.collect(repeat(3), input);
-        final Iterable<Integer> output2 = output1;
-        final List<Integer> expected = Arrays.asList(2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8, 10, 10, 10);
-        AssertIterable.assertIterableEquals(expected, output1);
-        AssertIterable.assertIterableEquals(expected, output2);
-    }
-
     @Test
     public void seqCollectTest3() {
         final Iterable<Integer> input = Functional.seq.init(DoublingGenerator, 5);
@@ -3182,6 +3318,30 @@ public class FunctionalTest {
         output.iterator().remove();
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqUnfoldTest1() {
+        final Integer seed = 0;
+        final Func<Integer, Pair<Integer, Integer>> unspool = new Func<Integer, Pair<Integer, Integer>>() {
+            @Override
+            public Pair<Integer, Integer> apply(final Integer integer) {
+                return Pair.with(integer + 1, integer + 1);
+            }
+        };
+        final Func<Integer, Boolean> finished = new Func<Integer, Boolean>() {
+            @Override
+            public Boolean apply(final Integer integer) {
+                return integer == 10;
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        final Iterable<Integer> output = Functional.seq.unfold(unspool, finished, seed);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
+    }
+
     @Test
     public void seqUnfoldTest2() {
         final Integer seed = 0;
@@ -3269,6 +3429,24 @@ public class FunctionalTest {
         final List<Integer> expected = Arrays.asList(2, 4, 6, 8, 10, 12, 14, 16, 18, 20);
         final Iterable<Integer> output = Functional.seq.unfold(doubler, seed);
         output.iterator().remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqUnfoldAsDoublingGeneratorTest2() {
+        final Integer seed = 1;
+        final Func<Integer, Option<Pair<Integer, Integer>>> doubler = new Func<Integer, Option<Pair<Integer, Integer>>>() {
+            @Override
+            public Option<Pair<Integer, Integer>> apply(final Integer integer) {
+                return integer > 10 ? Option.<Pair<Integer, Integer>>None() : Option.toOption(Pair.with(integer * 2, integer + 1));
+            }
+        };
+
+        final List<Integer> expected = Arrays.asList(2, 4, 6, 8, 10, 12, 14, 16, 18, 20);
+        final Iterable<Integer> output = Functional.seq.unfold(doubler, seed);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        output.iterator();
     }
 
     @Test
@@ -3470,6 +3648,19 @@ public class FunctionalTest {
         }
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqSkipTest1() {
+        final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
+        {
+            final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5);
+            final Iterable<Integer> output = Functional.seq.skip(0, l);
+            try {
+                output.iterator();
+            } catch(final UnsupportedOperationException e) {Assert.fail("Shouldn't reach this point"); }
+            output.iterator();
+        }
+    }
+
     @Test
     public void curriedSeqSkipTest1() {
         final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
@@ -3635,6 +3826,19 @@ public class FunctionalTest {
             final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5);
             final Iterable<Integer> output = Functional.seq.skipWhile(Functional.isEven, l);
             output.iterator().remove();
+        }
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromseqSkipWhileTest1() {
+        final List<Integer> l = Arrays.asList(1, 2, 3, 4, 5);
+        {
+            final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5);
+            final Iterable<Integer> output = Functional.seq.skipWhile(Functional.isEven, l);
+            try {
+                output.iterator();
+            } catch (final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+            output.iterator();
         }
     }
 
@@ -3817,6 +4021,18 @@ public class FunctionalTest {
         final int noPartitions = 5;
         final Iterable<Functional.Range<Integer>> partitions = Functional.seq.partition(noElems, noPartitions);
         partitions.iterator().remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorFromSeqPartitionRangesOfIntAndStore()
+    {
+        final int noElems = 13;
+        final int noPartitions = 5;
+        final Iterable<Functional.Range<Integer>> partitions = Functional.seq.partition(noElems, noPartitions);
+        try {
+            partitions.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach this point"); }
+        partitions.iterator();
     }
 
     @Test
@@ -4134,5 +4350,24 @@ public class FunctionalTest {
         final List<Integer> output = Functional.toList(enumeration);
 
         AssertIterable.assertIterableEquals(expected,output);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRemoveFromArrayIterableTest()
+    {
+        final Integer[] ints = new Integer[]{1,2,3,4,5};
+        ArrayIterable.create(ints).iterator().remove();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void appendIterableCanOnlyHaveOneIterator()
+    {
+        final Integer i = 1;
+        final Collection<Integer> l = Functional.init(DoublingGenerator, 5);
+        final Iterable<Integer> output = Functional.append(i, l);
+        try {
+            output.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Should not reach this point"); }
+        output.iterator();
     }
 }
