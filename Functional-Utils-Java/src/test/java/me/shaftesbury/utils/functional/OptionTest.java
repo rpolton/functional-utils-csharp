@@ -85,6 +85,58 @@ public class OptionTest
         Assert.assertFalse(a.isSome());
     }
 
+    @Test(expected = OptionNoValueAccessException.class)
+    public void OptionTestReferenceType3()
+    {
+        final Option<tmp> a = Option.<tmp>toOption(null);
+        a.Some();
+    }
+
+    @Test
+    public void compareOptionsForEqualityTest1()
+    {
+        final Option<Integer> some1 = Option.toOption(1);
+        final Option<Integer> some2 = Option.toOption(1);
+
+        Assert.assertEquals(some1, some2);
+    }
+
+    @Test
+    public void compareOptionsForEqualityTest2()
+    {
+        final Option<Integer> some1 = Option.toOption(1);
+        final Option<Integer> some2 = Option.toOption(2);
+
+        Assert.assertNotEquals(some1, some2);
+    }
+
+    @Test
+    public void compareOptionsForEqualityTest3()
+    {
+        final Option<Integer> some1 = Option.toOption(1);
+        final Option<Double> some2 = Option.toOption(2.1);
+
+        Assert.assertNotEquals(some1, some2);
+    }
+
+    @Test
+    public void compareOptionsForEqualityTest4()
+    {
+        final Option<Integer> none1 = Option.None();
+        final Option<Integer> none2 = Option.None();
+
+        Assert.assertEquals(none1, none2);
+    }
+
+    @Test
+    public void compareOptionsForEqualityTest5()
+    {
+        final Option<Integer> some = Option.toOption(2);
+        final Integer theInt = 2;
+
+        Assert.assertNotEquals(some,theInt);
+    }
+
 //    @Test
 //    public void OptionMonadTest1()
 //    {
