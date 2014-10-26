@@ -1,5 +1,6 @@
 package me.shaftesbury.utils.functional;
 
+import org.javatuples.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -146,6 +147,58 @@ public class MExceptionTest
                 return m.hasException();
             }
         }).toList().size());
+    }
+
+    @Test
+    public void bindTestExceptionThrownInFunc()
+    {
+        final MException<Integer> m = MException.toMException(
+                new Func0<Integer>() {
+                    @Override
+                    public Integer apply() {
+                        return new Integer(1);
+                    }
+                }
+        );
+
+        final MException<Integer> m1 = m.bind(new Func<Integer, MException<Integer>>() {
+            @Override
+            public MException<Integer> apply(final Integer integer) {
+                throw new RuntimeException("Argh");
+            }});
+
+        Assert.assertTrue(m1.hasException());
+        final Pair<RuntimeException, StackTraceElement[]> exceptionWithStackTrace = m1.getExceptionWithStackTrace();
+        Assert.assertEquals("Argh", exceptionWithStackTrace.getValue0().getMessage());
+    }
+
+    @Test
+    public void bindTestThisMExceptionHasExceptionAlready()
+    {
+        final MException<Integer> m = MException.toMException(
+                new Func0<Integer>() {
+                    @Override
+                    public Integer apply() {
+                        throw new RuntimeException("Argh");
+                    }
+                }
+        );
+
+        final MException<Integer> m1 = m.bind(new Func<Integer, MException<Integer>>() {
+            @Override
+            public MException<Integer> apply(final Integer integer) {
+                return MException.toMException(new Func0<Integer>() {
+                    @Override
+                    public Integer apply() {
+                        return new Integer(integer);
+                    }
+                });
+            }});
+
+        Assert.assertTrue(m1.hasException());
+        Assert.assertTrue(m.hasException());
+        final Pair<RuntimeException, StackTraceElement[]> exceptionWithStackTrace = m1.getExceptionWithStackTrace();
+        Assert.assertEquals("Argh",exceptionWithStackTrace.getValue0().getMessage());
     }
 
     @Test
