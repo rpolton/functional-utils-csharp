@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -134,7 +136,7 @@ public class OptionTest
         final Option<Integer> some = Option.toOption(2);
         final Integer theInt = 2;
 
-        Assert.assertNotEquals(some,theInt);
+        Assert.assertNotEquals(some, theInt);
     }
 
 //    @Test
@@ -359,4 +361,11 @@ public class OptionTest
         final Option<Integer> a = Option.Some(null);
     }
 
+    @Test
+    public void collectionOfOption()
+    {
+        final Map<Option<Integer>,Integer> map = new HashMap<Option<Integer>, Integer>();
+        map.put(Option.toOption(1),1);
+        Assert.assertEquals(new Integer(1), map.get(Option.toOption(1)));
+    }
 }
