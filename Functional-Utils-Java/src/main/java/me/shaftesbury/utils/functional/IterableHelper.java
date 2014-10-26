@@ -14,6 +14,13 @@ import java.util.*;
  */
 public class IterableHelper
 {
+    /**
+     * Note this is not intended to be a wrapper for a restartable sequence. If you want a restartable sequence turn
+     * the underlying container into a concrete collection first.
+     * @param it the singly-traversable input sequence
+     * @param <T> the type of the underlying data in the input sequence
+     * @return an Iterable2
+     */
     public static final <T>Iterable2<T> create(final java.lang.Iterable<T> it)
     {
         return new Iterable2<T>()
@@ -41,7 +48,19 @@ public class IterableHelper
             public int findIndex(final Func<? super T,Boolean> f) { return Functional.findIndex(f,i);}
             public final <B>B pick(final Func<? super T,Option<B>> f){return Functional.pick(f,i);}
             public final Iterable2<T> take(final int howMany){return create(Functional.seq.take(howMany, i));}
+
+            @Override
+            public Iterable2<T> takeWhile(Func<? super T, Boolean> f) {
+                return create(Functional.seq.takeWhile(f, i));
+            }
+
             public Iterable2<T> skip(int howMany) { return create(Functional.seq.skip(howMany, i)); }
+
+            @Override
+            public Iterable2<T> skipWhile(Func<? super T, Boolean> f) {
+                return create(Functional.seq.skipWhile(f,i));
+            }
+
             public String join(String delimiter) { return Functional.join(delimiter,i); }
             public T findLast(Func<? super T, Boolean> f) { return Functional.findLast(f,i); }
             public Pair<List<T>, List<T>> partition(Func<? super T, Boolean> f) { return Functional.partition(f, i); }
@@ -88,7 +107,12 @@ public class IterableHelper
         public int findIndex(final Func<? super T,Boolean> f) { throw new NoSuchElementException();}
         public final <B>B pick(final Func<? super T,Option<B>> f){throw new NoSuchElementException();}
         public final Iterable2<T> take(final int howMany){return this;}
+        @Override
+        public Iterable2<T> takeWhile(Func<? super T, Boolean> f) { return this; }
         public Iterable2<T> skip(int howMany) { return this; }
+        @Override
+        public Iterable2<T> skipWhile(Func<? super T, Boolean> f) { return this; }
+
         public String join(String delimiter) { return Functional.join(delimiter,this); }
         public T findLast(Func<? super T, Boolean> f) { throw new NoSuchElementException(); }
         public Pair<List<T>, List<T>> partition(Func<? super T, Boolean> f) { return Functional.partition(f,this); }

@@ -38,7 +38,9 @@ public interface Iterable2<T> extends java.lang.Iterable<T>
     <U>Iterable2<U> collect(final Func<? super T,? extends Iterable<U>> f);
 
     Iterable2<T> take(final int howMany);
+    Iterable2<T> takeWhile(final Func<? super T,Boolean> f);
     Iterable2<T> skip(final int howMany);
+    Iterable2<T> skipWhile(final Func<? super T,Boolean> f);
 
     String join(final String delimiter);
     T findLast(final Func<? super T,Boolean> f);
