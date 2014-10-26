@@ -20,6 +20,7 @@ public class MException<U>
 
     public final <B>MException<B> bind(final Func<U,MException<B>> f)
     {
+        if(f==null) throw new IllegalArgumentException("f");
         if(!hasException())
             try {
                 return f.apply(state);
@@ -37,6 +38,10 @@ public class MException<U>
 
     public static final <A,B,C>MException<C> lift(final Func2<A,B,C> f, final MException<A> a, final MException<B> b)
     {
+        if(f==null) throw new IllegalArgumentException("f");
+        if(a==null) throw new IllegalArgumentException("a");
+        if(b==null) throw new IllegalArgumentException("b");
+
         if(a.hasException()) return toMException(a.getExceptionWithStackTrace());
         if(b.hasException()) return toMException(b.getExceptionWithStackTrace());
         return new MException(BinaryFunction.delay(f, a.read(), b.read()));
@@ -44,6 +49,7 @@ public class MException<U>
 
     private MException(final Func0<U> f)
     {
+        if(f==null) throw new IllegalArgumentException("f");
         fn = f;
     }
 
