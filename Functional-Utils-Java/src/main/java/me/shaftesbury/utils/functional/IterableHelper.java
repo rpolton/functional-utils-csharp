@@ -14,6 +14,7 @@ import java.util.*;
  */
 public class IterableHelper
 {
+    private IterableHelper() {}
     /**
      * Note this is not intended to be a wrapper for a restartable sequence. If you want a restartable sequence turn
      * the underlying container into a concrete collection first.
@@ -82,6 +83,7 @@ public class IterableHelper
 
     private static final class EmptyList<T> implements Iterable2<T>
     {
+        EmptyList() {}
         public Iterator<T> iterator() { return new Iterator<T>() {
             @Override public boolean hasNext() { return false; }
             @Override public T next() { throw new java.util.NoSuchElementException(); }
