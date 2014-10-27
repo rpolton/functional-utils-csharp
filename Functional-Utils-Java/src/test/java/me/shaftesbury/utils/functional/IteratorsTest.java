@@ -28,6 +28,20 @@ public class IteratorsTest
         AssertIterable.assertIterableEquals(expected,output);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void cantReverseAnEmptyList()
+    {
+        final List<Integer> li = new ArrayList<Integer>();
+        Iterators.reverse(li);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRemoveFromReversedIterator()
+    {
+        final Iterable<Integer> rv = Iterators.reverse(Arrays.asList(1, 2, 3, 4));
+        rv.iterator().remove();
+    }
+
     private final Map<Integer, String> map = new LinkedHashMap<Integer, String>();
     private final List<String> list = new ArrayList<String>();
 
@@ -99,5 +113,18 @@ public class IteratorsTest
         final String expected =
                 new StringBuilder("zero zero UFO").append("one").toString();
         Assert.assertEquals(expected, sb.toString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void cantStepLessThanOne()
+    {
+        Iterators.everyNth(0,Arrays.asList(1,2,34));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRemoveFromEveryNth()
+    {
+        final Iterable<Integer> integers = Iterators.everyNth(2, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
+        integers.iterator().remove();
     }
 }
