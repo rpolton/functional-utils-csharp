@@ -2,6 +2,7 @@ package me.shaftesbury.utils.functional;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,26 +23,29 @@ public final class Iterators
             throw new IllegalArgumentException("Collection is empty");
 
         return new Iterable<T>() {
+            private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
             private final List<T> _list=list;
             @Override
             public Iterator<T> iterator() {
-                return new Iterator<T>() {
-                    private int _posn=list.size()-1;
-                    @Override
-                    public boolean hasNext() {
-                        return _posn>=0;
-                    }
+                if(haveCreatedIterator.compareAndSet(false,true))
+                    return new Iterator<T>() {
+                        private int _posn=list.size()-1;
+                        @Override
+                        public boolean hasNext() {
+                            return _posn>=0;
+                        }
 
-                    @Override
-                    public T next() {
-                        return _list.get(_posn--);
-                    }
+                        @Override
+                        public T next() {
+                            return _list.get(_posn--);
+                        }
 
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                else throw new UnsupportedOperationException("This Iterable does not allow multiple Iterators");
             }
         };
     }
@@ -55,39 +59,42 @@ public final class Iterators
             throw new IllegalArgumentException("Invalid step value, must be greater than zero.");
 
         return new Iterable<T>(){
+            private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
             final private Iterable<T> cache = it;
 
             @Override
             public Iterator<T> iterator() {
-                return new Iterator<T>(){
-                    private boolean isFirst = true;
-                    private boolean isNextReady = true;
-                    final private Iterator<T> posn = cache.iterator();
+                if(haveCreatedIterator.compareAndSet(false,true))
+                    return new Iterator<T>(){
+                        private boolean isFirst = true;
+                        private boolean isNextReady = true;
+                        final private Iterator<T> posn = cache.iterator();
 
-                    @Override
-                    public boolean hasNext() {
-                        if(isFirst||isNextReady) ;
-                        else {
-                            for(int i=0;i<step-1;++i) if(posn.hasNext()) posn.next();
-                            isNextReady = true;
+                        @Override
+                        public boolean hasNext() {
+                            if(isFirst||isNextReady) ;
+                            else {
+                                for(int i=0;i<step-1;++i) if(posn.hasNext()) posn.next();
+                                isNextReady = true;
+                            }
+                            return posn.hasNext();
                         }
-                        return posn.hasNext();
-                    }
 
-                    @Override
-                    public T next() {
-                        if(isFirst||isNextReady) ;
-                        else for(int i=0;i<step-1;++i) posn.next();
-                        isFirst=false;
-                        isNextReady = false;
-                        return posn.next();
-                    }
+                        @Override
+                        public T next() {
+                            if(isFirst||isNextReady) ;
+                            else for(int i=0;i<step-1;++i) posn.next();
+                            isFirst=false;
+                            isNextReady = false;
+                            return posn.next();
+                        }
 
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                else throw new UnsupportedOperationException("This Iterable does not allow multiple Iterators");
             }
         };
     }
