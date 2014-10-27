@@ -126,7 +126,7 @@ public class IterableHelper
 
         public <U> Map<U, List<T>> groupBy(Func<? super T, ? extends U> keyFn) { return Collections.EMPTY_MAP; }
 
-        public boolean equals(Object o) { return false; }
+        public boolean equals(Object o) { return o instanceof EmptyList<?>; }
 
         @Override
         public int hashCode() { return 0; }
