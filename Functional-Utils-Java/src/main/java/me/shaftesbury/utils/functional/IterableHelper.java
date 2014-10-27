@@ -85,7 +85,7 @@ public class IterableHelper
         public Iterator<T> iterator() { return new Iterator<T>() {
             @Override public boolean hasNext() { return false; }
             @Override public T next() { throw new java.util.NoSuchElementException(); }
-            @Override public void remove() { }
+            @Override public void remove() { throw new UnsupportedOperationException("Can't remove objects from this container"); }
         }; }
 
         public final Iterable2<T> filter(final Func<? super T,Boolean> f) { return this; }
