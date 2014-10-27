@@ -104,13 +104,13 @@ public class Iterable2Test
         final Iterable2<Integer> m = IterableHelper.init(QuadruplingGenerator, 5);
         try
         {
-            Assert.assertTrue(Functional.forAll2(
+            Assert.assertTrue(l.forAll2(
                     new Func2<Integer, Integer, Boolean>() {
                         @Override
                         public Boolean apply(Integer a, Integer b) {
                             return BothAreEven(a, b);
                         }
-                    }, l, m));
+                    }, m));
         }
         catch (Exception e)
         {
@@ -216,6 +216,18 @@ public class Iterable2Test
     {
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
         final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isOdd, m);
+
+        final Integer[] left = {3, 9, 15};
+        final Integer[] right = {6, 12};
+        Assert.assertArrayEquals(left, r.getValue0().toArray());
+        Assert.assertArrayEquals(right, r.getValue1().toArray());
+    }
+
+    @Test
+    public void PartitionTest1a()
+    {
+        final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
+        final Pair<List<Integer>, List<Integer>> r = m.partition(Functional.isOdd);
 
         final Integer[] left = {3, 9, 15};
         final Integer[] right = {6, 12};
@@ -651,7 +663,7 @@ public class Iterable2Test
             Assert.assertEquals(expected, Functional.join(",", ids.map(Functional.<Integer>dStringify())));
         }
         final Iterable2<Integer> ids = IterableHelper.init(TriplingGenerator, 5);
-        Assert.assertEquals(expected, Functional.join(",", ids));
+        Assert.assertEquals(expected, ids.join(","));
     }
 
     @Test
@@ -736,17 +748,17 @@ public class Iterable2Test
     public void findLastTest2()
     {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
-        Assert.assertEquals((Integer)10, Functional.findLast(Functional.isEven, l));
+        Assert.assertEquals((Integer)10, l.findLast(Functional.isEven));
     }
 
     @Test
     public void toArrayTest1()
     {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        final Iterable<String> strs = input.map(Functional.<Integer>dStringify());
+        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Iterable2<String> strs = input.map(Functional.<Integer>dStringify());
         final List<String> expected = Arrays.asList(new String[]{"1", "2", "3", "4", "5"});
 
-        final Object[] output = Functional.toArray(strs);
+        final Object[] output = strs.toArray();
 
         Assert.assertEquals(expected.size(),output.length);
         for(int i=0; i<expected.size(); ++i)
@@ -754,10 +766,54 @@ public class Iterable2Test
     }
 
     @Test
+    public void toSetTest1()
+    {
+        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
+        final Set<Integer> integerSet = input.toSet();
+        final Set<Integer> expected = new HashSet<Integer>();
+        expected.add(1);
+        expected.add(2);
+        expected.add(3);
+        expected.add(4);
+        expected.add(5);
+
+        Assert.assertTrue(expected.containsAll(integerSet));
+        Assert.assertTrue(integerSet.containsAll(expected));
+    }
+
+    @Test
+    public void toDictionaryTest()
+    {
+        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1, 2, 3, 4, 5});
+        final Map<Integer,String> output = input.toDictionary(Functional.<Integer>identity(), Functional.<Integer>dStringify());
+
+        final Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "1");
+        expected.put(2, "2");
+        expected.put(3, "3");
+        expected.put(4, "4");
+        expected.put(5, "5");
+        Assert.assertTrue(expected.size() == output.size());
+        for (final Integer expectedKey : expected.keySet()) {
+            Assert.assertTrue(output.containsKey(expectedKey));
+            final String expectedValue = expected.get(expectedKey);
+            //Assert.assertEquals(expectedValue,o.get(expectedKey),"Expected '"+expectedValue+"' but got '"+o.get(expectedKey)+"'");
+            Assert.assertTrue(output.get(expectedKey).equals(expectedValue));
+        }
+    }
+
+    @Test
     public void lastTest1()
     {
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
         Assert.assertEquals(5,(long) Functional.last(input));
+    }
+
+    @Test
+    public void lastTest1a()
+    {
+        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
+        Assert.assertEquals(5,(long) input.last());
     }
 
     @Test
@@ -1688,5 +1744,183 @@ public class Iterable2Test
                 return o.getValue1();
             }
         }, output).toArray());
+    }
+
+    @Test
+    public void takeWhileTest1() {
+        final Iterable2<Integer> l = IterableHelper.create(Arrays.asList(1, 2, 3, 4, 5));
+        final List<Integer> expected = new ArrayList<Integer>();
+        final Iterable<Integer> output = l.takeWhile(Functional.isEven);
+        AssertIterable.assertIterableEquals(expected, output);
+   }
+
+    @Test
+    public void skipTest1() {
+        final Iterable2<Integer> l = IterableHelper.create(Arrays.asList(1, 2, 3, 4, 5));
+
+        final List<Integer> expected = Arrays.asList(2, 3, 4, 5);
+        final Iterable<Integer> output = l.skip(1);
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test
+    public void skipWhileTest1()
+    {
+        final Iterable2<Integer> l = IterableHelper.create(Arrays.asList(1, 2, 3, 4, 5));
+        final List<Integer> expected = Arrays.asList(1,2,3,4,5);
+        final Iterable<Integer> output = l.skipWhile(Functional.isEven);
+        AssertIterable.assertIterableEquals(expected, output);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void emptyListIterator()
+    {
+        IterableHelper.createEmpty().iterator().next();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void emptyListIteratorCantRemove()
+    {
+        IterableHelper.createEmpty().iterator().remove();
+    }
+
+    /**
+     * These two are not equal because the real Iterable2 actually has an iterator which might not be subsequently
+     * recreatable and so it is not generally possible to determine whether the real Iterable2 is empty or not.
+     */
+    @Test
+    public void isEmptyListEqualToListWithNoElements()
+    {
+        final Iterable2<Integer> emptyList = IterableHelper.createEmpty();
+        final Iterable2<Integer> listWithNoElements = IterableHelper.create(new ArrayList<Integer>());
+
+        Assert.assertNotEquals(emptyList, listWithNoElements);
+    }
+
+    @Test
+    public void emptyListMapiTest()
+    {
+        Assert.assertEquals(IterableHelper.createEmpty(),
+                IterableHelper.createEmpty().mapi(new Func2<Integer, Object, Object>() {
+                    @Override
+                    public Object apply(Integer integer, Object o) {
+                        return null;
+                    }
+                }));
+    }
+
+    @Test
+    public void forAll2EmptyListTest()
+    {
+        Assert.assertFalse(IterableHelper.createEmpty().forAll2(new Func2<Object, Object, Boolean>() {
+            @Override
+            public Boolean apply(Object o, Object o2) {
+                return null;
+            }
+        }, Arrays.asList(1)));
+    }
+
+    @Test
+    public void toArrayEmptyListTest()
+    {
+        Assert.assertArrayEquals(new Integer[]{}, IterableHelper.createEmpty().toArray());
+    }
+
+    @Test
+    public void toSetEmptyListTest()
+    {
+        Assert.assertEquals(new HashSet<Integer>(), IterableHelper.createEmpty().toSet());
+    }
+
+    @Test
+    public void toDictionaryEmptyListTest()
+    {
+        Assert.assertEquals(new HashMap<Integer, String>(), IterableHelper.<Integer>createEmpty().toDictionary(new Func<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer integer) {
+                return null;
+            }
+        }, new Func<Integer, String>() {
+            @Override
+            public String apply(Integer integer) {
+                return null;
+            }
+        }));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void lastOfEmptyListTest()
+    {
+        IterableHelper.createEmpty().last();
+    }
+
+    @Test
+    public void emptyListTakeWhileTest()
+    {
+        Assert.assertEquals(IterableHelper.createEmpty(), IterableHelper.<Integer>createEmpty().takeWhile(Functional.isOdd));
+    }
+
+    @Test
+    public void emptyListSkipTest()
+    {
+        Assert.assertEquals(IterableHelper.createEmpty(),IterableHelper.<Integer>createEmpty().skip(1));
+    }
+
+    @Test
+    public void emptyListSkipWhileTest()
+    {
+        Assert.assertEquals(IterableHelper.createEmpty(),IterableHelper.<Integer>createEmpty().skipWhile(Functional.isOdd));
+    }
+
+    @Test
+    public void emptyListJoinTest()
+    {
+        Assert.assertEquals("", IterableHelper.createEmpty().join("a"));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void emptyListFindLastTest()
+    {
+        IterableHelper.<Integer>createEmpty().findLast(Functional.isOdd);
+    }
+
+    @Test
+    public void emptyListPartitionTest()
+    {
+        final Pair<List<Object>, List<Object>> pair = IterableHelper.createEmpty().partition(new Func<Object, Boolean>() {
+            @Override
+            public Boolean apply(Object o) {
+                return null;
+            }
+        });
+        Assert.assertTrue(pair.getValue0().isEmpty());
+        Assert.assertTrue(pair.getValue1().isEmpty());
+    }
+
+    @Test
+    public void emptyListGroupByTest()
+    {
+        final Map<Object, List<Object>> grp = IterableHelper.createEmpty().groupBy(new Func<Object, Object>() {
+            @Override
+            public Object apply(Object o) {
+                return null;
+            }
+        });
+
+        Assert.assertTrue(grp.isEmpty());
+    }
+
+    @Test
+    public void emptyListInACollection()
+    {
+        final Map<Iterable2<Integer>,Integer> map = new HashMap<Iterable2<Integer>, Integer>();
+        map.put(IterableHelper.<Integer>createEmpty(), 0);
+        Assert.assertEquals(Integer.valueOf(0), map.get(IterableHelper.createEmpty()));
+    }
+
+    @Test
+    public void emptyListToString()
+    {
+        Assert.assertEquals("()",IterableHelper.createEmpty().toString());
     }
 }
