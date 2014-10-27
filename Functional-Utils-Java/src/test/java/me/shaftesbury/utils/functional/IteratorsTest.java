@@ -127,4 +127,24 @@ public class IteratorsTest
         final Iterable<Integer> integers = Iterators.everyNth(2, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
         integers.iterator().remove();
     }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorTest1()
+    {
+        final Iterable<Integer> rv = Iterators.reverse(Arrays.asList(1, 2, 3));
+        try {
+            rv.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach here"); }
+        rv.iterator();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void cantRestartIteratorTest2()
+    {
+        final Iterable<Integer> rv = Iterators.everyNth(2, Arrays.asList(1, 2, 3));
+        try {
+            rv.iterator();
+        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach here"); }
+        rv.iterator();
+    }
 }
