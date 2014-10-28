@@ -27,6 +27,19 @@ public class MExceptionTest
         Assert.assertEquals(null, mex.read());
     }
 
+    @Test(expected = RuntimeException.class)
+    public void readMExceptionInErrorTest()
+    {
+        final MException<Object> m = MException.toMException(new Func0<Object>() {
+            @Override
+            public Object apply() {
+                throw new RuntimeException();
+            }
+        });
+
+        m.read();
+    }
+
     @Test
     public void returnTest2()
     {
