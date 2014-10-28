@@ -147,4 +147,29 @@ public class IteratorsTest
         } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach here"); }
         rv.iterator();
     }
+
+    @Test
+    public void everyNthRepeatedHasNextTest()
+    {
+        final Iterable<Integer> integers = Iterators.everyNth(2, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        final Iterator<Integer> iterator = integers.iterator();
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(Integer.valueOf(1), iterator.next());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(Integer.valueOf(3), iterator.next());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(Integer.valueOf(5), iterator.next());
+    }
+
+    @Test
+    public void everyNthRepeatedNextTest()
+    {
+        final Iterable<Integer> integers = Iterators.everyNth(2, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        final Iterator<Integer> iterator = integers.iterator();
+        Assert.assertEquals(Integer.valueOf(1), iterator.next());
+        Assert.assertEquals(Integer.valueOf(3), iterator.next());
+        Assert.assertEquals(Integer.valueOf(5), iterator.next());
+    }
 }
