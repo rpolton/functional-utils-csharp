@@ -1,0 +1,5 @@
+A library of utility functions in a functional style for C#. Copy(!) these functions or link them into your code. Use the source as a learning tool.
+
+I've designed this library to be both immediately applicable to your everyday coding as well as usable as a teaching tool. I haven't made any particular efforts to optimise the code but if you really want to have a go at that, be my guest. You could do worse, if you're looking at the Java version, than profile the code with JProfiler (available at http://www.ej-technologies.com/products/jprofiler/overview.html ) If you're using the .NET version then the choices are clearer - RedGate or whatever they call it nowadays...
+
+Let me know your results and I'll be sure to add any optimised versions of any functions that are submitted. Thanks in advance.
