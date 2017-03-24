@@ -12,7 +12,7 @@ import static java.lang.Math.pow;
 
 public class PrimitivesVsGenericTest
 {
-    private static final double oneMillion = pow(10,6);
+    private static double oneMillion = pow(10,6);
     @Test
     public void integerListVsPrimitiveListToString()
     {
@@ -107,7 +107,7 @@ public class PrimitivesVsGenericTest
                 final long beforeTransformation = System.nanoTime();
 
                 s2 = me.shaftesbury.utils.functional.primitive.Functional.findLast(new Func_int_T<Boolean>() {
-                    @Override
+
                     public Boolean apply(final int a) {
                         return a<howMany/2;
                     }
@@ -126,7 +126,7 @@ public class PrimitivesVsGenericTest
                 final long beforeTransformation = System.nanoTime();
 
                 s3 = Functional.findLast(new Func<Integer,Boolean>() {
-                    @Override
+
                     public Boolean apply(final Integer a) {
                         return a<howMany/2;
                     }

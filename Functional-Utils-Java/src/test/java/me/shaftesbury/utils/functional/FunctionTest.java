@@ -18,7 +18,7 @@ public class FunctionTest
     public void UnaryFunctionCompositionTest1()
     {
         final UnaryFunction<Integer,String> stringify = new UnaryFunction<Integer, String>() {
-            @Override
+
             public String apply(Integer integer) {
                 return Functional.Stringify(integer);
             }
@@ -26,7 +26,7 @@ public class FunctionTest
 
         final UnaryFunction<String,Iterable<Double>> expander =
                 new UnaryFunction<String, Iterable<Double>>() {
-                    @Override
+
                     public List<Double> apply(String s) {
                         Double m = Double.parseDouble(s);
                         return Arrays.asList(m-1.0,m,m+1.0);
@@ -48,7 +48,7 @@ public class FunctionTest
     {
         final BinaryFunction<Double,Integer,String> f =
                 new BinaryFunction<Double,Integer, String>() {
-                    @Override
+
                     public String apply(Double d, Integer i) {
                         return Functional.Stringify((int)(i * d));
                     }
@@ -67,7 +67,7 @@ public class FunctionTest
     {
         final BinaryFunction<Double,Integer,String> f =
                 new BinaryFunction<Double,Integer, String>() {
-                    @Override
+
                     public String apply(Double d, Integer i) {
                         return Functional.Stringify((int)(i * d));
                     }

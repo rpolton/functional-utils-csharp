@@ -15,7 +15,7 @@ public final class Iterators
 {
     private Iterators(){}
 
-    public static final <T>Iterable<T> reverse(final List<T> list)
+    public static <T>Iterable<T> reverse(final List<T> list)
     {
         if (list == null) throw new IllegalArgumentException("list");
 
@@ -25,22 +25,22 @@ public final class Iterators
         return new Iterable<T>() {
             private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
             private final List<T> _list=list;
-            @Override
+
             public Iterator<T> iterator() {
                 if(haveCreatedIterator.compareAndSet(false,true))
                     return new Iterator<T>() {
                         private int _posn=list.size()-1;
-                        @Override
+
                         public boolean hasNext() {
                             return _posn>=0;
                         }
 
-                        @Override
+
                         public T next() {
                             return _list.get(_posn--);
                         }
 
-                        @Override
+
                         public void remove() {
                             throw new UnsupportedOperationException();
                         }
@@ -51,7 +51,7 @@ public final class Iterators
     }
 
     // Return the first item of the sequence and then every nth item thereafter
-    public static final <T>Iterable<T> everyNth(final int step, final Iterable<T> it)
+    public static <T>Iterable<T> everyNth(final int step, final Iterable<T> it)
     {
         if (it == null) throw new IllegalArgumentException("enumerable");
 
@@ -62,7 +62,7 @@ public final class Iterators
             private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
             final private Iterable<T> cache = it;
 
-            @Override
+
             public Iterator<T> iterator() {
                 if(haveCreatedIterator.compareAndSet(false,true))
                     return new Iterator<T>(){
@@ -70,7 +70,7 @@ public final class Iterators
                         private boolean isNextReady = true;
                         final private Iterator<T> posn = cache.iterator();
 
-                        @Override
+
                         public boolean hasNext() {
                             if(isFirst||isNextReady) ;
                             else {
@@ -80,7 +80,7 @@ public final class Iterators
                             return posn.hasNext();
                         }
 
-                        @Override
+
                         public T next() {
                             if(isFirst||isNextReady) ;
                             else for(int i=0;i<step-1;++i) posn.next();
@@ -89,7 +89,7 @@ public final class Iterators
                             return posn.next();
                         }
 
-                        @Override
+
                         public void remove() {
                             throw new UnsupportedOperationException();
                         }

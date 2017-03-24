@@ -221,7 +221,7 @@ public class OptionTest
         final Option<Integer> a = Option.toOption(1);
         final Option<Integer> b = a.bind(
                 new Func<Integer, Option<Integer>>() {
-                    @Override
+
                     public Option<Integer> apply(Integer integer) {
                         return Option.toOption(integer*2);
                     }
@@ -236,7 +236,7 @@ public class OptionTest
         final Option<Integer> a = Option.<Integer>None();
         final Option<Integer> b = a.bind(
                 new Func<Integer, Option<Integer>>() {
-                    @Override
+
                     public Option<Integer> apply(Integer integer) {
                         return Option.toOption(integer*2);
                     }
@@ -254,7 +254,7 @@ public class OptionTest
 
         final Iterable2<Option<Integer>> output = input.map(
                 new Func<Integer, Option<Integer>>() {
-                    @Override
+
                     public Option<Integer> apply(Integer integer) {
                         return Option.toOption(integer).bind(
                                 new Func<Integer,Option<Integer>>(){
@@ -265,7 +265,7 @@ public class OptionTest
 
         AssertIterable.assertIterableEquals(expected,output.choose(
                 new Func<Option<Integer>, Option<Integer>>() {
-                    @Override
+
                     public Option<Integer> apply(Option<Integer> integerOption) {
                         return integerOption;
                     }
@@ -274,7 +274,7 @@ public class OptionTest
     }
 
     private final static Func2<Integer,Integer,Integer> plus = new Func2<Integer, Integer, Integer>() {
-        @Override
+
         public Integer apply(Integer integer1, Integer integer2) {
             return integer1 + integer2;
         }

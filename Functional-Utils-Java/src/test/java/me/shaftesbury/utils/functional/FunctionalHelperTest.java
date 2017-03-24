@@ -1,6 +1,5 @@
 package me.shaftesbury.utils.functional;
 
-import org.javatuples.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,7 +17,7 @@ public final class FunctionalHelperTest
     public void theyAreAllNone()
     {
         final List<Option<Object>> input = Functional.init(new Func<Integer, Option<Object>>() {
-            @Override
+
             public Option<Object> apply(Integer integer) {
                 return Option.None();
             }
@@ -31,7 +30,7 @@ public final class FunctionalHelperTest
     public void theyAreNotAllNone()
     {
         final List<Option<Object>> input = Functional.init(new Func<Integer, Option<Object>>() {
-            @Override
+
             public Option<Object> apply(Integer integer) {
                 return integer==1 ? Option.<Object>toOption(new Integer(1)) : Option.None();
             }
@@ -44,7 +43,7 @@ public final class FunctionalHelperTest
     public void theyAreAllSome()
     {
         final List<Option<Object>> input = Functional.init(new Func<Integer, Option<Object>>() {
-            @Override
+
             public Option<Object> apply(Integer integer) {
                 return Option.<Object>toOption(new Integer(1));
             }
@@ -57,7 +56,7 @@ public final class FunctionalHelperTest
     public void theyAreNotAllSome()
     {
         final List<Option<Object>> input = Functional.init(new Func<Integer, Option<Object>>() {
-            @Override
+
             public Option<Object> apply(Integer integer) {
                 return integer==1 ? Option.<Object>toOption(new Integer(1)) : Option.None();
             }
@@ -70,7 +69,7 @@ public final class FunctionalHelperTest
     public void justTheOnesThatAreNone()
     {
         final List<Option<Object>> input = Functional.init(new Func<Integer, Option<Object>>() {
-            @Override
+
             public Option<Object> apply(Integer integer) {
                 return integer==1 ? Option.<Object>toOption(new Integer(1)) : Option.None();
             }
@@ -85,7 +84,7 @@ public final class FunctionalHelperTest
     public void justTheOnesThatAreSome()
     {
         final List<Option<Object>> input = Functional.init(new Func<Integer, Option<Object>>() {
-            @Override
+
             public Option<Object> apply(Integer integer) {
                 return integer==1 ? Option.<Object>toOption(new Integer(1)) : Option.None();
             }
@@ -100,7 +99,7 @@ public final class FunctionalHelperTest
     public void theValueOfJustTheOnesThatAreSome()
     {
         final List<Option<Object>> input = Functional.init(new Func<Integer, Option<Object>>() {
-            @Override
+
             public Option<Object> apply(Integer integer) {
                 return integer==1 ? Option.<Object>toOption(new Integer(1)) : Option.None();
             }

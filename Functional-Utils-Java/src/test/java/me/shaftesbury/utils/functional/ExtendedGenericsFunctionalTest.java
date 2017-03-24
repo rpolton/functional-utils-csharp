@@ -15,7 +15,7 @@ public final class ExtendedGenericsFunctionalTest
     public final void chooseTestParseStringToNumber()
     {
         final Func<String,Option<Number>> toNumber = new Func<String, Option<Number>>() {
-            @Override
+
             public Option<Number> apply(String s) {
                 try {
                     if(s.contains("."))// then it's a float
@@ -37,7 +37,7 @@ public final class ExtendedGenericsFunctionalTest
     public final void chooseTestParseObjectToNumber()
     {
         final Func<Object,Option<Number>> toNumber = new Func<Object, Option<Number>>() {
-            @Override
+
             public Option<Number> apply(Object o) {
                 final String s = o.toString();
                 try {

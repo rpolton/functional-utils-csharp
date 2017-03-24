@@ -13,7 +13,7 @@ public final class Iterators
 {
     private Iterators(){}
 
-    public static final IntIterable reverse(final IntList list)
+    public static IntIterable reverse(final IntList list)
     {
         if (list == null) throw new IllegalArgumentException("list");
 
@@ -22,21 +22,21 @@ public final class Iterators
 
         return new IntIterable() {
             private final IntList _list=list;
-            @Override
+
             public IntIterator iterator() {
                 return new IntIterator() {
                     private int _posn=list.size()-1;
-                    @Override
+
                     public boolean hasNext() {
                         return _posn>=0;
                     }
 
-                    @Override
+
                     public int next() {
                         return _list.get(_posn--);
                     }
 
-                    @Override
+
                     public void remove() {
                         throw new UnsupportedOperationException();
                     }
@@ -46,7 +46,7 @@ public final class Iterators
     }
 
     // Return the first item of the sequence and then every nth item thereafter
-    public static final <T>Iterable<T> everyNth(final int step, final Iterable<T> it)
+    public static <T>Iterable<T> everyNth(final int step, final Iterable<T> it)
     {
         if (it == null) throw new IllegalArgumentException("enumerable");
 
@@ -56,14 +56,14 @@ public final class Iterators
         return new Iterable<T>(){
             final private Iterable<T> cache = it;
 
-            @Override
+
             public Iterator<T> iterator() {
                 return new Iterator<T>(){
                     private boolean isFirst = true;
                     private boolean isNextReady = true;
                     final private Iterator<T> posn = cache.iterator();
 
-                    @Override
+
                     public boolean hasNext() {
                         if(isFirst||isNextReady) ;
                         else {
@@ -73,7 +73,7 @@ public final class Iterators
                         return posn.hasNext();
                     }
 
-                    @Override
+
                     public T next() {
                         if(isFirst||isNextReady) ;
                         else for(int i=0;i<step-1;++i) posn.next();
@@ -82,7 +82,7 @@ public final class Iterators
                         return posn.next();
                     }
 
-                    @Override
+
                     public void remove() {
                         throw new UnsupportedOperationException();
                     }

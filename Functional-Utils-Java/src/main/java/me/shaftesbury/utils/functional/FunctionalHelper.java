@@ -16,7 +16,7 @@ public final class FunctionalHelper
     public static <T>Iterable2<Option<T>> areSome(final Iterable<Option<T>> input)
     {
         return IterableHelper.create(input).filter(new Func<Option<T>, Boolean>() {
-            @Override
+
             public Boolean apply(Option<T> tOption) {
                 return tOption.isSome();
             }
@@ -31,7 +31,7 @@ public final class FunctionalHelper
     public static <T>Iterable2<Option<T>> areNone(final Iterable<Option<T>> input)
     {
         return IterableHelper.create(input).filter(new Func<Option<T>, Boolean>() {
-            @Override
+
             public Boolean apply(Option<T> tOption) {
                 return tOption.isNone();
             }
@@ -46,7 +46,7 @@ public final class FunctionalHelper
     public static <T>boolean allSome(final Iterable<Option<T>> input)
     {
         return !IterableHelper.create(input).exists(new Func<Option<T>, Boolean>() {
-            @Override
+
             public Boolean apply(Option<T> tOption) {
                 return tOption.isNone();
             }
@@ -61,7 +61,7 @@ public final class FunctionalHelper
     public static <T>boolean allNone(final Iterable<Option<T>> input)
     {
         return !IterableHelper.create(input).exists(new Func<Option<T>, Boolean>() {
-            @Override
+
             public Boolean apply(Option<T> tOption) {
                 return tOption.isSome();
             }
@@ -80,7 +80,7 @@ public final class FunctionalHelper
     public static <T>Iterable2<T> some(final Iterable<Option<T>> input)
     {
         return IterableHelper.create(input).map(new Func<Option<T>, T>() {
-            @Override
+
             public T apply(Option<T> tOption) {
                 return tOption.Some();
             }

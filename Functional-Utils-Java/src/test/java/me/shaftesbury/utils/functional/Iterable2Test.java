@@ -1,7 +1,8 @@
 package me.shaftesbury.utils.functional;
 
-import org.javatuples.Pair;
-import org.javatuples.Triplet;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,10 +17,10 @@ import java.util.*;
  */
 public class Iterable2Test
 {
-    private static final Func<Integer,Integer> DoublingGenerator =
+    private static Func<Integer,Integer> DoublingGenerator =
             new Func<Integer,Integer>()
             {
-                @Override public Integer apply(Integer a) { return 2*a;}
+                 public Integer apply(Integer a) { return 2*a;}
             };
 
     @Test
@@ -44,7 +45,7 @@ public class Iterable2Test
         final Iterable2<Integer> i = IterableHelper.asList(new Integer[]{1,6,23,7,4});
         final Iterable2<Integer> output = i.sortWith(
                 new Comparator<Integer>() {
-                    @Override
+
                     public int compare(Integer a, Integer b) {
                         return Integer.compare(a, b);
                     }
@@ -58,7 +59,7 @@ public class Iterable2Test
         final Iterable2<Integer> i = IterableHelper.asList(new Integer[] { 1, 6, 23, 7, 4 });
         final Iterable2<Integer> j = i.sortWith(
                 new Comparator<Integer>() {
-                    @Override
+
                     public int compare(Integer a, Integer b) {
                         return a - b;
                     }
@@ -74,24 +75,24 @@ public class Iterable2Test
         AssertIterable.assertIterableEquals(Arrays.asList(1,4,6,7,23), j);
     }
 
-    private static final Func<Integer, Integer> TriplingGenerator =
+    private static Func<Integer, Integer> TriplingGenerator =
             new Func<Integer, Integer>() {
-                @Override
+
                 public Integer apply(final Integer a) {
                     return 3 * a;
                 }
             };
 
-    private static final Func<Integer, Integer> QuadruplingGenerator =
+    private static Func<Integer, Integer> QuadruplingGenerator =
             new Func<Integer, Integer>() {
-                @Override
+
                 public Integer apply(final Integer a) {
                     return 4 * a;
                 }
             };
 
 
-    private static final boolean BothAreEven(final int a, final int b)
+    private static boolean BothAreEven(final int a, final int b)
     {
         return Functional.isEven.apply(a) && Functional.isEven.apply(b);
     }
@@ -106,7 +107,7 @@ public class Iterable2Test
         {
             Assert.assertTrue(l.forAll2(
                     new Func2<Integer, Integer, Boolean>() {
-                        @Override
+
                         public Boolean apply(Integer a, Integer b) {
                             return BothAreEven(a, b);
                         }
@@ -125,7 +126,7 @@ public class Iterable2Test
 
     private static Func2<Integer, Integer, Boolean> dBothAreLessThan10 =
             new Func2<Integer, Integer, Boolean>() {
-                @Override
+
                 public Boolean apply(Integer a, Integer b) {
                     return BothAreLessThan10(a, b);
                 }
@@ -148,7 +149,7 @@ public class Iterable2Test
 
         Functional.forAll2(
                 new Func2<Integer, Integer, Boolean>() {
-                    @Override
+
                     public Boolean apply(Integer a, Integer b) {
                         return BothAreEven(a, b);
                     }
@@ -185,7 +186,7 @@ public class Iterable2Test
                 Functional.forAll2(
                         Functional.not2(
                                 new Func2<Integer, Integer, Boolean>() {
-                                    @Override
+
                                     public Boolean apply(Integer a, Integer b) {
                                         return a > lowerLimit && b > lowerLimit;
                                     }
@@ -203,7 +204,7 @@ public class Iterable2Test
                 Functional.forAll2(
                         Functional.not2(
                                 new Func2<Integer, Integer, Boolean>() {
-                                    @Override
+
                                     public Boolean apply(Integer a, Integer b) {
                                         return a > upperLimit && b > upperLimit;
                                     }
@@ -219,8 +220,8 @@ public class Iterable2Test
 
         final Integer[] left = {3, 9, 15};
         final Integer[] right = {6, 12};
-        Assert.assertArrayEquals(left, r.getValue0().toArray());
-        Assert.assertArrayEquals(right, r.getValue1().toArray());
+        Assert.assertArrayEquals(left, r.getLeft().toArray());
+        Assert.assertArrayEquals(right, r.getRight().toArray());
     }
 
     @Test
@@ -231,8 +232,8 @@ public class Iterable2Test
 
         final Integer[] left = {3, 9, 15};
         final Integer[] right = {6, 12};
-        Assert.assertArrayEquals(left, r.getValue0().toArray());
-        Assert.assertArrayEquals(right, r.getValue1().toArray());
+        Assert.assertArrayEquals(left, r.getLeft().toArray());
+        Assert.assertArrayEquals(right, r.getRight().toArray());
     }
 
     @Test
@@ -241,8 +242,8 @@ public class Iterable2Test
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
         final Iterable2<Integer> expected = IterableHelper.init(DoublingGenerator, 5);
-        AssertIterable.assertIterableEquals(expected, r.getValue0());
-        Assert.assertArrayEquals(new Integer[]{}, r.getValue1().toArray());
+        AssertIterable.assertIterableEquals(expected, r.getLeft());
+        Assert.assertArrayEquals(new Integer[]{}, r.getRight().toArray());
     }
 
     @Test
@@ -251,7 +252,7 @@ public class Iterable2Test
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
         final Iterable2<Integer> expected = IterableHelper.init(DoublingGenerator, 5).filter(Functional.isEven);
-        AssertIterable.assertIterableEquals(expected, r.getValue0());
+        AssertIterable.assertIterableEquals(expected, r.getLeft());
     }
 
     @Test
@@ -269,7 +270,7 @@ public class Iterable2Test
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
         final Iterable2<String> o = li.choose(
                 new Func<Integer, Option<String>>() {
-                    @Override
+
                     public Option<String> apply(Integer i) {
                         return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
                     }
@@ -287,7 +288,7 @@ public class Iterable2Test
             o = Functional.toDictionary(Functional.<Integer>identity(), Functional.<Integer>dStringify(),
                     li.choose(
                             new Func<Integer, Option<Integer>>() {
-                                @Override
+
                                 public Option<Integer> apply(Integer i) {
                                     return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
                                 }
@@ -314,7 +315,7 @@ public class Iterable2Test
     private final static <B, C>Func<C, Boolean> curried_fn(final B b)
     {
         return new Func<C, Boolean>() {
-            @Override
+
             public Boolean apply(C c) {
                 return Fn(b,c);
             }
@@ -331,10 +332,10 @@ public class Iterable2Test
 
     private static int adder_int(final int left, final int right) { return left + right; }
 
-    private static final Func<Integer, Integer> curried_adder_int(final int c)
+    private static Func<Integer, Integer> curried_adder_int(final int c)
     {
         return new Func<Integer, Integer>() {
-            @Override
+
             public Integer apply(Integer p) {
                 return adder_int(c, p);
             }
@@ -347,7 +348,7 @@ public class Iterable2Test
         final Iterable2<Integer> a = IterableHelper.asList(1, 2, 3, 4, 5);
         final Iterable2<Integer> b = a.map(
                 new Func<Integer, Integer>() {
-                    @Override
+
                     public Integer apply(final Integer a1) {
                         return adder_int(2, a1);
                     }
@@ -369,7 +370,7 @@ public class Iterable2Test
         Assert.assertEquals("2,4,6,8,10", s1);
         final String s2 = IterableHelper.init(DoublingGenerator, 5).fold(
                 new Func2<String, Integer, String>() {
-                    @Override
+
                     public String apply(String s1, Integer s2) {
                         return csv(s1, s2);
                     }
@@ -379,10 +380,10 @@ public class Iterable2Test
 
     private final Func<Iterable2<Integer>, String> concatenate =
             new Func<Iterable2<Integer>, String>() {
-                @Override
+
                 public String apply(Iterable2<Integer> l) {
                     return l.fold(new Func2<String, Integer, String>() {
-                        @Override
+
                         public String apply(String s1, Integer s2) {
                             return csv(s1, s2);
                         }
@@ -400,7 +401,7 @@ public class Iterable2Test
 
     private final UnaryFunction<Iterable2<Integer>, Iterable2<Integer>> evens_f =
             new UnaryFunction<Iterable2<Integer>, Iterable2<Integer>>() {
-                @Override
+
                 public Iterable2<Integer> apply(Iterable2<Integer> l) {
                     return l.filter(Functional.isEven);
                 }
@@ -453,7 +454,7 @@ public class Iterable2Test
         {
             final Iterable2<String> indentation = IterableHelper.init(
                     new Func<Integer, String>() {
-                        @Override
+
                         public String apply(Integer integer) {
                             return " ";
                         }
@@ -463,14 +464,14 @@ public class Iterable2Test
         {
             final Iterable2<String> indentation = IterableHelper.init(
                     new Func<Integer, String>() {
-                        @Override
+
                         public String apply(Integer integer) {
                             return " ";
                         }
                     }, level);
             final String s = indentation.fold(
                     new Func2<String, String, String>() {
-                        @Override
+
                         public String apply(String state, String str) {
                             return state + str;
                         }
@@ -480,17 +481,17 @@ public class Iterable2Test
         {
             final Iterable2<String> indentation = IterableHelper.init(
                     new Func<Integer, String>() {
-                        @Override
+
                         public String apply(Integer integer) {
                             return " ";
                         }
                     }, level);
             final Func<Iterable2<String>, String> folder =
                     new Func<Iterable2<String>, String>() {
-                        @Override
+
                         public String apply(final Iterable2<String> l) {
                             return l.fold(new Func2<String, String, String>() {
-                                @Override
+
                                 public String apply(final String state, final String str) {
                                     return state + str;
                                 }
@@ -625,33 +626,28 @@ public class Iterable2Test
 
         final Iterable2<myInt> openedDays2 = IterableHelper.init(
                 new Func<Integer, myInt>() {
-                    @Override
+
                     public myInt apply(final Integer a) {
                         return new myInt(3 * a);
                     }
                 }, 5);
         final Pair<Double, List<myInt>> output = Functional.foldAndChoose(
                 new Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
-                    @Override
+
                     public Pair<Double, Option<myInt>> apply(final Double state, final myInt day) {
                         final Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
                         return value != null
-                                ? new Pair<Double, Option<myInt>>(value, Option.<myInt>None())
-                                : new Pair<Double, Option<myInt>>(state, Option.toOption(day));
+                                ? Pair.of(value,Option.<myInt>None())
+                                : Pair.of(state, Option.toOption(day));
                     }
                 }, 10.0, openedDays2);
 
-        Assert.assertEquals(last, output.getValue0());
+        Assert.assertEquals(last, output.getLeft());
         final List<Integer> keys = new ArrayList<Integer>(missingPricesPerDate.keySet());
         Collections.sort(keys);
         Assert.assertArrayEquals(keys.toArray(),
                 Functional.map(
-                        new Func<myInt, Integer>() {
-                            @Override
-                            public Integer apply(final myInt i) {
-                                return i.i();
-                            }
-                        }, output.getValue1()).toArray());
+                        i -> i.i(), output.getRight()).toArray());
     }
 
     @Test
@@ -672,7 +668,7 @@ public class Iterable2Test
         final String expected = "'3','6','9','12','15'";
         final Func<Integer, String> f =
                 new Func<Integer, String>() {
-                    @Override
+
                     public String apply(Integer id) {
                         return "'" + id + "'";
                     }
@@ -731,7 +727,7 @@ public class Iterable2Test
         Integer four = 4;
         Iterable2.then(new Func<Integer,Integer>()
         {
-            @Override
+
             public Integer apply(Integer i) { return }
         })
     } */
@@ -837,7 +833,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
         final Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
-            @Override
+
             public Integer apply(Integer i) {
                 return i * 2;
             }
@@ -870,7 +866,7 @@ public class Iterable2Test
         final Iterable2<String> output = li.choose(
                 new Func<Integer,Option<String>>()
                 {
-                    @Override
+
                     public Option<String> apply(Integer i)
                     {
                         return i%2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
@@ -887,7 +883,7 @@ public class Iterable2Test
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<String> output = input.in(
                 new Func<Iterable2<Integer>, Iterable2<String>>() {
-                    @Override
+
                     public Iterable2<String> apply(Iterable2<Integer> integers) {
                         return integers.map(Functional.<Integer>dStringify());
                     }
@@ -903,7 +899,7 @@ public class Iterable2Test
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<String> output = input.in(
                 new Func<Iterable2<Integer>, Iterable2<String>>() {
-                    @Override
+
                     public Iterable2<String> apply(Iterable2<Integer> integers) {
                         try {
                             return integers.map(Functional.<Integer>dStringify());
@@ -924,7 +920,7 @@ public class Iterable2Test
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> oddElems = l.in(
                 new Func<Iterable2<Integer>, Iterable2<Integer>>() {
-                    @Override
+
                     public Iterable2<Integer> apply(Iterable2<Integer> ints) {
                         return ints.filter(Functional.isOdd);
                     }
@@ -1059,7 +1055,7 @@ public class Iterable2Test
         final Iterable2<Integer> output =
                 input.choose(
                         new Func<Integer, Option<Integer>>() {
-                            @Override
+
                             public Option<Integer> apply(Integer i) {
                                 return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
                             }
@@ -1075,7 +1071,7 @@ public class Iterable2Test
         final Iterable2<Character> output =
                 input.choose(
                         new Func<String, Option<Character>>() {
-                            @Override
+
                             public Option<Character> apply(String str) {
                                 return str.startsWith("a") ? Option.toOption('a') : Option.<Character>None();
                             }
@@ -1091,7 +1087,7 @@ public class Iterable2Test
         final Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
         final Iterable2<Integer> output = input.choose(
                 new Func<Integer, Option<Integer>>() {
-                    @Override
+
                     public Option<Integer> apply(Integer i) {
                         return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
                     }
@@ -1133,20 +1129,20 @@ public class Iterable2Test
     @Test
     public void UnzipTest1()
     {
-        final Collection<org.javatuples.Pair<String,Integer>> input =
-                new ArrayList<org.javatuples.Pair<String,Integer>>();
-        input.add(new org.javatuples.Pair<String,Integer>("1", 1));
-        input.add(new org.javatuples.Pair<String,Integer>("2", 2));
+        final Collection<Pair<String,Integer>> input =
+                new ArrayList<Pair<String,Integer>>();
+        input.add(Pair.of("1", 1));
+        input.add(Pair.of("2", 2));
 
-        final org.javatuples.Pair<Collection<String>,Collection<Integer>> expected =
-                new org.javatuples.Pair(
+        final Pair<Collection<String>,Collection<Integer>> expected =
+                Pair.of(
                         Arrays.asList(new String[]{"1", "2"}),
                         Arrays.asList(new Integer[]{1,2}));
 
-        final org.javatuples.Pair<List<String>,List<Integer>> output = Functional.unzip(input);
+        final Pair<List<String>,List<Integer>> output = Functional.unzip(input);
 
-        AssertIterable.assertIterableEquals(expected.getValue0(), output.getValue0());
-        AssertIterable.assertIterableEquals(expected.getValue1(), output.getValue1());
+        AssertIterable.assertIterableEquals(expected.getLeft(), output.getLeft());
+        AssertIterable.assertIterableEquals(expected.getRight(), output.getRight());
     }
 
     @Test
@@ -1155,14 +1151,14 @@ public class Iterable2Test
         final Iterable2<Integer> input1 = IterableHelper.asList(new Integer[] {1, 2, 3, 4, 5});
         final Iterable2<Character> input2 = IterableHelper.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
 
-        final Collection<org.javatuples.Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
-        expected.add(new Pair<Integer, Character>(1, 'a'));
-        expected.add(new Pair<Integer, Character>(2, 'b'));
-        expected.add(new Pair<Integer, Character>(3, 'c'));
-        expected.add(new Pair<Integer, Character>(4, 'd'));
-        expected.add(new Pair<Integer, Character>(5, 'e'));
+        final Collection<Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
+        expected.add(Pair.of(1, 'a'));
+        expected.add(Pair.of(2, 'b'));
+        expected.add(Pair.of(3, 'c'));
+        expected.add(Pair.of(4, 'd'));
+        expected.add(Pair.of(5, 'e'));
 
-        final Iterable2<org.javatuples.Pair<Integer,Character>> output = input1.zip(input2);
+        final Iterable2<Pair<Integer,Character>> output = input1.zip(input2);
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -1174,14 +1170,14 @@ public class Iterable2Test
         final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
         final Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
 
-        final Collection<Triplet<Integer,Character,Double>> expected = new ArrayList<Triplet<Integer, Character, Double>>();
-        expected.add(new Triplet<Integer, Character, Double>(1, 'a', 1.0));
-        expected.add(new Triplet<Integer, Character, Double>(2, 'b', 2.0));
-        expected.add(new Triplet<Integer, Character, Double>(3, 'c', 2.5));
-        expected.add(new Triplet<Integer, Character, Double>(4, 'd', 3.0));
-        expected.add(new Triplet<Integer, Character, Double>(5, 'e', 3.5));
+        final Collection<Triple<Integer,Character,Double>> expected = new ArrayList<Triple<Integer, Character, Double>>();
+        expected.add(Triple.of(1, 'a', 1.0));
+        expected.add(Triple.of(2, 'b', 2.0));
+        expected.add(Triple.of(3, 'c', 2.5));
+        expected.add(Triple.of(4, 'd', 3.0));
+        expected.add(Triple.of(5, 'e', 3.5));
 
-        final Iterable2<Triplet<Integer,Character,Double>> output = IterableHelper.create(input1).zip3(input2, input3);
+        final Iterable2<Triple<Integer,Character,Double>> output = IterableHelper.create(input1).zip3(input2, input3);
 
         AssertIterable.assertIterableEquals(expected, output);
     }
@@ -1231,7 +1227,7 @@ public class Iterable2Test
         Assert.assertEquals(trueMatch,
                 ls.find(
                         new Func<String, Boolean>() {
-                            @Override
+
                             public Boolean apply(String s) {
                                 return s.equals(trueMatch);
                             }
@@ -1246,7 +1242,7 @@ public class Iterable2Test
         final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         ls.find(
                 new Func<String, Boolean>() {
-                    @Override
+
                     public Boolean apply(String s) {
                         return s.equals(falseMatch);
                     }
@@ -1262,7 +1258,7 @@ public class Iterable2Test
         Assert.assertEquals(2,
                 ls.findIndex(
                         new Func<String, Boolean>() {
-                            @Override
+
                             public Boolean apply(String s) {
                                 return s.equals(trueMatch);
                             }
@@ -1277,7 +1273,7 @@ public class Iterable2Test
         final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         ls.findIndex(
                 new Func<String, Boolean>() {
-                    @Override
+
                     public Boolean apply(String s) {
                         return s.equals(falseMatch);
                     }
@@ -1292,7 +1288,7 @@ public class Iterable2Test
         Assert.assertEquals(((Integer) trueMatch).toString(),
                 li.pick(
                         new Func<Integer, Option<String>>() {
-                            @Override
+
                             public Option<String> apply(Integer a) {
                                 return a == trueMatch ? Option.toOption(a.toString()) : Option.<String>None();
                             }
@@ -1306,7 +1302,7 @@ public class Iterable2Test
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
         li.pick(
                 new Func<Integer, Option<String>>() {
-                    @Override
+
                     public Option<String> apply(Integer a) {
                         return a == falseMatch ? Option.toOption(a.toString()) : Option.<String>None();
                     }
@@ -1318,7 +1314,7 @@ public class Iterable2Test
     {
         final int state=0;
         final Func<Integer,Boolean> testForPosInts = new Func<Integer, Boolean>() {
-            @Override public Boolean apply(Integer integer) { return integer > state; }
+             public Boolean apply(Integer integer) { return integer > state; }
         };
 
         final Func<Iterable<Integer>,List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
@@ -1336,7 +1332,7 @@ public class Iterable2Test
         final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         final Map<String,String> output = Functional.map_dict(
                 new Func<Integer, Map.Entry<String, String>>() {
-                    @Override
+
                     public Map.Entry<String, String> apply(final Integer i) {
                         return new Map.Entry<String,String>(){
                             public String setValue(String v){throw new UnsupportedOperationException(); }
@@ -1359,14 +1355,14 @@ public class Iterable2Test
         AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2, 4, 6, 8, 10}), output_ints);
     }
 
-    public static final Func<Integer,Iterable<Integer>> intToList(final int howMany)
+    public static Func<Integer,Iterable<Integer>> intToList(final int howMany)
     {
         return new Func<Integer, Iterable<Integer>>() {
-            @Override
+
             public Iterable<Integer> apply(final Integer integer) {
                 return IterableHelper.init(
                         new Func<Integer, Integer>() {
-                            @Override
+
                             public Integer apply(Integer counter) {
                                 return integer;
                             }
@@ -1400,8 +1396,8 @@ public class Iterable2Test
         final Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 2);
         final List<Integer> expectedList = Arrays.asList(2,4);
         final List<Integer> expectedRemainder = Arrays.asList(6,8,10);
-        AssertIterable.assertIterableEquals(expectedList,output.getValue0());
-        AssertIterable.assertIterableEquals(expectedRemainder,output.getValue1());
+        AssertIterable.assertIterableEquals(expectedList,output.getLeft());
+        AssertIterable.assertIterableEquals(expectedRemainder,output.getRight());
     }
 
     @Test
@@ -1411,8 +1407,8 @@ public class Iterable2Test
         final Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 0);
         final List<Integer> expectedList = Arrays.asList();
         final List<Integer> expectedRemainder = Arrays.asList(2,4,6,8,10);
-        AssertIterable.assertIterableEquals(expectedList,output.getValue0());
-        AssertIterable.assertIterableEquals(expectedRemainder,output.getValue1());
+        AssertIterable.assertIterableEquals(expectedList,output.getLeft());
+        AssertIterable.assertIterableEquals(expectedRemainder,output.getRight());
     }
 
     @Test
@@ -1445,7 +1441,7 @@ public class Iterable2Test
             final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
             s2 = li.fold(
                     new Func2<String, Integer, String>() {
-                        @Override
+
                         public String apply(String s1, Integer s2) {
                             return csv(s1, s2);
                         }
@@ -1499,7 +1495,7 @@ public class Iterable2Test
     public void EmptySeqTestChoose()
     {
         final Func<Integer,Option<String>> chooser = new Func<Integer, Option<String>>() {
-            @Override
+
             public Option<String> apply(Integer integer) {
                 return Option.toOption(integer.toString());
             }
@@ -1551,7 +1547,7 @@ public class Iterable2Test
     public void EmptySeqTestFold()
     {
         final Func2<String,Integer,String> folder = new Func2<String,Integer,String>() {
-            @Override
+
             public String apply(String s, Integer integer) {
                 return s+integer.toString();
             }
@@ -1578,7 +1574,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final Iterable2<Integer> l1 = l.sortWith(new Comparator<Integer>() {
-            @Override
+
             public int compare(Integer o1, Integer o2) {
                 return 0;
             }
@@ -1603,7 +1599,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final Integer i = l.find(new Func<Integer, Boolean>() {
-            @Override
+
             public Boolean apply(Integer integer) {
                 return true;
             }
@@ -1616,7 +1612,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final int i = l.findIndex(new Func<Integer, Boolean>() {
-            @Override
+
             public Boolean apply(Integer integer) {
                 return true;
             }
@@ -1629,7 +1625,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final String i = l.pick(new Func<Integer, Option<String>>() {
-            @Override
+
             public Option<String> apply(Integer integer) {
                 return Option.toOption(integer.toString());
             }
@@ -1662,7 +1658,7 @@ public class Iterable2Test
         final Iterable2<Integer> j = IterableHelper.create(Arrays.asList(1,2,3));
         final Iterable2<Integer> k = IterableHelper.create(Arrays.asList(1,2,3));
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Iterable2<Triplet<Integer,Integer,Integer>> l1 = l.zip3(k, j); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Triple<Integer,Integer,Integer>> l1 = l.zip3(k, j); // this filter needed to be fed from a statically-typed variable
         final Iterable2<Integer> other = IterableHelper.createEmpty();
     }
 
@@ -1671,7 +1667,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final Iterable2<Integer> l1 = l.collect(new Func<Integer, Iterable<Integer>>() {
-            @Override
+
             public Iterable<Integer> apply(Integer integer) {
                 return Arrays.asList(1, 2, 3, integer);
             }
@@ -1686,10 +1682,10 @@ public class Iterable2Test
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty();
         final String u = l.in(new Func<Iterable2<Integer>, String>() {
-            @Override
+
             public String apply(Iterable2<Integer> integers) {
                 return integers.fold(new Func2<String, Integer, String>() {
-                    @Override
+
                     public String apply(String s, Integer integer) {
                         return s + integer.toString();
                     }
@@ -1716,7 +1712,7 @@ public class Iterable2Test
     {
         final Iterable2<String> input = IterableHelper.create(Arrays.asList("aa","aab","aac","def"));
         final Map<String,List<String>> output = input.groupBy(new Func<String, String>() {
-            @Override
+
             public String apply(final String s) {
                 return s.substring(0,1);
             }
@@ -1733,15 +1729,15 @@ public class Iterable2Test
     public void seqMapiTest1() {
         final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         final Iterable<Pair<Integer, String>> output = IterableHelper.create(input).mapi(new Func2<Integer, Integer, Pair<Integer, String>>() {
-            @Override
+
             public Pair<Integer, String> apply(final Integer pos, final Integer i) {
-                return Pair.with(pos, i.toString());
+                return Pair.of(pos, i.toString());
             }
         });
         Assert.assertArrayEquals(new String[]{"1", "2", "3", "4", "5"}, Functional.map(new Func<Pair<Integer, String>, String>() {
-            @Override
+
             public String apply(final Pair<Integer, String> o) {
-                return o.getValue1();
+                return o.getRight();
             }
         }, output).toArray());
     }
@@ -1802,7 +1798,7 @@ public class Iterable2Test
     {
         Assert.assertEquals(IterableHelper.createEmpty(),
                 IterableHelper.createEmpty().mapi(new Func2<Integer, Object, Object>() {
-                    @Override
+
                     public Object apply(Integer integer, Object o) {
                         return null;
                     }
@@ -1813,7 +1809,7 @@ public class Iterable2Test
     public void forAll2EmptyListTest()
     {
         Assert.assertFalse(IterableHelper.createEmpty().forAll2(new Func2<Object, Object, Boolean>() {
-            @Override
+
             public Boolean apply(Object o, Object o2) {
                 return null;
             }
@@ -1836,12 +1832,12 @@ public class Iterable2Test
     public void toDictionaryEmptyListTest()
     {
         Assert.assertEquals(new HashMap<Integer, String>(), IterableHelper.<Integer>createEmpty().toDictionary(new Func<Integer, Integer>() {
-            @Override
+
             public Integer apply(Integer integer) {
                 return null;
             }
         }, new Func<Integer, String>() {
-            @Override
+
             public String apply(Integer integer) {
                 return null;
             }
@@ -1888,20 +1884,20 @@ public class Iterable2Test
     public void emptyListPartitionTest()
     {
         final Pair<List<Object>, List<Object>> pair = IterableHelper.createEmpty().partition(new Func<Object, Boolean>() {
-            @Override
+
             public Boolean apply(Object o) {
                 return null;
             }
         });
-        Assert.assertTrue(pair.getValue0().isEmpty());
-        Assert.assertTrue(pair.getValue1().isEmpty());
+        Assert.assertTrue(pair.getLeft().isEmpty());
+        Assert.assertTrue(pair.getRight().isEmpty());
     }
 
     @Test
     public void emptyListGroupByTest()
     {
         final Map<Object, List<Object>> grp = IterableHelper.createEmpty().groupBy(new Func<Object, Object>() {
-            @Override
+
             public Object apply(Object o) {
                 return null;
             }

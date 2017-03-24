@@ -1,7 +1,8 @@
 package me.shaftesbury.utils.functional;
 
-import org.javatuples.Pair;
-import org.javatuples.Triplet;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;
 
@@ -22,12 +23,12 @@ public class IterableHelper
      * @param <T> the type of the underlying data in the input sequence
      * @return an Iterable2
      */
-    public static final <T>Iterable2<T> create(final java.lang.Iterable<T> it)
+    public static <T>Iterable2<T> create(final java.lang.Iterable<T> it)
     {
         return new Iterable2<T>()
         {
             private final java.lang.Iterable<T> i = it;
-            @Override
+
             public Iterator<T> iterator() { return i.iterator(); }
 
             public final Iterable2<T> filter(final Func<? super T,Boolean> f) { return create(Functional.seq.filter(f,i)); }
@@ -50,14 +51,14 @@ public class IterableHelper
             public final <B>B pick(final Func<? super T,Option<B>> f){return Functional.pick(f,i);}
             public final Iterable2<T> take(final int howMany){return create(Functional.seq.take(howMany, i));}
 
-            @Override
+
             public Iterable2<T> takeWhile(Func<? super T, Boolean> f) {
                 return create(Functional.seq.takeWhile(f, i));
             }
 
             public Iterable2<T> skip(int howMany) { return create(Functional.seq.skip(howMany, i)); }
 
-            @Override
+
             public Iterable2<T> skipWhile(Func<? super T, Boolean> f) {
                 return create(Functional.seq.skipWhile(f,i));
             }
@@ -65,9 +66,9 @@ public class IterableHelper
             public String join(String delimiter) { return Functional.join(delimiter,i); }
             public T findLast(Func<? super T, Boolean> f) { return Functional.findLast(f,i); }
             public Pair<List<T>, List<T>> partition(Func<? super T, Boolean> f) { return Functional.partition(f, i); }
-            public final <U>Iterable2<org.javatuples.Pair<T,U>> zip(final Iterable2<? extends U> l2) { return create(Functional.seq.zip(i, l2));}
-            //public final <U>org.javatuples.Pair<List<T>,List<U>> unzip(){return Functional.unzip(i);}
-            public final <U,V>Iterable2<Triplet<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3){return create(Functional.seq.zip3(i, l2, l3));}
+            public final <U>Iterable2<Pair<T,U>> zip(final Iterable2<? extends U> l2) { return create(Functional.seq.zip(i, l2));}
+            //public final <U>Pair<List<T>,List<U>> unzip(){return Functional.unzip(i);}
+            public final <U,V>Iterable2<Triple<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3){return create(Functional.seq.zip3(i, l2, l3));}
 
             public final <U>Iterable2<U> collect(final Func<? super T,? extends Iterable<U>> f){return create(Functional.seq.collect(f, i));}
             public <U>U in(final Func<Iterable2<T>, U> f){ return f.apply(this); }
@@ -76,18 +77,18 @@ public class IterableHelper
         };
     }
 
-    public static final <T>Iterable2<T> createEmpty()
+    public static <T>Iterable2<T> createEmpty()
     {
         return new EmptyList<T>();
     }
 
-    private static final class EmptyList<T> implements Iterable2<T>
+    private static class EmptyList<T> implements Iterable2<T>
     {
         EmptyList() {}
         public Iterator<T> iterator() { return new Iterator<T>() {
-            @Override public boolean hasNext() { return false; }
-            @Override public T next() { throw new java.util.NoSuchElementException(); }
-            @Override public void remove() { throw new UnsupportedOperationException("Can't remove objects from this container"); }
+             public boolean hasNext() { return false; }
+             public T next() { throw new java.util.NoSuchElementException(); }
+             public void remove() { throw new UnsupportedOperationException("Can't remove objects from this container"); }
         }; }
 
         public final Iterable2<T> filter(final Func<? super T,Boolean> f) { return this; }
@@ -109,19 +110,19 @@ public class IterableHelper
         public int findIndex(final Func<? super T,Boolean> f) { throw new NoSuchElementException();}
         public final <B>B pick(final Func<? super T,Option<B>> f){throw new NoSuchElementException();}
         public final Iterable2<T> take(final int howMany){return this;}
-        @Override
+
         public Iterable2<T> takeWhile(Func<? super T, Boolean> f) { return this; }
         public Iterable2<T> skip(int howMany) { return this; }
-        @Override
+
         public Iterable2<T> skipWhile(Func<? super T, Boolean> f) { return this; }
 
         public String join(String delimiter) { return Functional.join(delimiter,this); }
         public T findLast(Func<? super T, Boolean> f) { throw new NoSuchElementException(); }
         public Pair<List<T>, List<T>> partition(Func<? super T, Boolean> f) { return Functional.partition(f,this); }
 
-        public final <U>Iterable2<org.javatuples.Pair<T,U>> zip(final Iterable2<? extends U> l2) { throw new IllegalArgumentException("Iterable2.zip: It is not possible to zip an empty list with a non-empty list");}
-        //public final <U>org.javatuples.Pair<List<T>,List<U>> unzip(){return Functional.unzip(i);}
-        public final <U,V>Iterable2<Triplet<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3){throw new IllegalArgumentException("Iterable2.zip3: It is not possible to zip an empty list with a non-empty list");}
+        public final <U>Iterable2<Pair<T,U>> zip(final Iterable2<? extends U> l2) { throw new IllegalArgumentException("Iterable2.zip: It is not possible to zip an empty list with a non-empty list");}
+        //public final <U>Pair<List<T>,List<U>> unzip(){return Functional.unzip(i);}
+        public final <U,V>Iterable2<Triple<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3){throw new IllegalArgumentException("Iterable2.zip3: It is not possible to zip an empty list with a non-empty list");}
 
         public final <U>Iterable2<U> collect(final Func<? super T,? extends Iterable<U>> f){return new EmptyList<U>();}
         public <U>U in(final Func<Iterable2<T>, U> f){ return f.apply(this); }
@@ -130,15 +131,16 @@ public class IterableHelper
 
         public boolean equals(Object o) { return o instanceof EmptyList<?>; }
 
-        @Override
+
         public int hashCode() { return 0; }
 
-        @Override
+
         public String toString() { return "()"; }
     }
 
-    public static final <T>Iterable2<T> init(Func<Integer,T> f, int howMany) { return create(Functional.seq.init(f, howMany)); }
+    public static <T>Iterable2<T> init(Func<Integer,T> f, int howMany) { return create(Functional.seq.init(f, howMany)); }
     public final static <T>Iterable2<T> init(final Func<Integer,T> f) { return create(Functional.seq.init(f));}
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <T>Iterable2<T> asList(T... a) { return create(Arrays.asList(a)); }
 }

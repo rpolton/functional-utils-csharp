@@ -1,6 +1,7 @@
 package me.shaftesbury.utils.functional;
 
-import org.javatuples.Pair;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Created by Bob on 09/12/13.
@@ -13,7 +14,7 @@ public class MException<U>
     private StackTraceElement[] stacktrace = null;
 
     // this is 'return'
-    public static final <B>MException<B> toMException(final Func0<B> f)
+    public static <B>MException<B> toMException(final Func0<B> f)
     {
         return new MException<B>(f);
     }
@@ -31,12 +32,12 @@ public class MException<U>
             return new MException<B>(exception, stacktrace);
     }
 
-    private static final <C>MException<C> toMException(final Pair<RuntimeException,StackTraceElement[]> exc)
+    private static <C>MException<C> toMException(final Pair<RuntimeException,StackTraceElement[]> exc)
     {
-        return new MException(exc.getValue0(),exc.getValue1());
+        return new MException(exc.getLeft(),exc.getRight());
     }
 
-    public static final <A,B,C>MException<C> lift(final Func2<A,B,C> f, final MException<A> a, final MException<B> b)
+    public static <A,B,C>MException<C> lift(final Func2<A,B,C> f, final MException<A> a, final MException<B> b)
     {
         if(f==null) throw new IllegalArgumentException("f");
         if(a==null) throw new IllegalArgumentException("a");
@@ -81,7 +82,7 @@ public class MException<U>
 
     public Pair<RuntimeException,StackTraceElement[]> getExceptionWithStackTrace()
     {
-        return Pair.with(exception, stacktrace); // what happens if exception==null?
+        return Pair.of(exception, stacktrace); // what happens if exception==null?
     }
 
     public final U read()

@@ -20,7 +20,7 @@ public abstract class UnaryFunction<A,B> implements Func<A,B>
         return compose(this,f);
     }
 
-    private static final <A,B,C>UnaryFunction<A,C> compose(final Func<A,B> f, final Func<B,C> g)
+    private static <A,B,C>UnaryFunction<A,C> compose(final Func<A,B> f, final Func<B,C> g)
     {
         return new UnaryFunction<A,C>()
         {
@@ -37,11 +37,11 @@ public abstract class UnaryFunction<A,B> implements Func<A,B>
      * @param <B> the type of the return value of the delayed function
      * @return a function that takes no arguments and returns a value of type B
      */
-    public static final <A,B>Func0<B> delay(final Func<A,B> f, final A a)
+    public static <A,B>Func0<B> delay(final Func<A,B> f, final A a)
     {
         return new Func0<B>()
         {
-            @Override
+
             public B apply() {
                 return f.apply(a);
             }

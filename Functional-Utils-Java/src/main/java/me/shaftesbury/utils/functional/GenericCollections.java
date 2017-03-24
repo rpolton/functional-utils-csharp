@@ -15,31 +15,31 @@ public final class GenericCollections
         Collection<A> createUnmodifiableContainer(Collection<A> c);
     }
 
-    public static final <A>Generator<A> createArrayListGenerator() { return new GenericCollections().new ArrayListGenerator<A>(); }
+    public static <A>Generator<A> createArrayListGenerator() { return new GenericCollections().new ArrayListGenerator<A>(); }
 
     public class ArrayListGenerator<A> implements Generator<A>
     {
-        @Override
+
         public Collection<A> initialiseEmptyContainer() {
             return new ArrayList<A>();
         }
 
-        @Override
+
         public Collection<A> createUnmodifiableContainer(Collection<A> c) {
             return java.util.Collections.unmodifiableList(Functional.toList(c));
         }
     }
 
-    public static final <A>Generator<A> createHashSetGenerator() { return new GenericCollections().new HashSetGenerator<A>(); }
+    public static <A>Generator<A> createHashSetGenerator() { return new GenericCollections().new HashSetGenerator<A>(); }
 
     public class HashSetGenerator<A> implements Generator<A>
     {
-        @Override
+
         public Collection<A> initialiseEmptyContainer() {
             return new HashSet<A>();
         }
 
-        @Override
+
         public Collection<A> createUnmodifiableContainer(Collection<A> c) {
             return java.util.Collections.unmodifiableSet(Functional.toSet(c));
         }

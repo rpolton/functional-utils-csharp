@@ -3,8 +3,8 @@ package me.shaftesbury.utils.functional.primitive;
 import me.shaftesbury.utils.functional.Func;
 import me.shaftesbury.utils.functional.Func2;
 import me.shaftesbury.utils.functional.Option;
-import org.javatuples.Pair;
-import org.javatuples.Triplet;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;
 
@@ -24,10 +24,9 @@ public final class Functional
      * Concatenate all of the input elements into a single string where each element is separated from the next by the supplied delimiter
      * @param delimiter used to separate consecutive elements in the output
      * @param ints input sequence, each element of which will be converted to a string
-     * @param <T> the type of the element in the input sequence
      * @return a string containing the string representation of each input element separated by the supplied delimiter
      */
-    public static <T>String join(final String delimiter, final IntList ints)
+    public static String join(final String delimiter, final IntList ints)
     {
         if(ints==null) return "";
         final IntIterator it = ints.iterator();
@@ -45,13 +44,12 @@ public final class Functional
     /**
      * Analogue of string.Join for List<T> with the addition of a user-defined map function
      *
-     * @param <T> the type of the element in the input sequence
      * @param separator inserted between each transformed element
      * @param l the input sequence
      * @param fn map function (see <tt>map</tt>) which is used to transform the input sequence
      * @return a string containing the transformed string value of each input element separated by the supplied separator
      */
-    public static <T>String join(final String separator, final IntIterable l, final Func_int_T<String> fn)
+    public static String join(final String separator, final IntIterable l, final Func_int_T<String> fn)
     {
         if (l == null) throw new IllegalArgumentException("l");
         if (fn == null) throw new IllegalArgumentException("fn");
@@ -147,12 +145,12 @@ public final class Functional
 //        if (input == null) throw new IllegalArgumentException("input");
 //
 //        final Pair<IntList,IntIterable> p = takeNAndYield(input,1);
-//        final Pair<A,Boolean> seed = Pair.with(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
+//        final Pair<A,Boolean> seed = Pair.of(p.getLeft().get(0),f.apply(p.getLeft().get(0)));
 //        final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
-//            @Override public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.with(item,true):state;}
+//             public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.of(item,true):state;}
 //        },seed,p.getValue1());
 //
-//        if(result.getValue1()) return result.getValue0();
+//        if(result.getValue1()) return result.getLeft();
 //        throw new NoSuchElementException();
 //    }
 
@@ -190,7 +188,6 @@ public final class Functional
     public static Func_int_T<Integer> identity()
     {
         return new Func_int_T<Integer>() {
-            @Override
             public Integer apply(final int t) {
                 return t;
             }
@@ -201,9 +198,8 @@ public final class Functional
      * <tt>isEven</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an even integer
      */
-    public static final Func_int_T<Boolean> isEven = new Func_int_T<Boolean>()
+    public static Func_int_T<Boolean> isEven = new Func_int_T<Boolean>()
     {
-        @Override
         public Boolean apply(final int i)
         {
             return i % 2 == 0;
@@ -213,9 +209,8 @@ public final class Functional
      * <tt>isOdd</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an odd integer
      */
-    public static final Func_int_T<Boolean> isOdd = new Func_int_T<Boolean>()
+    public static Func_int_T<Boolean> isOdd = new Func_int_T<Boolean>()
     {
-        @Override
         public Boolean apply(final int i)
         {
             return i % 2 != 0;
@@ -224,8 +219,7 @@ public final class Functional
     /**
      * <tt>count</tt> a function that accepts a counter and another integer and returns 1 + counter
      */
-    public static final Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
-        @Override
+    public static Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
         public Integer apply(final Integer state, final Integer b) {
             return state + 1;
         }
@@ -233,8 +227,7 @@ public final class Functional
     /**
      * <tt>sum</tt> a function that accepts two integers and returns the sum of them
      */
-    public static final Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
-        @Override
+    public static Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
         public Integer apply(final Integer state, final Integer b) {
             return state + b;
         }
@@ -245,11 +238,10 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is greater than
      * 'that' or false otherwise
      */
-    public static final <T extends Comparable<T>>Func<T,Boolean> greaterThan(final T that)
+    public static <T extends Comparable<T>>Func<T,Boolean> greaterThan(final T that)
     {
         return new Func<T, Boolean>()
         {
-            @Override
             public Boolean apply(final T ths)
             {
                 return ths.compareTo(that)>0;
@@ -262,11 +254,10 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is greater than
      * or equal to 'that' or false otherwise
      */
-    public static final <T extends Comparable<T>>Func<T,Boolean> greaterThanOrEqual(final T that)
+    public static <T extends Comparable<T>>Func<T,Boolean> greaterThanOrEqual(final T that)
     {
         return new Func<T, Boolean>()
         {
-            @Override
             public Boolean apply(final T ths)
             {
                 return ths.compareTo(that)>=0;
@@ -279,11 +270,10 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is less than
      * 'that' or false otherwise
      */
-    public static final <T extends Comparable<T>>Func<T,Boolean> lessThan(final T that)
+    public static <T extends Comparable<T>>Func<T,Boolean> lessThan(final T that)
     {
         return new Func<T, Boolean>()
         {
-            @Override
             public Boolean apply(final T ths)
             {
                 return ths.compareTo(that)<0;
@@ -296,11 +286,10 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is less than
      * or equal to 'that' or false otherwise
      */
-    public static final <T extends Comparable<T>>Func<T,Boolean> lessThanOrEqual(final T that)
+    public static <T extends Comparable<T>>Func<T,Boolean> lessThanOrEqual(final T that)
     {
         return new Func<T, Boolean>()
         {
-            @Override
             public Boolean apply(final T ths)
             {
                 return ths.compareTo(that)<=0;
@@ -418,7 +407,6 @@ public final class Functional
     public static Func_int_T<String> dStringify()
     {
         return new Func_int_T<String>() {
-            @Override
             public String apply(final int a) {
                 return Integer.toString(a);
             }
@@ -572,7 +560,7 @@ public final class Functional
      */
     public static Func_int_T<Boolean> not(final Func_int_T<Boolean> f)
     {
-        return new Func_int_T<Boolean>(){@Override public Boolean apply(final int a) { return !f.apply(a);}};
+        return new Func_int_T<Boolean>(){public Boolean apply(final int a) { return !f.apply(a);}};
     }
 
     /**
@@ -599,7 +587,7 @@ public final class Functional
      */
     public static <A,B> Func2_int_int_T<Boolean> not2(final Func2_int_int_T<Boolean> f)
     {
-        return new Func2_int_int_T<Boolean>(){@Override public Boolean apply(final int a, final int b) { return !f.apply(a,b);}};
+        return new Func2_int_int_T<Boolean>(){public Boolean apply(final int a, final int b) { return !f.apply(a,b);}};
     }
 
     /// <summary> </summary>
@@ -636,7 +624,7 @@ public final class Functional
             else
                 right.add(a);
         }
-        return new Pair<List<Integer>,List<Integer>>(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
+        return Pair.of(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
     }
 
     /**
@@ -723,8 +711,8 @@ public final class Functional
         final List<A> results = new ArrayList<A>();
         while(!finished.apply(next)) {
             final Pair<A,B> t = unspool.apply(next);
-            results.add(t.getValue0());
-            next = t.getValue1();
+            results.add(t.getLeft());
+            next = t.getRight();
         }
         return results;
     }
@@ -744,8 +732,8 @@ public final class Functional
         while(true) {
             final Option<Pair<A,B>> t = unspool.apply(next);
             if(t.isNone()) break;
-            results.add(t.Some().getValue0());
-            next = t.Some().getValue1();
+            results.add(t.Some().getLeft());
+            next = t.Some().getRight();
         }
         return results;
     }
@@ -809,7 +797,7 @@ public final class Functional
         return output.toArray(); // this needs to be output.toArray(new T[0]) but that doesn't appear to be allowable Java :-(
     }
 
-    public static final <T>List<T> toMutableList(final Iterable<T> input)
+    public static <T>List<T> toMutableList(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableList(Iterable<T>): input is null");
 
@@ -827,7 +815,7 @@ public final class Functional
         return output;
     }
 
-    public static final <K,V>Map<K,V> toMutableDictionary(final Map<K,V> input)
+    public static <K,V>Map<K,V> toMutableDictionary(final Map<K,V> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableDictionary(Map<K,V>): input is null");
 
@@ -836,7 +824,7 @@ public final class Functional
         return output;
     }
 
-    public static final <T>Set<T> toMutableSet(final Iterable<T> input)
+    public static <T>Set<T> toMutableSet(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableSet(Iterable<T>): input is null");
 
@@ -860,7 +848,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a list containing the elements of the input sequence
      */
-    public static final <T>List<T> toList(final Iterable<T> input)
+    public static <T>List<T> toList(final Iterable<T> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.toList(Iterable<T>): input is null");
         return Collections.unmodifiableList(toMutableList(input));
@@ -872,7 +860,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a set containing the elements of the input sequence
      */
-    public static final <T>Set<T> toSet(final Iterable<T> input)
+    public static <T>Set<T> toSet(final Iterable<T> input)
     {
         //Sets.newSetFromMap();
         if(input==null) throw new IllegalArgumentException("Functional.toSet(Iterable<T>): input is null");
@@ -885,7 +873,7 @@ public final class Functional
      * @return the last element from the input sequence
      * @throws java.lang.IllegalArgumentException if the input sequence is null or empty
      */
-    public static final int last(final IntIterable input)
+    public static int last(final IntIterable input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.last(Iterable<T>): input is null");
 
@@ -909,7 +897,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return the last element from the input array
      */
-    public static final <T>T last(final T[] input)
+    public static <T>T last(final T[] input)
     {
         if(input==null||input.length==0) throw new IllegalArgumentException("Functional.last(T[]): input is null or empty");
 
@@ -922,7 +910,7 @@ public final class Functional
      * @param list2 second input sequence
      * @return a list containing the elements of the first sequence followed by the elements of the second sequence
      */
-    public static final IntList concat(final IntList list1, final IntList list2)
+    public static IntList concat(final IntList list1, final IntList list2)
     {
         if(list1==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list1 is null");
         if(list2==null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list2 is null");
@@ -940,7 +928,7 @@ public final class Functional
      * @return a list containing the first 'howMany' elements of 'list'
      * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
      */
-    public static final<T>List<T> take(final int howMany, final Iterable<? extends T> list)
+    public static<T>List<T> take(final int howMany, final Iterable<? extends T> list)
     {
         if(howMany<0) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): howMany is negative");
         if(list==null) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): list is null");
@@ -968,10 +956,10 @@ public final class Functional
      * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static final<T>Func<Iterable<? extends T>,List<T>> take(final int howMany)
+    public static<T>Func<Iterable<? extends T>,List<T>> take(final int howMany)
     {
         return new Func<Iterable<? extends T>, List<T>>() {
-            @Override
+
             public List<T> apply(final Iterable<? extends T> input) {
                 return Functional.take(howMany,input);
             }
@@ -986,7 +974,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a list
      */
-    public static final<T>List<T> takeWhile(final Func<? super T, Boolean> predicate, final List<T> list)
+    public static<T>List<T> takeWhile(final Func<? super T, Boolean> predicate, final List<T> list)
     {
         if(predicate==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): list is null");
@@ -1014,10 +1002,10 @@ public final class Functional
      * @return a list
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static final<T>Func<List<T>,List<T>> takeWhile(final Func<? super T, Boolean> predicate)
+    public static<T>Func<List<T>,List<T>> takeWhile(final Func<? super T, Boolean> predicate)
     {
         return new Func<List<T>, List<T>>() {
-            @Override
+
             public List<T> apply(final List<T> input) {
                 return Functional.takeWhile(predicate, input);
             }
@@ -1033,7 +1021,7 @@ public final class Functional
      * @return a list containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
      * are skipped than are present in the 'list'
      */
-    public static final <T>List<T> skip(final int howMany, final List<? extends T> list)
+    public static <T>List<T> skip(final int howMany, final List<? extends T> list)
     {
         if(howMany<0) throw new IllegalArgumentException("Functional.skip(int,List<T>): howMany is negative");
         if(list==null) throw new IllegalArgumentException("Functional.skip(int,List<T>): list is null");
@@ -1055,10 +1043,10 @@ public final class Functional
      * are skipped than are present in the 'list'
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static final<T>Func<List<? extends T>,List<T>> skip(final int howMany)
+    public static<T>Func<List<? extends T>,List<T>> skip(final int howMany)
     {
         return new Func<List<? extends T>, List<T>>() {
-            @Override
+
             public List<T> apply(final List<? extends T> input) {
                 return Functional.skip(howMany, input);
             }
@@ -1073,7 +1061,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a list containing the remaining elements after and including the first element for which the predicate returns false
      */
-    public static final <T>List<T> skipWhile(final Func<? super T, Boolean> predicate, final List<T> list)
+    public static <T>List<T> skipWhile(final Func<? super T, Boolean> predicate, final List<T> list)
     {
         if(predicate==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): list is null");
@@ -1093,10 +1081,10 @@ public final class Functional
      * @return a list containing the remaining elements after and including the first element for which the predicate returns false
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static final<T>Func<List<T>,List<T>> skipWhile(final Func<? super T, Boolean> predicate)
+    public static<T>Func<List<T>,List<T>> skipWhile(final Func<? super T, Boolean> predicate)
     {
         return new Func<List<T>, List<T>>() {
-            @Override
+
             public List<T> apply(final List<T> input) {
                 return Functional.skipWhile(predicate, input);
             }
@@ -1110,10 +1098,10 @@ public final class Functional
      * @param <T> the type of the constant
      * @return a function that returns a function that returns the supplied constant
      */
-    public static final <T>Func<Integer,T> constant(final T constant)
+    public static <T>Func<Integer,T> constant(final T constant)
     {
         return new Func<Integer, T>() {
-            @Override
+
             public T apply(final Integer integer) {
                 return constant;
             }
@@ -1126,7 +1114,7 @@ public final class Functional
      * @param startFrom the lower bound of the range
      * @return a function that returns a function that returns an integer from the range [startFrom+n, infinity)
      */
-    public static final Func_int_int range(final int startFrom)
+    public static Func_int_int range(final int startFrom)
     {
         return new Func_int_int(){
             private final int start = startFrom;
@@ -1147,7 +1135,7 @@ public final class Functional
      * @return list of pairs; the first element from each of the two input sequences is the first pair in the output sequence and so on,
      *          in order. If the sequences do not have the same number of elements then an exception is thrown.
      */
-    public static final <A,B>List<Pair<A,B>> zip(final Iterable<? extends A> l1, final Iterable<? extends B> l2)
+    public static <A,B>List<Pair<A,B>> zip(final Iterable<? extends A> l1, final Iterable<? extends B> l2)
     {
         if(l1==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 is null");
         if(l2==null) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l2 is null");
@@ -1163,7 +1151,7 @@ public final class Functional
         final Iterator<? extends A> l1_it = l1.iterator();
         final Iterator<? extends B> l2_it = l2.iterator();
 
-        while(l1_it.hasNext() && l2_it.hasNext()) output.add(new Pair(l1_it.next(),l2_it.next()));
+        while(l1_it.hasNext() && l2_it.hasNext()) output.add(Pair.of(l1_it.next(),l2_it.next()));
         if(l1_it.hasNext() || l2_it.hasNext()) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 and l2 have differing numbers of elements");
 
         return Collections.unmodifiableList(output);
@@ -1182,25 +1170,25 @@ public final class Functional
      * @return list of triplets; the first element from each of the input sequences is the first triplet in the output sequence and so on,
      *          in order. If the sequences do not have the same number of elements then an exception is thrown.
      */
-    public static final <A,B,C>List<Triplet<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
+    public static <A,B,C>List<Triple<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
     {
         if(l1==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1 is null");
         if(l2==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l2 is null");
         if(l3==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l3 is null");
 
-        final List<Triplet<A,B,C>> output;
+        final List<Triple<A,B,C>> output;
         if(l1 instanceof Collection<?> && l2 instanceof Collection<?> && l3 instanceof Collection<?>) {
             if (((Collection) l1).size() != ((Collection) l2).size())
                 throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1, l2 and l3 have differing numbers of elements");
 
-            output = new ArrayList<Triplet<A, B,C>>(((Collection) l1).size());
+            output = new ArrayList<Triple<A, B,C>>(((Collection) l1).size());
         }
-        else output = new ArrayList<Triplet<A, B,C>>();
+        else output = new ArrayList<Triple<A, B,C>>();
         final Iterator<? extends A> l1_it = l1.iterator();
         final Iterator<? extends B> l2_it = l2.iterator();
         final Iterator<? extends C> l3_it = l3.iterator();
 
-        while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(new Triplet(l1_it.next(),l2_it.next(),l3_it.next()));
+        while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(Triple.of(l1_it.next(),l2_it.next(),l3_it.next()));
         if(l1_it.hasNext() || l2_it.hasNext() || l3_it.hasNext())
             throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1, l2 and l3 have differing numbers of elements");
 
@@ -1217,7 +1205,7 @@ public final class Functional
      * @return pair of lists; the first element from each of the two output sequences is the first pair in the input sequence and so on,
      *          in order.
      */
-    public static final <A,B>Pair<List<A>,List<B>> unzip(final Iterable<Pair<A,B>> input)
+    public static <A,B>Pair<List<A>,List<B>> unzip(final Iterable<Pair<A,B>> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
 
@@ -1234,11 +1222,11 @@ public final class Functional
         }
         for(final Pair<A,B> pair:input)
         {
-            l1.add(pair.getValue0());
-            l2.add(pair.getValue1());
+            l1.add(pair.getLeft());
+            l2.add(pair.getRight());
         }
 
-        return new Pair(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2));
+        return Pair.of(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2));
     }
 
     /**
@@ -1252,7 +1240,7 @@ public final class Functional
      * @return triplet of lists; the first element from each of the output sequences is the first triplet in the input sequence and so on,
      *          in order.
      */
-    public static final <A,B,C>Triplet<List<A>,List<B>,List<C>> unzip3(final Iterable<Triplet<A,B,C>> input)
+    public static <A,B,C>Triple<List<A>,List<B>,List<C>> unzip3(final Iterable<Triple<A,B,C>> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
 
@@ -1271,14 +1259,14 @@ public final class Functional
             l3 = new ArrayList<C>();
         }
 
-        for(final Triplet<A,B,C> triplet:input)
+        for(final Triple<A,B,C> triplet:input)
         {
-            l1.add(triplet.getValue0());
-            l2.add(triplet.getValue1());
-            l3.add(triplet.getValue2());
+            l1.add(triplet.getLeft());
+            l2.add(triplet.getMiddle());
+            l3.add(triplet.getRight());
         }
 
-        return new Triplet(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2),Collections.unmodifiableList(l3));
+        return Triple.of(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2),Collections.unmodifiableList(l3));
     }
 
     /**
@@ -1292,7 +1280,7 @@ public final class Functional
      * @param <U> the type of the element in the output sequence
      * @return a list of type U containing the concatenated sequences of transformed values.
      */
-    public static final <T,U>List<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
+    public static <T,U>List<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
     {
         List<U> output = input instanceof Collection<?> ? new ArrayList<U>(((Collection) input).size()) : new ArrayList<U>();
 //        for(final T element : input)
@@ -1312,10 +1300,10 @@ public final class Functional
      * @return a list of type U containing the concatenated sequences of transformed values.
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static final <T,U>Func<Iterable<T>,List<U>> collect(final Func<? super T,? extends Iterable<U>> f)
+    public static <T,U>Func<Iterable<T>,List<U>> collect(final Func<? super T,? extends Iterable<U>> f)
     {
         return new Func<Iterable<T>, List<U>>() {
-            @Override
+
             public List<U> apply(final Iterable<T> input) {
                 return Functional.collect(f,input);
             }
@@ -1335,7 +1323,7 @@ public final class Functional
      * @param <A> the type of the element in the input sequence
      * @return a pair: (list, seq) - the list contains 'howMany' elements of 'input' and the sequence contains the remainder
      */
-    public static final <A>Pair<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
+    public static <A>Pair<List<A>,Iterable<A>> takeNAndYield(final Iterable<A> input, final int howMany)
     {
         if (input == null) throw new IllegalArgumentException("Functional.takeNAndYield: input is null");
 
@@ -1350,14 +1338,14 @@ public final class Functional
                 counter++;
                 if (counter < howMany && !position.hasNext()) break;
             }
-            return Pair.with(output, (Iterable<A>) new Iterable<A>() {
-                @Override
+            return Pair.of(output, (Iterable<A>) new Iterable<A>() {
+
                 public Iterator<A> iterator() {
                     return position;
                 }
             });
         }
-        return Pair.with(output, input);
+        return Pair.of(output, input);
     }
 
     /**
@@ -1369,25 +1357,25 @@ public final class Functional
      * @return a sequence containing all the elements of 'input' followed by 't'
      * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
      */
-    public static final <T>Iterable<T> append(final T t, final Iterable<T> input)
+    public static <T>Iterable<T> append(final T t, final Iterable<T> input)
     {
         return new Iterable<T>(){
-            @Override
+
             public Iterator<T> iterator() {
                 return new Iterator<T>(){
                     private int counter=0;
                     private Iterator<? extends T> iterator=input.iterator();
-                    @Override
+
                     public boolean hasNext() {
                         return counter==0||iterator.hasNext();
                     }
 
-                    @Override
+
                     public T next() {
                         return counter++==0 ? t : iterator.next();
                     }
 
-                    @Override
+
                     public void remove() {
                         throw new UnsupportedOperationException("Functional.append(T,Iterable<T>): it is not possible to remove elements from this sequence");
                     }
@@ -1407,7 +1395,7 @@ public final class Functional
      * @param <U> the type of the element in the key
      * @return a java.util.Map containing a list of elements for each key
      */
-    public static final <T,U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
+    public static <T,U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
     {
         if (keyFn == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): keyFn is null");
         if (input == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): input is null");
@@ -1509,15 +1497,15 @@ public final class Functional
 //
 //        final Integer seed = 0;
 //        final Func<Integer,Pair<T,Integer>> boundsCalculator = new Func<Integer, Pair<T, Integer>>() {
-//            @Override
+//
 //            public Pair<T, Integer> apply(final Integer integer) {
-//                return Pair.with(
+//                return Pair.of(
 //                        generator.apply(1 + (integer * size + (integer <= remainder ? integer : remainder))),
 //                        integer+1);
 //            }
 //        };
 //        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
-//            @Override
+//
 //            public Boolean apply(Integer integer) {
 //                return integer>howManyPartitions;
 //            }
@@ -1539,7 +1527,7 @@ public final class Functional
 //        return retval;
 //
 ////        return Functional.seq.init(new Func<Integer, Range<T>>() {
-////            @Override
+////
 ////            public Range<T> apply(final Integer integer) {
 ////// inefficient - the upper bound is computed twice (once at the end of an iteration and once at the beginning of the next iteration)
 ////                return new Range<T>( // 1 + the value because the init function expects the control range to start from one.

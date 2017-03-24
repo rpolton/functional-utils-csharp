@@ -92,7 +92,7 @@ public class LispListTest
         final List<Integer> highElems = filter(
                 new Func<Integer,Boolean>()
                 {
-                    @Override
+
                     public Boolean apply(Integer a) { return a > limit;}
                 }, input);
 
@@ -108,7 +108,7 @@ public class LispListTest
         final List<Integer> output = filter(
                 new Func<Integer,Boolean>()
                 {
-                    @Override public Boolean apply(Integer a) {return a > limit;}
+                     public Boolean apply(Integer a) {return a > limit;}
                 }, input);
 
         Assert.assertTrue(output.isEmpty());
@@ -122,7 +122,7 @@ public class LispListTest
         final List<Integer> output = filter(
                 new Func<Integer,Boolean>()
                 {
-                    @Override public Boolean apply(Integer a) {return a % 4 ==0;}
+                     public Boolean apply(Integer a) {return a % 4 ==0;}
                 }, input);
 
         Assert.assertEquals(expected, output);
@@ -175,7 +175,7 @@ public class LispListTest
         final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
         final Integer expected = 30;
         final Integer output = fold(new Func2<Integer, Integer, Integer>() {
-            @Override
+
             public Integer apply(Integer state, Integer o) {
                 return state+o;
             }
@@ -189,7 +189,7 @@ public class LispListTest
         final List<String> input = list("2",list("4",list("6",list("8",LispList.<String>nil()))));
         final String expected = "2468";
         final String output = fold(new Func2<String, String, String>() {
-            @Override
+
             public String apply(String state, String o) {
                 return state+o;
             }
@@ -203,7 +203,7 @@ public class LispListTest
         final List<Integer> input = list(2,list(4,list(6,list(8,LispList.<Integer>nil()))));
         final String expected = "8642";
         final String output = foldRight(new Func2<Integer, String, String>() {
-            @Override
+
             public String apply(Integer o, String state) {
                 return state + o;
             }

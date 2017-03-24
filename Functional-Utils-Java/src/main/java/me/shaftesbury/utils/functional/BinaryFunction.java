@@ -29,14 +29,14 @@ public abstract class BinaryFunction<A,B,C> implements Func2<A,B,C>
         return toUnaryFunc(this).apply(b);
     }
 
-    private static final <A,B,C>Func<B,Func<A,C>> toUnaryFunc(final BinaryFunction<A,B,C> f)
+    private static <A,B,C>Func<B,Func<A,C>> toUnaryFunc(final BinaryFunction<A,B,C> f)
     {
         return new Func<B,Func<A,C>>()
         {
-            @Override
+
             public Func<A, C> apply(final B b) {
                 return new Func<A, C>() {
-                    @Override
+
                     public C apply(final A a) {
                         return f.apply(a,b);
                     }
@@ -56,10 +56,10 @@ public abstract class BinaryFunction<A,B,C> implements Func2<A,B,C>
      * @param <C> the type of the return value of the delayed function
      * @return a function that takes no arguments and returns a value of type C
      */
-    public static final <A,B,C>Func0<C> delay(final Func2<A, B, C> f, final A a, final B b)
+    public static <A,B,C>Func0<C> delay(final Func2<A, B, C> f, final A a, final B b)
     {
         return new Func0<C>() {
-            @Override
+
             public C apply() {
                 return f.apply(a,b);
             }

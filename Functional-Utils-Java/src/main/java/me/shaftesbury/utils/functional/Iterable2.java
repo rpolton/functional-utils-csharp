@@ -1,7 +1,8 @@
 package me.shaftesbury.utils.functional;
 
-import org.javatuples.Pair;
-import org.javatuples.Triplet;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.Comparator;
 import java.util.List;
@@ -46,9 +47,9 @@ public interface Iterable2<T> extends java.lang.Iterable<T>
     T findLast(final Func<? super T,Boolean> f);
     Pair<List<T>,List<T>> partition(final Func<? super T,Boolean> f);
 
-    <U>Iterable2<org.javatuples.Pair<T,U>> zip(final Iterable2<? extends U> l2);
-    //<U>org.javatuples.Pair<List<T>,List<U>> unzip();
-    <U,V>Iterable2<Triplet<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3);
+    <U>Iterable2<Pair<T,U>> zip(final Iterable2<? extends U> l2);
+    //<U>Pair<List<T>,List<U>> unzip();
+    <U,V>Iterable2<Triple<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3);
     <U>U in(final Func<Iterable2<T>, U> f);
 
     <U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn);

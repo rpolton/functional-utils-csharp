@@ -1,7 +1,7 @@
 package me.shaftesbury.utils.functional;
 
-import org.javatuples.Pair;
-import org.javatuples.Triplet;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -58,13 +58,13 @@ public final class Functional
     {
         final Collection<String> indentation = init(
                 new Func<Integer, String>() {
-                    @Override
+
                     public String apply(final Integer integer) {
                         return unitOfIndentation;
                     }
                 }, howMany);
         return fold(new Func2<String, String, String>() {
-            @Override
+
             public String apply(final String state, final String str) {
                 return str + state;
             }
@@ -94,11 +94,11 @@ public final class Functional
         for (final B b : input)
         {
             final Pair<A, Option<B>> intermediate = f.apply(state, b);
-            state = intermediate.getValue0();
-            if (!intermediate.getValue1().isNone())
-                results.add(intermediate.getValue1().Some());
+            state = intermediate.getLeft();
+            if (!intermediate.getRight().isNone())
+                results.add(intermediate.getRight().Some());
         }
-        return new Pair<A, List<B>>(state, Collections.unmodifiableList(results));
+        return Pair.<A, List<B>>of(state, Collections.unmodifiableList(results));
     }
 
     public static <T>List<T> toList(final Enumeration<T> input)
@@ -176,7 +176,6 @@ public final class Functional
     public static <A>Func<Iterable<A>,A> find(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, A>() {
-            @Override
             public A apply(final Iterable<A> input) {
                 return Functional.find(f,input);
             }
@@ -223,12 +222,12 @@ public final class Functional
         if (input == null) throw new IllegalArgumentException("input");
 
         final Pair<List<A>,Iterable<A>> p = takeNAndYield(input,1);
-        final Pair<A,Boolean> seed = Pair.with(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
+        final Pair<A,Boolean> seed = Pair.of(p.getLeft().get(0),f.apply(p.getLeft().get(0)));
         final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
-            @Override public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.with(item,true):state;}
-        },seed,p.getValue1());
+            public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.of(item,true):state;}
+        },seed,p.getRight());
 
-        if(result.getValue1()) return result.getValue0();
+        if(result.getRight()) return result.getLeft();
         throw new NoSuchElementException();
     }
 
@@ -267,7 +266,6 @@ public final class Functional
     public static <A>Func<List<A>,A> findLast(final Func<A,Boolean> f)
     {
         return new Func<List<A>, A>() {
-            @Override
             public A apply(final List<A> input) {
                 return Functional.findLast(f,input);
             }
@@ -318,7 +316,6 @@ public final class Functional
     public static <A,B>Func<Iterable<A>,B> pick(final Func<? super A,Option<B>> f)
     {
         return new Func<Iterable<A>, B>() {
-            @Override
             public B apply(final Iterable<A> input) {
                 return Functional.pick(f,input);
             }
@@ -355,7 +352,6 @@ public final class Functional
     {
         return new Func<A, C>()
         {
-            @Override
             public C apply(final A x)
             {
                 return g.apply(f.apply(x));
@@ -379,7 +375,7 @@ public final class Functional
         final List<Pair<B,C>> output = new ArrayList<Pair<B,C>>(input.size());
 
         for(final A element : input)
-            output.add(Pair.with(f.apply(element), g.apply(element)));
+            output.add(Pair.of(f.apply(element), g.apply(element)));
 
         return output;
     }
@@ -392,7 +388,6 @@ public final class Functional
     public static <T>Func<T,T> identity()
     {
         return new Func<T, T>() {
-            @Override
             public T apply(final T t) {
                 return t;
             }
@@ -403,9 +398,8 @@ public final class Functional
      * <tt>isEven</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an even integer
      */
-    public static final Func<Integer,Boolean> isEven = new Func<Integer, Boolean>()
+    public static Func<Integer,Boolean> isEven = new Func<Integer, Boolean>()
     {
-        @Override
         public Boolean apply(final Integer i)
         {
             return i % 2 == 0;
@@ -415,9 +409,8 @@ public final class Functional
      * <tt>isOdd</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an odd integer
      */
-    public static final Func<Integer,Boolean> isOdd = new Func<Integer, Boolean>()
+    public static Func<Integer,Boolean> isOdd = new Func<Integer, Boolean>()
     {
-        @Override
         public Boolean apply(final Integer i)
         {
             return i % 2 != 0;
@@ -426,8 +419,7 @@ public final class Functional
     /**
      * <tt>count</tt> a function that accepts a counter and another integer and returns 1 + counter
      */
-    public static final Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
-                @Override
+    public static Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
                 public Integer apply(final Integer state, final Integer b) {
                     return state + 1;
                 }
@@ -435,8 +427,7 @@ public final class Functional
     /**
      * <tt>sum</tt> a function that accepts two integers and returns the sum of them
      */
-    public static final Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
-        @Override
+    public static Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
         public Integer apply(final Integer state, final Integer b) {
             return state + b;
         }
@@ -451,7 +442,6 @@ public final class Functional
     {
         return new Func<T, Boolean>()
         {
-            @Override
             public Boolean apply(final T ths)
             {
                 return ths.compareTo(that)>0;
@@ -468,7 +458,6 @@ public final class Functional
     {
         return new Func<T, Boolean>()
         {
-            @Override
             public Boolean apply(final T ths)
             {
                 return ths.compareTo(that)>=0;
@@ -485,7 +474,7 @@ public final class Functional
     {
         return new Func<T, Boolean>()
         {
-            @Override
+
             public Boolean apply(final T ths)
             {
                 return ths.compareTo(that)<0;
@@ -502,7 +491,7 @@ public final class Functional
     {
         return new Func<T, Boolean>()
         {
-            @Override
+
             public Boolean apply(final T ths)
             {
                 return ths.compareTo(that)<=0;
@@ -564,7 +553,7 @@ public final class Functional
     public static <A,B> Func<Iterable<A>,List<B>> map(final Func<? super A, ? extends B> f)
     {
         return new Func<Iterable<A>, List<B>>() {
-            @Override
+
             public List<B> apply(final Iterable<A> input) {
                 return Functional.map(f,input);
             }
@@ -606,7 +595,7 @@ public final class Functional
     public static <A,B> Func<Iterable<A>,List<B>> mapi(final Func2<Integer, ? super A, ? extends B> f)
     {
         return new Func<Iterable<A>, List<B>>() {
-            @Override
+
             public List<B> apply(final Iterable<A> input) {
                 return Functional.mapi(f,input);
             }
@@ -647,7 +636,7 @@ public final class Functional
      */
     public static Comparator<Integer> dSorter = new Comparator<Integer>()
     {
-        @Override public int compare(final Integer i, final Integer j) { return Sorter(i, j); }
+         public int compare(final Integer i, final Integer j) { return Sorter(i, j); }
     };
 
     /**
@@ -667,7 +656,7 @@ public final class Functional
     {
         return new Func<T, String>()
         {
-            @Override public String apply(final T i) { return Stringify(i); }
+             public String apply(final T i) { return Stringify(i); }
         };
     }
 
@@ -736,7 +725,7 @@ public final class Functional
     public static <T>Func<Iterable<T>,List<T>> filter(final Func<? super T,Boolean> f)
     {
         return new Func<Iterable<T>, List<T>>() {
-            @Override
+
             public List<T> apply(final Iterable<T> input) {
                 return Functional.filter(f,input);
             }
@@ -773,7 +762,7 @@ public final class Functional
     public static <A>Func<Iterable<A>,Boolean> exists(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Boolean>() {
-            @Override
+
             public Boolean apply(final Iterable<A> input) {
                 return Functional.exists(f,input);
             }
@@ -789,7 +778,7 @@ public final class Functional
      */
     public static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
     {
-        return new Func<A,Boolean>(){@Override public Boolean apply(final A a) { return !f.apply(a);}};
+        return new Func<A,Boolean>(){ public Boolean apply(final A a) { return !f.apply(a);}};
     }
 
     /**
@@ -819,7 +808,7 @@ public final class Functional
     public static <A>Func<Iterable<A>,Boolean> forAll(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Boolean>() {
-            @Override
+
             public Boolean apply(final Iterable<A> input) {
                 return Functional.forAll(f,input);
             }
@@ -836,7 +825,7 @@ public final class Functional
      */
     public static <A,B> Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
     {
-        return new Func2<A,B,Boolean>(){@Override public Boolean apply(final A a, final B b) { return !f.apply(a,b);}};
+        return new Func2<A,B,Boolean>(){ public Boolean apply(final A a, final B b) { return !f.apply(a,b);}};
     }
 
     /// <summary> </summary>
@@ -871,7 +860,7 @@ public final class Functional
                 left.add(a);
             else
                 right.add(a);
-        return new Pair<List<A>,List<A>>(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
+        return Pair.<List<A>,List<A>>of(Collections.unmodifiableList(left), Collections.unmodifiableList(right));
     }
 
     /**
@@ -888,7 +877,7 @@ public final class Functional
     public static <A>Func<Iterable<A>,Pair<List<A>,List<A>>> partition(final Func<? super A,Boolean> f)
     {
         return new Func<Iterable<A>, Pair<List<A>, List<A>>>() {
-            @Override
+
             public Pair<List<A>, List<A>> apply(final Iterable<A> input) {
                 return Functional.partition(f,input);
             }
@@ -933,7 +922,7 @@ public final class Functional
     public static <A, B>Func<Iterable<A>,List<B>> choose(final Func<? super A, Option<B>> f)
     {
         return new Func<Iterable<A>, List<B>>() {
-            @Override
+
             public List<B> apply(final Iterable<A> input) {
                 return Functional.choose(f, input);
             }
@@ -974,7 +963,7 @@ public final class Functional
     public static <A, B>Func<Iterable<B>,A> fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue)
     {
         return new Func<Iterable<B>, A>() {
-            @Override
+
             public A apply(final Iterable<B> input) {
                 return Functional.fold(f, initialValue, input);
             }
@@ -996,8 +985,8 @@ public final class Functional
         final List<A> results = new ArrayList<A>();
         while(!finished.apply(next)) {
             final Pair<A,B> t = unspool.apply(next);
-            results.add(t.getValue0());
-            next = t.getValue1();
+            results.add(t.getLeft());
+            next = t.getRight();
         }
         return results;
     }
@@ -1017,8 +1006,8 @@ public final class Functional
         while(true) {
             final Option<Pair<A,B>> t = unspool.apply(next);
             if(t.isNone()) break;
-            results.add(t.Some().getValue0());
-            next = t.Some().getValue1();
+            results.add(t.Some().getLeft());
+            next = t.Some().getRight();
         }
         return results;
     }
@@ -1223,7 +1212,7 @@ public final class Functional
     public static<T>Func<Iterable<? extends T>,List<T>> take(final int howMany)
     {
         return new Func<Iterable<? extends T>, List<T>>() {
-            @Override
+
             public List<T> apply(final Iterable<? extends T> input) {
                 return Functional.take(howMany,input);
             }
@@ -1269,7 +1258,7 @@ public final class Functional
     public static<T>Func<List<T>,List<T>> takeWhile(final Func<? super T, Boolean> predicate)
     {
         return new Func<List<T>, List<T>>() {
-            @Override
+
             public List<T> apply(final List<T> input) {
                 return Functional.takeWhile(predicate, input);
             }
@@ -1310,7 +1299,7 @@ public final class Functional
     public static<T>Func<List<? extends T>,List<T>> skip(final int howMany)
     {
         return new Func<List<? extends T>, List<T>>() {
-            @Override
+
             public List<T> apply(final List<? extends T> input) {
                 return Functional.skip(howMany, input);
             }
@@ -1348,7 +1337,7 @@ public final class Functional
     public static<T>Func<List<T>,List<T>> skipWhile(final Func<? super T, Boolean> predicate)
     {
         return new Func<List<T>, List<T>>() {
-            @Override
+
             public List<T> apply(final List<T> input) {
                 return Functional.skipWhile(predicate, input);
             }
@@ -1365,7 +1354,7 @@ public final class Functional
     public static <T>Func<Integer,T> constant(final T constant)
     {
         return new Func<Integer, T>() {
-            @Override
+
             public T apply(final Integer integer) {
                 return constant;
             }
@@ -1415,7 +1404,7 @@ public final class Functional
         final Iterator<? extends A> l1_it = l1.iterator();
         final Iterator<? extends B> l2_it = l2.iterator();
 
-        while(l1_it.hasNext() && l2_it.hasNext()) output.add(new Pair(l1_it.next(),l2_it.next()));
+        while(l1_it.hasNext() && l2_it.hasNext()) output.add(Pair.of(l1_it.next(),l2_it.next()));
         if(l1_it.hasNext() || l2_it.hasNext()) throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 and l2 have differing numbers of elements");
 
         return Collections.unmodifiableList(output);
@@ -1434,25 +1423,25 @@ public final class Functional
      * @return list of triplets; the first element from each of the input sequences is the first triplet in the output sequence and so on,
      *          in order. If the sequences do not have the same number of elements then an exception is thrown.
      */
-    public static <A,B,C>List<Triplet<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
+    public static <A,B,C>List<Triple<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
     {
         if(l1==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1 is null");
         if(l2==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l2 is null");
         if(l3==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l3 is null");
 
-        final List<Triplet<A,B,C>> output;
+        final List<Triple<A,B,C>> output;
         if(l1 instanceof Collection<?> && l2 instanceof Collection<?> && l3 instanceof Collection<?>) {
             if (((Collection) l1).size() != ((Collection) l2).size())
                 throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1, l2 and l3 have differing numbers of elements");
 
-            output = new ArrayList<Triplet<A, B,C>>(((Collection) l1).size());
+            output = new ArrayList<Triple<A, B,C>>(((Collection) l1).size());
         }
-        else output = new ArrayList<Triplet<A, B,C>>();
+        else output = new ArrayList<Triple<A, B,C>>();
         final Iterator<? extends A> l1_it = l1.iterator();
         final Iterator<? extends B> l2_it = l2.iterator();
         final Iterator<? extends C> l3_it = l3.iterator();
 
-        while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(new Triplet(l1_it.next(),l2_it.next(),l3_it.next()));
+        while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(Triple.of(l1_it.next(),l2_it.next(),l3_it.next()));
         if(l1_it.hasNext() || l2_it.hasNext() || l3_it.hasNext())
             throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1, l2 and l3 have differing numbers of elements");
 
@@ -1486,11 +1475,11 @@ public final class Functional
         }
         for(final Pair<A,B> pair:input)
         {
-            l1.add(pair.getValue0());
-            l2.add(pair.getValue1());
+            l1.add(pair.getLeft());
+            l2.add(pair.getRight());
         }
 
-        return new Pair(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2));
+        return Pair.of(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2));
     }
 
     /**
@@ -1504,7 +1493,7 @@ public final class Functional
      * @return triplet of lists; the first element from each of the output sequences is the first triplet in the input sequence and so on,
      *          in order.
      */
-    public static <A,B,C>Triplet<List<A>,List<B>,List<C>> unzip3(final Iterable<Triplet<A,B,C>> input)
+    public static <A,B,C>Triple<List<A>,List<B>,List<C>> unzip3(final Iterable<Triple<A,B,C>> input)
     {
         if(input==null) throw new IllegalArgumentException("Functional.unzip(Iterable<Pair<A,B>>): input is null");
 
@@ -1523,14 +1512,14 @@ public final class Functional
             l3 = new ArrayList<C>();
         }
 
-        for(final Triplet<A,B,C> triplet:input)
+        for(final Triple<A,B,C> triplet:input)
         {
-            l1.add(triplet.getValue0());
-            l2.add(triplet.getValue1());
-            l3.add(triplet.getValue2());
+            l1.add(triplet.getLeft());
+            l2.add(triplet.getMiddle());
+            l3.add(triplet.getRight());
         }
 
-        return new Triplet(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2),Collections.unmodifiableList(l3));
+        return Triple.of(Collections.unmodifiableList(l1),Collections.unmodifiableList(l2),Collections.unmodifiableList(l3));
     }
 
     /**
@@ -1567,7 +1556,7 @@ public final class Functional
     public static <T,U>Func<Iterable<T>,List<U>> collect(final Func<? super T,? extends Iterable<U>> f)
     {
         return new Func<Iterable<T>, List<U>>() {
-            @Override
+
             public List<U> apply(final Iterable<T> input) {
                 return Functional.collect(f,input);
             }
@@ -1602,15 +1591,15 @@ public final class Functional
                     counter++;
                     if (counter < howMany && !position.hasNext()) break;
                 }
-                return Pair.with(output, (Iterable<A>) new Iterable<A>() {
-                    @Override
+                return Pair.of(output, (Iterable<A>) new Iterable<A>() {
+
                     public Iterator<A> iterator() {
                         return position;
                     }
                 });
             }
         }
-        return Pair.with(output, input);
+        return Pair.of(output, input);
     }
 
     /**
@@ -1626,23 +1615,23 @@ public final class Functional
     {
         return new Iterable<T>(){
             private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-            @Override
+
             public Iterator<T> iterator() {
                 if(haveCreatedIterator.compareAndSet(false,true))
                     return new Iterator<T>(){
                         private int counter=0;
                         private Iterator<? extends T> iterator=input.iterator();
-                        @Override
+
                         public boolean hasNext() {
                             return counter==0||iterator.hasNext();
                         }
 
-                        @Override
+
                         public T next() {
                             return counter++==0 ? t : iterator.next();
                         }
 
-                        @Override
+
                         public void remove() {
                             throw new UnsupportedOperationException("Functional.append(T,Iterable<T>): it is not possible to remove elements from this sequence");
                         }
@@ -1765,15 +1754,15 @@ public final class Functional
 
         final Integer seed = 0;
         final Func<Integer,Pair<T,Integer>> boundsCalculator = new Func<Integer, Pair<T, Integer>>() {
-            @Override
+
             public Pair<T, Integer> apply(final Integer integer) {
-                return Pair.with(
+                return Pair.of(
                         generator.apply(1 + (integer * size + (integer <= remainder ? integer : remainder))),
                         integer+1);
             }
         };
         final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
-            @Override
+
             public Boolean apply(Integer integer) {
                 return integer>howManyPartitions;
             }
@@ -1795,7 +1784,7 @@ public final class Functional
         return retval;
 
 //        return Functional.seq.init(new Func<Integer, Range<T>>() {
-//            @Override
+//
 //            public Range<T> apply(final Integer integer) {
 //// inefficient - the upper bound is computed twice (once at the end of an iteration and once at the beginning of the next iteration)
 //                return new Range<T>( // 1 + the value because the init function expects the control range to start from one.
@@ -1812,7 +1801,7 @@ public final class Functional
      * then you should make the convert the sequence (the Iterable) to a concrete collection before accessing the
      * iterator.
      */
-    public static final class seq
+    public static class seq
     {
         private seq() {}
         /**
@@ -1833,23 +1822,23 @@ public final class Functional
 
             return new Iterable<U>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public final Iterator<U> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<U>() {
                             private final Iterator<T> _input=input.iterator();
                             private final Func<? super T,? extends U> _f = f;
-                            @Override
+
                             public final boolean hasNext() {
                                 return _input.hasNext();
                             }
 
-                            @Override
+
                             public final U next() {
                                 return _f.apply(_input.next());
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
@@ -1874,7 +1863,7 @@ public final class Functional
         public static <T,U>Func<Iterable<T>,Iterable<U>> map(final Func<? super T,? extends U> f)
         {
             return new Func<Iterable<T>, Iterable<U>>() {
-                @Override
+
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.map(f, input);
                 }
@@ -1899,24 +1888,24 @@ public final class Functional
 
             return new Iterable<U>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public final Iterator<U> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<U>() {
                             private final Iterator<T> _input=input.iterator();
                             private final Func2<Integer,? super T,? extends U> _f = f;
                             private int counter = 0;
-                            @Override
+
                             public final boolean hasNext() {
                                 return _input.hasNext();
                             }
 
-                            @Override
+
                             public final U next() {
                                 return _f.apply(counter++,_input.next());
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
@@ -1941,7 +1930,7 @@ public final class Functional
         public static <T,U>Func<Iterable<T>,Iterable<U>> mapi(final Func2<Integer,? super T,? extends U> f)
         {
             return new Func<Iterable<T>, Iterable<U>>() {
-                @Override
+
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.mapi(f, input);
                 }
@@ -1964,24 +1953,24 @@ public final class Functional
             return new Iterable<T>()
             {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<T> iterator()
                 {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>() {
                             private final Iterator<? extends T> _s1 = list1.iterator();
                             private final Iterator<? extends T> _s2 = list2.iterator();
-                            @Override
+
                             public boolean hasNext() {
                                 return _s1.hasNext() || _s2.hasNext();
                             }
 
-                            @Override
+
                             public T next() {
                                 return _s1.hasNext() ? _s1.next() : _s2.next();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.concat(Iterable<T>,Iterable<T>): remove is not supported");
                             }
@@ -2008,14 +1997,14 @@ public final class Functional
 
             return new Iterable<T>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public final Iterator<T> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>() {
                             private final Iterator<T> _input=input.iterator();
                             private final Func<? super T,Boolean> _f = f;
                             private T _next = null;
-                            @Override
+
                             public final boolean hasNext() {
                                 while(_next==null && // ie we haven't already read the next element
                                     _input.hasNext())
@@ -2030,7 +2019,7 @@ public final class Functional
                                 return _next!=null;
                             }
 
-                            @Override
+
                             public final T next() {
                                 if(hasNext())
                                 {
@@ -2041,7 +2030,7 @@ public final class Functional
                                 throw new java.util.NoSuchElementException();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.filter(Func<T,Boolean>,Iterable<T>): Removing elements is strictly prohibited");
                             }
@@ -2063,7 +2052,7 @@ public final class Functional
         public static <T>Func<Iterable<T>,Iterable<T>> filter(final Func<? super T,Boolean> f)
         {
             return new Func<Iterable<T>,Iterable<T>>(){
-                @Override
+
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.filter(f,input);
                 }
@@ -2089,14 +2078,14 @@ public final class Functional
 
             return new Iterable<U>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public final Iterator<U> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<U>() {
                             private final Iterator<T> _input=input.iterator();
                             private final Func<? super T,Option<U>> _f = f;
                             private Option<U> _next = Option.None();
-                            @Override
+
                             public final boolean hasNext() {
                                 while(_next.isNone() && // ie we haven't already read the next element
                                         _input.hasNext())
@@ -2111,7 +2100,7 @@ public final class Functional
                                 return _next.isSome();
                             }
 
-                            @Override
+
                             public final U next()
                             {
                                 if(hasNext())
@@ -2127,7 +2116,7 @@ public final class Functional
                                 throw new java.util.NoSuchElementException();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.choose(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
@@ -2151,7 +2140,7 @@ public final class Functional
         public static <T,U>Func<Iterable<T>,Iterable<U>> choose(final Func<? super T,Option<U>> f)
         {
             return new Func<Iterable<T>, Iterable<U>>() {
-                @Override
+
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.choose(f, input);
                 }
@@ -2179,26 +2168,26 @@ public final class Functional
             return new Iterable<T>()
             {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<T> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>()
                         {
                             private int _counter=1;
                             private final Func<Integer,? extends T> _f = f;
-                            @Override
+
                             public boolean hasNext() {
                                 return _counter<=howMany;
                             }
 
-                            @Override
+
                             public T next() {
                                 if(!hasNext())
                                     throw new NoSuchElementException();
                                 return _f.apply(_counter++);
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.init(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
@@ -2227,24 +2216,24 @@ public final class Functional
             return new Iterable<T>()
             {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<T> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>()
                         {
                             private int _counter=1;
                             private final Func<Integer,? extends T> _f = f;
-                            @Override
+
                             public boolean hasNext() {
                                 return true;
                             }
 
-                            @Override
+
                             public T next() {
                                 return _f.apply(_counter++);
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.init(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
@@ -2273,19 +2262,19 @@ public final class Functional
 
             return new Iterable<U>(){
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<U> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<U>(){
                             private final Iterator<T> it = input.iterator();
                             private List<U> cache = new ArrayList<U>();
                             private Iterator<U> cacheIterator = cache.iterator();
-                            @Override
+
                             public boolean hasNext() {
                                 return it.hasNext() || cacheIterator.hasNext();
                             }
 
-                            @Override
+
                             public U next() {
                                 if(cacheIterator.hasNext()) return cacheIterator.next();
                                 cache = toList(f.apply(it.next()));
@@ -2293,7 +2282,7 @@ public final class Functional
                                 return cacheIterator.next();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.collect: remove is not supported");
                             }
@@ -2317,7 +2306,7 @@ public final class Functional
         public static <T,U>Func<Iterable<T>,Iterable<U>> collect(final Func<? super T,? extends Iterable<U>> f)
         {
             return new Func<Iterable<T>, Iterable<U>>() {
-                @Override
+
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.collect(f,input);
                 }
@@ -2341,14 +2330,14 @@ public final class Functional
 
             return new Iterable<T>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<T> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>() {
                             private final Iterator<T> it = input.iterator();
                             private boolean haveWeSkipped = false;
 
-                            @Override
+
                             public boolean hasNext() {
                                 if (haveWeSkipped && it.hasNext()) return true;
                                 if (haveWeSkipped) return false;
@@ -2359,13 +2348,13 @@ public final class Functional
                                 return it.hasNext();
                             }
 
-                            @Override
+
                             public T next() {
                                 if(!hasNext()) throw new NoSuchElementException();
                                 return it.next();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.skip: remove is not supported");
                             }
@@ -2387,7 +2376,7 @@ public final class Functional
         public static <T>Func<Iterable<T>,Iterable<T>> skip(final int howMany)
         {
             return new Func<Iterable<T>, Iterable<T>>() {
-                @Override
+
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.skip(howMany, input);
                 }
@@ -2411,7 +2400,7 @@ public final class Functional
 
             return new Iterable<T>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<T> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>() {
@@ -2420,7 +2409,7 @@ public final class Functional
                             private boolean haveWeReadFirstValue = false;
                             private T firstValue = null;
 
-                            @Override
+
                             public boolean hasNext() {
                                 if (haveWeSkipped && it.hasNext()) return true;
                                 if (haveWeSkipped) return false;
@@ -2444,7 +2433,7 @@ public final class Functional
                                 }
                             }
 
-                            @Override
+
                             public T next() {
                                 if(haveWeSkipped && !haveWeReadFirstValue && firstValue!=null)
                                 {
@@ -2457,7 +2446,7 @@ public final class Functional
                                 return next();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.skipWhile(Func,Iterable): it is not possible to remove elements from this sequence");
                             }
@@ -2479,7 +2468,7 @@ public final class Functional
         public static <T>Func<Iterable<T>,Iterable<T>> skipWhile(final Func<? super T,Boolean> predicate)
         {
             return new Func<Iterable<T>, Iterable<T>>() {
-                @Override
+
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.skipWhile(predicate, input);
                 }
@@ -2503,18 +2492,18 @@ public final class Functional
 
             return new Iterable<T>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<T> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>(){
                             private final Iterator<? extends T> it = list.iterator();
                             private int howManyHaveWeRetrievedAlready = 0;
-                            @Override
+
                             public boolean hasNext() {
                                 return howManyHaveWeRetrievedAlready<howMany && it.hasNext();
                             }
 
-                            @Override
+
                             public T next() {
                                 if(howManyHaveWeRetrievedAlready>=howMany)
                                     throw new java.util.NoSuchElementException("Cannot request additional elements from input");
@@ -2523,7 +2512,7 @@ public final class Functional
                                 return next;
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.take: remove is not supported");
                             }
@@ -2543,7 +2532,7 @@ public final class Functional
         public static <T>Func<Iterable<T>,Iterable<T>> take(final int howMany)
         {
             return new Func<Iterable<T>, Iterable<T>>() {
-                @Override
+
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.take(howMany, input);
                 }
@@ -2567,7 +2556,7 @@ public final class Functional
 
             return new Iterable<T>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<T> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>() {
@@ -2576,7 +2565,7 @@ public final class Functional
                             private T next = null;
                             private boolean haveWeCheckedTheCurrentElement = false;
 
-                            @Override
+
                             public boolean hasNext() {
                                 if(!haveWeFinished)
                                 {
@@ -2610,7 +2599,7 @@ public final class Functional
                                 }
                             }
 
-                            @Override
+
                             public T next() {
                                 if(!haveWeFinished)
                                 {
@@ -2623,7 +2612,7 @@ public final class Functional
                                 throw new NoSuchElementException();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.takeWhile(Func,Iterable): it is not possible to remove elements from this sequence");
                             }
@@ -2645,7 +2634,7 @@ public final class Functional
         public static <T>Func<Iterable<T>,Iterable<T>> takeWhile(final Func<? super T,Boolean> predicate)
         {
             return new Func<Iterable<T>, Iterable<T>>() {
-                @Override
+
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.takeWhile(predicate, input);
                 }
@@ -2665,25 +2654,25 @@ public final class Functional
 
             return new Iterable<A>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<A> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<A>() {
                             B next = seed;
-                            @Override
+
                             public boolean hasNext() {
                                 return !finished.apply(next);
                             }
 
-                            @Override
+
                             public A next() {
                                 if(!hasNext()) throw new NoSuchElementException();
                                 final Pair<A,B> t = unspool.apply(next);
-                                next = t.getValue1();
-                                return t.getValue0();
+                                next = t.getRight();
+                                return t.getLeft();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.unfold(Func,Func,B): it is not possible to remove elements from this sequence");
                             }
@@ -2705,25 +2694,25 @@ public final class Functional
 
             return new Iterable<A>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<A> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<A>() {
                             B next = seed;
-                            @Override
+
                             public boolean hasNext() {
                                 return unspool.apply(next).isSome();
                             }
 
-                            @Override
+
                             public A next() {
                                 final Option<Pair<A,B>> temp = unspool.apply(next);
                                 if(temp.isNone()) throw new NoSuchElementException();
-                                next = temp.Some().getValue1();
-                                return temp.Some().getValue0();
+                                next = temp.Some().getRight();
+                                return temp.Some().getLeft();
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.unfold(Func,B): it is not possible to remove elements from this sequence");
                             }
@@ -2767,15 +2756,15 @@ public final class Functional
 
             final Integer seed = 0;
             final Func<Integer,Pair<T,Integer>> boundsCalculator = new Func<Integer, Pair<T, Integer>>() {
-                @Override
+
                 public Pair<T, Integer> apply(final Integer integer) {
-                    return Pair.with(
+                    return Pair.of(
                             generator.apply(1 + (integer * size + (integer <= remainder ? integer : remainder))),
                             integer+1);
                 }
             };
             final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
-                @Override
+
                 public Boolean apply(Integer integer) {
                     return integer>howManyPartitions;
                 }
@@ -2785,18 +2774,18 @@ public final class Functional
 
             return new Iterable<Range<T>>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<Range<T>> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<Range<T>>() {
                             final Iterator<T> iterator = output.iterator();
                             T last = iterator.next();
-                            @Override
+
                             public boolean hasNext() {
                                 return iterator.hasNext();
                             }
 
-                            @Override
+
                             public Range<T> next() {
                                 final T next = iterator.next();
                                 final Range<T> retval = new Range(last, next);
@@ -2804,7 +2793,7 @@ public final class Functional
                                 return retval;
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.partition(Func,int,int): it is not possible to remove elements from this sequence");
                             }
@@ -2832,13 +2821,13 @@ public final class Functional
 
             return new Iterable<Pair<A, B>>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<Pair<A, B>> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<Pair<A, B>>() {
                             private final Iterator<? extends A> l1_it = l1.iterator();
                             private final Iterator<? extends B> l2_it = l2.iterator();
-                            @Override
+
                             public boolean hasNext() {
                                 final boolean l1_it_hasNext = l1_it.hasNext();
                                 final boolean l2_it_hasNext = l2_it.hasNext();
@@ -2846,17 +2835,17 @@ public final class Functional
                                 return l1_it_hasNext && l2_it_hasNext;
                             }
 
-                            @Override
+
                             public Pair<A, B> next() {
-                                return Pair.with(l1_it.next(),l2_it.next());
+                                return Pair.of(l1_it.next(),l2_it.next());
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.zip(Iterable,Iterable): it is not possible to remove elements from this sequence");
                             }
 
-    //                        @Override
+    //
     //                        public void forEachRemaining(Consumer<? super Pair<A, B>> action) {
     //
     //                        }
@@ -2869,7 +2858,7 @@ public final class Functional
         public static <A,B>Func<Iterable<B>,Iterable<Pair<A,B>>> zip(final Iterable<? extends A> l1)
         {
             return new Func<Iterable<B>,Iterable<Pair<A,B>>>() {
-                @Override
+
                 public Iterable<Pair<A,B>> apply(final Iterable<B> l2) {
                     return Functional.seq.zip(l1, l2);
                 }
@@ -2889,22 +2878,22 @@ public final class Functional
          * @return list of pairs; the first element from each of the two input sequences is the first pair in the output sequence and so on,
          *          in order. If the sequences do not have the same number of elements then an exception is thrown.
          */
-        public static <A,B,C>Iterable<Triplet<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
+        public static <A,B,C>Iterable<Triple<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
         {
             if(l1==null) throw new IllegalArgumentException("Functional.seq.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1 is null");
             if(l2==null) throw new IllegalArgumentException("Functional.seq.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l2 is null");
             if(l3==null) throw new IllegalArgumentException("Functional.seq.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l3 is null");
 
-            return new Iterable<Triplet<A, B, C>>() {
+            return new Iterable<Triple<A, B, C>>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
-                public Iterator<Triplet<A, B, C>> iterator() {
+
+                public Iterator<Triple<A, B, C>> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
-                        return new Iterator<Triplet<A, B, C>>() {
+                        return new Iterator<Triple<A, B, C>>() {
                             private final Iterator<? extends A> l1_it = l1.iterator();
                             private final Iterator<? extends B> l2_it = l2.iterator();
                             private final Iterator<? extends C> l3_it = l3.iterator();
-                            @Override
+
                             public boolean hasNext() {
                                 final boolean l1_it_hasNext = l1_it.hasNext();
                                 final boolean l2_it_hasNext = l2_it.hasNext();
@@ -2913,17 +2902,17 @@ public final class Functional
                                 return l1_it_hasNext && l2_it_hasNext && l3_it_hasNext;
                             }
 
-                            @Override
-                            public Triplet<A, B, C> next() {
-                                return Triplet.with(l1_it.next(),l2_it.next(),l3_it.next());
+
+                            public Triple<A, B, C> next() {
+                                return Triple.of(l1_it.next(),l2_it.next(),l3_it.next());
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.zip3(Iterable,Iterable,Iterable): it is not possible to remove elements from this sequence");
                             }
 
-    //                        @Override
+    //
     //                        public void forEachRemaining(Consumer<? super Pair<A, B>> action) {
     //
     //                        }
@@ -2933,11 +2922,11 @@ public final class Functional
             };
         }
 
-        public static <A,B,C>Func<Iterable<C>,Iterable<Triplet<A,B,C>>> zip3(final Iterable<? extends A> l1,final Iterable<? extends B> l2)
+        public static <A,B,C>Func<Iterable<C>,Iterable<Triple<A,B,C>>> zip3(final Iterable<? extends A> l1,final Iterable<? extends B> l2)
         {
-            return new Func<Iterable<C>,Iterable<Triplet<A,B,C>>>() {
-                @Override
-                public Iterable<Triplet<A,B,C>> apply(final Iterable<C> l3) {
+            return new Func<Iterable<C>,Iterable<Triple<A,B,C>>>() {
+
+                public Iterable<Triple<A,B,C>> apply(final Iterable<C> l3) {
                     return Functional.seq.zip3(l1, l2, l3);
                 }
             };
@@ -2959,23 +2948,23 @@ public final class Functional
         {
             return new Iterable<Pair<B, C>>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
-                @Override
+
                 public Iterator<Pair<B, C>> iterator() {
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<Pair<B, C>>() {
                             private final Iterator<? extends A> iterator = input.iterator();
-                            @Override
+
                             public boolean hasNext() {
                                 return iterator.hasNext();
                             }
 
-                            @Override
+
                             public Pair<B, C> next() {
                                 final A next = iterator.next();
-                                return Pair.with(f.apply(next), g.apply(next));
+                                return Pair.of(f.apply(next), g.apply(next));
                             }
 
-                            @Override
+
                             public void remove() {
                                 throw new UnsupportedOperationException("Functional.seq.zip(Func,Func): it is not possible to remove elements from this sequence");
                             }
@@ -2994,7 +2983,7 @@ public final class Functional
     {
         private rec() {}
 
-        private static final <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterator<A> input, final Collection<A> accumulator)
+        private static <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterator<A> input, final Collection<A> accumulator)
         {
             if(input.hasNext())
             {
@@ -3020,7 +3009,7 @@ public final class Functional
             return filter(f,input.iterator(),input instanceof Collection<?> ? new ArrayList<A>(((Collection) input).size()) : new ArrayList<A>());
         }
 
-        private static final <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterator<A> input, final Collection<B> accumulator)
+        private static <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterator<A> input, final Collection<B> accumulator)
         {
             if(input.hasNext())
             {
@@ -3077,8 +3066,8 @@ public final class Functional
         {
             if(finished.apply(seed)) return accumulator;
             final Pair<A,B> p = unspool.apply(seed);
-            accumulator.add(p.getValue0());
-            return unfold(unspool,finished,p.getValue1(),accumulator);
+            accumulator.add(p.getLeft());
+            return unfold(unspool,finished,p.getRight(),accumulator);
         }
 
         /**
@@ -3097,8 +3086,8 @@ public final class Functional
         {
             final Option<Pair<A,B>> p = unspool.apply(seed);
             if(p.isNone()) return accumulator;
-            accumulator.add(p.Some().getValue0());
-            return unfold(unspool,p.Some().getValue1(),accumulator);
+            accumulator.add(p.Some().getLeft());
+            return unfold(unspool,p.Some().getRight(),accumulator);
         }
 
         /**
@@ -3132,7 +3121,7 @@ public final class Functional
      * Implementations of the algorithms contained herein which return sets
      * See <a href="http://en.wikipedia.org/wiki/Set_(computer_science)">Set</a>
      */
-    public static final class set
+    public static class set
     {
         private set() {}
         /**
@@ -3258,7 +3247,7 @@ public final class Functional
      * Implementations of the algorithms contained herein in terms of 'fold'
      * See <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
      */
-    public static final class inTermsOfFold
+    public static class inTermsOfFold
     {
         private inTermsOfFold() {}
 
@@ -3277,7 +3266,7 @@ public final class Functional
         public static <T,U>List<T> map(final Func<? super U,? extends T> f, final Iterable<U> l)
         {
             final List<T> l2 = Functional.fold(new Func2<List<T>,U,List<T>>() {
-                @Override
+
                 public List<T> apply(final List<T> state, final U o2) {
                     state.add(f.apply(o2));
                     return state;
@@ -3299,7 +3288,7 @@ public final class Functional
         public static <T>List<T> filter(final Func<? super T,Boolean> predicate, final Iterable<T> l)
         {
             final List<T> l2 = Functional.fold(new Func2<List<T>, T, List<T>>() {
-                @Override
+
                 public List<T> apply(final List<T> ts, final T o) {
                     if(predicate.apply(o)) ts.add(o);
                     return ts;
@@ -3323,9 +3312,9 @@ public final class Functional
         public static <A>List<A> init(final Func<Integer,? extends A> f, final int howMany)
         {
             return Functional.unfold(new Func<Integer, Option<Pair<A,Integer>>>() {
-                @Override
+
                 public Option<Pair<A,Integer>> apply(final Integer a) {
-                    return a<=howMany ? Option.toOption(Pair.with(f.apply(a), a + 1)) : Option.<Pair<A,Integer>>None();
+                    return a<=howMany ? Option.toOption(Pair.of(f.apply(a), a + 1)) : Option.<Pair<A,Integer>>None();
                 }
             }, new Integer(1));
         }
@@ -3400,13 +3389,13 @@ public final class Functional
             if (input == null) throw new IllegalArgumentException("input");
 
             final Pair<List<A>,Iterable<A>> p = takeNAndYield(input,1);
-            if(p.getValue0().isEmpty()) return Option.None();
-            final Pair<A,Boolean> seed = Pair.with(p.getValue0().get(0),f.apply(p.getValue0().get(0)));
+            if(p.getLeft().isEmpty()) return Option.None();
+            final Pair<A,Boolean> seed = Pair.of(p.getLeft().get(0),f.apply(p.getLeft().get(0)));
             final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
-                @Override public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.with(item,true):state;}
-            },seed,p.getValue1());
+                public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.of(item,true):state;}
+            },seed,p.getRight());
 
-            if(result.getValue1()) return Option.toOption(result.getValue0());
+            if(result.getRight()) return Option.toOption(result.getLeft());
             return Option.None();
         }
 
@@ -3557,7 +3546,7 @@ public final class Functional
             final Iterator<? extends A> l1_it = l1.iterator();
             final Iterator<? extends B> l2_it = l2.iterator();
 
-            while(l1_it.hasNext() && l2_it.hasNext()) output.add(new Pair(l1_it.next(),l2_it.next()));
+            while(l1_it.hasNext() && l2_it.hasNext()) output.add(Pair.of(l1_it.next(),l2_it.next()));
 
             return Collections.unmodifiableList(output);
         }
@@ -3575,20 +3564,20 @@ public final class Functional
          * @return list of triplets; the first element from each of the input sequences is the first triplet in the output sequence and so on,
          *          in order. If the sequences do not have the same number of elements then the results thus far are returned
          */
-        public static <A,B,C>List<Triplet<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
+        public static <A,B,C>List<Triple<A,B,C>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2, final Iterable<? extends C> l3)
         {
             if(l1==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1 is null");
             if(l2==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l2 is null");
             if(l3==null) throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l3 is null");
 
-            final List<Triplet<A,B,C>> output = (l1 instanceof Collection<?> && l2 instanceof Collection<?> && l3 instanceof Collection<?>)
-                    ? new ArrayList<Triplet<A,B,C>>(((Collection) l1).size())
-                    : new ArrayList<Triplet<A,B,C>>();
+            final List<Triple<A,B,C>> output = (l1 instanceof Collection<?> && l2 instanceof Collection<?> && l3 instanceof Collection<?>)
+                    ? new ArrayList<Triple<A,B,C>>(((Collection) l1).size())
+                    : new ArrayList<Triple<A,B,C>>();
             final Iterator<? extends A> l1_it = l1.iterator();
             final Iterator<? extends B> l2_it = l2.iterator();
             final Iterator<? extends C> l3_it = l3.iterator();
 
-            while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(new Triplet(l1_it.next(),l2_it.next(),l3_it.next()));
+            while(l1_it.hasNext() && l2_it.hasNext() && l3_it.hasNext()) output.add(Triple.of(l1_it.next(),l2_it.next(),l3_it.next()));
 
             return Collections.unmodifiableList(output);
         }
@@ -3668,7 +3657,7 @@ public final class Functional
         //return Try<InvalidOperationException>.ToTry(input, a => cases.First(chk => chk.check(a)).results(a), defaultCase);
         try {
             return cases.find(new Func<Case<A, B>, Boolean>() {
-                @Override
+
                 public Boolean apply(final Case<A, B> abCase) {
                     return abCase.predicate(input);
                 }
@@ -3685,9 +3674,9 @@ public final class Functional
     public static <A,B>Func<Pair<A,B>,A> first()
     {
         return new Func<Pair<A, B>, A>() {
-            @Override
+
             public A apply(Pair<A, B> pair) {
-                return pair.getValue0();
+                return pair.getLeft();
             }
         };
     }
@@ -3701,9 +3690,9 @@ public final class Functional
     public static <A,B>Func<Pair<A,B>,B> second()
     {
         return new Func<Pair<A, B>, B>() {
-            @Override
+
             public B apply(Pair<A, B> pair) {
-                return pair.getValue1();
+                return pair.getRight();
             }
         };
     }

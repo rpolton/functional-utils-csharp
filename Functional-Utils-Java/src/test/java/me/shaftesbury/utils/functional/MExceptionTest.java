@@ -1,6 +1,7 @@
 package me.shaftesbury.utils.functional;
 
-import org.javatuples.Pair;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ public class MExceptionTest
     {
         final MException<Object> mex = MException.toMException(
             new Func0<Object>() {
-                @Override
+
                 public Object apply() {
                     return null;
                 }
@@ -31,7 +32,7 @@ public class MExceptionTest
     public void readMExceptionInErrorTest()
     {
         final MException<Object> m = MException.toMException(new Func0<Object>() {
-            @Override
+
             public Object apply() {
                 throw new RuntimeException();
             }
@@ -45,7 +46,7 @@ public class MExceptionTest
     {
         final MException<Integer> mex = MException.toMException(
                 new Func0<Integer>() {
-                    @Override
+
                     public Integer apply() {
                         return 10;
                     }
@@ -63,7 +64,7 @@ public class MExceptionTest
         {
             final Integer ii = i;
             final Func0<Integer> f = new Func0<Integer>() {
-                @Override
+
                 public Integer apply() {
                     return new Integer(ii);
                 }
@@ -74,10 +75,10 @@ public class MExceptionTest
         }
     }
 
-    private static final Func<Integer,Integer> DoublingGenerator =
+    private static Func<Integer,Integer> DoublingGenerator =
             new Func<Integer,Integer>()
             {
-                @Override public Integer apply(Integer a) { return 2*a;}
+                 public Integer apply(Integer a) { return 2*a;}
             };
 
     @Test
@@ -86,10 +87,10 @@ public class MExceptionTest
         Iterable2<Integer> it = IterableHelper.init(DoublingGenerator,10);
         java.util.List<MException<Integer>> l = it.map(
                 new Func<Integer, MException<Integer>>() {
-                    @Override
+
                     public MException<Integer> apply(final Integer ii) {
                         final Func0<Integer> f = new Func0<Integer>() {
-                            @Override
+
                             public Integer apply() {
                                 if(ii==8||ii==10||ii==16) throw new IllegalArgumentException("value");
                                 return new Integer(ii);
@@ -113,7 +114,7 @@ public class MExceptionTest
             final Integer ii=i;
             final MException<Integer> m = MException.toMException(
                     new Func0<Integer>() {
-                        @Override
+
                         public Integer apply() {
                             return new Integer(ii);
                         }
@@ -124,11 +125,11 @@ public class MExceptionTest
             {
                 final Integer jj = j;
                 final MException<Integer> m1 = m.bind(new Func<Integer, MException<Integer>>() {
-                    @Override
+
                     public MException<Integer> apply(final Integer integer) {
                         return MException.toMException(
                                 new Func0<Integer>() {
-                                    @Override
+
                                     public Integer apply() {
                                         return integer / jj;
                                     }
@@ -167,7 +168,7 @@ public class MExceptionTest
     {
         final MException<Integer> m = MException.toMException(
                 new Func0<Integer>() {
-                    @Override
+
                     public Integer apply() {
                         return new Integer(1);
                     }
@@ -175,14 +176,14 @@ public class MExceptionTest
         );
 
         final MException<Integer> m1 = m.bind(new Func<Integer, MException<Integer>>() {
-            @Override
+
             public MException<Integer> apply(final Integer integer) {
                 throw new RuntimeException("Argh");
             }});
 
         Assert.assertTrue(m1.hasException());
         final Pair<RuntimeException, StackTraceElement[]> exceptionWithStackTrace = m1.getExceptionWithStackTrace();
-        Assert.assertEquals("Argh", exceptionWithStackTrace.getValue0().getMessage());
+        Assert.assertEquals("Argh", exceptionWithStackTrace.getLeft().getMessage());
     }
 
     @Test
@@ -190,7 +191,7 @@ public class MExceptionTest
     {
         final MException<Integer> m = MException.toMException(
                 new Func0<Integer>() {
-                    @Override
+
                     public Integer apply() {
                         throw new RuntimeException("Argh");
                     }
@@ -198,10 +199,10 @@ public class MExceptionTest
         );
 
         final MException<Integer> m1 = m.bind(new Func<Integer, MException<Integer>>() {
-            @Override
+
             public MException<Integer> apply(final Integer integer) {
                 return MException.toMException(new Func0<Integer>() {
-                    @Override
+
                     public Integer apply() {
                         return new Integer(integer);
                     }
@@ -211,7 +212,7 @@ public class MExceptionTest
         Assert.assertTrue(m1.hasException());
         Assert.assertTrue(m.hasException());
         final Pair<RuntimeException, StackTraceElement[]> exceptionWithStackTrace = m1.getExceptionWithStackTrace();
-        Assert.assertEquals("Argh",exceptionWithStackTrace.getValue0().getMessage());
+        Assert.assertEquals("Argh",exceptionWithStackTrace.getLeft().getMessage());
     }
 
     @Test
@@ -219,19 +220,19 @@ public class MExceptionTest
     {
         final Integer valu = 10;
         final MException<Integer> a = MException.toMException(new Func0<Integer>() {
-            @Override
+
             public Integer apply() {
                 return 10 / valu;
             }
         });
         final MException<Integer> b = MException.toMException(new Func0<Integer>() {
-            @Override
+
             public Integer apply() {
                 return 20 / valu;
             }
         });
         final MException<Integer> c = MException.lift(new Func2<Integer, Integer, Integer>() {
-            @Override
+
             public Integer apply(Integer o, Integer o2) {
                 return o + o2;
             }

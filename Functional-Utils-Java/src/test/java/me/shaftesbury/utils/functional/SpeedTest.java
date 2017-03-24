@@ -65,10 +65,10 @@ public class SpeedTest
         }
     }
 
-    private static final Func<Integer,Integer> DoublingGenerator =
+    private static Func<Integer,Integer> DoublingGenerator =
             new Func<Integer,Integer>()
             {
-                @Override public Integer apply(Integer a) { return 2*a;}
+                 public Integer apply(Integer a) { return 2*a;}
             };
 
     public final static <A>List<A> filterWithIterable(final Func<? super A,Boolean> pred, final Iterable<A> input)

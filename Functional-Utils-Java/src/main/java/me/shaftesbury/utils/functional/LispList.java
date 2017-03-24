@@ -17,58 +17,58 @@ public final class LispList
         boolean isEmpty();
     }
 
-    private static final <T>List<T> reverse(final List<T> input, final List<T> accumulator)
+    private static <T>List<T> reverse(final List<T> input, final List<T> accumulator)
     {
         return input.isEmpty() ? accumulator : reverse(input.tail(),list(input.head(),accumulator));
     }
 
-    public static final <T>List<T> reverse(final List<T> input)
+    public static <T>List<T> reverse(final List<T> input)
     {
         return reverse(input,(List<T>)nil());
     }
 
-    private static final <T>List<T> filter(final Func<T,Boolean> f, final List<T> input, final List<T> accumulator)
+    private static <T>List<T> filter(final Func<T,Boolean> f, final List<T> input, final List<T> accumulator)
     {
         return input.isEmpty()
                 ? accumulator
                 : filter(f,input.tail(),f.apply(input.head())?list(input.head(), accumulator):accumulator);
     }
 
-    public static final <T>List<T> filter(final Func<T,Boolean> f, final List<T> input)
+    public static <T>List<T> filter(final Func<T,Boolean> f, final List<T> input)
     {
         return reverse(filter(f, input, (List<T>) nil()));
     }
 
-    public static final <T,R>List<R> map(final Func<T,R> f, final List<T> input)
+    public static <T,R>List<R> map(final Func<T,R> f, final List<T> input)
     {
         return input.isEmpty()
                ? (List<R>)nil()
                : list(f.apply(input.head()),map(f,input.tail()));
     }
 
-    public static final <T,R>R fold(final Func2<R,T,R> f, final R initialValue, final List<T> input)
+    public static <T,R>R fold(final Func2<R,T,R> f, final R initialValue, final List<T> input)
     {
         return input.isEmpty()
                 ? initialValue
                 : fold(f,f.apply(initialValue,input.head()),input.tail());
     }
-    public static final <T,R>R foldRight(final Func2<T,R,R> f, final R initialValue, final List<T> input)
+    public static <T,R>R foldRight(final Func2<T,R,R> f, final R initialValue, final List<T> input)
     {
         return input.isEmpty()
                 ? initialValue
                 : f.apply(input.head(),foldRight(f,initialValue,input.tail()));
     }
 
-    public static final <T>List<T> cons(final T t, final List<T> l) { return list(t,l); }
-    public static final <T>T car(final List<T> l) { return l.head(); }
-    public static final <T>List<T> cdr(final List<T> l) { return l.tail(); }
-    public static final <T>T cadr(final List<T> l) { return car(cdr(l)); }
-    public static final <T>List<T> compose(final T t1, final T t2) { return list(t1, list(t2, (List<T>)nil())); }
+    public static <T>List<T> cons(final T t, final List<T> l) { return list(t,l); }
+    public static <T>T car(final List<T> l) { return l.head(); }
+    public static <T>List<T> cdr(final List<T> l) { return l.tail(); }
+    public static <T>T cadr(final List<T> l) { return car(cdr(l)); }
+    public static <T>List<T> compose(final T t1, final T t2) { return list(t1, list(t2, (List<T>)nil())); }
 
-    public static final class EmptyListHasNoHead extends RuntimeException {}
-    public static final class EmptyListHasNoTail extends RuntimeException {}
+    public static class EmptyListHasNoHead extends RuntimeException {}
+    public static class EmptyListHasNoTail extends RuntimeException {}
 
-    private static final LispList ll = new LispList();
+    private static LispList ll = new LispList();
 
     public final class NonEmptyList<T> implements List<T>
     {
@@ -81,17 +81,17 @@ public final class LispList
             _tail = tail;
         }
 
-        @Override
+
         public T head() {
             return _head;
         }
 
-        @Override
+
         public List<T> tail() {
             return _tail;
         }
 
-        @Override
+
         public boolean isEmpty() {
             return false;
         }
@@ -110,20 +110,20 @@ public final class LispList
         }
     }
 
-    public static final <T>List<T> nil()
+    public static <T>List<T> nil()
     {
         return new List<T>(){
-            @Override
+
             public T head() {
                 throw new EmptyListHasNoHead();
             }
 
-            @Override
+
             public List<T> tail() {
                 throw new EmptyListHasNoTail();
             }
 
-            @Override
+
             public boolean isEmpty() {
                 return true;
             }
@@ -138,7 +138,7 @@ public final class LispList
         };
     }
 
-    public static final <T>List<T> list(final T head, final List<T> tail)
+    public static <T>List<T> list(final T head, final List<T> tail)
     {
         return ll.new NonEmptyList<T>(head,tail);
     }

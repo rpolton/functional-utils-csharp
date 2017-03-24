@@ -1,6 +1,6 @@
 package me.shaftesbury.utils.functional;
 
-import org.javatuples.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -67,9 +67,9 @@ public final class AssertIterableTest
     public void assertEqualTest2()
     {
         final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
-        input1.add(new Pair<Integer, Integer>(1,1));
-        input1.add(new Pair<Integer, Integer>(2,1));
-        input1.add(new Pair<Integer, Integer>(5,1));
+        input1.add(Pair.of(1,1));
+        input1.add(Pair.of(2,1));
+        input1.add(Pair.of(5,1));
 
         AssertIterable.assertIterableEquals(input1,input1);
     }
@@ -78,14 +78,14 @@ public final class AssertIterableTest
     public void assertEqualTest3()
     {
         final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
-        input1.add(new Pair<Integer, Integer>(1,1));
-        input1.add(new Pair<Integer, Integer>(2,1));
-        input1.add(new Pair<Integer, Integer>(5,1));
+        input1.add(Pair.of(1,1));
+        input1.add(Pair.of(2,1));
+        input1.add(Pair.of(5,1));
 
         final List<Pair<Integer,Integer>> input2 = new ArrayList<Pair<Integer, Integer>>();
-        input2.add(new Pair<Integer, Integer>(1,1));
-        input2.add(new Pair<Integer, Integer>(2,1));
-        input2.add(new Pair<Integer, Integer>(5,1));
+        input2.add(Pair.of(1,1));
+        input2.add(Pair.of(2,1));
+        input2.add(Pair.of(5,1));
 
         AssertIterable.assertIterableEquals(input1,input2);
     }
@@ -94,14 +94,14 @@ public final class AssertIterableTest
     public void assertUnequalTest6()
     {
         final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
-        input1.add(new Pair<Integer, Integer>(1,1));
-        input1.add(new Pair<Integer, Integer>(2,1));
-        input1.add(new Pair<Integer, Integer>(5,1));
+        input1.add(Pair.of(1,1));
+        input1.add(Pair.of(2,1));
+        input1.add(Pair.of(5,1));
 
         final List<Pair<Integer,Integer>> input2 = new ArrayList<Pair<Integer, Integer>>();
-        input2.add(new Pair<Integer, Integer>(1,2));
-        input2.add(new Pair<Integer, Integer>(2,1));
-        input2.add(new Pair<Integer, Integer>(5,1));
+        input2.add(Pair.of(1,2));
+        input2.add(Pair.of(2,1));
+        input2.add(Pair.of(5,1));
 
         AssertIterable.assertIterableEquals(input1,input2);
     }
