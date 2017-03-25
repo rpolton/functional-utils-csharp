@@ -1,5 +1,7 @@
 package me.shaftesbury.utils.functional;
 
+import java.util.function.Function;
+
 /**
  * Option is an implementation of the <tt>option monad</tt>.
  * See http://en.wikipedia.org/wiki/Option_type
@@ -130,11 +132,11 @@ public final class Option<T>
     /**
      * Apply a function to the underlying data if {@link #isSome()} and return the result otherwise return {@link #None()}
      * {@see http://en.wikipedia.org/wiki/Monad_(functional_programming)}
-     * @param f the function to be bound
      * @param <U> the type of the resulting Option type
+     * @param f the function to be bound
      * @return an Option containing either {@link #None()} or the result of the function <tt>f</tt>
      */
-    public <U>Option<U> bind(final Func<T,Option<U>> f)
+    public <U>Option<U> bind(final Function<T, Option<U>> f)
     {
         if(isSome()) return f.apply(Some());
         else return Option.None();

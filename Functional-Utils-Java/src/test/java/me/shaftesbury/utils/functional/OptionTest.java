@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Created with IntelliJ IDEA.
@@ -220,7 +221,7 @@ public class OptionTest
     {
         final Option<Integer> a = Option.toOption(1);
         final Option<Integer> b = a.bind(
-                new Func<Integer, Option<Integer>>() {
+                new Function<Integer, Option<Integer>>() {
 
                     public Option<Integer> apply(Integer integer) {
                         return Option.toOption(integer*2);
@@ -235,7 +236,7 @@ public class OptionTest
     {
         final Option<Integer> a = Option.<Integer>None();
         final Option<Integer> b = a.bind(
-                new Func<Integer, Option<Integer>>() {
+                new Function<Integer, Option<Integer>>() {
 
                     public Option<Integer> apply(Integer integer) {
                         return Option.toOption(integer*2);
@@ -253,18 +254,18 @@ public class OptionTest
         // Note that this really ought to be an example of 'choose' but we use bind here to exercise the code ;-)
 
         final Iterable2<Option<Integer>> output = input.map(
-                new Func<Integer, Option<Integer>>() {
+                new Function<Integer, Option<Integer>>() {
 
                     public Option<Integer> apply(Integer integer) {
                         return Option.toOption(integer).bind(
-                                new Func<Integer,Option<Integer>>(){
+                                new Function<Integer,Option<Integer>>(){
                                     public Option<Integer> apply(final Integer i) {
                                         return Functional.isEven.apply(i) ? Option.toOption(i) : Option.<Integer>None();
                                     } }); } } );
 
 
         AssertIterable.assertIterableEquals(expected,output.choose(
-                new Func<Option<Integer>, Option<Integer>>() {
+                new Function<Option<Integer>, Option<Integer>>() {
 
                     public Option<Integer> apply(Option<Integer> integerOption) {
                         return integerOption;

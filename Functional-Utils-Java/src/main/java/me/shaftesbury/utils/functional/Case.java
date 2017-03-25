@@ -1,5 +1,7 @@
 package me.shaftesbury.utils.functional;
 
+import java.util.function.Function;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Bob
@@ -9,9 +11,9 @@ package me.shaftesbury.utils.functional;
  */
 public final class Case<A, B>
 {
-    private final Func<A,Boolean> check;
-    private final Func<A, B> result;
-    public Case(final Func<A,Boolean> chk,final Func<A, B> res) {this.check = chk; this.result=res;}
+    private final Function<A, Boolean> check;
+    private final Function<A, B> result;
+    public Case(final Function<A, Boolean> chk, final Function<A, B> res) {this.check = chk; this.result=res;}
     public final Boolean predicate(final A a) { return check.apply(a); }
     public final B results(final A a) { return result.apply(a); }
 }

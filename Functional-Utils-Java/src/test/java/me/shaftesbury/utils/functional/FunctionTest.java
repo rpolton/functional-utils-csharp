@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,8 +55,8 @@ public class FunctionTest
                     }
                 };
 
-        final Func<Integer,Func<Double,String>> decomposed = f.toFunc();
-        final Func<Double,String> decomposed1 = decomposed.apply(2);
+        final Function<Integer,Function<Double,String>> decomposed = f.toFunc();
+        final Function<Double,String> decomposed1 = decomposed.apply(2);
         final Iterable2<String> output = IterableHelper.asList(1.0,2.0,3.0,4.0,5.0).map(decomposed1);
         final Iterable<String> expected = Arrays.asList("2","4","6","8","10");
 
@@ -73,7 +74,7 @@ public class FunctionTest
                     }
                 };
 
-        final Func<Double,String> decomposed = f.toFunc(2);
+        final Function<Double,String> decomposed = f.toFunc(2);
         final Iterable2<String> output = IterableHelper.asList(1.0,2.0,3.0,4.0,5.0).map(decomposed);
         final Iterable<String> expected = Arrays.asList("2","4","6","8","10");
 

@@ -1,5 +1,7 @@
 package me.shaftesbury.utils.functional;
 
+import java.util.function.Function;
+
 /**
  * Created by Bob on 16/05/14.
  *
@@ -15,7 +17,7 @@ public final class FunctionalHelper
      */
     public static <T>Iterable2<Option<T>> areSome(final Iterable<Option<T>> input)
     {
-        return IterableHelper.create(input).filter(new Func<Option<T>, Boolean>() {
+        return IterableHelper.create(input).filter(new Function<Option<T>, Boolean>() {
 
             public Boolean apply(Option<T> tOption) {
                 return tOption.isSome();
@@ -30,7 +32,7 @@ public final class FunctionalHelper
      */
     public static <T>Iterable2<Option<T>> areNone(final Iterable<Option<T>> input)
     {
-        return IterableHelper.create(input).filter(new Func<Option<T>, Boolean>() {
+        return IterableHelper.create(input).filter(new Function<Option<T>, Boolean>() {
 
             public Boolean apply(Option<T> tOption) {
                 return tOption.isNone();
@@ -45,7 +47,7 @@ public final class FunctionalHelper
      */
     public static <T>boolean allSome(final Iterable<Option<T>> input)
     {
-        return !IterableHelper.create(input).exists(new Func<Option<T>, Boolean>() {
+        return !IterableHelper.create(input).exists(new Function<Option<T>, Boolean>() {
 
             public Boolean apply(Option<T> tOption) {
                 return tOption.isNone();
@@ -60,7 +62,7 @@ public final class FunctionalHelper
      */
     public static <T>boolean allNone(final Iterable<Option<T>> input)
     {
-        return !IterableHelper.create(input).exists(new Func<Option<T>, Boolean>() {
+        return !IterableHelper.create(input).exists(new Function<Option<T>, Boolean>() {
 
             public Boolean apply(Option<T> tOption) {
                 return tOption.isSome();
@@ -71,7 +73,7 @@ public final class FunctionalHelper
     /**
      * Given an input sequence of {@link me.shaftesbury.utils.functional.Option} return a lazily-evaluated sequence containing
      * the underlying data elements. Note that the proper way to perform this action is to use
-     * {@link me.shaftesbury.utils.functional.Option#bind(Func)}
+     * {@link Option#bind(Function)}
      * @param input the input sequence
      * @param <T> the type of the underlying data
      * @return a lazily-evaluated sequence containing the underlying data
@@ -79,7 +81,7 @@ public final class FunctionalHelper
      */
     public static <T>Iterable2<T> some(final Iterable<Option<T>> input)
     {
-        return IterableHelper.create(input).map(new Func<Option<T>, T>() {
+        return IterableHelper.create(input).map(new Function<Option<T>, T>() {
 
             public T apply(Option<T> tOption) {
                 return tOption.Some();

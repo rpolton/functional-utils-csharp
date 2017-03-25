@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static me.shaftesbury.utils.functional.Functional.*;
 import static me.shaftesbury.utils.functional.MException.toMException;
@@ -58,7 +60,7 @@ public final class ImperativeAndFunctionalEquivalenceExamples
 
         private static int functional(final int n)
         {
-            final Func<Integer,Integer> oddGenerator = new Func<Integer, Integer>() {
+            final Function<Integer,Integer> oddGenerator = new Function<Integer, Integer>() {
 
                 public Integer apply(Integer integer) {
                     return 2*(integer-1) + 1;            // because init starts counting from 1
@@ -87,9 +89,9 @@ public final class ImperativeAndFunctionalEquivalenceExamples
             return result;
         }
 
-        public static Func<Integer,Boolean> isDivisibleBy(final int denominator)
+        public static Function<Integer,Boolean> isDivisibleBy(final int denominator)
         {
-            return new Func<Integer,Boolean>(){
+            return new Function<Integer,Boolean>(){
                 public Boolean apply(final Integer numerator) {
                     return numerator % denominator == 0;
                 }
@@ -149,10 +151,10 @@ public final class ImperativeAndFunctionalEquivalenceExamples
 
         private static List<Book> functional(final String s, final List<Book> books)
         {
-            return filter(new Func<Book, Boolean>() {
+            return filter(new Function<Book, Boolean>() {
 
                 public Boolean apply(final Book book) {
-                    return IterableHelper.create(book.authors).exists(new Func<Person, Boolean>() {
+                    return IterableHelper.create(book.authors).exists(new Function<Person, Boolean>() {
 
                         public Boolean apply(final Person person) {
                             return person.name.startsWith(s);
@@ -210,20 +212,20 @@ public final class ImperativeAndFunctionalEquivalenceExamples
 
         private final List<Integer> functional(final List<Integer> l)
         {
-            final MException<Integer> firstElement = toMException(delay(new Func<List<Integer>, Integer>() {
+            final MException<Integer> firstElement = toMException(delay(new Function<List<Integer>, Integer>() {
 
                 public Integer apply(List<Integer> o) {
                     return o.get(0);
                 }
             }, l));
             final Iterable<MException<Integer>> results =
-                    IterableHelper.create(Functional.skip(1,l)).map(new Func<Integer, MException<Integer>>() {
+                    IterableHelper.create(Functional.skip(1,l)).map(new Function<Integer, MException<Integer>>() {
 
                         public MException<Integer> apply(final Integer integer) {
-                            return firstElement.bind(new Func<Integer, MException<Integer>>() {
+                            return firstElement.bind(new Function<Integer, MException<Integer>>() {
 
                                 public MException<Integer> apply(final Integer underlyingInteger) {
-                                    return toMException(delay(new Func<Integer, Integer>() {
+                                    return toMException(delay(new Function<Integer, Integer>() {
 
                                         public Integer apply(Integer o) {
                                             return underlyingInteger / o;
@@ -233,15 +235,15 @@ public final class ImperativeAndFunctionalEquivalenceExamples
                             });
                         }
                     });
-            final Iterable<MException<Integer>> squares = Functional.map(new Func<MException<Integer>, MException<Integer>>() {
+            final Iterable<MException<Integer>> squares = Functional.map(new Function<MException<Integer>, MException<Integer>>() {
 
                 public MException<Integer> apply(MException<Integer> o) {
-                    return o.bind(new Func<Integer,MException<Integer>>() {
+                    return o.bind(new Function<Integer,MException<Integer>>() {
 
                         public MException<Integer> apply(final Integer i) {
-                            return toMException(new Func0<Integer>() {
+                            return toMException(new Supplier<Integer>() {
 
-                                public Integer apply() {
+                                public Integer get() {
                                     return i*i;
                                 }
                             });
@@ -249,7 +251,7 @@ public final class ImperativeAndFunctionalEquivalenceExamples
                     });
                 }}, results);
 
-            return toList(choose(new Func<MException<Integer>, Option<Integer>>() {
+            return toList(choose(new Function<MException<Integer>, Option<Integer>>() {
 
                 public Option<Integer> apply(MException<Integer> i) {
                     return i.hasException() ? Option.<Integer>None() : toOption(i.read());
@@ -287,17 +289,17 @@ public final class ImperativeAndFunctionalEquivalenceExamples
 
 //        private static Pair<List<String>,List<String>> functional(final List<Integer> testVals)
 //        {
-//            final Func<Integer, String> func1 = new Func<Integer, String>() {
+//            final Function<Integer, String> func1 = new Function<Integer, String>() {
 //
 //                public String apply(final Integer integer) {
 //                    return integer.toString();
 //                }
 //            };
 //
-//            final Func<Integer, Iterable<String>> func2 = new Func<Integer, Iterable<String>>() {
+//            final Function<Integer, Iterable<String>> func2 = new Function<Integer, Iterable<String>>() {
 //
 //                public Iterable<String> apply(final Integer integer) {
-//                    return Functional.map(new Func<Integer, String>() {
+//                    return Functional.map(new Function<Integer, String>() {
 //
 //                        public String apply(Integer integer) {
 //                            return Integer.toString(10 * integer + 1);

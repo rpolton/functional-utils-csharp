@@ -1,5 +1,7 @@
 package me.shaftesbury.utils.functional;
 
+import java.util.function.Function;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Bob
@@ -27,19 +29,19 @@ public final class LispList
         return reverse(input,(List<T>)nil());
     }
 
-    private static <T>List<T> filter(final Func<T,Boolean> f, final List<T> input, final List<T> accumulator)
+    private static <T>List<T> filter(final Function<T, Boolean> f, final List<T> input, final List<T> accumulator)
     {
         return input.isEmpty()
                 ? accumulator
                 : filter(f,input.tail(),f.apply(input.head())?list(input.head(), accumulator):accumulator);
     }
 
-    public static <T>List<T> filter(final Func<T,Boolean> f, final List<T> input)
+    public static <T>List<T> filter(final Function<T, Boolean> f, final List<T> input)
     {
         return reverse(filter(f, input, (List<T>) nil()));
     }
 
-    public static <T,R>List<R> map(final Func<T,R> f, final List<T> input)
+    public static <T,R>List<R> map(final Function<T, R> f, final List<T> input)
     {
         return input.isEmpty()
                ? (List<R>)nil()

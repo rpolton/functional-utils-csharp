@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,8 +19,8 @@ import java.util.*;
  */
 public class Iterable2Test
 {
-    private static Func<Integer,Integer> DoublingGenerator =
-            new Func<Integer,Integer>()
+    private static Function<Integer,Integer> DoublingGenerator =
+            new Function<Integer,Integer>()
             {
                  public Integer apply(Integer a) { return 2*a;}
             };
@@ -75,16 +77,16 @@ public class Iterable2Test
         AssertIterable.assertIterableEquals(Arrays.asList(1,4,6,7,23), j);
     }
 
-    private static Func<Integer, Integer> TriplingGenerator =
-            new Func<Integer, Integer>() {
+    private static Function<Integer, Integer> TriplingGenerator =
+            new Function<Integer, Integer>() {
 
                 public Integer apply(final Integer a) {
                     return 3 * a;
                 }
             };
 
-    private static Func<Integer, Integer> QuadruplingGenerator =
-            new Func<Integer, Integer>() {
+    private static Function<Integer, Integer> QuadruplingGenerator =
+            new Function<Integer, Integer>() {
 
                 public Integer apply(final Integer a) {
                     return 4 * a;
@@ -106,7 +108,7 @@ public class Iterable2Test
         try
         {
             Assert.assertTrue(l.forAll2(
-                    new Func2<Integer, Integer, Boolean>() {
+                    new BiFunction<Integer, Integer, Boolean>() {
 
                         public Boolean apply(Integer a, Integer b) {
                             return BothAreEven(a, b);
@@ -124,8 +126,8 @@ public class Iterable2Test
         return a < 10 && b < 10;
     }
 
-    private static Func2<Integer, Integer, Boolean> dBothAreLessThan10 =
-            new Func2<Integer, Integer, Boolean>() {
+    private static BiFunction<Integer, Integer, Boolean> dBothAreLessThan10 =
+            new BiFunction<Integer, Integer, Boolean>() {
 
                 public Boolean apply(Integer a, Integer b) {
                     return BothAreLessThan10(a, b);
@@ -148,7 +150,7 @@ public class Iterable2Test
         final Iterable2<Integer> m = IterableHelper.init(QuadruplingGenerator, 7);
 
         Functional.forAll2(
-                new Func2<Integer, Integer, Boolean>() {
+                new BiFunction<Integer, Integer, Boolean>() {
 
                     public Boolean apply(Integer a, Integer b) {
                         return BothAreEven(a, b);
@@ -185,7 +187,7 @@ public class Iterable2Test
         Assert.assertFalse(
                 Functional.forAll2(
                         Functional.not2(
-                                new Func2<Integer, Integer, Boolean>() {
+                                new BiFunction<Integer, Integer, Boolean>() {
 
                                     public Boolean apply(Integer a, Integer b) {
                                         return a > lowerLimit && b > lowerLimit;
@@ -203,7 +205,7 @@ public class Iterable2Test
         Assert.assertTrue(
                 Functional.forAll2(
                         Functional.not2(
-                                new Func2<Integer, Integer, Boolean>() {
+                                new BiFunction<Integer, Integer, Boolean>() {
 
                                     public Boolean apply(Integer a, Integer b) {
                                         return a > upperLimit && b > upperLimit;
@@ -269,7 +271,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
         final Iterable2<String> o = li.choose(
-                new Func<Integer, Option<String>>() {
+                new Function<Integer, Option<String>>() {
 
                     public Option<String> apply(Integer i) {
                         return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
@@ -287,7 +289,7 @@ public class Iterable2Test
             final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
             o = Functional.toDictionary(Functional.<Integer>identity(), Functional.<Integer>dStringify(),
                     li.choose(
-                            new Func<Integer, Option<Integer>>() {
+                            new Function<Integer, Option<Integer>>() {
 
                                 public Option<Integer> apply(Integer i) {
                                     return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
@@ -312,9 +314,9 @@ public class Iterable2Test
         return b.equals(c);
     }
 
-    private final static <B, C>Func<C, Boolean> curried_fn(final B b)
+    private final static <B, C>Function<C, Boolean> curried_fn(final B b)
     {
-        return new Func<C, Boolean>() {
+        return new Function<C, Boolean>() {
 
             public Boolean apply(C c) {
                 return Fn(b,c);
@@ -332,9 +334,9 @@ public class Iterable2Test
 
     private static int adder_int(final int left, final int right) { return left + right; }
 
-    private static Func<Integer, Integer> curried_adder_int(final int c)
+    private static Function<Integer, Integer> curried_adder_int(final int c)
     {
-        return new Func<Integer, Integer>() {
+        return new Function<Integer, Integer>() {
 
             public Integer apply(Integer p) {
                 return adder_int(c, p);
@@ -347,7 +349,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> a = IterableHelper.asList(1, 2, 3, 4, 5);
         final Iterable2<Integer> b = a.map(
-                new Func<Integer, Integer>() {
+                new Function<Integer, Integer>() {
 
                     public Integer apply(final Integer a1) {
                         return adder_int(2, a1);
@@ -369,7 +371,7 @@ public class Iterable2Test
         final String s1 = Functional.join(",", li.map(Functional.<Integer>dStringify()));
         Assert.assertEquals("2,4,6,8,10", s1);
         final String s2 = IterableHelper.init(DoublingGenerator, 5).fold(
-                new Func2<String, Integer, String>() {
+                new BiFunction<String, Integer, String>() {
 
                     public String apply(String s1, Integer s2) {
                         return csv(s1, s2);
@@ -378,11 +380,11 @@ public class Iterable2Test
         Assert.assertEquals(s1, s2);
     }
 
-    private final Func<Iterable2<Integer>, String> concatenate =
-            new Func<Iterable2<Integer>, String>() {
+    private final Function<Iterable2<Integer>, String> concatenate =
+            new Function<Iterable2<Integer>, String>() {
 
                 public String apply(Iterable2<Integer> l) {
-                    return l.fold(new Func2<String, Integer, String>() {
+                    return l.fold(new BiFunction<String, Integer, String>() {
 
                         public String apply(String s1, Integer s2) {
                             return csv(s1, s2);
@@ -453,7 +455,7 @@ public class Iterable2Test
 
         {
             final Iterable2<String> indentation = IterableHelper.init(
-                    new Func<Integer, String>() {
+                    new Function<Integer, String>() {
 
                         public String apply(Integer integer) {
                             return " ";
@@ -463,14 +465,14 @@ public class Iterable2Test
         }
         {
             final Iterable2<String> indentation = IterableHelper.init(
-                    new Func<Integer, String>() {
+                    new Function<Integer, String>() {
 
                         public String apply(Integer integer) {
                             return " ";
                         }
                     }, level);
             final String s = indentation.fold(
-                    new Func2<String, String, String>() {
+                    new BiFunction<String, String, String>() {
 
                         public String apply(String state, String str) {
                             return state + str;
@@ -480,17 +482,17 @@ public class Iterable2Test
         }
         {
             final Iterable2<String> indentation = IterableHelper.init(
-                    new Func<Integer, String>() {
+                    new Function<Integer, String>() {
 
                         public String apply(Integer integer) {
                             return " ";
                         }
                     }, level);
-            final Func<Iterable2<String>, String> folder =
-                    new Func<Iterable2<String>, String>() {
+            final Function<Iterable2<String>, String> folder =
+                    new Function<Iterable2<String>, String>() {
 
                         public String apply(final Iterable2<String> l) {
-                            return l.fold(new Func2<String, String, String>() {
+                            return l.fold(new BiFunction<String, String, String>() {
 
                                 public String apply(final String state, final String str) {
                                     return state + str;
@@ -519,7 +521,7 @@ public class Iterable2Test
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
         final Iterable2<Integer> o =
                 li.choose(
-                        new Func<Integer, Option<Integer>>() {
+                        new Function<Integer, Option<Integer>>() {
                             public Option<Integer> apply(Integer i) {
                                 return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
                             }
@@ -625,14 +627,14 @@ public class Iterable2Test
         }
 
         final Iterable2<myInt> openedDays2 = IterableHelper.init(
-                new Func<Integer, myInt>() {
+                new Function<Integer, myInt>() {
 
                     public myInt apply(final Integer a) {
                         return new myInt(3 * a);
                     }
                 }, 5);
         final Pair<Double, List<myInt>> output = Functional.foldAndChoose(
-                new Func2<Double, myInt, Pair<Double, Option<myInt>>>() {
+                new BiFunction<Double, myInt, Pair<Double, Option<myInt>>>() {
 
                     public Pair<Double, Option<myInt>> apply(final Double state, final myInt day) {
                         final Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
@@ -666,8 +668,8 @@ public class Iterable2Test
     public void joinTest2()
     {
         final String expected = "'3','6','9','12','15'";
-        final Func<Integer, String> f =
-                new Func<Integer, String>() {
+        final Function<Integer, String> f =
+                new Function<Integer, String>() {
 
                     public String apply(Integer id) {
                         return "'" + id + "'";
@@ -725,7 +727,7 @@ public class Iterable2Test
         Integer two = 2;
         Integer three = 3;
         Integer four = 4;
-        Iterable2.then(new Func<Integer,Integer>()
+        Iterable2.then(new Function<Integer,Integer>()
         {
 
             public Integer apply(Integer i) { return }
@@ -832,7 +834,7 @@ public class Iterable2Test
     public void seqConcatTest1()
     {
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        final Func<Integer,Integer> doubler = new Func<Integer, Integer>() {
+        final Function<Integer,Integer> doubler = new Function<Integer, Integer>() {
 
             public Integer apply(Integer i) {
                 return i * 2;
@@ -864,7 +866,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator,5);
         final Iterable2<String> output = li.choose(
-                new Func<Integer,Option<String>>()
+                new Function<Integer,Option<String>>()
                 {
 
                     public Option<String> apply(Integer i)
@@ -882,7 +884,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<String> output = input.in(
-                new Func<Iterable2<Integer>, Iterable2<String>>() {
+                new Function<Iterable2<Integer>, Iterable2<String>>() {
 
                     public Iterable2<String> apply(Iterable2<Integer> integers) {
                         return integers.map(Functional.<Integer>dStringify());
@@ -898,7 +900,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<String> output = input.in(
-                new Func<Iterable2<Integer>, Iterable2<String>>() {
+                new Function<Iterable2<Integer>, Iterable2<String>>() {
 
                     public Iterable2<String> apply(Iterable2<Integer> integers) {
                         try {
@@ -919,7 +921,7 @@ public class Iterable2Test
     {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> oddElems = l.in(
-                new Func<Iterable2<Integer>, Iterable2<Integer>>() {
+                new Function<Iterable2<Integer>, Iterable2<Integer>>() {
 
                     public Iterable2<Integer> apply(Iterable2<Integer> ints) {
                         return ints.filter(Functional.isOdd);
@@ -939,7 +941,7 @@ public class Iterable2Test
         }
     }
 
-    private static Func<object, string> fn1()
+    private static Function<object, string> fn1()
     {
         return delegate(object o)
         {
@@ -964,7 +966,7 @@ public class Iterable2Test
     [Test]
     public void FwdPipelineTest6()
     {
-        Func<object, string> fn = fn1();
+        Function<object, string> fn = fn1();
         var i = new Test1(10);
         const string s = "test";
         Assert.AreEqual("10", i.in(fn));
@@ -1016,12 +1018,12 @@ public class Iterable2Test
     /*[Test]
     public void CaseTest2()
     {
-        var c1 = new List<Func<A, object>> {(A a) => (object) a.name, (A a) => (object) a.id};
+        var c1 = new List<Function<A, object>> {(A a) => (object) a.name, (A a) => (object) a.id};
 
-        Func<A, IEnumerable<Func<int, object>>> c2 =
-                a => c1.Select<Func<A, object>, Func<int, object>>(f => j => f(a));
+        Function<A, IEnumerable<Function<int, object>>> c2 =
+                a => c1.Select<Function<A, object>, Function<int, object>>(f => j => f(a));
 
-        Func<A, IEnumerable<Iterable2.Case<int, object>>> cases =
+        Function<A, IEnumerable<Iterable2.Case<int, object>>> cases =
                 a => c2(a).Select((f, i) => Case.ToCase(i.Equals, f));
 
         var theA = new A {id = 1, name = "one"};
@@ -1037,9 +1039,9 @@ public class Iterable2Test
     {
         var input = new[] {1, 2, 3, 4, 5};
         var output = new List<string>();
-        Func<int, string> format = i => string.Format("Discarding {0}", i);
+        Function<int, string> format = i => string.Format("Discarding {0}", i);
         List<string> expected = new[] {1, 2, 3, 4, 5}.Select(format).ToList();
-        Func<int, bool> f = i =>
+        Function<int, bool> f = i =>
         {
             output.Add(format(i));
             return true;
@@ -1054,7 +1056,7 @@ public class Iterable2Test
         final Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
         final Iterable2<Integer> output =
                 input.choose(
-                        new Func<Integer, Option<Integer>>() {
+                        new Function<Integer, Option<Integer>>() {
 
                             public Option<Integer> apply(Integer i) {
                                 return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
@@ -1070,7 +1072,7 @@ public class Iterable2Test
         final Collection<Character> expected = Arrays.asList(new Character[]{'a'});
         final Iterable2<Character> output =
                 input.choose(
-                        new Func<String, Option<Character>>() {
+                        new Function<String, Option<Character>>() {
 
                             public Option<Character> apply(String str) {
                                 return str.startsWith("a") ? Option.toOption('a') : Option.<Character>None();
@@ -1086,7 +1088,7 @@ public class Iterable2Test
         final Iterable2<Integer> input = IterableHelper.asList(new Integer[] {1, 2, 3, 4, 5});
         final Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
         final Iterable2<Integer> output = input.choose(
-                new Func<Integer, Option<Integer>>() {
+                new Function<Integer, Option<Integer>>() {
 
                     public Option<Integer> apply(Integer i) {
                         return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
@@ -1099,8 +1101,8 @@ public class Iterable2Test
     /*[Test]
     public void CurryTest1()
     {
-        Func<int, int, bool> f = (i, j) => i > j;
-        Func<int, Func<int, bool>> g = i => j => f(i, j);
+        Function<int, int, bool> f = (i, j) => i > j;
+        Function<int, Function<int, bool>> g = i => j => f(i, j);
         bool t = 10.in(g(5));
         Assert.IsFalse(t);
     }*/
@@ -1108,8 +1110,8 @@ public class Iterable2Test
     /*[Test]
     public void CurryTest2()
     {
-        Func<int, int, bool> f = (i, j) => i < j;
-        Func<int, Func<int, bool>> g = i => j => f(i, j);
+        Function<int, int, bool> f = (i, j) => i < j;
+        Function<int, Function<int, bool>> g = i => j => f(i, j);
         bool t = 10.in(g(5));
         Assert.IsTrue(t);
     }*/
@@ -1117,10 +1119,10 @@ public class Iterable2Test
     /*[Test]
     public void CompositionTest1()
     {
-        Func<int, int, int> add = (x, y) => x + y;
-        Func<int, Func<int, int>> add1 = y => x => add(x, y);
-        Func<int, int, int> mult = (x, y) => x*y;
-        Func<int, Func<int, int>> mult1 = y => x => mult(x, y);
+        Function<int, int, int> add = (x, y) => x + y;
+        Function<int, Function<int, int>> add1 = y => x => add(x, y);
+        Function<int, int, int> mult = (x, y) => x*y;
+        Function<int, Function<int, int>> mult1 = y => x => mult(x, y);
         int expected = mult(add(1, 2), 3);
         Assert.AreEqual(9, expected);
         Assert.AreEqual(expected, 2.in(add1(1).then(mult1(3))));
@@ -1226,7 +1228,7 @@ public class Iterable2Test
         final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         Assert.assertEquals(trueMatch,
                 ls.find(
-                        new Func<String, Boolean>() {
+                        new Function<String, Boolean>() {
 
                             public Boolean apply(String s) {
                                 return s.equals(trueMatch);
@@ -1241,7 +1243,7 @@ public class Iterable2Test
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         ls.find(
-                new Func<String, Boolean>() {
+                new Function<String, Boolean>() {
 
                     public Boolean apply(String s) {
                         return s.equals(falseMatch);
@@ -1257,7 +1259,7 @@ public class Iterable2Test
         final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         Assert.assertEquals(2,
                 ls.findIndex(
-                        new Func<String, Boolean>() {
+                        new Function<String, Boolean>() {
 
                             public Boolean apply(String s) {
                                 return s.equals(trueMatch);
@@ -1272,7 +1274,7 @@ public class Iterable2Test
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
         ls.findIndex(
-                new Func<String, Boolean>() {
+                new Function<String, Boolean>() {
 
                     public Boolean apply(String s) {
                         return s.equals(falseMatch);
@@ -1287,7 +1289,7 @@ public class Iterable2Test
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
         Assert.assertEquals(((Integer) trueMatch).toString(),
                 li.pick(
-                        new Func<Integer, Option<String>>() {
+                        new Function<Integer, Option<String>>() {
 
                             public Option<String> apply(Integer a) {
                                 return a == trueMatch ? Option.toOption(a.toString()) : Option.<String>None();
@@ -1301,7 +1303,7 @@ public class Iterable2Test
         final int falseMatch = 7;
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
         li.pick(
-                new Func<Integer, Option<String>>() {
+                new Function<Integer, Option<String>>() {
 
                     public Option<String> apply(Integer a) {
                         return a == falseMatch ? Option.toOption(a.toString()) : Option.<String>None();
@@ -1313,11 +1315,11 @@ public class Iterable2Test
     public void curryFnTest1()
     {
         final int state=0;
-        final Func<Integer,Boolean> testForPosInts = new Func<Integer, Boolean>() {
+        final Function<Integer,Boolean> testForPosInts = new Function<Integer, Boolean>() {
              public Boolean apply(Integer integer) { return integer > state; }
         };
 
-        final Func<Iterable<Integer>,List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
+        final Function<Iterable<Integer>,List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
 
         final Collection<Integer> l = Arrays.asList(new Integer[]{-3,-2,0,1,5});
         final Collection<Integer> posInts = curriedTestForPosInts.apply(l);
@@ -1331,7 +1333,7 @@ public class Iterable2Test
     {
         final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         final Map<String,String> output = Functional.map_dict(
-                new Func<Integer, Map.Entry<String, String>>() {
+                new Function<Integer, Map.Entry<String, String>>() {
 
                     public Map.Entry<String, String> apply(final Integer i) {
                         return new Map.Entry<String,String>(){
@@ -1355,13 +1357,13 @@ public class Iterable2Test
         AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2, 4, 6, 8, 10}), output_ints);
     }
 
-    public static Func<Integer,Iterable<Integer>> intToList(final int howMany)
+    public static Function<Integer,Iterable<Integer>> intToList(final int howMany)
     {
-        return new Func<Integer, Iterable<Integer>>() {
+        return new Function<Integer, Iterable<Integer>>() {
 
             public Iterable<Integer> apply(final Integer integer) {
                 return IterableHelper.init(
-                        new Func<Integer, Integer>() {
+                        new Function<Integer, Integer>() {
 
                             public Integer apply(Integer counter) {
                                 return integer;
@@ -1440,7 +1442,7 @@ public class Iterable2Test
         {
             final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
             s2 = li.fold(
-                    new Func2<String, Integer, String>() {
+                    new BiFunction<String, Integer, String>() {
 
                         public String apply(String s1, Integer s2) {
                             return csv(s1, s2);
@@ -1494,7 +1496,7 @@ public class Iterable2Test
     @Test
     public void EmptySeqTestChoose()
     {
-        final Func<Integer,Option<String>> chooser = new Func<Integer, Option<String>>() {
+        final Function<Integer,Option<String>> chooser = new Function<Integer, Option<String>>() {
 
             public Option<String> apply(Integer integer) {
                 return Option.toOption(integer.toString());
@@ -1546,7 +1548,7 @@ public class Iterable2Test
     @Test
     public void EmptySeqTestFold()
     {
-        final Func2<String,Integer,String> folder = new Func2<String,Integer,String>() {
+        final BiFunction<String,Integer,String> folder = new BiFunction<String,Integer,String>() {
 
             public String apply(String s, Integer integer) {
                 return s+integer.toString();
@@ -1598,7 +1600,7 @@ public class Iterable2Test
     public void EmptySeqTestFind()
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Integer i = l.find(new Func<Integer, Boolean>() {
+        final Integer i = l.find(new Function<Integer, Boolean>() {
 
             public Boolean apply(Integer integer) {
                 return true;
@@ -1611,7 +1613,7 @@ public class Iterable2Test
     public void EmptySeqTestFindIndex()
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final int i = l.findIndex(new Func<Integer, Boolean>() {
+        final int i = l.findIndex(new Function<Integer, Boolean>() {
 
             public Boolean apply(Integer integer) {
                 return true;
@@ -1624,7 +1626,7 @@ public class Iterable2Test
     public void EmptySeqTestPick()
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final String i = l.pick(new Func<Integer, Option<String>>() {
+        final String i = l.pick(new Function<Integer, Option<String>>() {
 
             public Option<String> apply(Integer integer) {
                 return Option.toOption(integer.toString());
@@ -1666,7 +1668,7 @@ public class Iterable2Test
     public void EmptySeqTestCollect()
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Iterable2<Integer> l1 = l.collect(new Func<Integer, Iterable<Integer>>() {
+        final Iterable2<Integer> l1 = l.collect(new Function<Integer, Iterable<Integer>>() {
 
             public Iterable<Integer> apply(Integer integer) {
                 return Arrays.asList(1, 2, 3, integer);
@@ -1681,10 +1683,10 @@ public class Iterable2Test
     public void EmptySeqTestIn()
     {
         final Iterable2<Integer> l = IterableHelper.createEmpty();
-        final String u = l.in(new Func<Iterable2<Integer>, String>() {
+        final String u = l.in(new Function<Iterable2<Integer>, String>() {
 
             public String apply(Iterable2<Integer> integers) {
-                return integers.fold(new Func2<String, Integer, String>() {
+                return integers.fold(new BiFunction<String, Integer, String>() {
 
                     public String apply(String s, Integer integer) {
                         return s + integer.toString();
@@ -1711,7 +1713,7 @@ public class Iterable2Test
     public void groupByStringFirstTwoChar()
     {
         final Iterable2<String> input = IterableHelper.create(Arrays.asList("aa","aab","aac","def"));
-        final Map<String,List<String>> output = input.groupBy(new Func<String, String>() {
+        final Map<String,List<String>> output = input.groupBy(new Function<String, String>() {
 
             public String apply(final String s) {
                 return s.substring(0,1);
@@ -1728,13 +1730,13 @@ public class Iterable2Test
     @Test
     public void seqMapiTest1() {
         final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        final Iterable<Pair<Integer, String>> output = IterableHelper.create(input).mapi(new Func2<Integer, Integer, Pair<Integer, String>>() {
+        final Iterable<Pair<Integer, String>> output = IterableHelper.create(input).mapi(new BiFunction<Integer, Integer, Pair<Integer, String>>() {
 
             public Pair<Integer, String> apply(final Integer pos, final Integer i) {
                 return Pair.of(pos, i.toString());
             }
         });
-        Assert.assertArrayEquals(new String[]{"1", "2", "3", "4", "5"}, Functional.map(new Func<Pair<Integer, String>, String>() {
+        Assert.assertArrayEquals(new String[]{"1", "2", "3", "4", "5"}, Functional.map(new Function<Pair<Integer, String>, String>() {
 
             public String apply(final Pair<Integer, String> o) {
                 return o.getRight();
@@ -1797,7 +1799,7 @@ public class Iterable2Test
     public void emptyListMapiTest()
     {
         Assert.assertEquals(IterableHelper.createEmpty(),
-                IterableHelper.createEmpty().mapi(new Func2<Integer, Object, Object>() {
+                IterableHelper.createEmpty().mapi(new BiFunction<Integer, Object, Object>() {
 
                     public Object apply(Integer integer, Object o) {
                         return null;
@@ -1808,7 +1810,7 @@ public class Iterable2Test
     @Test
     public void forAll2EmptyListTest()
     {
-        Assert.assertFalse(IterableHelper.createEmpty().forAll2(new Func2<Object, Object, Boolean>() {
+        Assert.assertFalse(IterableHelper.createEmpty().forAll2(new BiFunction<Object, Object, Boolean>() {
 
             public Boolean apply(Object o, Object o2) {
                 return null;
@@ -1831,12 +1833,12 @@ public class Iterable2Test
     @Test
     public void toDictionaryEmptyListTest()
     {
-        Assert.assertEquals(new HashMap<Integer, String>(), IterableHelper.<Integer>createEmpty().toDictionary(new Func<Integer, Integer>() {
+        Assert.assertEquals(new HashMap<Integer, String>(), IterableHelper.<Integer>createEmpty().toDictionary(new Function<Integer, Integer>() {
 
             public Integer apply(Integer integer) {
                 return null;
             }
-        }, new Func<Integer, String>() {
+        }, new Function<Integer, String>() {
 
             public String apply(Integer integer) {
                 return null;
@@ -1883,7 +1885,7 @@ public class Iterable2Test
     @Test
     public void emptyListPartitionTest()
     {
-        final Pair<List<Object>, List<Object>> pair = IterableHelper.createEmpty().partition(new Func<Object, Boolean>() {
+        final Pair<List<Object>, List<Object>> pair = IterableHelper.createEmpty().partition(new Function<Object, Boolean>() {
 
             public Boolean apply(Object o) {
                 return null;
@@ -1896,7 +1898,7 @@ public class Iterable2Test
     @Test
     public void emptyListGroupByTest()
     {
-        final Map<Object, List<Object>> grp = IterableHelper.createEmpty().groupBy(new Func<Object, Object>() {
+        final Map<Object, List<Object>> grp = IterableHelper.createEmpty().groupBy(new Function<Object, Object>() {
 
             public Object apply(Object o) {
                 return null;

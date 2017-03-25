@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,8 +17,8 @@ import java.util.*;
  */
 public class IteratorsTest
 {
-    private static Func<Integer,Integer> DoublingGenerator =
-            new Func<Integer,Integer>()
+    private static Function<Integer, Integer> DoublingGenerator =
+            new Function<Integer, Integer>()
             {
                  public Integer apply(Integer a) { return 2*a;}
             };

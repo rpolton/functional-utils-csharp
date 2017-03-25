@@ -6,6 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by Bob on 09/12/13.
@@ -16,9 +19,9 @@ public class MExceptionTest
     public void returnTest1()
     {
         final MException<Object> mex = MException.toMException(
-            new Func0<Object>() {
+            new Supplier<Object>() {
 
-                public Object apply() {
+                public Object get() {
                     return null;
                 }
             }
@@ -31,9 +34,9 @@ public class MExceptionTest
     @Test(expected = RuntimeException.class)
     public void readMExceptionInErrorTest()
     {
-        final MException<Object> m = MException.toMException(new Func0<Object>() {
+        final MException<Object> m = MException.toMException(new Supplier<Object>() {
 
-            public Object apply() {
+            public Object get() {
                 throw new RuntimeException();
             }
         });
@@ -45,9 +48,9 @@ public class MExceptionTest
     public void returnTest2()
     {
         final MException<Integer> mex = MException.toMException(
-                new Func0<Integer>() {
+                new Supplier<Integer>() {
 
-                    public Integer apply() {
+                    public Integer get() {
                         return 10;
                     }
                 }
@@ -63,9 +66,9 @@ public class MExceptionTest
         for(int i=0;i<10;++i)
         {
             final Integer ii = i;
-            final Func0<Integer> f = new Func0<Integer>() {
+            final Supplier<Integer> f = new Supplier<Integer>() {
 
-                public Integer apply() {
+                public Integer get() {
                     return new Integer(ii);
                 }
             };
@@ -75,8 +78,8 @@ public class MExceptionTest
         }
     }
 
-    private static Func<Integer,Integer> DoublingGenerator =
-            new Func<Integer,Integer>()
+    private static Function<Integer,Integer> DoublingGenerator =
+            new Function<Integer, Integer>()
             {
                  public Integer apply(Integer a) { return 2*a;}
             };
@@ -86,12 +89,12 @@ public class MExceptionTest
     {
         Iterable2<Integer> it = IterableHelper.init(DoublingGenerator,10);
         java.util.List<MException<Integer>> l = it.map(
-                new Func<Integer, MException<Integer>>() {
+                new Function<Integer, MException<Integer>>() {
 
                     public MException<Integer> apply(final Integer ii) {
-                        final Func0<Integer> f = new Func0<Integer>() {
+                        final Supplier<Integer> f = new Supplier<Integer>() {
 
-                            public Integer apply() {
+                            public Integer get() {
                                 if(ii==8||ii==10||ii==16) throw new IllegalArgumentException("value");
                                 return new Integer(ii);
                             }
@@ -113,9 +116,9 @@ public class MExceptionTest
         {
             final Integer ii=i;
             final MException<Integer> m = MException.toMException(
-                    new Func0<Integer>() {
+                    new Supplier<Integer>() {
 
-                        public Integer apply() {
+                        public Integer get() {
                             return new Integer(ii);
                         }
                     }
@@ -124,13 +127,13 @@ public class MExceptionTest
             for(int j=-i;j<=i;++j)
             {
                 final Integer jj = j;
-                final MException<Integer> m1 = m.bind(new Func<Integer, MException<Integer>>() {
+                final MException<Integer> m1 = m.bind(new Function<Integer, MException<Integer>>() {
 
                     public MException<Integer> apply(final Integer integer) {
                         return MException.toMException(
-                                new Func0<Integer>() {
+                                new Supplier<Integer>() {
 
-                                    public Integer apply() {
+                                    public Integer get() {
                                         return integer / jj;
                                     }
                                 });
@@ -142,7 +145,7 @@ public class MExceptionTest
         }
 
         final java.util.List<MException<Integer>> l1 = Functional.filter(
-                new Func<MException<Integer>,Boolean>() {
+                new Function<MException<Integer>,Boolean>() {
                     public Boolean apply(final MException<Integer> m) {
                         return !m.hasException();
                     }
@@ -150,13 +153,13 @@ public class MExceptionTest
 
         Assert.assertFalse(
                 Functional.forAll(
-                        new Func<MException<Integer>, Boolean>() {
+                        new Function<MException<Integer>, Boolean>() {
                             public Boolean apply(final MException<Integer> m2) {
                                 return m2.hasException();
                             }
                         }, l1));
 
-        Assert.assertEquals(3, IterableHelper.create(l).filter(new Func<MException<Integer>, Boolean>() {
+        Assert.assertEquals(3, IterableHelper.create(l).filter(new Function<MException<Integer>, Boolean>() {
             public Boolean apply(final MException<Integer> m) {
                 return m.hasException();
             }
@@ -167,15 +170,15 @@ public class MExceptionTest
     public void bindTestExceptionThrownInFunc()
     {
         final MException<Integer> m = MException.toMException(
-                new Func0<Integer>() {
+                new Supplier<Integer>() {
 
-                    public Integer apply() {
+                    public Integer get() {
                         return new Integer(1);
                     }
                 }
         );
 
-        final MException<Integer> m1 = m.bind(new Func<Integer, MException<Integer>>() {
+        final MException<Integer> m1 = m.bind(new Function<Integer, MException<Integer>>() {
 
             public MException<Integer> apply(final Integer integer) {
                 throw new RuntimeException("Argh");
@@ -190,20 +193,20 @@ public class MExceptionTest
     public void bindTestThisMExceptionHasExceptionAlready()
     {
         final MException<Integer> m = MException.toMException(
-                new Func0<Integer>() {
+                new Supplier<Integer>() {
 
-                    public Integer apply() {
+                    public Integer get() {
                         throw new RuntimeException("Argh");
                     }
                 }
         );
 
-        final MException<Integer> m1 = m.bind(new Func<Integer, MException<Integer>>() {
+        final MException<Integer> m1 = m.bind(new Function<Integer, MException<Integer>>() {
 
             public MException<Integer> apply(final Integer integer) {
-                return MException.toMException(new Func0<Integer>() {
+                return MException.toMException(new Supplier<Integer>() {
 
-                    public Integer apply() {
+                    public Integer get() {
                         return new Integer(integer);
                     }
                 });
@@ -219,19 +222,19 @@ public class MExceptionTest
     public void liftTest1()
     {
         final Integer valu = 10;
-        final MException<Integer> a = MException.toMException(new Func0<Integer>() {
+        final MException<Integer> a = MException.toMException(new Supplier<Integer>() {
 
-            public Integer apply() {
+            public Integer get() {
                 return 10 / valu;
             }
         });
-        final MException<Integer> b = MException.toMException(new Func0<Integer>() {
+        final MException<Integer> b = MException.toMException(new Supplier<Integer>() {
 
-            public Integer apply() {
+            public Integer get() {
                 return 20 / valu;
             }
         });
-        final MException<Integer> c = MException.lift(new Func2<Integer, Integer, Integer>() {
+        final MException<Integer> c = MException.lift(new BiFunction<Integer, Integer, Integer>() {
 
             public Integer apply(Integer o, Integer o2) {
                 return o + o2;

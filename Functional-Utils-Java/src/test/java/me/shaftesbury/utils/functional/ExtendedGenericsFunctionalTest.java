@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by Bob on 13/02/14.
@@ -14,7 +15,7 @@ public final class ExtendedGenericsFunctionalTest
     @Test
     public final void chooseTestParseStringToNumber()
     {
-        final Func<String,Option<Number>> toNumber = new Func<String, Option<Number>>() {
+        final Function<String, Option<Number>> toNumber = new Function<String, Option<Number>>() {
 
             public Option<Number> apply(String s) {
                 try {
@@ -36,7 +37,7 @@ public final class ExtendedGenericsFunctionalTest
     @Test
     public final void chooseTestParseObjectToNumber()
     {
-        final Func<Object,Option<Number>> toNumber = new Func<Object, Option<Number>>() {
+        final Function<Object, Option<Number>> toNumber = new Function<Object, Option<Number>>() {
 
             public Option<Number> apply(Object o) {
                 final String s = o.toString();

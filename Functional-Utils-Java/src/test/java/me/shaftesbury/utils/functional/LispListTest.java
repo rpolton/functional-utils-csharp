@@ -3,6 +3,8 @@ package me.shaftesbury.utils.functional;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.function.Function;
+
 import static me.shaftesbury.utils.functional.LispList.*;
 
 /**
@@ -90,7 +92,7 @@ public class LispListTest
         final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
         final Integer limit = 5;
         final List<Integer> highElems = filter(
-                new Func<Integer,Boolean>()
+                new Function<Integer,Boolean>()
                 {
 
                     public Boolean apply(Integer a) { return a > limit;}
@@ -106,7 +108,7 @@ public class LispListTest
         final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
         final Integer limit = 10;
         final List<Integer> output = filter(
-                new Func<Integer,Boolean>()
+                new Function<Integer,Boolean>()
                 {
                      public Boolean apply(Integer a) {return a > limit;}
                 }, input);
@@ -120,7 +122,7 @@ public class LispListTest
         final List<Integer> input = list(2,list(4,list(6,list(8,list(10,list(12, list(14, list(16, list(18, list(20, LispList.<Integer>nil()))))))))));
         final List<Integer> expected = list(4,list(8,list(12,list(16,list(20,LispList.<Integer>nil())))));
         final List<Integer> output = filter(
-                new Func<Integer,Boolean>()
+                new Function<Integer,Boolean>()
                 {
                      public Boolean apply(Integer a) {return a % 4 ==0;}
                 }, input);

@@ -5,6 +5,8 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Herein are contained some standard algorithms from functional programming.
@@ -57,13 +59,13 @@ public final class Functional
     public static String indentBy(final int howMany, final String unitOfIndentation, final String indentThis)
     {
         final Collection<String> indentation = init(
-                new Func<Integer, String>() {
+                new Function<Integer, String>() {
 
                     public String apply(final Integer integer) {
                         return unitOfIndentation;
                     }
                 }, howMany);
-        return fold(new Func2<String, String, String>() {
+        return fold(new BiFunction<String, String, String>() {
 
             public String apply(final String state, final String str) {
                 return str + state;
@@ -74,16 +76,16 @@ public final class Functional
     /**
      * foldAndChoose: <tt>fold</tt> except that instead of folding every element in the input sequence, <tt>fold</tt>
      * only those for which the fold function 'f' returns a Some value (see <tt>Option</tt>)
+     * @param <A> the type of the initialValue / seed
+     * @param <B> the type of the element in the input sequence
      * @param f is the fold function modified such that the return value contains an Option in addition to the state
      * @param initialValue the seed for the fold function
      * @param input the input sequence
-     * @param <A> the type of the initialValue / seed
-     * @param <B> the type of the element in the input sequence
      * @return the folded value paired with those transformed elements which are Some
      * @throws OptionNoValueAccessException
      */
     public static <A, B>Pair<A,List<B>> foldAndChoose(
-            final Func2<A, B, Pair<A,Option<B>>> f,
+            final BiFunction<A, B, Pair<A, Option<B>>> f,
             final A initialValue, final Iterable<B> input) throws OptionNoValueAccessException
     {
         if (f == null) throw new IllegalArgumentException("f");
@@ -118,7 +120,7 @@ public final class Functional
      * @param fn map function (see <tt>map</tt>) which is used to transform the input sequence
      * @return a string containing the transformed string value of each input element separated by the supplied separator
      */
-    public static <T>String join(final String separator, final Iterable<T> l, final Func<? super T, String> fn)
+    public static <T>String join(final String separator, final Iterable<T> l, final Function<? super T, String> fn)
     {
         if (l == null) throw new IllegalArgumentException("l");
         if (fn == null) throw new IllegalArgumentException("fn");
@@ -150,7 +152,7 @@ public final class Functional
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the first element from the input sequence for which the supplied predicate returns true
      */
-    public static <A>A find(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static <A>A find(final Function<? super A,Boolean> f, final Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -173,9 +175,9 @@ public final class Functional
      *          which returns the first element from the input sequence for which the supplied predicate returns true
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A>Func<Iterable<A>,A> find(final Func<? super A,Boolean> f)
+    public static <A>Function<Iterable<A>,A> find(final Function<? super A,Boolean> f)
     {
-        return new Func<Iterable<A>, A>() {
+        return new Function<Iterable<A>, A>() {
             public A apply(final Iterable<A> input) {
                 return Functional.find(f,input);
             }
@@ -193,7 +195,7 @@ public final class Functional
      * @return the position in the input sequence of the first element from the input sequence for which the supplied predicate
      * returns true
      */
-    public static <A>int findIndex(final Func<A,Boolean> f, final Iterable<? extends A> input)
+    public static <A>int findIndex(final Function<A,Boolean> f, final Iterable<? extends A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -216,14 +218,14 @@ public final class Functional
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the last element in the input sequence for which the supplied predicate returns true
      */
-    public static <A>A findLast(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static <A>A findLast(final Function<? super A,Boolean> f, final Iterable<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
 
         final Pair<List<A>,Iterable<A>> p = takeNAndYield(input,1);
         final Pair<A,Boolean> seed = Pair.of(p.getLeft().get(0),f.apply(p.getLeft().get(0)));
-        final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
+        final Pair<A,Boolean> result = fold(new BiFunction<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
             public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.of(item,true):state;}
         },seed,p.getRight());
 
@@ -241,7 +243,7 @@ public final class Functional
      * @throws java.util.NoSuchElementException if no element is found that satisfies the predicate
      * @return the last element in the input sequence for which the supplied predicate returns true
      */
-    public static <A>A findLast(final Func<? super A,Boolean> f, final List<A> input)
+    public static <A>A findLast(final Function<? super A,Boolean> f, final List<A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -263,9 +265,9 @@ public final class Functional
      * @return the last element in the input sequence for which the supplied predicate returns true
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A>Func<List<A>,A> findLast(final Func<A,Boolean> f)
+    public static <A>Function<List<A>,A> findLast(final Function<A,Boolean> f)
     {
-        return new Func<List<A>, A>() {
+        return new Function<List<A>, A>() {
             public A apply(final List<A> input) {
                 return Functional.findLast(f,input);
             }
@@ -284,7 +286,7 @@ public final class Functional
      * @param <B> the type of the output element
      * @return the first non-None transformed element of the input sequence
      */
-    public static <A, B>B pick(final Func<A,Option<B>> f, final Iterable<? extends A> input)
+    public static <A, B>B pick(final Function<A,Option<B>> f, final Iterable<? extends A> input)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if (input == null) throw new IllegalArgumentException("input");
@@ -313,9 +315,9 @@ public final class Functional
      * @return the first non-None transformed element of the input sequence
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A,B>Func<Iterable<A>,B> pick(final Func<? super A,Option<B>> f)
+    public static <A,B>Function<Iterable<A>,B> pick(final Function<? super A,Option<B>> f)
     {
-        return new Func<Iterable<A>, B>() {
+        return new Function<Iterable<A>, B>() {
             public B apply(final Iterable<A> input) {
                 return Functional.pick(f,input);
             }
@@ -332,7 +334,7 @@ public final class Functional
      * @param <AA> the type of the input
      * @return f(input)
      */
-    public static <A, B, AA extends A> B in(final AA input, final Func<A, B> f)
+    public static <A, B, AA extends A> B in(final AA input, final Function<A, B> f)
     {
         return f.apply(input);
     }
@@ -348,9 +350,9 @@ public final class Functional
      * @param <C> the type of the output of <tt>g</tt>
      * @return a function equivalent to g(f(x))
      */
-    public static <A, B, C> Func<A, C> then(final Func<A, ? extends B> f, final Func<B, C> g)
+    public static <A, B, C> Function<A, C> then(final Function<A, ? extends B> f, final Function<B, C> g)
     {
-        return new Func<A, C>()
+        return new Function<A, C>()
         {
             public C apply(final A x)
             {
@@ -370,7 +372,7 @@ public final class Functional
      * @param <C> the resulting type of the second transformation
      * @return a list of pairs containing the two transformed sequences
      */
-    public static <A,B,C>List<Pair<B,C>> zip(final Func<? super A,B> f, final Func<? super A,C> g, final Collection<? extends A> input)
+    public static <A,B,C>List<Pair<B,C>> zip(final Function<? super A,B> f, final Function<? super A,C> g, final Collection<? extends A> input)
     {
         final List<Pair<B,C>> output = new ArrayList<Pair<B,C>>(input.size());
 
@@ -385,9 +387,9 @@ public final class Functional
      * @param <T> the type of the input element
      * @return a function which is the identity transformation
      */
-    public static <T>Func<T,T> identity()
+    public static <T>Function<T,T> identity()
     {
-        return new Func<T, T>() {
+        return new Function<T, T>() {
             public T apply(final T t) {
                 return t;
             }
@@ -398,7 +400,7 @@ public final class Functional
      * <tt>isEven</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an even integer
      */
-    public static Func<Integer,Boolean> isEven = new Func<Integer, Boolean>()
+    public static Function<Integer,Boolean> isEven = new Function<Integer, Boolean>()
     {
         public Boolean apply(final Integer i)
         {
@@ -409,7 +411,7 @@ public final class Functional
      * <tt>isOdd</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an odd integer
      */
-    public static Func<Integer,Boolean> isOdd = new Func<Integer, Boolean>()
+    public static Function<Integer,Boolean> isOdd = new Function<Integer, Boolean>()
     {
         public Boolean apply(final Integer i)
         {
@@ -419,7 +421,7 @@ public final class Functional
     /**
      * <tt>count</tt> a function that accepts a counter and another integer and returns 1 + counter
      */
-    public static Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
+    public static BiFunction<Integer,Integer,Integer> count = new BiFunction<Integer, Integer, Integer>() {
                 public Integer apply(final Integer state, final Integer b) {
                     return state + 1;
                 }
@@ -427,7 +429,7 @@ public final class Functional
     /**
      * <tt>sum</tt> a function that accepts two integers and returns the sum of them
      */
-    public static Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
+    public static BiFunction<Integer,Integer,Integer> sum = new BiFunction<Integer, Integer, Integer>() {
         public Integer apply(final Integer state, final Integer b) {
             return state + b;
         }
@@ -438,9 +440,9 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is greater than
      * 'that' or false otherwise
      */
-    public static <T extends Comparable<T>>Func<T,Boolean> greaterThan(final T that)
+    public static <T extends Comparable<T>>Function<T,Boolean> greaterThan(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             public Boolean apply(final T ths)
             {
@@ -454,9 +456,9 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is greater than
      * or equal to 'that' or false otherwise
      */
-    public static <T extends Comparable<T>>Func<T,Boolean> greaterThanOrEqual(final T that)
+    public static <T extends Comparable<T>>Function<T,Boolean> greaterThanOrEqual(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             public Boolean apply(final T ths)
             {
@@ -470,9 +472,9 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is less than
      * 'that' or false otherwise
      */
-    public static <T extends Comparable<T>>Func<T,Boolean> lessThan(final T that)
+    public static <T extends Comparable<T>>Function<T,Boolean> lessThan(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
 
             public Boolean apply(final T ths)
@@ -487,9 +489,9 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is less than
      * or equal to 'that' or false otherwise
      */
-    public static <T extends Comparable<T>>Func<T,Boolean> lessThanOrEqual(final T that)
+    public static <T extends Comparable<T>>Function<T,Boolean> lessThanOrEqual(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
 
             public Boolean apply(final T ths)
@@ -503,14 +505,14 @@ public final class Functional
      * The init function, not dissimilar to list comprehensions, which is used to return a new finite list whose contents are
      * determined by successive calls to the function f.
      * init: (int -> A) -> int -> A list
+     * @param <T> the type of the element in the output sequence
      * @param f generator function used to produce the individual elements of the output list. This function is called by init
      *          with the unity-based position of the current element in the output list being produced. Therefore, the first time
      *          f is called it will receive a literal '1' as its argument; the second time '2'; etc.
      * @param howMany the number of elements in the output list
-     * @param <T> the type of the element in the output sequence
      * @return a list of 'howMany' elements of type 'T' which were generated by the function 'f'
      */
-    public static <T>List<T> init(final Func<Integer,T> f,final int howMany)
+    public static <T>List<T> init(final Function<Integer, T> f, final int howMany)
     {
         if (f == null) throw new IllegalArgumentException("f");
         if(howMany<1) throw new IllegalArgumentException("howMany");
@@ -531,9 +533,9 @@ public final class Functional
      * @param <B> the type of the element in the output sequence
      * @return a list of type B containing the transformed values.
      */
-    public static <A,B> List<B> map(final Func<A, ? extends B> f, final Iterable<? extends A> input)
+    public static <A,B> List<B> map(final Function<A, ? extends B> f, final Iterable<? extends A> input)
     {
-        final List<B> output = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
+        final List<B> output = input instanceof Collection<?> ? new ArrayList<>(((Collection) input).size()) : new ArrayList<>();
         for(final A a : input)
             output.add(f.apply(a));
         return Collections.unmodifiableList(output);
@@ -550,9 +552,9 @@ public final class Functional
      *          containing the transformed values.
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A,B> Func<Iterable<A>,List<B>> map(final Func<? super A, ? extends B> f)
+    public static <A,B> Function<Iterable<A>,List<B>> map(final Function<? super A, ? extends B> f)
     {
-        return new Func<Iterable<A>, List<B>>() {
+        return new Function<Iterable<A>, List<B>>() {
 
             public List<B> apply(final Iterable<A> input) {
                 return Functional.map(f,input);
@@ -571,9 +573,9 @@ public final class Functional
      * @param <B> the type of the element in the output sequence
      * @return a list of type B containing the transformed values.
      */
-    public static <A,B> List<B> mapi(final Func2<Integer, A, ? extends B> f, final Iterable<? extends A> input)
+    public static <A,B> List<B> mapi(final BiFunction<Integer, A, ? extends B> f, final Iterable<? extends A> input)
     {
-        final List<B> output = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
+        final List<B> output = input instanceof Collection<?> ? new ArrayList<>(((Collection) input).size()) : new ArrayList<>();
         int pos = 0;
         for(final A a : input)
             output.add(f.apply(pos++, a));
@@ -592,9 +594,9 @@ public final class Functional
      *          containing the transformed values.
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A,B> Func<Iterable<A>,List<B>> mapi(final Func2<Integer, ? super A, ? extends B> f)
+    public static <A,B> Function<Iterable<A>,List<B>> mapi(final BiFunction<Integer, ? super A, ? extends B> f)
     {
-        return new Func<Iterable<A>, List<B>>() {
+        return new Function<Iterable<A>, List<B>>() {
 
             public List<B> apply(final Iterable<A> input) {
                 return Functional.mapi(f,input);
@@ -652,9 +654,9 @@ public final class Functional
      * @param <T> the type of the element which we will render as a String
      * @return a function that calls <tt>Stringify</tt>
      */
-    public static <T>Func<T, String> dStringify()
+    public static <T>Function<T, String> dStringify()
     {
-        return new Func<T, String>()
+        return new Function<T, String>()
         {
              public String apply(final T i) { return Stringify(i); }
         };
@@ -665,18 +667,18 @@ public final class Functional
      * true for all pairs and there is the same number of elements in both input sequences then forAll2 returns true. If the predicate
      * returns false at any point then the traversal of the input sequences halts and forAll2 returns false.
      * forAll2: (A -> B -> bool) -> A list -> B list -> bool
-     * @param f predicate to which each successive pair (input1_i, input2_i) is applied
-     * @param input1 input sequence
-     * @param input2 input sequence
      * @param <A> the base type of the element in the first input sequence
      * @param <B> the base type of the element in the second input sequence
      * @param <AA> the type of the element in the first input sequence
      * @param <BB> the type of the element in the second input sequence
+     * @param f predicate to which each successive pair (input1_i, input2_i) is applied
+     * @param input1 input sequence
+     * @param input2 input sequence
      * @return true if the predicate 'f' evaluates true for all pairs, false otherwise
      * @throws java.lang.IllegalArgumentException if the predicate returns true for all pairs and the sequences contain differing numbers
      * of elements
      */
-    public static <A, B,AA extends A,BB extends B>boolean forAll2(final Func2<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
+    public static <A, B,AA extends A,BB extends B>boolean forAll2(final BiFunction<A, B, Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
     {
         final Iterator<AA> enum1 = input1.iterator();
         final Iterator<BB> enum2 = input2.iterator();
@@ -695,14 +697,14 @@ public final class Functional
 
     /**
      * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+     * @param <A> the type of the element in the input sequence
      * @param pred a filter function. This is passed each input element in turn and returns either true or false. If true then
      *             the input element is passed through to the output otherwise it is ignored.
      * @param input a sequence of objects
-     * @param <A> the type of the element in the input sequence
      * @return a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
      *          function returns true for the element.
      */
-    public static <A>List<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
+    public static <A>List<A> filter(final Function<? super A, Boolean> pred, final Iterable<A> input)
     {
         final List<A> output = input instanceof Collection<?> ? new ArrayList<A>(((Collection) input).size()) : new ArrayList<A>();
         for(final A element : input)
@@ -714,17 +716,17 @@ public final class Functional
 
     /**
      * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+     * @param <T> the type of the element in the input sequence
      * @param f a filter function. This is passed each input element in turn and returns either true or false. If true then
      *             the input element is passed through to the output otherwise it is ignored.
-     * @param <T> the type of the element in the input sequence
      * @return a curried function that expects an input sequence which it feeds to the filter predicate which then returns
      *          a list which contains zero or more of the elements of the input sequence. Each element is included only if the filter
      *          function returns true for the element.
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <T>Func<Iterable<T>,List<T>> filter(final Func<? super T,Boolean> f)
+    public static <T>Function<Iterable<T>, List<T>> filter(final Function<? super T, Boolean> f)
     {
-        return new Func<Iterable<T>, List<T>>() {
+        return new Function<Iterable<T>, List<T>>() {
 
             public List<T> apply(final Iterable<T> input) {
                 return Functional.filter(f,input);
@@ -736,12 +738,12 @@ public final class Functional
      * The converse operation to <tt>forAll</tt>. If the predicate returns true then 'exists' returns true and halts the traveral of the
      * input sequence. Otherwise return false.
      * exists: (A -> bool) -> A list -> bool
+     * @param <A> the type of the element in the input sequence
      * @param f predicate
      * @param input input sequence
-     * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for any element in the input sequence, false otherwise
      */
-    public static <A>boolean exists(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static <A>boolean exists(final Function<? super A, Boolean> f, final Iterable<A> input)
     {
         for(final A a : input)
             if(f.apply(a))
@@ -754,14 +756,14 @@ public final class Functional
      * input sequence. Otherwise return false.
      * exists: (A -> bool) -> A list -> bool
      * This is the curried implementation.
-     * @param f predicate
      * @param <A> the type of the element in the input sequence
+     * @param f predicate
      * @return true if the predicate returns true for any element in the input sequence, false otherwise
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A>Func<Iterable<A>,Boolean> exists(final Func<? super A,Boolean> f)
+    public static <A>Function<Iterable<A>, Boolean> exists(final Function<? super A, Boolean> f)
     {
-        return new Func<Iterable<A>, Boolean>() {
+        return new Function<Iterable<A>, Boolean>() {
 
             public Boolean apply(final Iterable<A> input) {
                 return Functional.exists(f,input);
@@ -772,25 +774,25 @@ public final class Functional
     /**
      * not reverses the result of the applied predicate
      * not: (A -> bool) -> (A -> bool)
-     * @param f the applied predicate
      * @param <A> the type of the input to the function <tt>f</tt>
+     * @param f the applied predicate
      * @return true if f returns false, false if f returns true
      */
-    public static <A>Func<A,Boolean> not(final Func<A,Boolean> f)
+    public static <A>Function<A, Boolean> not(final Function<A, Boolean> f)
     {
-        return new Func<A,Boolean>(){ public Boolean apply(final A a) { return !f.apply(a);}};
+        return new Function<A, Boolean>(){ public Boolean apply(final A a) { return !f.apply(a);}};
     }
 
     /**
      * The converse operation to <tt>exists</tt>. If the predicate returns true for all elements in the input sequence then 'forAll'
      * returns true otherwise return false.
      * forAll: (A -> bool) -> A list -> bool
+     * @param <A> the type of the element in the input sequence
      * @param f predicate
      * @param input input sequence
-     * @param <A> the type of the element in the input sequence
      * @return true if the predicate returns true for all elements in the input sequence, false otherwise
      */
-    public static <A>boolean forAll(final Func<A,Boolean> f, final Iterable<? extends A> input)
+    public static <A>boolean forAll(final Function<A, Boolean> f, final Iterable<? extends A> input)
     {
         return !exists(not(f), input);
     }
@@ -800,14 +802,14 @@ public final class Functional
      * returns true otherwise return false.
      * forAll: (A -> bool) -> A list -> bool
      * This is a curried implementation of 'forAll
-     * @param f predicate
      * @param <A> the type of the element in the input sequence
+     * @param f predicate
      * @return true if the predicate returns true for all elements in the input sequence, false otherwise
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A>Func<Iterable<A>,Boolean> forAll(final Func<? super A,Boolean> f)
+    public static <A>Function<Iterable<A>, Boolean> forAll(final Function<? super A, Boolean> f)
     {
-        return new Func<Iterable<A>, Boolean>() {
+        return new Function<Iterable<A>, Boolean>() {
 
             public Boolean apply(final Iterable<A> input) {
                 return Functional.forAll(f,input);
@@ -818,14 +820,14 @@ public final class Functional
     /**
      * not2 reverses the result of the applied predicate
      * not2: (A -> B -> bool) -> (A -> B -> bool)
-     * @param f the applied predicate
      * @param <A> the type of the first input to the function <tt>f</tt>
      * @param <B> the type of the second input to the function <tt>f</tt>
+     * @param f the applied predicate
      * @return true if f returns false, false if f returns true
      */
-    public static <A,B> Func2<A,B,Boolean> not2(final Func2<A,B,Boolean> f)
+    public static <A,B> BiFunction<A, B, Boolean> not2(final BiFunction<A, B, Boolean> f)
     {
-        return new Func2<A,B,Boolean>(){ public Boolean apply(final A a, final B b) { return !f.apply(a,b);}};
+        return new BiFunction<A, B, Boolean>(){ public Boolean apply(final A a, final B b) { return !f.apply(a,b);}};
     }
 
     /// <summary> </summary>
@@ -836,12 +838,12 @@ public final class Functional
      * containing those elements from the input sequence for which the predicate returned true, the second list containing those
      * elements from the input sequence for which the predicate returned false.
      * partition: (A -> bool) -> A list -> A list * A list
+     * @param <A> the type of the element in the input sequence
      * @param f predicate used to split the input sequence into two groups
      * @param input the input sequence
-     * @param <A> the type of the element in the input sequence
      * @return a pair of lists, the first being the 'true' and the second being the 'false'
      */
-    public static <A>Pair<List<A>,List<A>> partition(final Func<? super A,Boolean> f, final Iterable<A> input)
+    public static <A>Pair<List<A>,List<A>> partition(final Function<? super A, Boolean> f, final Iterable<A> input)
     {
         final List<A> left;
         final List<A> right;
@@ -869,14 +871,14 @@ public final class Functional
      * elements from the input sequence for which the predicate returned false.
      * partition: (A -> bool) -> A list -> A list * A list
      * This is a curried implementation of 'forAll
-     * @param f predicate used to split the input sequence into two groups
      * @param <A> the type of the element in the input sequence
+     * @param f predicate used to split the input sequence into two groups
      * @return a pair of lists, the first being the 'true' and the second being the 'false'
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A>Func<Iterable<A>,Pair<List<A>,List<A>>> partition(final Func<? super A,Boolean> f)
+    public static <A>Function<Iterable<A>, Pair<List<A>, List<A>>> partition(final Function<? super A, Boolean> f)
     {
-        return new Func<Iterable<A>, Pair<List<A>, List<A>>>() {
+        return new Function<Iterable<A>, Pair<List<A>,List<A>>>() {
 
             public Pair<List<A>, List<A>> apply(final Iterable<A> input) {
                 return Functional.partition(f,input);
@@ -889,13 +891,13 @@ public final class Functional
      * be between zero and the number of elements in the input sequence.
      * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * choose: (A -> B option) -> A list -> B list
-     * @param f map function. This transforms the input element into an Option
-     * @param input input sequence
      * @param <A> the type of the element in the input sequence
      * @param <B> the type of the element in the output sequence
+     * @param f map function. This transforms the input element into an Option
+     * @param input input sequence
      * @return a list of transformed elements, numbering less than or equal to the number of input elements
      */
-    public static <A, B>List<B> choose(final Func<? super A, Option<B>> f, final Iterable<A> input)
+    public static <A, B>List<B> choose(final Function<? super A, Option<B>> f, final Iterable<A> input)
     {
         final List<B> results = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
         for(final A a : input)
@@ -913,15 +915,15 @@ public final class Functional
      * be between zero and the number of elements in the input sequence.
      * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
      * choose: (A -> B option) -> A list -> B list
-     * @param f map function. This transforms the input element into an Option
      * @param <A> the type of the element in the input sequence
      * @param <B> the type of the element in the output sequence
+     * @param f map function. This transforms the input element into an Option
      * @return a list of transformed elements, numbering less than or equal to the number of input elements
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A, B>Func<Iterable<A>,List<B>> choose(final Func<? super A, Option<B>> f)
+    public static <A, B>Function<Iterable<A>, List<B>> choose(final Function<? super A, Option<B>> f)
     {
-        return new Func<Iterable<A>, List<B>>() {
+        return new Function<Iterable<A>, List<B>>() {
 
             public List<B> apply(final Iterable<A> input) {
                 return Functional.choose(f, input);
@@ -933,14 +935,14 @@ public final class Functional
      * See <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
      * fold: aggregate the elements of the input sequence given a seed and an aggregation function.
      * fold: (A -> B -> A) -> A -> B list -> A
+     * @param <A> the type of the initialValue / seed
+     * @param <B> the type of the element in the input sequence
      * @param f aggregation function
      * @param initialValue seed for the algorithm
      * @param input input sequence
-     * @param <A> the type of the initialValue / seed
-     * @param <B> the type of the element in the input sequence
      * @return aggregated value
      */
-    public static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
+    public static <A, B>A fold(final BiFunction<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
     {
         A state = initialValue;
         for (final B b : input)
@@ -953,16 +955,16 @@ public final class Functional
      * fold: aggregate the elements of the input sequence given a seed and an aggregation function.
      * This is the curried implementation
      * fold: (A -> B -> A) -> A -> B list -> A
-     * @param f aggregation function
-     * @param initialValue seed for the algorithm
      * @param <A> the type of the initialValue / seed
      * @param <B> the type of the element in the output sequence
+     * @param f aggregation function
+     * @param initialValue seed for the algorithm
      * @return aggregated value
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <A, B>Func<Iterable<B>,A> fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue)
+    public static <A, B>Function<Iterable<B>, A> fold(final BiFunction<? super A, ? super B, ? extends A> f, final A initialValue)
     {
-        return new Func<Iterable<B>, A>() {
+        return new Function<Iterable<B>, A>() {
 
             public A apply(final Iterable<B> input) {
                 return Functional.fold(f, initialValue, input);
@@ -976,7 +978,7 @@ public final class Functional
      * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
-    public static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
+    public static <A,B>List<A> unfold(final Function<? super B, Pair<A, B>> unspool, final Function<? super B, Boolean> finished, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
         if(finished==null) throw new IllegalArgumentException("finished");
@@ -997,7 +999,7 @@ public final class Functional
      * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
-    public static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
+    public static <A,B>List<A> unfold(final Function<? super B, Option<Pair<A, B>>> unspool, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
 
@@ -1015,17 +1017,17 @@ public final class Functional
     /**
      * toDictionary: given each element from the input sequence apply the keyFn and valueFn to generate a (key,value) pair.
      * The resulting dictionary (java.util.Map) contains all these pairs.
-     * @param keyFn function used to generate the key
-     * @param valueFn function used to generate the value
-     * @param input input sequence
      * @param <T> the type of the element in the input sequence
      * @param <K> the type of the key elements
      * @param <V> the type of the value elements
+     * @param keyFn function used to generate the key
+     * @param valueFn function used to generate the value
+     * @param input input sequence
      * @return a java.util.Map containing the transformed input sequence
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    public static <T,K,V>Map<K,V> toDictionary(final Func<? super T,? extends K> keyFn, final Func<? super T,? extends V> valueFn, final Iterable<T> input)
+    public static <T,K,V>Map<K,V> toDictionary(final Function<? super T, ? extends K> keyFn, final Function<? super T, ? extends V> valueFn, final Iterable<T> input)
     {
         if(keyFn==null) throw new IllegalArgumentException("keyFn");
         if(valueFn==null) throw new IllegalArgumentException("valueFn");
@@ -1203,15 +1205,15 @@ public final class Functional
     /**
      * take: given a list return another list containing the first 'howMany' elements
      * This is the curried implementation
-     * @param howMany a positive number of elements to be returned from the input sequence
      * @param <T> the type of the element in the input sequence
+     * @param howMany a positive number of elements to be returned from the input sequence
      * @return a list containing the first 'howMany' elements of 'list'
      * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static<T>Func<Iterable<? extends T>,List<T>> take(final int howMany)
+    public static<T>Function<Iterable<? extends T>, List<T>> take(final int howMany)
     {
-        return new Func<Iterable<? extends T>, List<T>>() {
+        return new Function<Iterable<? extends T>, List<T>>() {
 
             public List<T> apply(final Iterable<? extends T> input) {
                 return Functional.take(howMany,input);
@@ -1222,12 +1224,12 @@ public final class Functional
     /**
      * takeWhile: given a list return another list containing the first elements up and not including the first element for which
      * the predicate returns false
+     * @param <T> the type of the element in the input sequence
      * @param predicate the predicate to use
      * @param list the input sequence
-     * @param <T> the type of the element in the input sequence
      * @return a list
      */
-    public static<T>List<T> takeWhile(final Func<? super T, Boolean> predicate, final List<T> list)
+    public static<T>List<T> takeWhile(final Function<? super T, Boolean> predicate, final List<T> list)
     {
         if(predicate==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): list is null");
@@ -1250,14 +1252,14 @@ public final class Functional
      * takeWhile: given a list return another list containing the first elements up and not including the first element for which
      * the predicate returns false
      * This is the curried implementation
-     * @param predicate the predicate to use
      * @param <T> the type of the element in the input sequence
+     * @param predicate the predicate to use
      * @return a list
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static<T>Func<List<T>,List<T>> takeWhile(final Func<? super T, Boolean> predicate)
+    public static<T>Function<List<T>, List<T>> takeWhile(final Function<? super T, Boolean> predicate)
     {
-        return new Func<List<T>, List<T>>() {
+        return new Function<List<T>, List<T>>() {
 
             public List<T> apply(final List<T> input) {
                 return Functional.takeWhile(predicate, input);
@@ -1290,15 +1292,15 @@ public final class Functional
      * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
      * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
      * This is the curried implementation
-     * @param howMany a non-negative number of elements to be discarded from the input sequence
      * @param <T> the type of the element in the input sequence
+     * @param howMany a non-negative number of elements to be discarded from the input sequence
      * @return a list containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
      * are skipped than are present in the 'list'
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static<T>Func<List<? extends T>,List<T>> skip(final int howMany)
+    public static<T>Function<List<? extends T>, List<T>> skip(final int howMany)
     {
-        return new Func<List<? extends T>, List<T>>() {
+        return new Function<List<? extends T>, List<T>>() {
 
             public List<T> apply(final List<? extends T> input) {
                 return Functional.skip(howMany, input);
@@ -1309,12 +1311,12 @@ public final class Functional
     /**
      * skipWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
      * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+     * @param <T> the type of the element in the input sequence
      * @param predicate ignore elements in the input while the predicate is true.
      * @param list the input sequence
-     * @param <T> the type of the element in the input sequence
      * @return a list containing the remaining elements after and including the first element for which the predicate returns false
      */
-    public static <T>List<T> skipWhile(final Func<? super T, Boolean> predicate, final List<T> list)
+    public static <T>List<T> skipWhile(final Function<? super T, Boolean> predicate, final List<T> list)
     {
         if(predicate==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): list is null");
@@ -1329,14 +1331,14 @@ public final class Functional
     /**
      * skipWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
      * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
-     * @param predicate ignore elements in the input while the predicate is true.
      * @param <T> the type of the element in the input sequence
+     * @param predicate ignore elements in the input while the predicate is true.
      * @return a list containing the remaining elements after and including the first element for which the predicate returns false
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static<T>Func<List<T>,List<T>> skipWhile(final Func<? super T, Boolean> predicate)
+    public static<T>Function<List<T>, List<T>> skipWhile(final Function<? super T, Boolean> predicate)
     {
-        return new Func<List<T>, List<T>>() {
+        return new Function<List<T>, List<T>>() {
 
             public List<T> apply(final List<T> input) {
                 return Functional.skipWhile(predicate, input);
@@ -1347,13 +1349,13 @@ public final class Functional
     /**
      * constant: a function that returns a map function f(n) that returns the supplied 'constant'. Typically this would be
      * used in <tt>init</tt>
-     * @param constant the desired constant value to be returned
      * @param <T> the type of the constant
+     * @param constant the desired constant value to be returned
      * @return a function that returns a function that returns the supplied constant
      */
-    public static <T>Func<Integer,T> constant(final T constant)
+    public static <T>Function<Integer, T> constant(final T constant)
     {
-        return new Func<Integer, T>() {
+        return new Function<Integer, T>() {
 
             public T apply(final Integer integer) {
                 return constant;
@@ -1367,9 +1369,9 @@ public final class Functional
      * @param startFrom the lower bound of the range
      * @return a function that returns a function that returns an integer from the range [startFrom+n, infinity)
      */
-    public static Func<Integer,Integer> range(final Integer startFrom)
+    public static Function<Integer, Integer> range(final Integer startFrom)
     {
-        return new Func<Integer,Integer>(){
+        return new Function<Integer, Integer>(){
             private final Integer start = startFrom;
             public Integer apply(final Integer input) {
                 return (start-1)+input; // because init starts counting from 1
@@ -1527,13 +1529,13 @@ public final class Functional
      * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
      * These sequences are concatenated into one final output sequence at the end of the transformation.
      * map: (T -> U list) -> T list -> U list
-     * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
-     * @param input a sequence to be fed into f
      * @param <T> the type of the element in the input sequence
      * @param <U> the type of the element in the output sequence
+     * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+     * @param input a sequence to be fed into f
      * @return a list of type U containing the concatenated sequences of transformed values.
      */
-    public static <T,U>List<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
+    public static <T,U>List<U> collect(final Function<? super T, ? extends Iterable<U>> f, final Iterable<T> input)
     {
         List<U> output = input instanceof Collection<?> ? new ArrayList<U>(((Collection) input).size()) : new ArrayList<U>();
         for(final T element : input)
@@ -1547,15 +1549,15 @@ public final class Functional
      * These sequences are concatenated into one final output sequence at the end of the transformation.
      * map: (T -> U list) -> T list -> U list
      * This is a curried implementation of 'collect'
-     * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
      * @param <T> the type of the element in the input sequence
      * @param <U> the type of the element in the output sequence
+     * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
      * @return a list of type U containing the concatenated sequences of transformed values.
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <T,U>Func<Iterable<T>,List<U>> collect(final Func<? super T,? extends Iterable<U>> f)
+    public static <T,U>Function<Iterable<T>, List<U>> collect(final Function<? super T, ? extends Iterable<U>> f)
     {
-        return new Func<Iterable<T>, List<U>>() {
+        return new Function<Iterable<T>, List<U>>() {
 
             public List<U> apply(final Iterable<T> input) {
                 return Functional.collect(f,input);
@@ -1642,17 +1644,17 @@ public final class Functional
     }
 
     /**
-     * groupBy: similar to {@link #partition(Func,Iterable)} in that the input is grouped according to a function. This is more general than
+     * groupBy: similar to {@link #partition(Function, Iterable)} in that the input is grouped according to a function. This is more general than
      * <tt>partition</tt> though as the output can be an arbitrary number of groups, up to and including one group per item in the
      * input data set. The 'keyFn' is the grouping operator and it is used to determine the key at which any given element from
      * the input data set should be added to the output dictionary / map.
-     * @param keyFn the grouping function. Given an element return the key to be used when storing this element in the dictionary
-     * @param input the input sequence
      * @param <T> the type of the element in the input sequence
      * @param <U> the type of the element in the key
+     * @param keyFn the grouping function. Given an element return the key to be used when storing this element in the dictionary
+     * @param input the input sequence
      * @return a java.util.Map containing a list of elements for each key
      */
-    public static <T,U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
+    public static <T,U>Map<U,List<T>> groupBy(final Function<? super T, ? extends U> keyFn, final Iterable<T> input)
     {
         if (keyFn == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): keyFn is null");
         if (input == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): input is null");
@@ -1742,7 +1744,7 @@ public final class Functional
      * @param howManyPartitions defines the number of Range objects to generate to cover the interval
      * @return a list of Range objects
      */
-    public static <T>List<Range<T>> partition(final Func<Integer,T> generator, final int howManyElements, final int howManyPartitions)
+    public static <T>List<Range<T>> partition(final Function<Integer, T> generator, final int howManyElements, final int howManyPartitions)
     {
         if(howManyElements<=0) throw new IllegalArgumentException("Functional.partition() howManyElements cannot be non-positive");
         if(howManyPartitions<=0) throw new IllegalArgumentException("Functional.partition() howManyPartitions cannot be non-positive");
@@ -1753,7 +1755,7 @@ public final class Functional
         assert size*howManyPartitions + remainder == howManyElements;
 
         final Integer seed = 0;
-        final Func<Integer,Pair<T,Integer>> boundsCalculator = new Func<Integer, Pair<T, Integer>>() {
+        final Function<Integer,Pair<T,Integer>> boundsCalculator = new Function<Integer, Pair<T, Integer>>() {
 
             public Pair<T, Integer> apply(final Integer integer) {
                 return Pair.of(
@@ -1761,7 +1763,7 @@ public final class Functional
                         integer+1);
             }
         };
-        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+        final Function<Integer, Boolean> finished = new Function<Integer, Boolean>() {
 
             public Boolean apply(Integer integer) {
                 return integer>howManyPartitions;
@@ -1783,7 +1785,7 @@ public final class Functional
         }
         return retval;
 
-//        return Functional.seq.init(new Func<Integer, Range<T>>() {
+//        return Functional.seq.init(new Function<Integer, Range<T>>() {
 //
 //            public Range<T> apply(final Integer integer) {
 //// inefficient - the upper bound is computed twice (once at the end of an iteration and once at the beginning of the next iteration)
@@ -1808,14 +1810,14 @@ public final class Functional
          * See <A href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</A>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (T -> U) -> T seq -> U seq
-         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param input a sequence to be fed into f
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param input a sequence to be fed into f
          * @return a lazily-evaluated sequence of type B containing the transformed values.
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T,U>Iterable<U> map(final Func<? super T,? extends U> f, final Iterable<T> input)
+        public static <T,U>Iterable<U> map(final Function<? super T, ? extends U> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -1827,7 +1829,7 @@ public final class Functional
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<U>() {
                             private final Iterator<T> _input=input.iterator();
-                            private final Func<? super T,? extends U> _f = f;
+                            private final Function<? super T, ? extends U> _f = f;
 
                             public final boolean hasNext() {
                                 return _input.hasNext();
@@ -1840,7 +1842,7 @@ public final class Functional
 
 
                             public void remove() {
-                                throw new UnsupportedOperationException("Functional.seq.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                                throw new UnsupportedOperationException("Functional.seq.map(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
                         };
                     else throw new UnsupportedOperationException("This Iterable does not allow multiple Iterators");
@@ -1852,17 +1854,17 @@ public final class Functional
          * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (T -> U) -> T seq -> U seq
-         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
          * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a lazily-evaluated
          * sequence of type U containing the transformed values.
          * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T,U>Func<Iterable<T>,Iterable<U>> map(final Func<? super T,? extends U> f)
+        public static <T,U>Function<Iterable<T>, Iterable<U>> map(final Function<? super T, ? extends U> f)
         {
-            return new Func<Iterable<T>, Iterable<U>>() {
+            return new Function<Iterable<T>, Iterable<U>>() {
 
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.map(f, input);
@@ -1874,14 +1876,14 @@ public final class Functional
          * See <A href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</A>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
          * mapi: (Integer -> T -> U) -> T seq -> U seq
-         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param input a sequence to be fed into f
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param input a sequence to be fed into f
          * @return a lazily-evaluated sequence of type B containing the transformed values.
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T,U>Iterable<U> mapi(final Func2<Integer,? super T,? extends U> f, final Iterable<T> input)
+        public static <T,U>Iterable<U> mapi(final BiFunction<Integer, ? super T, ? extends U> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -1893,7 +1895,7 @@ public final class Functional
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<U>() {
                             private final Iterator<T> _input=input.iterator();
-                            private final Func2<Integer,? super T,? extends U> _f = f;
+                            private final BiFunction<Integer, ? super T, ? extends U> _f = f;
                             private int counter = 0;
 
                             public final boolean hasNext() {
@@ -1907,7 +1909,7 @@ public final class Functional
 
 
                             public void remove() {
-                                throw new UnsupportedOperationException("Functional.seq.map(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                                throw new UnsupportedOperationException("Functional.seq.map(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
                         };
                     else throw new UnsupportedOperationException("This Iterable does not allow multiple Iterators");
@@ -1919,17 +1921,17 @@ public final class Functional
          * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into an element in the output sequence.
          * mapi: (int -> T -> U) -> T seq -> U seq
-         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
          * @return a curried function that expects an input sequence which it feeds to the transformation f which returns a lazily-evaluated
          * sequence of type U containing the transformed values.
          * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T,U>Func<Iterable<T>,Iterable<U>> mapi(final Func2<Integer,? super T,? extends U> f)
+        public static <T,U>Function<Iterable<T>, Iterable<U>> mapi(final BiFunction<Integer, ? super T, ? extends U> f)
         {
-            return new Func<Iterable<T>, Iterable<U>>() {
+            return new Function<Iterable<T>, Iterable<U>>() {
 
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.mapi(f, input);
@@ -1982,15 +1984,15 @@ public final class Functional
 
         /**
          * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+         * @param <T> the type of the element in the input sequence
          * @param f a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
          * @param input a sequence of objects
-         * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence which contains zero or more of the elements of the input sequence. Each element is included only if
          * the filter function returns true for the element.
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Iterable<T> filter(final Func<? super T,Boolean> f, final Iterable<T> input) //throws NoSuchElementException, IllegalArgumentException, UnsupportedOperationException
+        public static <T>Iterable<T> filter(final Function<? super T, Boolean> f, final Iterable<T> input) //throws NoSuchElementException, IllegalArgumentException, UnsupportedOperationException
         {
             if(f==null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -2002,7 +2004,7 @@ public final class Functional
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<T>() {
                             private final Iterator<T> _input=input.iterator();
-                            private final Func<? super T,Boolean> _f = f;
+                            private final Function<? super T, Boolean> _f = f;
                             private T _next = null;
 
                             public final boolean hasNext() {
@@ -2032,7 +2034,7 @@ public final class Functional
 
 
                             public void remove() {
-                                throw new UnsupportedOperationException("Functional.seq.filter(Func<T,Boolean>,Iterable<T>): Removing elements is strictly prohibited");
+                                throw new UnsupportedOperationException("Functional.seq.filter(Function<T,Boolean>,Iterable<T>): Removing elements is strictly prohibited");
                             }
                         };
                     else throw new UnsupportedOperationException("This Iterable does not allow multiple Iterators");
@@ -2042,16 +2044,16 @@ public final class Functional
 
         /**
          * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+         * @param <T> the type of the element in the input sequence
          * @param f a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
-         * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence which contains zero or more of the elements of the input sequence. Each element is included only if
          * the filter function returns true for the element.
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Func<Iterable<T>,Iterable<T>> filter(final Func<? super T,Boolean> f)
+        public static <T>Function<Iterable<T>, Iterable<T>> filter(final Function<? super T, Boolean> f)
         {
-            return new Func<Iterable<T>,Iterable<T>>(){
+            return new Function<Iterable<T>, Iterable<T>>(){
 
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.filter(f,input);
@@ -2064,14 +2066,14 @@ public final class Functional
          * be between zero and the number of elements in the input sequence.
          * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * choose: (A -> B option) -> A list -> B list
-         * @param f map function. This transforms the input element into an Option
-         * @param input input sequence
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f map function. This transforms the input element into an Option
+         * @param input input sequence
          * @return a lazily-evaluated sequence of transformed elements, numbering less than or equal to the number of input elements
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T,U>Iterable<U> choose(final Func<? super T,Option<U>> f, final Iterable<T> input)
+        public static <T,U>Iterable<U> choose(final Function<? super T, Option<U>> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -2083,7 +2085,7 @@ public final class Functional
                     if(haveCreatedIterator.compareAndSet(false,true))
                         return new Iterator<U>() {
                             private final Iterator<T> _input=input.iterator();
-                            private final Func<? super T,Option<U>> _f = f;
+                            private final Function<? super T, Option<U>> _f = f;
                             private Option<U> _next = Option.None();
 
                             public final boolean hasNext() {
@@ -2118,7 +2120,7 @@ public final class Functional
 
 
                             public void remove() {
-                                throw new UnsupportedOperationException("Functional.seq.choose(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                                throw new UnsupportedOperationException("Functional.seq.choose(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
                         };
                     else throw new UnsupportedOperationException("This Iterable does not allow multiple Iterators");
@@ -2131,15 +2133,15 @@ public final class Functional
          * be between zero and the number of elements in the input sequence.
          * See <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Map</a>
          * choose: (A -> B option) -> A list -> B list
-         * @param f map function. This transforms the input element into an Option
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f map function. This transforms the input element into an Option
          * @return a lazily-evaluated sequence of transformed elements, numbering less than or equal to the number of input elements
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T,U>Func<Iterable<T>,Iterable<U>> choose(final Func<? super T,Option<U>> f)
+        public static <T,U>Function<Iterable<T>, Iterable<U>> choose(final Function<? super T, Option<U>> f)
         {
-            return new Func<Iterable<T>, Iterable<U>>() {
+            return new Function<Iterable<T>, Iterable<U>>() {
 
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.choose(f, input);
@@ -2151,16 +2153,16 @@ public final class Functional
          * The init function, not dissimilar to list comprehensions, which is used to return a new finite sequence whose contents are
          * determined by successive calls to the function f.
          * init: (int -> T) -> int -> T seq
+         * @param <T> the type of the element in the output sequence
          * @param f generator function used to produce the individual elements of the output sequence.
          *          This function is called by init with the unity-based position of the current element in the output sequence being
          *          produced. Therefore, the first time f is called it will receive a literal '1' as its argument; the second time
          *          '2'; etc.
          * @param howMany the number of elements in the output sequence
-         * @param <T> the type of the element in the output sequence
          * @return a lazily-evaluated sequence which will contain no more than 'howMany' elements of type 'T' which were generated by the function 'f'
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Iterable<T> init(final Func<Integer,? extends T> f,final int howMany)
+        public static <T>Iterable<T> init(final Function<Integer, ? extends T> f, final int howMany)
         {
             if(f==null) throw new IllegalArgumentException("f");
             if(howMany<1) throw new IllegalArgumentException("howMany");
@@ -2174,7 +2176,7 @@ public final class Functional
                         return new Iterator<T>()
                         {
                             private int _counter=1;
-                            private final Func<Integer,? extends T> _f = f;
+                            private final Function<Integer, ? extends T> _f = f;
 
                             public boolean hasNext() {
                                 return _counter<=howMany;
@@ -2189,7 +2191,7 @@ public final class Functional
 
 
                             public void remove() {
-                                throw new UnsupportedOperationException("Functional.seq.init(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                                throw new UnsupportedOperationException("Functional.seq.init(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
                         };
                     else throw new UnsupportedOperationException("This Iterable does not allow multiple Iterators");
@@ -2201,15 +2203,15 @@ public final class Functional
          * The init function, not dissimilar to list comprehensions, which is used to return a new infinite sequence whose contents are
          * determined by successive calls to the function f.
          * init: (int -> T) -> T seq
+         * @param <T> the type of the element in the output sequence
          * @param f generator function used to produce the individual elements of the output sequence.
          *          This function is called by init with the unity-based position of the current element in the output sequence being
          *          produced. Therefore, the first time f is called it will receive a literal '1' as its argument; the second time
          *          '2'; etc.
-         * @param <T> the type of the element in the output sequence
          * @return a potentially infinite sequence containing elements of type 'T' which were generated by the function 'f'
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Iterable<T> init(final Func<Integer,? extends T> f)
+        public static <T>Iterable<T> init(final Function<Integer, ? extends T> f)
         {
             if(f==null) throw new IllegalArgumentException("f");
 
@@ -2222,7 +2224,7 @@ public final class Functional
                         return new Iterator<T>()
                         {
                             private int _counter=1;
-                            private final Func<Integer,? extends T> _f = f;
+                            private final Function<Integer, ? extends T> _f = f;
 
                             public boolean hasNext() {
                                 return true;
@@ -2235,7 +2237,7 @@ public final class Functional
 
 
                             public void remove() {
-                                throw new UnsupportedOperationException("Functional.seq.init(Func<T,U>,Iterable<T>): Removing elements is strictly prohibited");
+                                throw new UnsupportedOperationException("Functional.seq.init(Function<T,U>,Iterable<T>): Removing elements is strictly prohibited");
                             }
                         };
                     else throw new UnsupportedOperationException("This Iterable does not allow multiple Iterators");
@@ -2248,14 +2250,14 @@ public final class Functional
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
          * These sequences are concatenated into one final output sequence at the end of the transformation.
          * map: (T -> U list) -> T list -> U list
-         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
-         * @param input a sequence to be fed into f
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+         * @param input a sequence to be fed into f
          * @return a lazily-evaluated sequence of type U containing the concatenated sequences of transformed values.
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T,U>Iterable<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
+        public static <T,U>Iterable<U> collect(final Function<? super T, ? extends Iterable<U>> f, final Iterable<T> input)
         {
             if(f==null) throw new IllegalArgumentException("Functional.seq.collect: f is null");
             if(input==null) throw new IllegalArgumentException("Functional.seq.collect: input is null");
@@ -2297,15 +2299,15 @@ public final class Functional
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
          * These sequences are concatenated into one final output sequence at the end of the transformation.
          * map: (T -> U list) -> T list -> U list
-         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
          * @return a function returning a lazily-evaluated sequence of type U containing the concatenated sequences of transformed values.
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T,U>Func<Iterable<T>,Iterable<U>> collect(final Func<? super T,? extends Iterable<U>> f)
+        public static <T,U>Function<Iterable<T>, Iterable<U>> collect(final Function<? super T, ? extends Iterable<U>> f)
         {
-            return new Func<Iterable<T>, Iterable<U>>() {
+            return new Function<Iterable<T>, Iterable<U>>() {
 
                 public Iterable<U> apply(final Iterable<T> input) {
                     return Functional.seq.collect(f,input);
@@ -2367,15 +2369,15 @@ public final class Functional
         /**
          * skip: the converse of <tt>take</tt>. Given a list return another list containing those elements that follow the
          * first 'howMany' elements. That is, if we skip(1,[1,2,3]) then we have [2,3]
-         * @param howMany a non-negative number of elements to be discarded from the input sequence
          * @param <T> the type of the element in the input sequence
+         * @param howMany a non-negative number of elements to be discarded from the input sequence
          * @return a lazily-evaluated sequence containing the remaining elements after the first 'howMany' elements of 'list' or an empty list if more elements
          * are skipped than are present in the 'list'
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Func<Iterable<T>,Iterable<T>> skip(final int howMany)
+        public static <T>Function<Iterable<T>, Iterable<T>> skip(final int howMany)
         {
-            return new Func<Iterable<T>, Iterable<T>>() {
+            return new Function<Iterable<T>, Iterable<T>>() {
 
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.skip(howMany, input);
@@ -2386,14 +2388,14 @@ public final class Functional
         /**
          * skipWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
          * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+         * @param <T> the type of the element in the input sequence
          * @param predicate ignore elements in the input while the predicate is true.
          * @param input the input sequence
-         * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence containing the remaining elements after and including the first element for which
          * the predicate returns false
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Iterable<T> skipWhile(final Func<? super T,Boolean> predicate, final Iterable<T> input) {
+        public static <T>Iterable<T> skipWhile(final Function<? super T, Boolean> predicate, final Iterable<T> input) {
             if (predicate == null)
                 throw new IllegalArgumentException("Functional.skipWhile(Func,Iterable<T>): predicate is null");
             if (input == null) throw new IllegalArgumentException("Functional.skipWhile(Func,Iterable<T>): input is null");
@@ -2459,15 +2461,15 @@ public final class Functional
         /**
          * skipWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
          * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
-         * @param predicate ignore elements in the input while the predicate is true.
          * @param <T> the type of the element in the input sequence
+         * @param predicate ignore elements in the input while the predicate is true.
          * @return a lazily-evaluated sequence containing the remaining elements after and including the first element for which
          * the predicate returns false
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Func<Iterable<T>,Iterable<T>> skipWhile(final Func<? super T,Boolean> predicate)
+        public static <T>Function<Iterable<T>, Iterable<T>> skipWhile(final Function<? super T, Boolean> predicate)
         {
-            return new Func<Iterable<T>, Iterable<T>>() {
+            return new Function<Iterable<T>, Iterable<T>>() {
 
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.skipWhile(predicate, input);
@@ -2524,14 +2526,14 @@ public final class Functional
 
         /**
          * take: given a sequence return another sequence containing the first 'howMany' elements
-         * @param howMany a positive number of elements to be returned from the input sequence
          * @param <T> the type of the element in the input sequence
+         * @param howMany a positive number of elements to be returned from the input sequence
          * @return a sequence containing the first 'howMany' elements of 'list'
          * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
          */
-        public static <T>Func<Iterable<T>,Iterable<T>> take(final int howMany)
+        public static <T>Function<Iterable<T>, Iterable<T>> take(final int howMany)
         {
-            return new Func<Iterable<T>, Iterable<T>>() {
+            return new Function<Iterable<T>, Iterable<T>>() {
 
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.take(howMany, input);
@@ -2542,14 +2544,14 @@ public final class Functional
         /**
          * takeWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
          * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
+         * @param <T> the type of the element in the input sequence
          * @param predicate ignore elements in the input while the predicate is true.
          * @param input the input sequence
-         * @param <T> the type of the element in the input sequence
          * @return a lazily-evaluated sequence containing the remaining elements after and including the first element for which
          * the predicate returns false
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Iterable<T> takeWhile(final Func<? super T,Boolean> predicate, final Iterable<T> input) {
+        public static <T>Iterable<T> takeWhile(final Function<? super T, Boolean> predicate, final Iterable<T> input) {
             if (predicate == null)
                 throw new IllegalArgumentException("Functional.takeWhile(Func,Iterable<T>): predicate is null");
             if (input == null) throw new IllegalArgumentException("Functional.takeWhile(Func,Iterable<T>): input is null");
@@ -2625,15 +2627,15 @@ public final class Functional
         /**
          * takeWhile: the converse of <tt>takeWhile</tt>. Given a list return another list containing all those elements from,
          * and including, the first element for which the predicate returns false. That is, if we skip(isOdd,[1,2,3]) then we have [2,3]
-         * @param predicate ignore elements in the input while the predicate is true.
          * @param <T> the type of the element in the input sequence
+         * @param predicate ignore elements in the input while the predicate is true.
          * @return a lazily-evaluated sequence containing the remaining elements after and including the first element for which
          * the predicate returns false
          * @see <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">Lazy evaluation</a>
          */
-        public static <T>Func<Iterable<T>,Iterable<T>> takeWhile(final Func<? super T,Boolean> predicate)
+        public static <T>Function<Iterable<T>, Iterable<T>> takeWhile(final Function<? super T, Boolean> predicate)
         {
-            return new Func<Iterable<T>, Iterable<T>>() {
+            return new Function<Iterable<T>, Iterable<T>>() {
 
                 public Iterable<T> apply(final Iterable<T> input) {
                     return Functional.seq.takeWhile(predicate, input);
@@ -2647,7 +2649,7 @@ public final class Functional
          * This is the converse of <tt>fold</tt>
          * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
          */
-        public static <A,B>Iterable<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
+        public static <A,B>Iterable<A> unfold(final Function<? super B, Pair<A, B>> unspool, final Function<? super B, Boolean> finished, final B seed)
         {
             if(unspool==null) throw new IllegalArgumentException("unspool");
             if(finished==null) throw new IllegalArgumentException("finished");
@@ -2688,7 +2690,7 @@ public final class Functional
          * This is the converse of <tt>fold</tt>
          * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
          */
-        public static <A,B>Iterable<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
+        public static <A,B>Iterable<A> unfold(final Function<? super B, Option<Pair<A, B>>> unspool, final B seed)
         {
             if(unspool==null) throw new IllegalArgumentException("unspool");
 
@@ -2744,7 +2746,7 @@ public final class Functional
          * @param howManyPartitions defines the number of Range objects to generate to cover the interval
          * @return a list of Range objects
          */
-        public static <T>Iterable<Range<T>> partition(final Func<Integer,T> generator, final int howManyElements, final int howManyPartitions)
+        public static <T>Iterable<Range<T>> partition(final Function<Integer, T> generator, final int howManyElements, final int howManyPartitions)
         {
             if(howManyElements<=0) throw new IllegalArgumentException("Functional.partition() howManyElements cannot be non-positive");
             if(howManyPartitions<=0) throw new IllegalArgumentException("Functional.partition() howManyPartitions cannot be non-positive");
@@ -2755,7 +2757,7 @@ public final class Functional
             assert size*howManyPartitions + remainder == howManyElements;
 
             final Integer seed = 0;
-            final Func<Integer,Pair<T,Integer>> boundsCalculator = new Func<Integer, Pair<T, Integer>>() {
+            final Function<Integer, Pair<T, Integer>> boundsCalculator = new Function<Integer, Pair<T, Integer>>() {
 
                 public Pair<T, Integer> apply(final Integer integer) {
                     return Pair.of(
@@ -2763,7 +2765,7 @@ public final class Functional
                             integer+1);
                 }
             };
-            final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+            final Function<Integer, Boolean> finished = new Function<Integer, Boolean>() {
 
                 public Boolean apply(Integer integer) {
                     return integer>howManyPartitions;
@@ -2855,9 +2857,9 @@ public final class Functional
             };
         }
 
-        public static <A,B>Func<Iterable<B>,Iterable<Pair<A,B>>> zip(final Iterable<? extends A> l1)
+        public static <A,B>Function<Iterable<B>, Iterable<Pair<A, B>>> zip(final Iterable<? extends A> l1)
         {
-            return new Func<Iterable<B>,Iterable<Pair<A,B>>>() {
+            return new Function<Iterable<B>, Iterable<Pair<A,B>>>() {
 
                 public Iterable<Pair<A,B>> apply(final Iterable<B> l2) {
                     return Functional.seq.zip(l1, l2);
@@ -2922,9 +2924,9 @@ public final class Functional
             };
         }
 
-        public static <A,B,C>Func<Iterable<C>,Iterable<Triple<A,B,C>>> zip3(final Iterable<? extends A> l1,final Iterable<? extends B> l2)
+        public static <A,B,C>Function<Iterable<C>, Iterable<Triple<A, B, C>>> zip3(final Iterable<? extends A> l1, final Iterable<? extends B> l2)
         {
-            return new Func<Iterable<C>,Iterable<Triple<A,B,C>>>() {
+            return new Function<Iterable<C>, Iterable<Triple<A,B,C>>>() {
 
                 public Iterable<Triple<A,B,C>> apply(final Iterable<C> l3) {
                     return Functional.seq.zip3(l1, l2, l3);
@@ -2935,16 +2937,16 @@ public final class Functional
         /**
          * Convolution of functions
          * See <a href="http://en.wikipedia.org/wiki/Zip_(higher-order_function)">Zip</a>
-         * @param f the first transformation function
-         * @param g the second transformation function
-         * @param input the input sequence
          * @param <A> the type of the input sequence
          * @param <B> the result type of the first transformation
          * @param <C> the result type of the second transformation
+         * @param f the first transformation function
+         * @param g the second transformation function
+         * @param input the input sequence
          * @return a sequence of pairs. The first value of the pair is the result of the first transformation and the seocnd value of the
          * pair of the result of the second transformation.
          */
-        public static <A,B,C>Iterable<Pair<B,C>> zip(final Func<? super A,B> f, final Func<? super A,C> g, final Iterable<? extends A> input)
+        public static <A,B,C>Iterable<Pair<B,C>> zip(final Function<? super A, B> f, final Function<? super A, C> g, final Iterable<? extends A> input)
         {
             return new Iterable<Pair<B, C>>() {
                 private final AtomicBoolean haveCreatedIterator = new AtomicBoolean(false);
@@ -2983,7 +2985,7 @@ public final class Functional
     {
         private rec() {}
 
-        private static <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterator<A> input, final Collection<A> accumulator)
+        private static <A>Iterable<A> filter(final Function<? super A, Boolean> f, final Iterator<A> input, final Collection<A> accumulator)
         {
             if(input.hasNext())
             {
@@ -2998,18 +3000,18 @@ public final class Functional
          * See <A href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</A>
          * This is a recursive implementation of filter.
          * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
+         * @param <A> the type of the element in the input sequence
          * @param f a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
-         * @param <A> the type of the element in the input sequence
          * @return a sequence which contains zero or more of the elements of the input sequence. Each element is included only if
          * the filter function returns true for the element.
          */
-        public static <A>Iterable<A> filter(final Func<? super A,Boolean> f, final Iterable<A> input)
+        public static <A>Iterable<A> filter(final Function<? super A, Boolean> f, final Iterable<A> input)
         {
             return filter(f,input.iterator(),input instanceof Collection<?> ? new ArrayList<A>(((Collection) input).size()) : new ArrayList<A>());
         }
 
-        private static <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterator<A> input, final Collection<B> accumulator)
+        private static <A,B>Iterable<B> map(final Function<? super A, ? extends B> f, final Iterator<A> input, final Collection<B> accumulator)
         {
             if(input.hasNext())
             {
@@ -3025,18 +3027,18 @@ public final class Functional
          * Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (A -> B) -> A seq -> B seq
          * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
-         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param input a sequence to be fed into f
          * @param <A> the type of the element in the input sequence
          * @param <B> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param input a sequence to be fed into f
          * @return a seq of type B containing the transformed values.
          */
-        public static <A,B>Iterable<B> map(final Func<? super A,? extends B> f, final Iterable<A> input)
+        public static <A,B>Iterable<B> map(final Function<? super A, ? extends B> f, final Iterable<A> input)
         {
             return map(f,input.iterator(),input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>());
         }
 
-        private final static <A,B>A fold(final Func2<? super A,? super B,? extends A> f, final A initialValue, final Iterator<B> input)
+        private final static <A,B>A fold(final BiFunction<? super A, ? super B, ? extends A> f, final A initialValue, final Iterator<B> input)
         {
             if(input.hasNext())
             {
@@ -3051,18 +3053,18 @@ public final class Functional
          * fold: (A -> B -> A) -> A -> B list -> A
          * This is a recursive implementation of fold
          * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
-         * @param f the aggregation function
-         * @param initialValue the seed for the aggregation
          * @param <A> the type of the initialValue / seed
          * @param <B> the type of the element in the output sequence
+         * @param f the aggregation function
+         * @param initialValue the seed for the aggregation
          * @return the aggregated value
          */
-        public static <A, B>A fold(final Func2<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
+        public static <A, B>A fold(final BiFunction<? super A, ? super B, ? extends A> f, final A initialValue, final Iterable<B> input)
         {
             return fold(f,initialValue,input.iterator());
         }
 
-        private final static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed, final List<A> accumulator)
+        private final static <A,B>List<A> unfold(final Function<? super B, Pair<A, B>> unspool, final Function<? super B, Boolean> finished, final B seed, final List<A> accumulator)
         {
             if(finished.apply(seed)) return accumulator;
             final Pair<A,B> p = unspool.apply(seed);
@@ -3077,12 +3079,12 @@ public final class Functional
          * This is a recursive implementation of unfold
          * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
          */
-        public static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
+        public static <A,B>List<A> unfold(final Function<? super B, Pair<A, B>> unspool, final Function<? super B, Boolean> finished, final B seed)
         {
             return unfold(unspool,finished,seed,new ArrayList<A>());
         }
 
-        private final static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed, final List<A> accumulator)
+        private final static <A,B>List<A> unfold(final Function<? super B, Option<Pair<A, B>>> unspool, final B seed, final List<A> accumulator)
         {
             final Option<Pair<A,B>> p = unspool.apply(seed);
             if(p.isNone()) return accumulator;
@@ -3097,7 +3099,7 @@ public final class Functional
          * This is a recursive implementation of unfold
          * See <a href="http://en.wikipedia.org/wiki/Recursion_(computer_science)">Recursion</a>
          */
-        public static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
+        public static <A,B>List<A> unfold(final Function<? super B, Option<Pair<A, B>>> unspool, final B seed)
         {
             return unfold(unspool,seed,new ArrayList<A>());
         }
@@ -3106,7 +3108,7 @@ public final class Functional
         // Following are functions for non-list collections
         */
 
-    public static <A, B, C>Map<B, C> map_dict(final Func<? super A,Map.Entry<B,C>> f, final Iterable<A> input)
+    public static <A, B, C>Map<B, C> map_dict(final Function<? super A, Map.Entry<B, C>> f, final Iterable<A> input)
     {
         final Map<B, C> results = new HashMap<B, C>();
         for (final A a : input)
@@ -3126,14 +3128,14 @@ public final class Functional
         private set() {}
         /**
          * See <a href="http://en.wikipedia.org/wiki/Filter_(higher-order_function)">Filter</a>
+         * @param <A> the type of the element in the input sequence
          * @param pred a filter function. This is passed each input element in turn and returns either true or false. If true then
          *             the input element is passed through to the output otherwise it is ignored.
          * @param input a sequence of objects
-         * @param <A> the type of the element in the input sequence
          * @return a set which contains zero or more of the elements of the input sequence. Each element is included only if the filter
          *          function returns true for the element.
          */
-        public static <A>Set<A> filter(final Func<? super A,Boolean> pred, final Iterable<A> input)
+        public static <A>Set<A> filter(final Function<? super A, Boolean> pred, final Iterable<A> input)
         {
             final Set<A> output = input instanceof Collection<?> ? new HashSet<A>(((Collection) input).size()) : new HashSet<A>();
             for(final A element : input)
@@ -3149,13 +3151,13 @@ public final class Functional
          * This is a 1-to-1 transformation. Every element in the input sequence will be transformed into a sequence of output elements.
          * These sequences are concatenated into one final output sequence at the end of the transformation.
          * map: (T -> U list) -> T list -> U list
-         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
-         * @param input a sequence to be fed into f
          * @param <T> the type of the element in the input sequence
          * @param <U> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type T and returns a sequence of objects, presumably related, of type U
+         * @param input a sequence to be fed into f
          * @return a set of type U containing the concatenated sequences of transformed values.
          */
-        public static <T,U>Set<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
+        public static <T,U>Set<U> collect(final Function<? super T, ? extends Iterable<U>> f, final Iterable<T> input)
         {
             Set<U> output = input instanceof Collection<?> ? new HashSet<U>(((Collection) input).size()) : new HashSet<U>();
             for(final T element : input)
@@ -3168,10 +3170,10 @@ public final class Functional
          * This implementation of the map function returns a set instead of an ordered sequence. It is a 1-to-1 transformation.
          * Every element in the input sequence will be transformed into an element in the output sequence.
          * map: (A -> B) -> A seq -> B set
-         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
-         * @param input a sequence to be fed into f
          * @param <A> the type of the element in the input sequence
          * @param <B> the type of the element in the output sequence
+         * @param f a transformation function which takes a object of type A and returns an object, presumably related, of type B
+         * @param input a sequence to be fed into f
          * @return a set of type B containing the transformed values.
          * @throws UnsupportedOperationException if the <tt>add</tt> operation
          *         is not supported by this set
@@ -3182,7 +3184,7 @@ public final class Functional
          * @throws IllegalArgumentException if some property of the specified element
          *         prevents it from being added to this set
          */
-        public static <A,B> Set<B> map(final Func<? super A, ? extends B> f, final Iterable<A> input)
+        public static <A,B> Set<B> map(final Function<? super A, ? extends B> f, final Iterable<A> input)
         {
             final Set<B> output = input instanceof Collection<?> ? new HashSet<B>(((Collection) input).size()) : new HashSet<B>();
             for(final A a : input)
@@ -3263,9 +3265,9 @@ public final class Functional
          * @return a list of type B containing the transformed values.
          * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
          */
-        public static <T,U>List<T> map(final Func<? super U,? extends T> f, final Iterable<U> l)
+        public static <T,U>List<T> map(final Function<? super U,? extends T> f, final Iterable<U> l)
         {
-            final List<T> l2 = Functional.fold(new Func2<List<T>,U,List<T>>() {
+            final List<T> l2 = Functional.fold(new BiFunction<List<T>,U,List<T>>() {
 
                 public List<T> apply(final List<T> state, final U o2) {
                     state.add(f.apply(o2));
@@ -3285,9 +3287,9 @@ public final class Functional
          *          function returns true for the element.
          * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
          */
-        public static <T>List<T> filter(final Func<? super T,Boolean> predicate, final Iterable<T> l)
+        public static <T>List<T> filter(final Function<? super T,Boolean> predicate, final Iterable<T> l)
         {
-            final List<T> l2 = Functional.fold(new Func2<List<T>, T, List<T>>() {
+            final List<T> l2 = Functional.fold(new BiFunction<List<T>, T, List<T>>() {
 
                 public List<T> apply(final List<T> ts, final T o) {
                     if(predicate.apply(o)) ts.add(o);
@@ -3309,9 +3311,9 @@ public final class Functional
          * @return a list of 'howMany' elements of type 'T' which were generated by the function 'f'
          * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
          */
-        public static <A>List<A> init(final Func<Integer,? extends A> f, final int howMany)
+        public static <A>List<A> init(final Function<Integer,? extends A> f, final int howMany)
         {
-            return Functional.unfold(new Func<Integer, Option<Pair<A,Integer>>>() {
+            return Functional.unfold(new Function<Integer, Option<Pair<A,Integer>>>() {
 
                 public Option<Pair<A,Integer>> apply(final Integer a) {
                     return a<=howMany ? Option.toOption(Pair.of(f.apply(a), a + 1)) : Option.<Pair<A,Integer>>None();
@@ -3339,7 +3341,7 @@ public final class Functional
          * @return the first element from the input sequence for which the supplied predicate returns true or None
          * if no element is found that satisfies the predicate
          */
-        public static <A>Option<A> find(final Func<? super A,Boolean> f, final Iterable<A> input)
+        public static <A>Option<A> find(final Function<? super A,Boolean> f, final Iterable<A> input)
         {
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -3360,7 +3362,7 @@ public final class Functional
          * @return the position in the input sequence of the first element from the input sequence for which the supplied predicate
          * returns true or None if no element is found that satisfies the predicate
          */
-        public static <A>Option<Integer> findIndex(final Func<A,Boolean> f, final Iterable<? extends A> input)
+        public static <A>Option<Integer> findIndex(final Function<A,Boolean> f, final Iterable<? extends A> input)
         {
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -3383,7 +3385,7 @@ public final class Functional
          * @return the last element in the input sequence for which the supplied predicate returns true or None
          * if no element is found that satisfies the predicate
          */
-        public static <A>Option<A> findLast(final Func<? super A,Boolean> f, final Iterable<A> input)
+        public static <A>Option<A> findLast(final Function<? super A,Boolean> f, final Iterable<A> input)
         {
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -3391,7 +3393,7 @@ public final class Functional
             final Pair<List<A>,Iterable<A>> p = takeNAndYield(input,1);
             if(p.getLeft().isEmpty()) return Option.None();
             final Pair<A,Boolean> seed = Pair.of(p.getLeft().get(0),f.apply(p.getLeft().get(0)));
-            final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
+            final Pair<A,Boolean> result = fold(new BiFunction<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
                 public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.of(item,true):state;}
             },seed,p.getRight());
 
@@ -3409,7 +3411,7 @@ public final class Functional
          * @return the last element in the input sequence for which the supplied predicate returns true or None
          * if no element is found that satisfies the predicate
          */
-        public static <A>Option<A> findLast(final Func<? super A,Boolean> f, final List<A> input)
+        public static <A>Option<A> findLast(final Function<? super A,Boolean> f, final List<A> input)
         {
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -3450,7 +3452,7 @@ public final class Functional
          * @param <B> the type of the output element
          * @return the first non-None transformed element of the input sequence or None if no such element exists
          */
-        public static <A, B>Option<B> pick(final Func<A,Option<B>> f, final Iterable<? extends A> input)
+        public static <A, B>Option<B> pick(final Function<A,Option<B>> f, final Iterable<? extends A> input)
         {
             if (f == null) throw new IllegalArgumentException("f");
             if (input == null) throw new IllegalArgumentException("input");
@@ -3480,7 +3482,7 @@ public final class Functional
          * if the predicate returns true for all pairs and the sequences contain differing numbers
          * of elements
          */
-        public static <A, B,AA extends A,BB extends B>Option<Boolean> forAll2(final Func2<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
+        public static <A, B,AA extends A,BB extends B>Option<Boolean> forAll2(final BiFunction<A, B,Boolean> f, final Iterable<AA> input1, final Iterable<BB> input2)
         {
             final Iterator<AA> enum1 = input1.iterator();
             final Iterator<BB> enum2 = input2.iterator();
@@ -3599,7 +3601,7 @@ public final class Functional
      * @return the results of evaluating the 'thenClause' or the 'elseClause', depending on whether the 'predicate' evaluates to true
      * or false respectively
      */
-    public static <A,B>B If(final A a, final Func<? super A,Boolean> predicate, final Func<? super A, ? extends B> thenClause, final Func<? super A, ? extends B> elseClause)
+    public static <A,B>B If(final A a, final Function<? super A,Boolean> predicate, final Function<? super A, ? extends B> thenClause, final Function<? super A, ? extends B> elseClause)
     {
         if (a == null) throw new IllegalArgumentException("a");
         if (predicate == null) throw new IllegalArgumentException("predicate");
@@ -3617,7 +3619,7 @@ public final class Functional
      * @param <B> the type of the result of the transformation function
      * @return a new Case object
      */
-    public static <A,B>Case<A,B> toCase(final Func<A,Boolean> pred, final Func<A, B> result)
+    public static <A,B>Case<A,B> toCase(final Function<A,Boolean> pred, final Function<A, B> result)
     {
         if (pred == null) throw new IllegalArgumentException("pred");
         if (result == null) throw new IllegalArgumentException("res");
@@ -3634,7 +3636,7 @@ public final class Functional
      * @param <B> the type of the result
      * @return the result of the appropriate Case or the result of the 'defaultCase' function
      */
-    public static <A, B>B Switch(final A input, final Iterable<Case<A, B>> cases, final Func<A,B> defaultCase)
+    public static <A, B>B Switch(final A input, final Iterable<Case<A, B>> cases, final Function<A,B> defaultCase)
     {
         return Switch(input,IterableHelper.create(cases),defaultCase);
     }
@@ -3648,7 +3650,7 @@ public final class Functional
      * @param <B> the type of the result
      * @return the result of the appropriate Case or the result of the 'defaultCase' function
      */
-    public static <A, B>B Switch(final A input, final Iterable2<Case<A, B>> cases, final Func<A, B> defaultCase)
+    public static <A, B>B Switch(final A input, final Iterable2<Case<A, B>> cases, final Function<A, B> defaultCase)
     {
         if (input == null) throw new IllegalArgumentException("input");
         if (cases == null) throw new IllegalArgumentException("cases");
@@ -3656,7 +3658,7 @@ public final class Functional
 
         //return Try<InvalidOperationException>.ToTry(input, a => cases.First(chk => chk.check(a)).results(a), defaultCase);
         try {
-            return cases.find(new Func<Case<A, B>, Boolean>() {
+            return cases.find(new Function<Case<A, B>, Boolean>() {
 
                 public Boolean apply(final Case<A, B> abCase) {
                     return abCase.predicate(input);
@@ -3671,9 +3673,9 @@ public final class Functional
      * @param <B> the type of the second element in the pair
      * @return a function that returns the first element in a Pair
      */
-    public static <A,B>Func<Pair<A,B>,A> first()
+    public static <A,B>Function<Pair<A,B>,A> first()
     {
-        return new Func<Pair<A, B>, A>() {
+        return new Function<Pair<A, B>, A>() {
 
             public A apply(Pair<A, B> pair) {
                 return pair.getLeft();
@@ -3687,9 +3689,9 @@ public final class Functional
      * @param <B> the type of the second element in the pair
      * @return a function that returns the second element in a Pair
      */
-    public static <A,B>Func<Pair<A,B>,B> second()
+    public static <A,B>Function<Pair<A,B>,B> second()
     {
-        return new Func<Pair<A, B>, B>() {
+        return new Function<Pair<A, B>, B>() {
 
             public B apply(Pair<A, B> pair) {
                 return pair.getRight();

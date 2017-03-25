@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import static java.lang.Math.pow;
 
@@ -125,7 +126,7 @@ public class PrimitivesVsGenericTest
 
                 final long beforeTransformation = System.nanoTime();
 
-                s3 = Functional.findLast(new Func<Integer,Boolean>() {
+                s3 = Functional.findLast(new Function<Integer, Boolean>() {
 
                     public Boolean apply(final Integer a) {
                         return a<howMany/2;

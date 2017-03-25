@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class SpeedTest
 {
-    public final static <A,B> List<B> mapWithIterable(final Func<A, ? extends B> f, final Iterable<? extends A> input)
+    public final static <A,B> List<B> mapWithIterable(final Function<A, ? extends B> f, final Iterable<? extends A> input)
     {
         final List<B> output = new ArrayList<B>();
         for(final A a : input)
@@ -17,7 +18,7 @@ public class SpeedTest
         return Collections.unmodifiableList(output);
     }
 
-    public final static <A,B> List<B> mapWithCollection(final Func<A, ? extends B> f, final Collection<? extends A> input)
+    public final static <A,B> List<B> mapWithCollection(final Function<A, ? extends B> f, final Collection<? extends A> input)
     {
         final List<B> output = new ArrayList<B>(input.size());
         for(final A a : input)
@@ -25,7 +26,7 @@ public class SpeedTest
         return Collections.unmodifiableList(output);
     }
 
-    public final static <A,B> List<B> mapWithInstanceOf(final Func<A, ? extends B> f, final Iterable<? extends A> input)
+    public final static <A,B> List<B> mapWithInstanceOf(final Function<A, ? extends B> f, final Iterable<? extends A> input)
     {
         final List<B> output = input instanceof Collection<?> ? new ArrayList<B>(((Collection) input).size()) : new ArrayList<B>();
         for(final A a : input)
@@ -65,13 +66,13 @@ public class SpeedTest
         }
     }
 
-    private static Func<Integer,Integer> DoublingGenerator =
-            new Func<Integer,Integer>()
+    private static Function<Integer,Integer> DoublingGenerator =
+            new Function<Integer,Integer>()
             {
                  public Integer apply(Integer a) { return 2*a;}
             };
 
-    public final static <A>List<A> filterWithIterable(final Func<? super A,Boolean> pred, final Iterable<A> input)
+    public final static <A>List<A> filterWithIterable(final Function<? super A,Boolean> pred, final Iterable<A> input)
     {
         final List<A> output = new ArrayList<A>();
         for(final A element : input)
@@ -81,7 +82,7 @@ public class SpeedTest
         return Collections.unmodifiableList(output);
     }
 
-    public final static <A>List<A> filterWithCollection(final Func<? super A,Boolean> pred, final Collection<A> input)
+    public final static <A>List<A> filterWithCollection(final Function<? super A,Boolean> pred, final Collection<A> input)
     {
         final List<A> output = new ArrayList<A>(input.size());
         for(final A element : input)
@@ -91,7 +92,7 @@ public class SpeedTest
         return Collections.unmodifiableList(output);
     }
 
-    public final static <A>List<A> filterWithHalfCollection(final Func<? super A,Boolean> pred, final Collection<A> input)
+    public final static <A>List<A> filterWithHalfCollection(final Function<? super A,Boolean> pred, final Collection<A> input)
     {
         final List<A> output = new ArrayList<A>((input.size()/2)+1);
         for(final A element : input)
@@ -101,7 +102,7 @@ public class SpeedTest
         return Collections.unmodifiableList(output);
     }
 
-    public final static <A>List<A> filterWithInstanceOf(final Func<? super A,Boolean> pred, final Iterable<A> input)
+    public final static <A>List<A> filterWithInstanceOf(final Function<? super A,Boolean> pred, final Iterable<A> input)
     {
         final List<A> output = input instanceof Collection<?> ? new ArrayList<A>(((Collection) input).size()) : new ArrayList<A>();
         for(final A element : input)
