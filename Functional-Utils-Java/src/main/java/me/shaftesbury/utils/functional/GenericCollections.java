@@ -3,10 +3,8 @@ package me.shaftesbury.utils.functional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.function.Function;
 
-/**
- * Created by Bob on 10/12/13.
- */
 public final class GenericCollections
 {
     public interface Generator<A>
@@ -21,7 +19,7 @@ public final class GenericCollections
     {
 
         public Collection<A> initialiseEmptyContainer() {
-            return new ArrayList<A>();
+            return new ArrayList<>();
         }
 
 
@@ -30,13 +28,13 @@ public final class GenericCollections
         }
     }
 
-    public static <A>Generator<A> createHashSetGenerator() { return new GenericCollections().new HashSetGenerator<A>(); }
+    public static <A>Generator<A> createHashSetGenerator() { return new GenericCollections().new HashSetGenerator<>(); }
 
     public class HashSetGenerator<A> implements Generator<A>
     {
 
         public Collection<A> initialiseEmptyContainer() {
-            return new HashSet<A>();
+            return new HashSet<>();
         }
 
 
@@ -45,7 +43,7 @@ public final class GenericCollections
         }
     }
 
-    public final static <A>Iterable<A> filter(final Func<A,Boolean> pred, final Generator<A> generator, final Iterable<A> input)
+    public static <A>Iterable<A> filter(final Function<A,Boolean> pred, final Generator<A> generator, final Iterable<A> input)
     {
         final Collection<A> output = generator.initialiseEmptyContainer();
         for(final A element : input)

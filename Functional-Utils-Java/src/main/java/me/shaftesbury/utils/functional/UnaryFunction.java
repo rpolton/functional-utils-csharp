@@ -12,7 +12,7 @@ public abstract class UnaryFunction<A,B> implements Function<A,B>
 {
     /**
      * Functional composition. Return a new function which, when evaluated, returns the composition of the current {@link me.shaftesbury.utils.functional.UnaryFunction}
-     * and the supplied {@link me.shaftesbury.utils.functional.Func} parameter.
+     * and the supplied {@link java.util.function.Function} parameter.
      * @param <C> the type of the return value of f
      * @param f the single-argument function to be composed with this
      * @return a {@link me.shaftesbury.utils.functional.UnaryFunction} that accepts a parameter of type A and returns a datum of type C
@@ -32,7 +32,7 @@ public abstract class UnaryFunction<A,B> implements Function<A,B>
     }
 
     /**
-     * Given a {@link me.shaftesbury.utils.functional.Func} and its argument, produce a function of no arguments that
+     * Given a {@link java.util.function.Function} and its argument, produce a function of no arguments that
      * can be evaluated at a later point.
      * @param <A> the type of the parameter of f
      * @param <B> the type of the return value of the delayed function
@@ -42,12 +42,6 @@ public abstract class UnaryFunction<A,B> implements Function<A,B>
      */
     public static <A,B>Supplier<B> delay(final Function<A, B> f, final A a)
     {
-        return new Supplier<B>()
-        {
-
-            public B get() {
-                return f.apply(a);
-            }
-        };
+        return () -> f.apply(a);
     }
 }

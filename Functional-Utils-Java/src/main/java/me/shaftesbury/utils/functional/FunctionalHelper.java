@@ -17,12 +17,7 @@ public final class FunctionalHelper
      */
     public static <T>Iterable2<Option<T>> areSome(final Iterable<Option<T>> input)
     {
-        return IterableHelper.create(input).filter(new Function<Option<T>, Boolean>() {
-
-            public Boolean apply(Option<T> tOption) {
-                return tOption.isSome();
-            }
-        });
+        return IterableHelper.create(input).filter(tOption -> tOption.isSome());
     }
     /**
      * Given an input sequence of {@link me.shaftesbury.utils.functional.Option} types return a new lazily-evaluated sequence of those which are {@link me.shaftesbury.utils.functional.Option#None()}
@@ -32,12 +27,7 @@ public final class FunctionalHelper
      */
     public static <T>Iterable2<Option<T>> areNone(final Iterable<Option<T>> input)
     {
-        return IterableHelper.create(input).filter(new Function<Option<T>, Boolean>() {
-
-            public Boolean apply(Option<T> tOption) {
-                return tOption.isNone();
-            }
-        });
+        return IterableHelper.create(input).filter(tOption -> tOption.isNone());
     }
     /**
      * Given an input sequence of {@link me.shaftesbury.utils.functional.Option} types return true if all the elements are {@link me.shaftesbury.utils.functional.Option#Some()}
@@ -47,12 +37,7 @@ public final class FunctionalHelper
      */
     public static <T>boolean allSome(final Iterable<Option<T>> input)
     {
-        return !IterableHelper.create(input).exists(new Function<Option<T>, Boolean>() {
-
-            public Boolean apply(Option<T> tOption) {
-                return tOption.isNone();
-            }
-        });
+        return !IterableHelper.create(input).exists(tOption -> tOption.isNone());
     }
     /**
      * Given an input sequence of {@link me.shaftesbury.utils.functional.Option} types return true if all the elements are {@link me.shaftesbury.utils.functional.Option#None()}
@@ -62,12 +47,7 @@ public final class FunctionalHelper
      */
     public static <T>boolean allNone(final Iterable<Option<T>> input)
     {
-        return !IterableHelper.create(input).exists(new Function<Option<T>, Boolean>() {
-
-            public Boolean apply(Option<T> tOption) {
-                return tOption.isSome();
-            }
-        });
+        return !IterableHelper.create(input).exists(tOption -> tOption.isSome());
     }
 
     /**
@@ -81,12 +61,7 @@ public final class FunctionalHelper
      */
     public static <T>Iterable2<T> some(final Iterable<Option<T>> input)
     {
-        return IterableHelper.create(input).map(new Function<Option<T>, T>() {
-
-            public T apply(Option<T> tOption) {
-                return tOption.Some();
-            }
-        });
+        return IterableHelper.create(input).map(tOption -> tOption.Some());
     }
 
     private FunctionalHelper(){}

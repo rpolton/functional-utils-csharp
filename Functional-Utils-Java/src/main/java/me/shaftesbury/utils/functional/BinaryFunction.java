@@ -5,12 +5,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * An implementation of {@link me.shaftesbury.utils.functional.Func2} that is intended for use by the {@link me.shaftesbury.utils.functional.MException}
+ * An implementation of {@link java.util.function.BiFunction} that is intended for use by the {@link me.shaftesbury.utils.functional.MException}
  * @param <A> the type of the first argument of the function
  * @param <B> the type of the second argument of the function
  * @param <C> the type of the return value of the function
  */
-public abstract class BinaryFunction<A,B,C> implements Func2<A,B,C>
+public abstract class BinaryFunction<A,B,C> implements BiFunction<A,B,C>
 {
     /**
      * Create a curried unary function from this binary function
@@ -35,17 +35,7 @@ public abstract class BinaryFunction<A,B,C> implements Func2<A,B,C>
 
     private static <A,B,C>Function<B, Function<A, C>> toUnaryFunc(final BinaryFunction<A,B,C> f)
     {
-        return new Function<B, Function<A, C>>() {
-
-            public Function<A, C> apply(final B b) {
-                return new Function<A, C>() {
-
-                    public C apply(final A a) {
-                        return f.apply(a,b);
-                    }
-                };
-            }
-        };
+        return b -> (Function<A, C>) a -> f.apply(a,b);
     }
 
     /**
@@ -61,11 +51,6 @@ public abstract class BinaryFunction<A,B,C> implements Func2<A,B,C>
      */
     public static <A,B,C>Supplier<C> delay(final BiFunction<A, B, C> f, final A a, final B b)
     {
-        return new Supplier<C>() {
-
-            public C get() {
-                return f.apply(a,b);
-            }
-        };
+        return () -> f.apply(a,b);
     }
 }

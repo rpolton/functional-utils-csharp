@@ -1,12 +1,12 @@
 package me.shaftesbury.utils.functional.primitive;
 
-import me.shaftesbury.utils.functional.Func;
-import me.shaftesbury.utils.functional.Func2;
 import me.shaftesbury.utils.functional.Option;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static me.shaftesbury.utils.functional.primitive.Iterators.reverse;
 
@@ -146,7 +146,7 @@ public final class Functional
 //
 //        final Pair<IntList,IntIterable> p = takeNAndYield(input,1);
 //        final Pair<A,Boolean> seed = Pair.of(p.getLeft().get(0),f.apply(p.getLeft().get(0)));
-//        final Pair<A,Boolean> result = fold(new Func2<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
+//        final Pair<A,Boolean> result = fold(new BiFunction<Pair<A,Boolean>,A,Pair<A,Boolean>>(){
 //             public Pair<A,Boolean> apply(final Pair<A,Boolean> state, final A item){return f.apply(item)?Pair.of(item,true):state;}
 //        },seed,p.getValue1());
 //
@@ -219,7 +219,7 @@ public final class Functional
     /**
      * <tt>count</tt> a function that accepts a counter and another integer and returns 1 + counter
      */
-    public static Func2<Integer,Integer,Integer> count = new Func2<Integer, Integer, Integer>() {
+    public static BiFunction<Integer,Integer,Integer> count = new BiFunction<Integer, Integer, Integer>() {
         public Integer apply(final Integer state, final Integer b) {
             return state + 1;
         }
@@ -227,7 +227,7 @@ public final class Functional
     /**
      * <tt>sum</tt> a function that accepts two integers and returns the sum of them
      */
-    public static Func2<Integer,Integer,Integer> sum = new Func2<Integer, Integer, Integer>() {
+    public static BiFunction<Integer,Integer,Integer> sum = new BiFunction<Integer, Integer, Integer>() {
         public Integer apply(final Integer state, final Integer b) {
             return state + b;
         }
@@ -238,9 +238,9 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is greater than
      * 'that' or false otherwise
      */
-    public static <T extends Comparable<T>>Func<T,Boolean> greaterThan(final T that)
+    public static <T extends Comparable<T>>Function<T,Boolean> greaterThan(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             public Boolean apply(final T ths)
             {
@@ -254,9 +254,9 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is greater than
      * or equal to 'that' or false otherwise
      */
-    public static <T extends Comparable<T>>Func<T,Boolean> greaterThanOrEqual(final T that)
+    public static <T extends Comparable<T>>Function<T,Boolean> greaterThanOrEqual(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             public Boolean apply(final T ths)
             {
@@ -270,9 +270,9 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is less than
      * 'that' or false otherwise
      */
-    public static <T extends Comparable<T>>Func<T,Boolean> lessThan(final T that)
+    public static <T extends Comparable<T>>Function<T,Boolean> lessThan(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             public Boolean apply(final T ths)
             {
@@ -286,9 +286,9 @@ public final class Functional
      * @return a function that compares its supplied argument with the 'that' argument and returns true if 'this' is less than
      * or equal to 'that' or false otherwise
      */
-    public static <T extends Comparable<T>>Func<T,Boolean> lessThanOrEqual(final T that)
+    public static <T extends Comparable<T>>Function<T,Boolean> lessThanOrEqual(final T that)
     {
-        return new Func<T, Boolean>()
+        return new Function<T, Boolean>()
         {
             public Boolean apply(final T ths)
             {
@@ -702,7 +702,7 @@ public final class Functional
      * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
-    public static <A,B>List<A> unfold(final Func<? super B,Pair<A,B>> unspool, final Func<? super B,Boolean> finished, final B seed)
+    public static <A,B>List<A> unfold(final Function<? super B,Pair<A,B>> unspool, final Function<? super B,Boolean> finished, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
         if(finished==null) throw new IllegalArgumentException("finished");
@@ -723,7 +723,7 @@ public final class Functional
      * This is the converse of <tt>fold</tt>
      * unfold: (b -> (a, b)) -> (b -> Bool) -> b -> [a]
      */
-    public static <A,B>List<A> unfold(final Func<? super B,Option<Pair<A,B>>> unspool, final B seed)
+    public static <A,B>List<A> unfold(final Function<? super B,Option<Pair<A,B>>> unspool, final B seed)
     {
         if(unspool==null) throw new IllegalArgumentException("unspool");
 
@@ -956,9 +956,9 @@ public final class Functional
      * @throws java.util.NoSuchElementException if more elements are requested than are present in the input sequence
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static<T>Func<Iterable<? extends T>,List<T>> take(final int howMany)
+    public static<T>Function<Iterable<? extends T>,List<T>> take(final int howMany)
     {
-        return new Func<Iterable<? extends T>, List<T>>() {
+        return new Function<Iterable<? extends T>, List<T>>() {
 
             public List<T> apply(final Iterable<? extends T> input) {
                 return Functional.take(howMany,input);
@@ -974,7 +974,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a list
      */
-    public static<T>List<T> takeWhile(final Func<? super T, Boolean> predicate, final List<T> list)
+    public static<T>List<T> takeWhile(final Function<? super T, Boolean> predicate, final List<T> list)
     {
         if(predicate==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): list is null");
@@ -1002,9 +1002,9 @@ public final class Functional
      * @return a list
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static<T>Func<List<T>,List<T>> takeWhile(final Func<? super T, Boolean> predicate)
+    public static<T>Function<List<T>,List<T>> takeWhile(final Function<? super T, Boolean> predicate)
     {
-        return new Func<List<T>, List<T>>() {
+        return new Function<List<T>, List<T>>() {
 
             public List<T> apply(final List<T> input) {
                 return Functional.takeWhile(predicate, input);
@@ -1043,9 +1043,9 @@ public final class Functional
      * are skipped than are present in the 'list'
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static<T>Func<List<? extends T>,List<T>> skip(final int howMany)
+    public static<T>Function<List<? extends T>,List<T>> skip(final int howMany)
     {
-        return new Func<List<? extends T>, List<T>>() {
+        return new Function<List<? extends T>, List<T>>() {
 
             public List<T> apply(final List<? extends T> input) {
                 return Functional.skip(howMany, input);
@@ -1061,7 +1061,7 @@ public final class Functional
      * @param <T> the type of the element in the input sequence
      * @return a list containing the remaining elements after and including the first element for which the predicate returns false
      */
-    public static <T>List<T> skipWhile(final Func<? super T, Boolean> predicate, final List<T> list)
+    public static <T>List<T> skipWhile(final Function<? super T, Boolean> predicate, final List<T> list)
     {
         if(predicate==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.skipWhile(Func,List<T>): list is null");
@@ -1081,9 +1081,9 @@ public final class Functional
      * @return a list containing the remaining elements after and including the first element for which the predicate returns false
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static<T>Func<List<T>,List<T>> skipWhile(final Func<? super T, Boolean> predicate)
+    public static<T>Function<List<T>,List<T>> skipWhile(final Function<? super T, Boolean> predicate)
     {
-        return new Func<List<T>, List<T>>() {
+        return new Function<List<T>, List<T>>() {
 
             public List<T> apply(final List<T> input) {
                 return Functional.skipWhile(predicate, input);
@@ -1098,9 +1098,9 @@ public final class Functional
      * @param <T> the type of the constant
      * @return a function that returns a function that returns the supplied constant
      */
-    public static <T>Func<Integer,T> constant(final T constant)
+    public static <T>Function<Integer,T> constant(final T constant)
     {
-        return new Func<Integer, T>() {
+        return new Function<Integer, T>() {
 
             public T apply(final Integer integer) {
                 return constant;
@@ -1280,7 +1280,7 @@ public final class Functional
      * @param <U> the type of the element in the output sequence
      * @return a list of type U containing the concatenated sequences of transformed values.
      */
-    public static <T,U>List<U> collect(final Func<? super T,? extends Iterable<U>> f, final Iterable<T> input)
+    public static <T,U>List<U> collect(final Function<? super T,? extends Iterable<U>> f, final Iterable<T> input)
     {
         List<U> output = input instanceof Collection<?> ? new ArrayList<U>(((Collection) input).size()) : new ArrayList<U>();
 //        for(final T element : input)
@@ -1300,9 +1300,9 @@ public final class Functional
      * @return a list of type U containing the concatenated sequences of transformed values.
      * @see <a href="http://en.wikipedia.org/wiki/Currying">Currying</a>
      */
-    public static <T,U>Func<Iterable<T>,List<U>> collect(final Func<? super T,? extends Iterable<U>> f)
+    public static <T,U>Function<Iterable<T>,List<U>> collect(final Function<? super T,? extends Iterable<U>> f)
     {
-        return new Func<Iterable<T>, List<U>>() {
+        return new Function<Iterable<T>, List<U>>() {
 
             public List<U> apply(final Iterable<T> input) {
                 return Functional.collect(f,input);
@@ -1395,7 +1395,7 @@ public final class Functional
      * @param <U> the type of the element in the key
      * @return a java.util.Map containing a list of elements for each key
      */
-    public static <T,U>Map<U,List<T>> groupBy(final Func<? super T, ? extends U> keyFn, final Iterable<T> input)
+    public static <T,U>Map<U,List<T>> groupBy(final Function<? super T, ? extends U> keyFn, final Iterable<T> input)
     {
         if (keyFn == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): keyFn is null");
         if (input == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): input is null");
@@ -1485,7 +1485,7 @@ public final class Functional
 //     * @param howManyPartitions defines the number of Range objects to generate to cover the interval
 //     * @return a list of Range objects
 //     */
-//    public static <T>List<Range<T>> partition(final Func<Integer,T> generator, final int howManyElements, final int howManyPartitions)
+//    public static <T>List<Range<T>> partition(final Function<Integer,T> generator, final int howManyElements, final int howManyPartitions)
 //    {
 //        if(howManyElements<=0) throw new IllegalArgumentException("Functional.partition() howManyElements cannot be non-positive");
 //        if(howManyPartitions<=0) throw new IllegalArgumentException("Functional.partition() howManyPartitions cannot be non-positive");
@@ -1496,7 +1496,7 @@ public final class Functional
 //        assert size*howManyPartitions + remainder == howManyElements;
 //
 //        final Integer seed = 0;
-//        final Func<Integer,Pair<T,Integer>> boundsCalculator = new Func<Integer, Pair<T, Integer>>() {
+//        final Function<Integer,Pair<T,Integer>> boundsCalculator = new Function<Integer, Pair<T, Integer>>() {
 //
 //            public Pair<T, Integer> apply(final Integer integer) {
 //                return Pair.of(
@@ -1504,7 +1504,7 @@ public final class Functional
 //                        integer+1);
 //            }
 //        };
-//        final Func<Integer,Boolean> finished = new Func<Integer, Boolean>() {
+//        final Function<Integer,Boolean> finished = new Function<Integer, Boolean>() {
 //
 //            public Boolean apply(Integer integer) {
 //                return integer>howManyPartitions;
@@ -1526,7 +1526,7 @@ public final class Functional
 //        }
 //        return retval;
 //
-////        return Functional.seq.init(new Func<Integer, Range<T>>() {
+////        return Functional.seq.init(new Function<Integer, Range<T>>() {
 ////
 ////            public Range<T> apply(final Integer integer) {
 ////// inefficient - the upper bound is computed twice (once at the end of an iteration and once at the beginning of the next iteration)

@@ -7,9 +7,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/**
- * Created by Bob on 09/12/13.
- */
 public class MException<U>
 {
     private Supplier<U> fn;
@@ -20,7 +17,7 @@ public class MException<U>
     // this is 'return'
     public static <B>MException<B> toMException(final Supplier<B> f)
     {
-        return new MException<B>(f);
+        return new MException<>(f);
     }
 
     public final <B>MException<B> bind(final Function<U, MException<B>> f)
@@ -30,10 +27,10 @@ public class MException<U>
             try {
                 return f.apply(state);
             } catch(final RuntimeException ex) {
-                return new MException<B>(ex, new Throwable().getStackTrace());
+                return new MException<>(ex, new Throwable().getStackTrace());
             }
         else
-            return new MException<B>(exception, stacktrace);
+            return new MException<>(exception, stacktrace);
     }
 
     private static <C>MException<C> toMException(final Pair<RuntimeException,StackTraceElement[]> exc)

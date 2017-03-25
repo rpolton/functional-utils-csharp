@@ -4,13 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 23/10/13
- * Time: 11:39
- * To change this template use File | Settings | File Templates.
- */
 public final class Iterators
 {
     private Iterators(){}

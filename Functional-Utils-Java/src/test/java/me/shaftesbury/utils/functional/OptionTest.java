@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -274,12 +275,7 @@ public class OptionTest
         ));
     }
 
-    private final static Func2<Integer,Integer,Integer> plus = new Func2<Integer, Integer, Integer>() {
-
-        public Integer apply(Integer integer1, Integer integer2) {
-            return integer1 + integer2;
-        }
-    };
+    private final static BiFunction<Integer,Integer,Integer> plus = (integer1, integer2) -> integer1 + integer2;
 
     @Test
     public void OptionLiftTest1()

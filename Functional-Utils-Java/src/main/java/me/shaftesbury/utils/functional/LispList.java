@@ -1,17 +1,11 @@
 package me.shaftesbury.utils.functional;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 26/11/13
- * Time: 20:57
- * To change this template use File | Settings | File Templates.
- */
 public final class LispList
 {
-    public static interface List<T>
+    public interface List<T>
     {
         T head();
         List<T> tail();
@@ -26,7 +20,7 @@ public final class LispList
 
     public static <T>List<T> reverse(final List<T> input)
     {
-        return reverse(input,(List<T>)nil());
+        return reverse(input, nil());
     }
 
     private static <T>List<T> filter(final Function<T, Boolean> f, final List<T> input, final List<T> accumulator)
@@ -38,7 +32,7 @@ public final class LispList
 
     public static <T>List<T> filter(final Function<T, Boolean> f, final List<T> input)
     {
-        return reverse(filter(f, input, (List<T>) nil()));
+        return reverse(filter(f, input, nil()));
     }
 
     public static <T,R>List<R> map(final Function<T, R> f, final List<T> input)
@@ -48,13 +42,13 @@ public final class LispList
                : list(f.apply(input.head()),map(f,input.tail()));
     }
 
-    public static <T,R>R fold(final Func2<R,T,R> f, final R initialValue, final List<T> input)
+    public static <T,R>R fold(final BiFunction<R,T,R> f, final R initialValue, final List<T> input)
     {
         return input.isEmpty()
                 ? initialValue
                 : fold(f,f.apply(initialValue,input.head()),input.tail());
     }
-    public static <T,R>R foldRight(final Func2<T,R,R> f, final R initialValue, final List<T> input)
+    public static <T,R>R foldRight(final BiFunction<T,R,R> f, final R initialValue, final List<T> input)
     {
         return input.isEmpty()
                 ? initialValue
@@ -65,7 +59,7 @@ public final class LispList
     public static <T>T car(final List<T> l) { return l.head(); }
     public static <T>List<T> cdr(final List<T> l) { return l.tail(); }
     public static <T>T cadr(final List<T> l) { return car(cdr(l)); }
-    public static <T>List<T> compose(final T t1, final T t2) { return list(t1, list(t2, (List<T>)nil())); }
+    public static <T>List<T> compose(final T t1, final T t2) { return list(t1, list(t2, nil())); }
 
     public static class EmptyListHasNoHead extends RuntimeException {}
     public static class EmptyListHasNoTail extends RuntimeException {}
@@ -130,7 +124,7 @@ public final class LispList
                 return true;
             }
 
-            public boolean equals(Object o)
+            public boolean equals(final Object o)
             {
                 if(o==null) return false;
                 return o instanceof List<?> && ((List<?>)o).isEmpty();
@@ -142,6 +136,6 @@ public final class LispList
 
     public static <T>List<T> list(final T head, final List<T> tail)
     {
-        return ll.new NonEmptyList<T>(head,tail);
+        return ll.new NonEmptyList<>(head, tail);
     }
 }

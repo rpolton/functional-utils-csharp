@@ -176,12 +176,7 @@ public class LispListTest
     {
         final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
         final Integer expected = 30;
-        final Integer output = fold(new Func2<Integer, Integer, Integer>() {
-
-            public Integer apply(Integer state, Integer o) {
-                return state+o;
-            }
-        },new Integer(0),input);
+        final Integer output = fold((state, o) -> state+o,new Integer(0),input);
         Assert.assertEquals(expected,output);
     }
 
@@ -190,12 +185,7 @@ public class LispListTest
     {
         final List<String> input = list("2",list("4",list("6",list("8",LispList.<String>nil()))));
         final String expected = "2468";
-        final String output = fold(new Func2<String, String, String>() {
-
-            public String apply(String state, String o) {
-                return state+o;
-            }
-        },"",input);
+        final String output = fold((state, o) -> state+o,"",input);
         Assert.assertEquals(expected,output);
     }
 
@@ -204,12 +194,7 @@ public class LispListTest
     {
         final List<Integer> input = list(2,list(4,list(6,list(8,LispList.<Integer>nil()))));
         final String expected = "8642";
-        final String output = foldRight(new Func2<Integer, String, String>() {
-
-            public String apply(Integer o, String state) {
-                return state + o;
-            }
-        }, "", input);
+        final String output = foldRight((o, state) -> state + o, "", input);
         Assert.assertEquals(expected,output);
     }
 

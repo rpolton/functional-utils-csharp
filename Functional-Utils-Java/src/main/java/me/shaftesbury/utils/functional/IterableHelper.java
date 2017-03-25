@@ -8,13 +8,6 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 29/11/13
- * Time: 17:03
- * To change this template use File | Settings | File Templates.
- */
 public class IterableHelper
 {
     private IterableHelper() {}
@@ -81,7 +74,7 @@ public class IterableHelper
 
     public static <T>Iterable2<T> createEmpty()
     {
-        return new EmptyList<T>();
+        return new EmptyList<>();
     }
 
     private static class EmptyList<T> implements Iterable2<T>
@@ -94,9 +87,9 @@ public class IterableHelper
         }; }
 
         public final Iterable2<T> filter(final Function<? super T, Boolean> f) { return this; }
-        public final <U>Iterable2<U> map(final Function<? super T, ? extends U> f) { return new EmptyList<U>(); }
-        public <U> Iterable2<U> mapi(BiFunction<Integer, T, ? extends U> f) { return new EmptyList<U>();}
-        public final <U>Iterable2<U> choose(final Function<? super T, Option<U>> f) { return new EmptyList<U>(); }
+        public final <U>Iterable2<U> map(final Function<? super T, ? extends U> f) { return new EmptyList<>(); }
+        public <U> Iterable2<U> mapi(BiFunction<Integer, T, ? extends U> f) { return new EmptyList<>();}
+        public final <U>Iterable2<U> choose(final Function<? super T, Option<U>> f) { return new EmptyList<>(); }
         public final boolean exists(final Function<? super T, Boolean> f) { return false; }
         public final boolean forAll(final Function<? super T, Boolean> f) { return false; }
         public <U> boolean forAll2(BiFunction<? super U, ? super T, Boolean> f, Iterable<U> input1) { return false; }
@@ -126,10 +119,10 @@ public class IterableHelper
         //public final <U>Pair<List<T>,List<U>> unzip(){return Functional.unzip(i);}
         public final <U,V>Iterable2<Triple<T,U,V>> zip3(final Iterable<? extends U> l2, final Iterable<? extends V> l3){throw new IllegalArgumentException("Iterable2.zip3: It is not possible to zip an empty list with a non-empty list");}
 
-        public final <U>Iterable2<U> collect(final Function<? super T, ? extends Iterable<U>> f){return new EmptyList<U>();}
+        public final <U>Iterable2<U> collect(final Function<? super T, ? extends Iterable<U>> f){return new EmptyList<>();}
         public <U>U in(final Function<Iterable2<T>, U> f){ return f.apply(this); }
 
-        public <U> Map<U, List<T>> groupBy(Function<? super T, ? extends U> keyFn) { return Collections.EMPTY_MAP; }
+        public <U> Map<U, List<T>> groupBy(Function<? super T, ? extends U> keyFn) { return Collections.emptyMap(); }
 
         public boolean equals(Object o) { return o instanceof EmptyList<?>; }
 
@@ -141,7 +134,7 @@ public class IterableHelper
     }
 
     public static <T>Iterable2<T> init(Function<Integer, T> f, int howMany) { return create(Functional.seq.init(f, howMany)); }
-    public final static <T>Iterable2<T> init(final Function<Integer,? extends T> f) { return create(Functional.seq.init(f));}
+    public static <T>Iterable2<T> init(final Function<Integer,? extends T> f) { return create(Functional.seq.init(f));}
     @SafeVarargs
     @SuppressWarnings("varargs")
     public static <T>Iterable2<T> asList(T... a) { return create(Arrays.asList(a)); }

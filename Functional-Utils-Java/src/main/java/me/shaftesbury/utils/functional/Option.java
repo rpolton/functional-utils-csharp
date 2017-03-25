@@ -1,5 +1,6 @@
 package me.shaftesbury.utils.functional;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -51,7 +52,7 @@ public final class Option<T>
      */
     public static <U>Option<U> None()
     {
-        return new Option<U>();
+        return new Option<>();
     }
 
     /**
@@ -126,7 +127,7 @@ public final class Option<T>
      */
     public static <U>Option<U> toOption(final U t)
     {
-        return new Option<U>(t);
+        return new Option<>(t);
     }
 
     /**
@@ -153,7 +154,7 @@ public final class Option<T>
      * @param <C> the type of the resulting Option
      * @return an Option containing the result of the lifted function as applied to <tt>o1</tt> and <tt>o2</tt> or {@link #None()}
      */
-    public static <A,B,C>Option<C>lift(final Func2<A,B,C> f, final Option<A> o1, final Option<B> o2)
+    public static <A,B,C>Option<C>lift(final BiFunction<A,B,C> f, final Option<A> o1, final Option<B> o2)
     {
         if(o1.isSome() && o2.isSome()) return toOption(f.apply(o1.Some(),o2.Some()));
         else return None();

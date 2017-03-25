@@ -11,13 +11,6 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 01/12/13
- * Time: 23:31
- * To change this template use File | Settings | File Templates.
- */
 public interface Iterable2<T> extends java.lang.Iterable<T>
 {
     Iterable2<T> filter(Function<? super T, Boolean> f);
