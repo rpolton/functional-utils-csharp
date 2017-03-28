@@ -1,7 +1,8 @@
 package me.shaftesbury.utils.functional;
 
-import me.shaftesbury.utils.functional.primitive.Func_int_T;
-import me.shaftesbury.utils.functional.primitive.IntList;
+import me.shaftesbury.utils.functional.primitive.integer.Func_int_T;
+import me.shaftesbury.utils.functional.primitive.integer.FunctionalTest;
+import me.shaftesbury.utils.functional.primitive.integer.IntList;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,11 +43,11 @@ public class PrimitivesVsGenericTest
             {
                 final long beforeInitialisation = System.nanoTime();
 
-                final IntList ints_l = me.shaftesbury.utils.functional.primitive.Functional.init(10, howMany);
+                final IntList ints_l = me.shaftesbury.utils.functional.primitive.integer.Functional.init(10, howMany);
 
                 final long beforeTransformation = System.nanoTime();
 
-                s2 = me.shaftesbury.utils.functional.primitive.Functional.join("", ints_l);
+                s2 = me.shaftesbury.utils.functional.primitive.integer.Functional.join("", ints_l);
 
                 final long afterTransformation = System.nanoTime();
                 System.out.println("Primitive list initialisation time " + (beforeTransformation - beforeInitialisation) / oneMillion + " ms");
@@ -103,11 +104,11 @@ public class PrimitivesVsGenericTest
             {
                 final long beforeInitialisation = System.nanoTime();
 
-                final IntList ints = me.shaftesbury.utils.functional.primitive.Functional.init(me.shaftesbury.utils.functional.primitive.IntFunctionalTest.DoublingGenerator, howMany);
+                final IntList ints = me.shaftesbury.utils.functional.primitive.integer.Functional.init(FunctionalTest.DoublingGenerator, howMany);
 
                 final long beforeTransformation = System.nanoTime();
 
-                s2 = me.shaftesbury.utils.functional.primitive.Functional.findLast(new Func_int_T<Boolean>() {
+                s2 = me.shaftesbury.utils.functional.primitive.integer.Functional.findLast(new Func_int_T<Boolean>() {
 
                     public Boolean apply(final int a) {
                         return a<howMany/2;
@@ -122,7 +123,7 @@ public class PrimitivesVsGenericTest
             {
                 final long beforeInitialisation = System.nanoTime();
 
-                final List<Integer> ints = Functional.init(FunctionalTest.DoublingGenerator, howMany);
+                final List<Integer> ints = Functional.init(me.shaftesbury.utils.functional.FunctionalTest.DoublingGenerator, howMany);
 
                 final long beforeTransformation = System.nanoTime();
 

@@ -1,4 +1,4 @@
-package me.shaftesbury.utils.functional.primitive;
+package me.shaftesbury.utils.functional.primitive.integer;
 
 import java.util.function.IntSupplier;
 
