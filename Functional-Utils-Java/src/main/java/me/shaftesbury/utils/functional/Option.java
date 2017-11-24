@@ -8,7 +8,7 @@ import java.util.function.Function;
  * See http://en.wikipedia.org/wiki/Option_type
  * {@see http://en.wikipedia.org/wiki/Monad_(functional_programming)}
  */
-public final class Option<T>
+public final class Option<T> implements IOption
 {
     private final T _t;
     private Option()
