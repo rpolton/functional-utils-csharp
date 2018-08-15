@@ -2,13 +2,6 @@ package me.shaftesbury.utils.functional;
 
 import java.util.function.Function;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 04/12/13
- * Time: 22:56
- * To change this template use File | Settings | File Templates.
- */
 public final class Case<A, B>
 {
     private final Function<A, Boolean> check;
