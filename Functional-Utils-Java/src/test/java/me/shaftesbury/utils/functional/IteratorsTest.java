@@ -1,56 +1,53 @@
 package me.shaftesbury.utils.functional;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 08/11/13
- * Time: 15:12
- * To change this template use File | Settings | File Templates.
- */
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.fail;
+
 public class IteratorsTest
 {
-    private static Function<Integer, Integer> DoublingGenerator =
-            new Function<Integer, Integer>()
-            {
-                 public Integer apply(Integer a) { return 2*a;}
-            };
+    private static Function<Integer, Integer> DoublingGenerator = a -> 2*a;
 
-    @Test
-    public void ReverseTest1()
+    @Test void reverseTest1()
     {
         final List<Integer> li = Functional.init(DoublingGenerator, 10);
-        final Collection<Integer> expected = Arrays.asList(new Integer[]{20,18,16,14,12,10,8,6,4,2});
+        final Collection<Integer> expected = Arrays.asList(20,18,16,14,12,10,8,6,4,2);
         final Iterable<Integer> output = Iterators.reverse(li);
-        AssertIterable.assertIterableEquals(expected,output);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void cantReverseAnEmptyList()
+    @Test void cantReverseAnEmptyList()
     {
-        final List<Integer> li = new ArrayList<Integer>();
-        Iterators.reverse(li);
+        final List<Integer> li = new ArrayList<>();
+        assertThatIllegalArgumentException().isThrownBy(()->Iterators.reverse(li));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void cantRemoveFromReversedIterator()
+    @Test void cantRemoveFromReversedIterator()
     {
         final Iterable<Integer> rv = Iterators.reverse(Arrays.asList(1, 2, 3, 4));
-        rv.iterator().remove();
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(()->rv.iterator().remove());
     }
 
-    private final Map<Integer, String> map = new LinkedHashMap<Integer, String>();
-    private final List<String> list = new ArrayList<String>();
+    private final Map<Integer, String> map = new LinkedHashMap<>();
+    private final List<String> list = new ArrayList<>();
 
-    @Before
-    public void Initialise()
+    @BeforeEach
+    public void initialise()
     {
         map.put(-1, "minus one");
         map.put(0, "zero zero UFO");
@@ -63,15 +60,14 @@ public class IteratorsTest
         Collections.sort(list);
     }
 
-    @After
-    public void Clear()
+    @AfterEach
+    public void clear()
     {
         map.clear();
         list.clear();
     }
 
-    @Test
-    public void SteppedEnumTest1()
+    @Test void steppedEnumTest1()
     {
         final StringBuilder sb = new StringBuilder();
         for (final String s : Iterators.everyNth(3, list))
@@ -79,11 +75,10 @@ public class IteratorsTest
 
         final String expected =
                 new StringBuilder("minus one").append("one hundred").append("zero zero UFO").toString();
-        Assert.assertEquals(expected, sb.toString());
+        assertThat( sb.toString()).isEqualTo(expected);
     }
 
-    @Test
-    public void SteppedEnumTest2()
+    @Test void steppedEnumTest2()
     {
         final StringBuilder sb = new StringBuilder();
         for (final String s : Iterators.everyNth(2, list))
@@ -91,11 +86,10 @@ public class IteratorsTest
 
         final String expected =
                 new StringBuilder("minus one").append("one").append("ten").append("zero zero UFO").toString();
-        Assert.assertEquals(expected, sb.toString());
+        assertThat( sb.toString()).isEqualTo(expected);
     }
 
-    @Test
-    public void SteppedEnumTest3()
+    @Test void steppedEnumTest3()
     {
         final StringBuilder sb = new StringBuilder();
         for (final String s : Iterators.everyNth(1, list))
@@ -104,11 +98,10 @@ public class IteratorsTest
         final String expected =
                 new StringBuilder("minus one").append("ninety seven").append("one").append("one hundred").append("ten").append("two").
                         append("zero zero UFO").toString();
-        Assert.assertEquals(expected, sb.toString());
+        assertThat( sb.toString()).isEqualTo(expected);
     }
 
-    @Test
-    public void SteppedEnumTest4()
+    @Test void steppedEnumTest4()
     {
         final StringBuilder sb = new StringBuilder();
         for (final String s : Iterators.everyNth(4, Iterators.reverse(list)))
@@ -116,64 +109,57 @@ public class IteratorsTest
 
         final String expected =
                 new StringBuilder("zero zero UFO").append("one").toString();
-        Assert.assertEquals(expected, sb.toString());
+        assertThat( sb.toString()).isEqualTo(expected);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void cantStepLessThanOne()
-    {
-        Iterators.everyNth(0,Arrays.asList(1,2,34));
+    @Test void cantStepLessThanOne() {
+        assertThatIllegalArgumentException().isThrownBy(()->Iterators.everyNth(0,Arrays.asList(1,2,34)));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void cantRemoveFromEveryNth()
-    {
+    @Test
+    void cantRemoveFromEveryNth() {
         final Iterable<Integer> integers = Iterators.everyNth(2, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
-        integers.iterator().remove();
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(()->integers.iterator().remove());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void cantRestartIteratorTest1()
-    {
+    @Test
+    void cantRestartIteratorTest1() {
         final Iterable<Integer> rv = Iterators.reverse(Arrays.asList(1, 2, 3));
         try {
             rv.iterator();
-        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach here"); }
-        rv.iterator();
+        } catch(final UnsupportedOperationException e) { fail("Shouldn't reach here"); }
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(rv::iterator);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void cantRestartIteratorTest2()
-    {
+    @Test
+    void cantRestartIteratorTest2() {
         final Iterable<Integer> rv = Iterators.everyNth(2, Arrays.asList(1, 2, 3));
         try {
             rv.iterator();
-        } catch(final UnsupportedOperationException e) { Assert.fail("Shouldn't reach here"); }
-        rv.iterator();
+        } catch(final UnsupportedOperationException e) { fail("Shouldn't reach here"); }
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(rv::iterator);
     }
 
-    @Test
-    public void everyNthRepeatedHasNextTest()
+    @Test void everyNthRepeatedHasNextTest()
     {
         final Iterable<Integer> integers = Iterators.everyNth(2, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
         final Iterator<Integer> iterator = integers.iterator();
-        Assert.assertTrue(iterator.hasNext());
-        Assert.assertEquals(Integer.valueOf(1), iterator.next());
-        Assert.assertTrue(iterator.hasNext());
-        Assert.assertTrue(iterator.hasNext());
-        Assert.assertEquals(Integer.valueOf(3), iterator.next());
-        Assert.assertTrue(iterator.hasNext());
-        Assert.assertTrue(iterator.hasNext());
-        Assert.assertEquals(Integer.valueOf(5), iterator.next());
+        assertThat(iterator.hasNext()).isTrue();
+        assertThat( iterator.next()).isEqualTo(Integer.valueOf(1));
+        assertThat(iterator.hasNext()).isTrue();
+        assertThat(iterator.hasNext()).isTrue();
+        assertThat( iterator.next()).isEqualTo(Integer.valueOf(3));
+        assertThat(iterator.hasNext()).isTrue();
+        assertThat(iterator.hasNext()).isTrue();
+        assertThat( iterator.next()).isEqualTo(Integer.valueOf(5));
     }
 
-    @Test
-    public void everyNthRepeatedNextTest()
+    @Test void everyNthRepeatedNextTest()
     {
         final Iterable<Integer> integers = Iterators.everyNth(2, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
         final Iterator<Integer> iterator = integers.iterator();
-        Assert.assertEquals(Integer.valueOf(1), iterator.next());
-        Assert.assertEquals(Integer.valueOf(3), iterator.next());
-        Assert.assertEquals(Integer.valueOf(5), iterator.next());
+        assertThat( iterator.next()).isEqualTo(Integer.valueOf(1));
+        assertThat( iterator.next()).isEqualTo(Integer.valueOf(3));
+        assertThat( iterator.next()).isEqualTo(Integer.valueOf(5));
     }
 }

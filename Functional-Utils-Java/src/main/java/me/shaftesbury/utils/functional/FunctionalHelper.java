@@ -17,7 +17,7 @@ public final class FunctionalHelper
      */
     public static <T>Iterable2<Option<T>> areSome(final Iterable<Option<T>> input)
     {
-        return IterableHelper.create(input).filter(tOption -> tOption.isSome());
+        return IterableHelper.create(input).filter(Option::isSome);
     }
     /**
      * Given an input sequence of {@link me.shaftesbury.utils.functional.Option} types return a new lazily-evaluated sequence of those which are {@link me.shaftesbury.utils.functional.Option#None()}
@@ -27,7 +27,7 @@ public final class FunctionalHelper
      */
     public static <T>Iterable2<Option<T>> areNone(final Iterable<Option<T>> input)
     {
-        return IterableHelper.create(input).filter(tOption -> tOption.isNone());
+        return IterableHelper.create(input).filter(Option::isNone);
     }
     /**
      * Given an input sequence of {@link me.shaftesbury.utils.functional.Option} types return true if all the elements are {@link me.shaftesbury.utils.functional.Option#Some()}
@@ -37,7 +37,7 @@ public final class FunctionalHelper
      */
     public static <T>boolean allSome(final Iterable<Option<T>> input)
     {
-        return !IterableHelper.create(input).exists(tOption -> tOption.isNone());
+        return !IterableHelper.create(input).exists(Option::isNone);
     }
     /**
      * Given an input sequence of {@link me.shaftesbury.utils.functional.Option} types return true if all the elements are {@link me.shaftesbury.utils.functional.Option#None()}
@@ -47,7 +47,7 @@ public final class FunctionalHelper
      */
     public static <T>boolean allNone(final Iterable<Option<T>> input)
     {
-        return !IterableHelper.create(input).exists(tOption -> tOption.isSome());
+        return !IterableHelper.create(input).exists(Option::isSome);
     }
 
     /**

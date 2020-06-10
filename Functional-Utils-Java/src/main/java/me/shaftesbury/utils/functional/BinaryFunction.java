@@ -28,7 +28,7 @@ public abstract class BinaryFunction<A,B,C> implements BiFunction<A,B,C>
      * @param b the argument to be passed to the curried function
      * @return a function that accepts an argument of type A and returns an object of type C
      */
-    public Function<A, C> toFunc(B b)
+    public Function<A, C> toFunc(final B b)
     {
         return toUnaryFunc(this).apply(b);
     }

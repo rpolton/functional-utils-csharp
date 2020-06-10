@@ -4,7 +4,17 @@ import me.shaftesbury.utils.functional.Option;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -187,51 +197,27 @@ public final class Functional
      */
     public static Func_int_T<Integer> identity()
     {
-        return new Func_int_T<Integer>() {
-            public Integer apply(final int t) {
-                return t;
-            }
-        };
+        return t -> t;
     }
 
     /**
      * <tt>isEven</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an even integer
      */
-    public static Func_int_T<Boolean> isEven = new Func_int_T<Boolean>()
-    {
-        public Boolean apply(final int i)
-        {
-            return i % 2 == 0;
-        }
-    };
+    public static Func_int_T<Boolean> isEven = i -> i % 2 == 0;
     /**
      * <tt>isOdd</tt> a function that accepts an integer and returns a boolean that indicates whether the passed integer
      * is or is not an odd integer
      */
-    public static Func_int_T<Boolean> isOdd = new Func_int_T<Boolean>()
-    {
-        public Boolean apply(final int i)
-        {
-            return i % 2 != 0;
-        }
-    };
+    public static Func_int_T<Boolean> isOdd = i -> i % 2 != 0;
     /**
      * <tt>count</tt> a function that accepts a counter and another integer and returns 1 + counter
      */
-    public static BiFunction<Integer,Integer,Integer> count = new BiFunction<Integer, Integer, Integer>() {
-        public Integer apply(final Integer state, final Integer b) {
-            return state + 1;
-        }
-    };
+    public static BiFunction<Integer,Integer,Integer> count = (state, b) -> state + 1;
     /**
      * <tt>sum</tt> a function that accepts two integers and returns the sum of them
      */
-    public static BiFunction<Integer,Integer,Integer> sum = new BiFunction<Integer, Integer, Integer>() {
-        public Integer apply(final Integer state, final Integer b) {
-            return state + b;
-        }
-    };
+    public static BiFunction<Integer,Integer,Integer> sum = Integer::sum;
 
     /**
      * @param <T> the type of <tt>that</tt>, the input argument
@@ -240,13 +226,7 @@ public final class Functional
      */
     public static <T extends Comparable<T>>Function<T,Boolean> greaterThan(final T that)
     {
-        return new Function<T, Boolean>()
-        {
-            public Boolean apply(final T ths)
-            {
-                return ths.compareTo(that)>0;
-            }
-        };
+        return ths -> ths.compareTo(that)>0;
     }
 
     /**
@@ -256,13 +236,7 @@ public final class Functional
      */
     public static <T extends Comparable<T>>Function<T,Boolean> greaterThanOrEqual(final T that)
     {
-        return new Function<T, Boolean>()
-        {
-            public Boolean apply(final T ths)
-            {
-                return ths.compareTo(that)>=0;
-            }
-        };
+        return ths -> ths.compareTo(that)>=0;
     }
 
     /**
@@ -272,13 +246,7 @@ public final class Functional
      */
     public static <T extends Comparable<T>>Function<T,Boolean> lessThan(final T that)
     {
-        return new Function<T, Boolean>()
-        {
-            public Boolean apply(final T ths)
-            {
-                return ths.compareTo(that)<0;
-            }
-        };
+        return ths -> ths.compareTo(that)<0;
     }
 
     /**
@@ -288,13 +256,7 @@ public final class Functional
      */
     public static <T extends Comparable<T>>Function<T,Boolean> lessThanOrEqual(final T that)
     {
-        return new Function<T, Boolean>()
-        {
-            public Boolean apply(final T ths)
-            {
-                return ths.compareTo(that)<=0;
-            }
-        };
+        return ths -> ths.compareTo(that)<=0;
     }
 
     /**
@@ -312,7 +274,7 @@ public final class Functional
         if (f == null) throw new IllegalArgumentException("f");
         if(howMany<1) throw new IllegalArgumentException("howMany");
 
-        final ArrayList<T> output = new ArrayList<T>(howMany);
+        final ArrayList<T> output = new ArrayList<>(howMany);
         for(int i=1; i<=howMany; ++i)
             output.add(f.apply(i));
         return output;
@@ -350,7 +312,7 @@ public final class Functional
      */
     public static <B> List<B> map(final Func_int_T<? extends B> f, final IntIterable input)
     {
-        final List<B> output = input instanceof IntList ? new ArrayList<B>(((IntList) input).size()) : new ArrayList<B>();
+        final List<B> output = input instanceof IntList ? new ArrayList<>(((IntList) input).size()) : new ArrayList<>();
         final IntIterator iterator = input.iterator();
         while(iterator.hasNext()) {
             final int a = iterator.next();
@@ -390,7 +352,7 @@ public final class Functional
      */
     public static <B> List<B> mapi(final Func2_int_int_T<? extends B> f, final IntIterable input)
     {
-        final List<B> output = input instanceof IntList ? new ArrayList<B>(((IntList) input).size()) : new ArrayList<B>();
+        final List<B> output = input instanceof IntList ? new ArrayList<>(((IntList) input).size()) : new ArrayList<>();
         int pos = 0;
         final IntIterator iterator = input.iterator();
         while(iterator.hasNext()) {
@@ -406,11 +368,7 @@ public final class Functional
      */
     public static Func_int_T<String> dStringify()
     {
-        return new Func_int_T<String>() {
-            public String apply(final int a) {
-                return Integer.toString(a);
-            }
-        };
+        return Integer::toString;
     }
 
     /**
@@ -560,7 +518,7 @@ public final class Functional
      */
     public static Func_int_T<Boolean> not(final Func_int_T<Boolean> f)
     {
-        return new Func_int_T<Boolean>(){public Boolean apply(final int a) { return !f.apply(a);}};
+        return a -> !f.apply(a);
     }
 
     /**
@@ -587,7 +545,7 @@ public final class Functional
      */
     public static <A,B> Func2_int_int_T<Boolean> not2(final Func2_int_int_T<Boolean> f)
     {
-        return new Func2_int_int_T<Boolean>(){public Boolean apply(final int a, final int b) { return !f.apply(a,b);}};
+        return (a, b) -> !f.apply(a,b);
     }
 
     /// <summary> </summary>
@@ -608,13 +566,13 @@ public final class Functional
         final List<Integer> right;
         if(input instanceof IntList)
         {
-            left = new ArrayList<Integer>(((IntList) input).size());
-            right = new ArrayList<Integer>(((IntList) input).size());
+            left = new ArrayList<>(((IntList) input).size());
+            right = new ArrayList<>(((IntList) input).size());
         }
         else
         {
-            left = new ArrayList<Integer>();
-            right = new ArrayList<Integer>();
+            left = new ArrayList<>();
+            right = new ArrayList<>();
         }
         final IntIterator iterator = input.iterator();
         while(iterator.hasNext()) {
@@ -639,7 +597,7 @@ public final class Functional
      */
     public static <B>List<B> choose(final Func_int_T<Option<B>> f, final IntIterable input)
     {
-        final List<B> results = input instanceof IntList ? new ArrayList<B>(((IntList) input).size()) : new ArrayList<B>();
+        final List<B> results = input instanceof IntList ? new ArrayList<>(((IntList) input).size()) : new ArrayList<>();
         final IntIterator iterator = input.iterator();
         while(iterator.hasNext())
         {
@@ -708,7 +666,7 @@ public final class Functional
         if(finished==null) throw new IllegalArgumentException("finished");
 
         B next = seed;
-        final List<A> results = new ArrayList<A>();
+        final List<A> results = new ArrayList<>();
         while(!finished.apply(next)) {
             final Pair<A,B> t = unspool.apply(next);
             results.add(t.getLeft());
@@ -728,7 +686,7 @@ public final class Functional
         if(unspool==null) throw new IllegalArgumentException("unspool");
 
         B next = seed;
-        final List<A> results = new ArrayList<A>();
+        final List<A> results = new ArrayList<>();
         while(true) {
             final Option<Pair<A,B>> t = unspool.apply(next);
             if(t.isNone()) break;
@@ -767,7 +725,7 @@ public final class Functional
         if(keyFn==null) throw new IllegalArgumentException("keyFn");
         if(valueFn==null) throw new IllegalArgumentException("valueFn");
 
-        final Map<K,V> output = new HashMap<K,V>();
+        final Map<K,V> output = new HashMap<>();
         final IntIterator iterator = input.iterator();
         while(iterator.hasNext())
         {
@@ -791,7 +749,7 @@ public final class Functional
         if(input instanceof Collection<?>)
             return ((Collection<T>)input).toArray();
 
-        final List<T> output = new ArrayList<T>();
+        final List<T> output = new ArrayList<>();
         for(final T element: input) output.add(element);
 
         return output.toArray(); // this needs to be output.toArray(new T[0]) but that doesn't appear to be allowable Java :-(
@@ -804,12 +762,12 @@ public final class Functional
         if(input instanceof Collection<?>)
         {
             final Collection<T> input_ = (Collection<T>)input;
-            final List<T> output = new ArrayList<T>(input_.size());
+            final List<T> output = new ArrayList<>(input_.size());
             output.addAll(input_);
             return output;
         }
 
-        final List<T> output = new ArrayList<T>();
+        final List<T> output = new ArrayList<>();
         for(final T element: input) output.add(element);
 
         return output;
@@ -819,7 +777,7 @@ public final class Functional
     {
         if(input==null) throw new IllegalArgumentException("Functional.toMutableDictionary(Map<K,V>): input is null");
 
-        final Map<K,V> output = new HashMap<K,V>(input.size());
+        final Map<K,V> output = new HashMap<>(input.size());
         output.putAll(input);
         return output;
     }
@@ -831,12 +789,12 @@ public final class Functional
         if(input instanceof Collection<?>)
         {
             final Collection<T> input_ = (Collection<T>)input;
-            final Set<T> output = new HashSet<T>(input_.size());
+            final Set<T> output = new HashSet<>(input_.size());
             output.addAll(input_);
             return output;
         }
 
-        final Set<T> output = new HashSet<T>();
+        final Set<T> output = new HashSet<>();
         for(final T element: input) output.add(element);
 
         return output;
@@ -933,9 +891,9 @@ public final class Functional
         if(howMany<0) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): howMany is negative");
         if(list==null) throw new IllegalArgumentException("Functional.take(int,Iterable<T>): list is null");
 
-        if(howMany==0) return new ArrayList<T>(0);
+        if(howMany==0) return new ArrayList<>(0);
 
-        final List<T> output = new ArrayList<T>(howMany);
+        final List<T> output = new ArrayList<>(howMany);
         final Iterator<? extends T> iterator = list.iterator();
         for(int i=0;i<howMany;++i)
         {
@@ -958,12 +916,7 @@ public final class Functional
      */
     public static<T>Function<Iterable<? extends T>,List<T>> take(final int howMany)
     {
-        return new Function<Iterable<? extends T>, List<T>>() {
-
-            public List<T> apply(final Iterable<? extends T> input) {
-                return Functional.take(howMany,input);
-            }
-        };
+        return input -> Functional.take(howMany,input);
     }
 
     /**
@@ -979,14 +932,14 @@ public final class Functional
         if(predicate==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): predicate is null");
         if(list==null) throw new IllegalArgumentException("Functional.take(Func,Iterable<T>): list is null");
 
-        if(list.size()==0) return new ArrayList<T>();
+        if(list.size()==0) return new ArrayList<>();
 
         for(int i=0;i<list.size();++i)
         {
             final T element = list.get(i);
             if(!predicate.apply(element))
             {
-                if(i==0) return new ArrayList<T>();
+                if(i==0) return new ArrayList<>();
                 return Collections.unmodifiableList(list.subList(0,i));
             }
         }
@@ -1004,12 +957,7 @@ public final class Functional
      */
     public static<T>Function<List<T>,List<T>> takeWhile(final Function<? super T, Boolean> predicate)
     {
-        return new Function<List<T>, List<T>>() {
-
-            public List<T> apply(final List<T> input) {
-                return Functional.takeWhile(predicate, input);
-            }
-        };
+        return input -> Functional.takeWhile(predicate, input);
     }
 
     /**
@@ -1028,7 +976,7 @@ public final class Functional
 
         if(howMany==0) return Collections.unmodifiableList(list);
         final int outputListSize = list.size()-howMany;
-        if(outputListSize<=0) return new ArrayList<T>();
+        if(outputListSize<=0) return new ArrayList<>();
 
         return Collections.unmodifiableList(list.subList(howMany,list.size()));
     }
@@ -1045,12 +993,7 @@ public final class Functional
      */
     public static<T>Function<List<? extends T>,List<T>> skip(final int howMany)
     {
-        return new Function<List<? extends T>, List<T>>() {
-
-            public List<T> apply(final List<? extends T> input) {
-                return Functional.skip(howMany, input);
-            }
-        };
+        return input -> Functional.skip(howMany, input);
     }
 
     /**
@@ -1070,7 +1013,7 @@ public final class Functional
             if(!predicate.apply(list.get(counter)))
                 return Collections.unmodifiableList(list.subList(counter,list.size()));
 
-        return Collections.unmodifiableList(new ArrayList<T>(0));
+        return Collections.unmodifiableList(new ArrayList<>(0));
     }
 
     /**
@@ -1083,12 +1026,7 @@ public final class Functional
      */
     public static<T>Function<List<T>,List<T>> skipWhile(final Function<? super T, Boolean> predicate)
     {
-        return new Function<List<T>, List<T>>() {
-
-            public List<T> apply(final List<T> input) {
-                return Functional.skipWhile(predicate, input);
-            }
-        };
+        return input -> Functional.skipWhile(predicate, input);
     }
 
     /**
@@ -1100,12 +1038,7 @@ public final class Functional
      */
     public static <T>Function<Integer,T> constant(final T constant)
     {
-        return new Function<Integer, T>() {
-
-            public T apply(final Integer integer) {
-                return constant;
-            }
-        };
+        return integer -> constant;
     }
 
     /**
@@ -1145,9 +1078,9 @@ public final class Functional
             if (((Collection) l1).size() != ((Collection) l2).size())
                 throw new IllegalArgumentException("Functional.zip(Iterable<A>,Iterable<B>): l1 and l2 have differing numbers of elements");
 
-            output = new ArrayList<Pair<A, B>>(((Collection) l1).size());
+            output = new ArrayList<>(((Collection) l1).size());
         }
-        else output = new ArrayList<Pair<A, B>>();
+        else output = new ArrayList<>();
         final Iterator<? extends A> l1_it = l1.iterator();
         final Iterator<? extends B> l2_it = l2.iterator();
 
@@ -1181,9 +1114,9 @@ public final class Functional
             if (((Collection) l1).size() != ((Collection) l2).size())
                 throw new IllegalArgumentException("Functional.zip3(Iterable<A>,Iterable<B>,Iterable<C>): l1, l2 and l3 have differing numbers of elements");
 
-            output = new ArrayList<Triple<A, B,C>>(((Collection) l1).size());
+            output = new ArrayList<>(((Collection) l1).size());
         }
-        else output = new ArrayList<Triple<A, B,C>>();
+        else output = new ArrayList<>();
         final Iterator<? extends A> l1_it = l1.iterator();
         final Iterator<? extends B> l2_it = l2.iterator();
         final Iterator<? extends C> l3_it = l3.iterator();
@@ -1213,12 +1146,12 @@ public final class Functional
         final List<B> l2;
         if(input instanceof Collection<?>) {
             final int size = ((Collection) input).size();
-            l1 = new ArrayList<A>(size);
-            l2 = new ArrayList<B>(size);
+            l1 = new ArrayList<>(size);
+            l2 = new ArrayList<>(size);
         }
         else {
-            l1 = new ArrayList<A>();
-            l2 = new ArrayList<B>();
+            l1 = new ArrayList<>();
+            l2 = new ArrayList<>();
         }
         for(final Pair<A,B> pair:input)
         {
@@ -1249,14 +1182,14 @@ public final class Functional
         final List<C> l3;
         if(input instanceof Collection<?>) {
             final int size = ((Collection) input).size();
-            l1 = new ArrayList<A>(size);
-            l2 = new ArrayList<B>(size);
-            l3 = new ArrayList<C>(size);
+            l1 = new ArrayList<>(size);
+            l2 = new ArrayList<>(size);
+            l3 = new ArrayList<>(size);
         }
         else {
-            l1 = new ArrayList<A>();
-            l2 = new ArrayList<B>();
-            l3 = new ArrayList<C>();
+            l1 = new ArrayList<>();
+            l2 = new ArrayList<>();
+            l3 = new ArrayList<>();
         }
 
         for(final Triple<A,B,C> triplet:input)
@@ -1282,7 +1215,7 @@ public final class Functional
      */
     public static <T,U>List<U> collect(final Function<? super T,? extends Iterable<U>> f, final Iterable<T> input)
     {
-        List<U> output = input instanceof Collection<?> ? new ArrayList<U>(((Collection) input).size()) : new ArrayList<U>();
+        final List<U> output = input instanceof Collection<?> ? new ArrayList<>(((Collection) input).size()) : new ArrayList<>();
 //        for(final T element : input)
 //            output = Functional.concat(output, Functional.toList(f.apply(element)));
         return Collections.unmodifiableList(output);
@@ -1302,12 +1235,7 @@ public final class Functional
      */
     public static <T,U>Function<Iterable<T>,List<U>> collect(final Function<? super T,? extends Iterable<U>> f)
     {
-        return new Function<Iterable<T>, List<U>>() {
-
-            public List<U> apply(final Iterable<T> input) {
-                return Functional.collect(f,input);
-            }
-        };
+        return input -> Functional.collect(f,input);
     }
 
     /**
@@ -1328,7 +1256,7 @@ public final class Functional
         if (input == null) throw new IllegalArgumentException("Functional.takeNAndYield: input is null");
 
         int counter = 0;
-        final List<A> output = new ArrayList<A>(howMany);
+        final List<A> output = new ArrayList<>(howMany);
         final Iterator<A> position = input.iterator();
         if(howMany>0&&position.hasNext())
         {
@@ -1338,12 +1266,7 @@ public final class Functional
                 counter++;
                 if (counter < howMany && !position.hasNext()) break;
             }
-            return Pair.of(output, (Iterable<A>) new Iterable<A>() {
-
-                public Iterator<A> iterator() {
-                    return position;
-                }
-            });
+            return Pair.of(output, (Iterable<A>) () -> position);
         }
         return Pair.of(output, input);
     }
@@ -1359,27 +1282,22 @@ public final class Functional
      */
     public static <T>Iterable<T> append(final T t, final Iterable<T> input)
     {
-        return new Iterable<T>(){
+        return () -> new Iterator<T>(){
+            private int counter=0;
+            private Iterator<? extends T> iterator=input.iterator();
 
-            public Iterator<T> iterator() {
-                return new Iterator<T>(){
-                    private int counter=0;
-                    private Iterator<? extends T> iterator=input.iterator();
-
-                    public boolean hasNext() {
-                        return counter==0||iterator.hasNext();
-                    }
+            public boolean hasNext() {
+                return counter==0||iterator.hasNext();
+            }
 
 
-                    public T next() {
-                        return counter++==0 ? t : iterator.next();
-                    }
+            public T next() {
+                return counter++==0 ? t : iterator.next();
+            }
 
 
-                    public void remove() {
-                        throw new UnsupportedOperationException("Functional.append(T,Iterable<T>): it is not possible to remove elements from this sequence");
-                    }
-                };
+            public void remove() {
+                throw new UnsupportedOperationException("Functional.append(T,Iterable<T>): it is not possible to remove elements from this sequence");
             }
         };
     }
@@ -1400,7 +1318,7 @@ public final class Functional
         if (keyFn == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): keyFn is null");
         if (input == null) throw new IllegalArgumentException("Functional.groupBy(Func,Iterable): input is null");
 
-        final Map<U,List<T>> intermediateResults = new HashMap<U,List<T>>();
+        final Map<U,List<T>> intermediateResults = new HashMap<>();
         for(final T element : input)
         {
             final U key = keyFn.apply(element);
@@ -1408,12 +1326,12 @@ public final class Functional
                 intermediateResults.get(key).add(element);
             else
             {
-                final List<T> list = new ArrayList<T>();
+                final List<T> list = new ArrayList<>();
                 list.add(element);
                 intermediateResults.put(key, list);
             }
         }
-        final Map<U,List<T>> output = new HashMap<U,List<T>>(intermediateResults.size());
+        final Map<U,List<T>> output = new HashMap<>(intermediateResults.size());
         for(final Map.Entry<U,List<T>> entry : intermediateResults.entrySet())
             output.put(entry.getKey(),Collections.unmodifiableList(entry.getValue()));
         return Collections.unmodifiableMap(output);

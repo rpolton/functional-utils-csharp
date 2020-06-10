@@ -16,5 +16,5 @@ public interface Func_int_int extends IntUnaryOperator {
      */
     int apply(int a);
 
-    default int applyAsInt(int a) { return apply(a); }
+    default int applyAsInt(final int a) { return apply(a); }
 }

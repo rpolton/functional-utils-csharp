@@ -1,418 +1,288 @@
 package me.shaftesbury.utils.functional;
 
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 16/10/13
- * Time: 22:26
- * To change this template use File | Settings | File Templates.
- */
-public class Iterable2Test
-{
-    private static Function<Integer,Integer> DoublingGenerator =
-            new Function<Integer,Integer>()
-            {
-                 public Integer apply(Integer a) { return 2*a;}
-            };
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+
+public class Iterable2Test {
+    private static Function<Integer, Integer> DoublingGenerator = a -> 2 * a;
 
     @Test
-    public void InitTest1()
-    {
+    void initTest1() {
         final Iterable2<Integer> output = IterableHelper.init(DoublingGenerator, 5);
-        AssertIterable.assertIterableEquals(Arrays.asList(2,4,6,8,10),output);
-    }
-
-
-    @Test
-    public void MapTest1()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1, 2, 3, 4, 5});
-        final Iterable2<String> output = input.map(Functional.<Integer>dStringify());
-        AssertIterable.assertIterableEquals(Arrays.asList("1","2","3","4","5"),output);
+        assertThat(output).containsExactly(2, 4, 6, 8, 10);
     }
 
     @Test
-    public void SortWithTest1()
-    {
-        final Iterable2<Integer> i = IterableHelper.asList(new Integer[]{1,6,23,7,4});
-        final Iterable2<Integer> output = i.sortWith(
-                new Comparator<Integer>() {
-
-                    public int compare(Integer a, Integer b) {
-                        return Integer.compare(a, b);
-                    }
-                });
-        AssertIterable.assertIterableEquals(Arrays.asList(1,4,6,7,23), output);
+    void mapTest1() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Iterable2<String> output = input.map(Functional.dStringify());
+        assertThat(output).containsExactly("1", "2", "3", "4", "5");
     }
 
     @Test
-    public void SortWithTest2()
-    {
-        final Iterable2<Integer> i = IterableHelper.asList(new Integer[] { 1, 6, 23, 7, 4 });
-        final Iterable2<Integer> j = i.sortWith(
-                new Comparator<Integer>() {
-
-                    public int compare(Integer a, Integer b) {
-                        return a - b;
-                    }
-                });
-        AssertIterable.assertIterableEquals(Arrays.asList(1,4,6,7,23), j);
+    void sortWithTest1() {
+        final Iterable2<Integer> i = IterableHelper.asList(1, 6, 23, 7, 4);
+        final Iterable2<Integer> output = i.sortWith(Integer::compare);
+        assertThat(output).containsExactly(1, 4, 6, 7, 23);
     }
 
     @Test
-    public void SortWithTest3()
-    {
-        final Iterable2<Integer> i = IterableHelper.asList(new Integer[] { 1, 6, 23, 7, 4 });
+    void sortWithTest2() {
+        final Iterable2<Integer> i = IterableHelper.asList(1, 6, 23, 7, 4);
+        final Iterable2<Integer> j = i.sortWith(Comparator.comparingInt(a -> a));
+        assertThat(j).containsExactly(1, 4, 6, 7, 23);
+    }
+
+    @Test
+    void sortWithTest3() {
+        final Iterable2<Integer> i = IterableHelper.asList(1, 6, 23, 7, 4);
         final Iterable2<Integer> j = i.sortWith(Functional.dSorter);
-        AssertIterable.assertIterableEquals(Arrays.asList(1,4,6,7,23), j);
+        assertThat(j).containsExactly(1, 4, 6, 7, 23);
     }
 
-    private static Function<Integer, Integer> TriplingGenerator =
-            new Function<Integer, Integer>() {
+    private static Function<Integer, Integer> TriplingGenerator = a -> 3 * a;
 
-                public Integer apply(final Integer a) {
-                    return 3 * a;
-                }
-            };
+    private static Function<Integer, Integer> QuadruplingGenerator = a -> 4 * a;
 
-    private static Function<Integer, Integer> QuadruplingGenerator =
-            new Function<Integer, Integer>() {
-
-                public Integer apply(final Integer a) {
-                    return 4 * a;
-                }
-            };
-
-
-    private static boolean BothAreEven(final int a, final int b)
-    {
+    private static boolean BothAreEven(final int a, final int b) {
         return Functional.isEven.apply(a) && Functional.isEven.apply(b);
     }
 
-
     @Test
-    public void ForAll2Test1()
-    {
+    void forAll2Test1() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> m = IterableHelper.init(QuadruplingGenerator, 5);
-        try
-        {
-            Assert.assertTrue(l.forAll2(
-                    new BiFunction<Integer, Integer, Boolean>() {
-
-                        public Boolean apply(Integer a, Integer b) {
-                            return BothAreEven(a, b);
-                        }
-                    }, m));
-        }
-        catch (Exception e)
-        {
-            Assert.fail("Shouldn't reach this point");
-        }
+        assertThat(l.forAll2(Iterable2Test::BothAreEven, m)).isTrue();
     }
 
-    private static boolean BothAreLessThan10(final int a, final int b)
-    {
+    private static boolean BothAreLessThan10(final int a, final int b) {
         return a < 10 && b < 10;
     }
 
-    private static BiFunction<Integer, Integer, Boolean> dBothAreLessThan10 =
-            new BiFunction<Integer, Integer, Boolean>() {
-
-                public Boolean apply(Integer a, Integer b) {
-                    return BothAreLessThan10(a, b);
-                }
-            }   ;
+    private static BiFunction<Integer, Integer, Boolean> dBothAreLessThan10 = Iterable2Test::BothAreLessThan10;
 
     @Test
-    public void ForAll2Test2()
-    {
+    void forAll2Test2() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
 
-        Assert.assertFalse(Functional.forAll2(dBothAreLessThan10, l, m));
-    }
-
-    @Test(expected=Exception.class)
-    public void ForAll2Test3()
-    {
-        final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
-        final Iterable2<Integer> m = IterableHelper.init(QuadruplingGenerator, 7);
-
-        Functional.forAll2(
-                new BiFunction<Integer, Integer, Boolean>() {
-
-                    public Boolean apply(Integer a, Integer b) {
-                        return BothAreEven(a, b);
-                    }
-                }, l, m);
+        assertThat(Functional.forAll2(dBothAreLessThan10, l, m)).isFalse();
     }
 
     @Test
-    public void CompositionTest1A()
-    {
+    void forAll2Test3() {
+        final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
+        final Iterable2<Integer> m = IterableHelper.init(QuadruplingGenerator, 7);
+
+        assertThatExceptionOfType(Exception.class).isThrownBy(() -> Functional.forAll2(Iterable2Test::BothAreEven, l, m));
+    }
+
+    @Test
+    void compositionTest1A() {
         final Iterable2<Integer> i = IterableHelper.asList(1, 2, 3, 45, 56, 6);
 
         final boolean allOdd = i.forAll(Functional.isOdd);
         final boolean notAllOdd = i.exists(Functional.not(Functional.isOdd));
 
-        Assert.assertFalse(allOdd);
-        Assert.assertTrue(notAllOdd);
+        assertThat(allOdd).isFalse();
+        assertThat(notAllOdd).isTrue();
     }
 
     @Test
-    public void CompositionTest2() {
+    void compositionTest2() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
-        Assert.assertFalse(Functional.forAll2(Functional.not2(dBothAreLessThan10), l, m));
+        assertThat(Functional.forAll2(Functional.not2(dBothAreLessThan10), l, m)).isFalse();
         // equivalent to BothAreGreaterThanOrEqualTo10
     }
 
     @Test
-    public void CompositionTest2a() {
+    void compositionTest2a() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
         final int lowerLimit = 1;
         final int upperLimit = 16;
-        Assert.assertFalse(
-                Functional.forAll2(
-                        Functional.not2(
-                                new BiFunction<Integer, Integer, Boolean>() {
-
-                                    public Boolean apply(Integer a, Integer b) {
-                                        return a > lowerLimit && b > lowerLimit;
-                                    }
-                                }
-                        ), l, m));
+        assertThat(Functional.forAll2(Functional.not2((a, b) -> a > lowerLimit && b > lowerLimit), l, m)).isFalse();
     }
 
     @Test
-    public void CompositionTest2b() {
+    void compositionTest2b() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
         final int lowerLimit = 1;
         final int upperLimit = 16;
-        Assert.assertTrue(
-                Functional.forAll2(
-                        Functional.not2(
-                                new BiFunction<Integer, Integer, Boolean>() {
-
-                                    public Boolean apply(Integer a, Integer b) {
-                                        return a > upperLimit && b > upperLimit;
-                                    }
-                                }
-                        ), l, m));
+        assertThat(Functional.forAll2(Functional.not2((a, b) -> a > upperLimit && b > upperLimit), l, m)).isTrue();
     }
 
     @Test
-    public void PartitionTest1()
-    {
+    void partitionTest1() {
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
         final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isOdd, m);
 
         final Integer[] left = {3, 9, 15};
         final Integer[] right = {6, 12};
-        Assert.assertArrayEquals(left, r.getLeft().toArray());
-        Assert.assertArrayEquals(right, r.getRight().toArray());
+        assertThat(r.getLeft().toArray()).containsExactly(left);
+        assertThat(r.getRight().toArray()).containsExactly(right);
     }
 
     @Test
-    public void PartitionTest1a()
-    {
+    void partitionTest1a() {
         final Iterable2<Integer> m = IterableHelper.init(TriplingGenerator, 5);
         final Pair<List<Integer>, List<Integer>> r = m.partition(Functional.isOdd);
 
         final Integer[] left = {3, 9, 15};
         final Integer[] right = {6, 12};
-        Assert.assertArrayEquals(left, r.getLeft().toArray());
-        Assert.assertArrayEquals(right, r.getRight().toArray());
+        assertThat(r.getLeft().toArray()).containsExactly(left);
+        assertThat(r.getRight().toArray()).containsExactly(right);
     }
 
     @Test
-    public void PartitionTest2()
-    {
+    void partitionTest2() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
         final Iterable2<Integer> expected = IterableHelper.init(DoublingGenerator, 5);
-        AssertIterable.assertIterableEquals(expected, r.getLeft());
-        Assert.assertArrayEquals(new Integer[]{}, r.getRight().toArray());
+        assertThat(r.getLeft()).containsExactlyElementsOf(expected);
+        assertThat(r.getRight().toArray()).containsExactly(new Integer[]{});
     }
 
     @Test
-    public void PartitionTest3()
-    {
+    void partitionTest3() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Pair<List<Integer>, List<Integer>> r = Functional.partition(Functional.isEven, l);
         final Iterable2<Integer> expected = IterableHelper.init(DoublingGenerator, 5).filter(Functional.isEven);
-        AssertIterable.assertIterableEquals(expected, r.getLeft());
+        assertThat(r.getLeft()).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void ToStringTest1()
-    {
+    void toStringTest1() {
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
+        final Iterable2<String> ls = li.map(Functional.dStringify());
         //String s = String.Join(",", ls);
-        AssertIterable.assertIterableEquals(IterableHelper.asList("2","4","6","8","10"), ls);
+        assertThat(ls).containsExactlyElementsOf(IterableHelper.asList("2", "4", "6", "8", "10"));
     }
 
     @Test
-    public void ChooseTest1B() throws OptionNoValueAccessException
-    {
+    void chooseTest1B() throws OptionNoValueAccessException {
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
         final Iterable2<String> o = li.choose(
-                new Function<Integer, Option<String>>() {
-
-                    public Option<String> apply(Integer i) {
-                        return i % 2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
-                    }
-                });
+                i -> i % 2 == 0 ? Option.toOption(i.toString()) : Option.None());
         final Iterable2<String> expected = IterableHelper.asList("6", "12");
-        AssertIterable.assertIterableEquals(o, expected);
+        assertThat(expected).containsExactlyElementsOf(o);
     }
 
     @Test
-    public void ChooseTest2A() //throws OptionNoValueAccessException
+    void chooseTest2A() //throws OptionNoValueAccessException
     {
-        Map<Integer,String> o=null;
-        try{
+        Map<Integer, String> o = null;
+        try {
             final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
-            o = Functional.toDictionary(Functional.<Integer>identity(), Functional.<Integer>dStringify(),
+            o = Functional.toDictionary(Functional.identity(), Functional.dStringify(),
                     li.choose(
-                            new Function<Integer, Option<Integer>>() {
-
-                                public Option<Integer> apply(Integer i) {
-                                    return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
-                                }
-                            }));
-        }catch(Exception e){}
-        final Map<Integer,String> expected = new HashMap<Integer,String>();
+                            i -> i % 2 == 0 ? Option.toOption(i) : Option.None()));
+        } catch (final Exception e) {
+        }
+        final Map<Integer, String> expected = new HashMap<>();
         expected.put(6, "6");
         expected.put(12, "12");
-        Assert.assertTrue(expected.size()==o.size());
-        for(final Integer expectedKey : expected.keySet())
-        {
-            Assert.assertTrue(o.containsKey(expectedKey));
-            final String expectedValue=expected.get(expectedKey);
-            //Assert.assertEquals(expectedValue,o.get(expectedKey),"Expected '"+expectedValue+"' but got '"+o.get(expectedKey)+"'");
-            Assert.assertTrue(o.get(expectedKey).equals(expectedValue));
+        assertThat(expected.size() == o.size()).isTrue();
+        for (final Integer expectedKey : expected.keySet()) {
+            assertThat(o.containsKey(expectedKey)).isTrue();
+            final String expectedValue = expected.get(expectedKey);
+            //assertThat("Expected '"+expectedValue+"' but got '"+o.get(expectedKey)+"'").isEqualTo(expectedValue,o.get(expectedKey));
+            assertThat(o.get(expectedKey).equals(expectedValue)).isTrue();
         }
     }
 
-    private final static <B, C>boolean Fn(final B b, final C c)
-    {
+    private final static <B, C> boolean Fn(final B b, final C c) {
         return b.equals(c);
     }
 
-    private final static <B, C>Function<C, Boolean> curried_fn(final B b)
-    {
-        return new Function<C, Boolean>() {
-
-            public Boolean apply(C c) {
-                return Fn(b,c);
-            }
-        };
+    private final static <B, C> Function<C, Boolean> curried_fn(final B b) {
+        return c -> Fn(b, c);
     }
 
     @Test
-    public void CurriedFnTest1()
-    {
+    void curriedFnTest1() {
         final boolean test1a = Fn(1, 2);
         final boolean test1b = curried_fn(1).apply(2);
-        Assert.assertEquals(test1a, test1b);
+        assertThat(test1b).isEqualTo(test1a);
     }
 
-    private static int adder_int(final int left, final int right) { return left + right; }
+    private static int adder_int(final int left, final int right) {
+        return left + right;
+    }
 
-    private static Function<Integer, Integer> curried_adder_int(final int c)
-    {
-        return new Function<Integer, Integer>() {
-
-            public Integer apply(Integer p) {
-                return adder_int(c, p);
-            }
-        };
+    private static Function<Integer, Integer> curried_adder_int(final int c) {
+        return p -> adder_int(c, p);
     }
 
     @Test
-    public void CurriedFnTest2()
-    {
+    void curriedFnTest2() {
         final Iterable2<Integer> a = IterableHelper.asList(1, 2, 3, 4, 5);
         final Iterable2<Integer> b = a.map(
-                new Function<Integer, Integer>() {
-
-                    public Integer apply(final Integer a1) {
-                        return adder_int(2, a1);
-                    }
-                });
+                a1 -> adder_int(2, a1));
         final Iterable2<Integer> c = a.map(curried_adder_int(2));
-        AssertIterable.assertIterableEquals(b, c);
+        assertThat(c).containsExactlyElementsOf(b);
     }
 
-    private static String csv(final String state, final Integer a)
-    {
-        return Functional.isNullOrEmpty(state) ? a.toString() : state + "," + a;
+    private static String csv(final String state, final Integer a) {
+        return StringUtils.isEmpty(state) ? a.toString() : state + "," + a;
     }
 
     @Test
-    public void FoldvsMapTest1()
-    {
+    void foldvsMapTest1() {
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        final String s1 = Functional.join(",", li.map(Functional.<Integer>dStringify()));
-        Assert.assertEquals("2,4,6,8,10", s1);
+        final String s1 = Functional.join(",", li.map(Functional.dStringify()));
+        assertThat(s1).isEqualTo("2,4,6,8,10");
         final String s2 = IterableHelper.init(DoublingGenerator, 5).fold(
-                new BiFunction<String, Integer, String>() {
-
-                    public String apply(String s1, Integer s2) {
-                        return csv(s1, s2);
-                    }
-                }, "");
-        Assert.assertEquals(s1, s2);
+                Iterable2Test::csv, "");
+        assertThat(s2).isEqualTo(s1);
     }
 
     private final Function<Iterable2<Integer>, String> concatenate =
-            new Function<Iterable2<Integer>, String>() {
-
-                public String apply(Iterable2<Integer> l) {
-                    return l.fold(new BiFunction<String, Integer, String>() {
-
-                        public String apply(String s1, Integer s2) {
-                            return csv(s1, s2);
-                        }
-                    }, "");
-                }
-            };
+            l -> l.fold(Iterable2Test::csv, "");
 
     @Test
-    public void FwdPipelineTest1()
-    {
+    void fwdPipelineTest1() {
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
         final String s1 = li.in(concatenate);
-        Assert.assertEquals("2,4,6,8,10", s1);
+        assertThat(s1).isEqualTo("2,4,6,8,10");
     }
 
     private final UnaryFunction<Iterable2<Integer>, Iterable2<Integer>> evens_f =
             new UnaryFunction<Iterable2<Integer>, Iterable2<Integer>>() {
 
-                public Iterable2<Integer> apply(Iterable2<Integer> l) {
+                public Iterable2<Integer> apply(final Iterable2<Integer> l) {
                     return l.filter(Functional.isEven);
                 }
             };
 
     @Test
-    public void FwdPipelineTest2()
-    {
-        String s1;
+    void fwdPipelineTest2() {
+        final String s1;
         {
             final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
             final Iterable2<Integer> evens = li.in(evens_f);
@@ -420,121 +290,80 @@ public class Iterable2Test
         }
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
         final String s2 = li.in(evens_f.then(concatenate));
-        Assert.assertEquals("6,12", s1);
-        Assert.assertEquals(s1, s2);
+        assertThat(s1).isEqualTo("6,12");
+        assertThat(s2).isEqualTo(s1);
     }
 
     @Test
-    public void CompositionTest3()
-    {
+    void compositionTest3() {
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
-        final String s = li.in( evens_f.then(concatenate));
-        Assert.assertEquals("6,12", s);
+        final String s = li.in(evens_f.then(concatenate));
+        assertThat(s).isEqualTo("6,12");
     }
 
     @Test
-    public void CompositionTest4()
-    {
+    void compositionTest4() {
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
         final String s = evens_f.then(concatenate).apply(li);
-        Assert.assertEquals("6,12", s);
+        assertThat(s).isEqualTo("6,12");
     }
 
     @Test
-    public void IndentTest1()
-    {
+    void indentTest1() {
         final int level = 5;
         final String expectedResult = "     ";
 
         String indentedName = "";
-        for (int i = 0; i < level; ++i)
-        {
+        for (int i = 0; i < level; ++i) {
             indentedName += " ";
         }
-        Assert.assertEquals(indentedName, expectedResult);
+        assertThat(expectedResult).isEqualTo(indentedName);
 
         {
             final Iterable2<String> indentation = IterableHelper.init(
-                    new Function<Integer, String>() {
-
-                        public String apply(Integer integer) {
-                            return " ";
-                        }
-                    }, level);
-            Assert.assertEquals(Functional.join("", indentation), "     ");
+                    integer -> " ", level);
+            assertThat("     ").isEqualTo(Functional.join("", indentation));
         }
         {
             final Iterable2<String> indentation = IterableHelper.init(
-                    new Function<Integer, String>() {
-
-                        public String apply(Integer integer) {
-                            return " ";
-                        }
-                    }, level);
+                    integer -> " ", level);
             final String s = indentation.fold(
-                    new BiFunction<String, String, String>() {
-
-                        public String apply(String state, String str) {
-                            return state + str;
-                        }
-                    }, "");
-            Assert.assertEquals(s, expectedResult);
+                    (state, str) -> state + str, "");
+            assertThat(expectedResult).isEqualTo(s);
         }
         {
             final Iterable2<String> indentation = IterableHelper.init(
-                    new Function<Integer, String>() {
-
-                        public String apply(Integer integer) {
-                            return " ";
-                        }
-                    }, level);
+                    integer -> " ", level);
             final Function<Iterable2<String>, String> folder =
-                    new Function<Iterable2<String>, String>() {
-
-                        public String apply(final Iterable2<String> l) {
-                            return l.fold(new BiFunction<String, String, String>() {
-
-                                public String apply(final String state, final String str) {
-                                    return state + str;
-                                }
-                            }, "");
-                        }
-                    };
+                    l -> l.fold((state, str) -> state + str, "");
 
             final String s1 = indentation.in(folder);
-            Assert.assertEquals(s1, expectedResult);
+            assertThat(expectedResult).isEqualTo(s1);
         }
     }
 
     @Test
-    public void IndentTest2()
-    {
+    void indentTest2() {
         final int level = 5;
         final String expectedResult = "     BOB";
-        Assert.assertEquals(expectedResult, Functional.indentBy(level, " ", "BOB"));
+        assertThat(Functional.indentBy(level, " ", "BOB")).isEqualTo(expectedResult);
     }
 
 
     @Test
-    public void ChooseTest3A() throws OptionNoValueAccessException
-    {
+    void chooseTest3A() throws OptionNoValueAccessException {
         final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
         final Iterable2<Integer> o =
                 li.choose(
-                        new Function<Integer, Option<Integer>>() {
-                            public Option<Integer> apply(Integer i) {
-                                return i % 2 == 0 ? Option.toOption(i) : Option.<Integer>None();
-                            }
-                        });
+                        i -> i % 2 == 0 ? Option.toOption(i) : Option.None());
 
-        final Integer[] expected = new Integer[]{6,12};
-        AssertIterable.assertIterableEquals(Arrays.asList(expected), o);
+        final Integer[] expected = new Integer[]{6, 12};
+        assertThat(o).containsExactly(expected);
     }
 
 /*
         [Test]
-        public void TryGetValueTest1()
-        {
+        public void tryGetValueTest1() {
             var d = new Dictionary<string, int>();
             d["one"] = 1;
             Assert.AreEqual(1, Iterable2Helpers.TryGetValue_nullable("one", d));
@@ -544,8 +373,7 @@ public class Iterable2Test
 
     /*
             [Test]
-        public void TryGetValueTest2()
-        {
+        public void tryGetValueTest2() {
             var d = new Dictionary<string, int>();
             d["one"] = 1;
             Assert.IsNull(Iterable2Helpers.TryGetValue_nullable("two", d));
@@ -554,8 +382,7 @@ public class Iterable2Test
      */
 /*
         [Test]
-        public void TryGetValueTest3()
-        {
+        public void tryGetValueTest3() {
             var d = new Dictionary<string, string>();
             d["one"] = "ONE";
             Assert.AreEqual("ONE", Iterable2Helpers.TryGetValue("one", d).Some);
@@ -565,8 +392,7 @@ public class Iterable2Test
 
     /*
             [Test]
-        public void TryGetValueTest4()
-        {
+        public void tryGetValueTest4() {
             var d = new Dictionary<string, string>();
             d["one"] = "ONE";
             Assert.IsTrue(Iterable2Helpers.TryGetValue("two", d).None);
@@ -576,8 +402,7 @@ public class Iterable2Test
 
     /*
             [Test]
-        public void TryGetValueTest5()
-        {
+        public void tryGetValueTest5() {
             var d = new Dictionary<string, List<int>>();
             var l = new List<int>(new[] {1, 2, 3});
             d["one"] = l;
@@ -586,8 +411,7 @@ public class Iterable2Test
 */
     /*
         [Test]
-        public void TryGetValueTest6()
-        {
+        public void tryGetValueTest6() {
             var d = new Dictionary<string, string>();
             d["one"] = "ONE";
             Assert.IsTrue(Iterable2Helpers.TryGetValue("two", d).None);
@@ -595,356 +419,283 @@ public class Iterable2Test
 
      */
 
-    private class myInt
-    {
+    private class myInt {
         private final int _i;
 
-        public myInt(int i)
-        {
+        public myInt(final int i) {
             _i = i;
         }
 
-        public final int i()
-        {
+        public final int i() {
             return _i;
         }
     }
 
 
     @Test
-    public void foldAndChooseTest1()
-    {
-        final Map<Integer, Double> missingPricesPerDate = new Hashtable<Integer, Double>();
+    void foldAndChooseTest1() {
+        final Map<Integer, Double> missingPricesPerDate = new Hashtable<>();
         final Iterable2<Integer> openedDays = IterableHelper.init(TriplingGenerator, 5);
         Double last = 10.0;
-        for (final int day : openedDays)
-        {
-            final Double value = day%2 == 0 ? (Double)((double)(day/2)) : null;
-            if (value!=null)
+        for (final int day : openedDays) {
+            final Double value = day % 2 == 0 ? (Double) ((double) (day / 2)) : null;
+            if (value != null)
                 last = value;
             else
                 missingPricesPerDate.put(day, last);
         }
 
         final Iterable2<myInt> openedDays2 = IterableHelper.init(
-                new Function<Integer, myInt>() {
-
-                    public myInt apply(final Integer a) {
-                        return new myInt(3 * a);
-                    }
-                }, 5);
+                a -> new myInt(3 * a), 5);
         final Pair<Double, List<myInt>> output = Functional.foldAndChoose(
-                new BiFunction<Double, myInt, Pair<Double, Option<myInt>>>() {
-
-                    public Pair<Double, Option<myInt>> apply(final Double state, final myInt day) {
-                        final Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
-                        return value != null
-                                ? Pair.of(value,Option.<myInt>None())
-                                : Pair.of(state, Option.toOption(day));
-                    }
+                (state, day) -> {
+                    final Double value = day.i() % 2 == 0 ? (Double) ((double) (day.i() / 2)) : null;
+                    return value != null
+                            ? Pair.of(value, Option.None())
+                            : Pair.of(state, Option.toOption(day));
                 }, 10.0, openedDays2);
 
-        Assert.assertEquals(last, output.getLeft());
-        final List<Integer> keys = new ArrayList<Integer>(missingPricesPerDate.keySet());
+        assertThat(output.getLeft()).isEqualTo(last);
+        final List<Integer> keys = new ArrayList<>(missingPricesPerDate.keySet());
         Collections.sort(keys);
-        Assert.assertArrayEquals(keys.toArray(),
-                Functional.map(
-                        i -> i.i(), output.getRight()).toArray());
+        assertThat(Functional.map(myInt::i, output.getRight()).toArray()).containsExactly(keys.toArray());
     }
 
     @Test
-    public void joinTest1()
-    {
+    void joinTest1() {
         final String expected = "3,6,9,12,15";
         {
             final Iterable2<Integer> ids = IterableHelper.init(TriplingGenerator, 5);
-            Assert.assertEquals(expected, Functional.join(",", ids.map(Functional.<Integer>dStringify())));
+            assertThat(Functional.join(",", ids.map(Functional.dStringify()))).isEqualTo(expected);
         }
         final Iterable2<Integer> ids = IterableHelper.init(TriplingGenerator, 5);
-        Assert.assertEquals(expected, ids.join(","));
+        assertThat(")).isEqualTo(expected, ids.join(");
     }
 
     @Test
-    public void joinTest2()
-    {
+    void joinTest2() {
         final String expected = "'3','6','9','12','15'";
         final Function<Integer, String> f =
-                new Function<Integer, String>() {
-
-                    public String apply(Integer id) {
-                        return "'" + id + "'";
-                    }
-                };
+                id -> "'" + id + "'";
         {
             final Iterable2<Integer> ids = IterableHelper.init(TriplingGenerator, 5);
-            Assert.assertEquals(expected, Functional.join(",", ids.map(f)));
+            assertThat(Functional.join(",", ids.map(f))).isEqualTo(expected);
         }
         final Iterable2<Integer> ids = IterableHelper.init(TriplingGenerator, 5);
-        Assert.assertEquals(expected, Functional.join(",", ids, f));
+        assertThat(Functional.join(",", ids, f)).isEqualTo(expected);
     }
 
     @Test
-    public void betweenTest1()
-    {
+    void betweenTest1() {
         final int lowerBound = 2, upperBound = 4;
-        Assert.assertTrue(Functional.between(lowerBound, upperBound, 3));
+        assertThat(Functional.between(lowerBound, upperBound, 3)).isTrue();
     }
 
     @Test
-    public void betweenTest2()
-    {
+    void betweenTest2() {
         final int lowerBound = 2, upperBound = 4;
-        Assert.assertFalse(Functional.between(lowerBound, upperBound, 1));
+        assertThat(Functional.between(lowerBound, upperBound, 1)).isFalse();
     }
 
     @Test
-    public void betweenTest3()
-    {
+    void betweenTest3() {
         final double lowerBound = 2.5, upperBound = 2.6;
-        Assert.assertTrue(Functional.between(lowerBound, upperBound, 2.55));
+        assertThat(Functional.between(lowerBound, upperBound, 2.55)).isTrue();
     }
 
     @Test
-    public void testIsEven_withEvenNum()
-    {
-        Assert.assertTrue(Functional.isEven.apply(2));
+    void testIsEven_withEvenNum() {
+        assertThat(Functional.isEven.apply(2)).isTrue();
     }
 
     @Test
-    public void testIn()
-    {
+    void testIn() {
         final Integer a = 10;
-        Assert.assertTrue(Functional.in(a, Functional.isEven));
+        assertThat(Functional.in(a, Functional.isEven)).isTrue();
     }
 
 
-    /*@Test
-    public void testThen()
-    {
+    /*@Test void testThen() {
         // mult(two,three).then(add(four)) =>
         // then(mult(two,three),add(four))
         // 2 * 3 + 4 = 10
         Integer two = 2;
         Integer three = 3;
         Integer four = 4;
-        Iterable2.then(new Function<Integer,Integer>()
-        {
+        Iterable2.then(new Function<Integer,Integer>() {
 
             public Integer apply(Integer i) { return }
         })
     } */
 
 
-    @Test(expected=NoSuchElementException.class)
-    public void findLastTest1()
-    {
+    @Test
+    void findLastTest1() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
-        Assert.assertEquals((Integer) 5, Functional.findLast(Functional.isOdd, l));
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> Functional.findLast(Functional.isOdd, l));
     }
 
     @Test
-    public void findLastTest2()
-    {
+    void findLastTest2() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
-        Assert.assertEquals((Integer)10, l.findLast(Functional.isEven));
+        assertThat(l.findLast(Functional.isEven)).isEqualTo((Integer) 10);
     }
 
     @Test
-    public void toArrayTest1()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1, 2, 3, 4, 5});
-        final Iterable2<String> strs = input.map(Functional.<Integer>dStringify());
-        final List<String> expected = Arrays.asList(new String[]{"1", "2", "3", "4", "5"});
+    void toArrayTest1() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Iterable2<String> strs = input.map(Functional.dStringify());
+        final List<String> expected = Arrays.asList("1", "2", "3", "4", "5");
 
         final Object[] output = strs.toArray();
 
-        Assert.assertEquals(expected.size(),output.length);
-        for(int i=0; i<expected.size(); ++i)
-            Assert.assertEquals(expected.get(i), output[i]);
+        assertThat(output.length).isEqualTo(expected.size());
+        for (int i = 0; i < expected.size(); ++i)
+            assertThat(output[i]).isEqualTo(expected.get(i));
     }
 
     @Test
-    public void toSetTest1()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
+    void toSetTest1() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
         final Set<Integer> integerSet = input.toSet();
-        final Set<Integer> expected = new HashSet<Integer>();
+        final Set<Integer> expected = new HashSet<>();
         expected.add(1);
         expected.add(2);
         expected.add(3);
         expected.add(4);
         expected.add(5);
 
-        Assert.assertTrue(expected.containsAll(integerSet));
-        Assert.assertTrue(integerSet.containsAll(expected));
+        assertThat(expected.containsAll(integerSet)).isTrue();
+        assertThat(integerSet.containsAll(expected)).isTrue();
     }
 
     @Test
-    public void toDictionaryTest()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1, 2, 3, 4, 5});
-        final Map<Integer,String> output = input.toDictionary(Functional.<Integer>identity(), Functional.<Integer>dStringify());
+    void toDictionaryTest() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Map<Integer, String> output = input.toDictionary(Functional.identity(), Functional.dStringify());
 
-        final Map<Integer, String> expected = new HashMap<Integer, String>();
+        final Map<Integer, String> expected = new HashMap<>();
         expected.put(1, "1");
         expected.put(2, "2");
         expected.put(3, "3");
         expected.put(4, "4");
         expected.put(5, "5");
-        Assert.assertTrue(expected.size() == output.size());
+        assertThat(expected.size() == output.size()).isTrue();
         for (final Integer expectedKey : expected.keySet()) {
-            Assert.assertTrue(output.containsKey(expectedKey));
+            assertThat(output.containsKey(expectedKey)).isTrue();
             final String expectedValue = expected.get(expectedKey);
-            //Assert.assertEquals(expectedValue,o.get(expectedKey),"Expected '"+expectedValue+"' but got '"+o.get(expectedKey)+"'");
-            Assert.assertTrue(output.get(expectedKey).equals(expectedValue));
+            //assertThat("Expected '"+expectedValue+"' but got '"+o.get(expectedKey)+"'").isEqualTo(expectedValue,o.get(expectedKey));
+            assertThat(output.get(expectedKey).equals(expectedValue)).isTrue();
         }
     }
 
     @Test
-    public void lastTest1()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        Assert.assertEquals(5,(long) Functional.last(input));
+    void lastTest1() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        assertThat((long) Functional.last(input)).isEqualTo(5);
     }
 
     @Test
-    public void lastTest1a()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        Assert.assertEquals(5,(long) input.last());
+    void lastTest1a() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        assertThat((long) input.last()).isEqualTo(5);
     }
 
     @Test
-    public void lastTest2()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        final Iterable<String> strs = input.map(Functional.<Integer>dStringify());
-        Assert.assertEquals("5", Functional.last(strs));
+    void lastTest2() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Iterable<String> strs = input.map(Functional.dStringify());
+        assertThat(Functional.last(strs)).isEqualTo("5");
     }
 
     @Test
-    public void concatTest1()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        final Iterable2<Integer> expected = IterableHelper.asList(new Integer[]{1,2,3,4,5,1,2,3,4,5});
-        AssertIterable.assertIterableEquals(expected, input.concat(input));
+    void concatTest1() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Iterable2<Integer> expected = IterableHelper.asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
+        assertThat(input.concat(input)).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void seqConcatTest1()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1,2,3,4,5});
-        final Function<Integer,Integer> doubler = new Function<Integer, Integer>() {
+    void seqConcatTest1() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Function<Integer, Integer> doubler = i -> i * 2;
+        final Iterable2<String> expected = IterableHelper.asList("1", "2", "3", "4", "5", "2", "4", "6", "8", "10");
 
-            public Integer apply(Integer i) {
-                return i * 2;
-            }
-        };
-        final Iterable2<String> expected = IterableHelper.asList(new String[]{"1","2","3","4","5","2","4","6","8","10"});
+        final Iterable2<String> strs = input.map(Functional.dStringify());
+        final Iterable2<String> output = strs.concat(input.map(doubler).map(Functional.dStringify()));
 
-        final Iterable2<String> strs = input.map(Functional.<Integer>dStringify());
-        final Iterable2<String> output = strs.concat(input.map(doubler).map(Functional.<Integer>dStringify()));
-
-        AssertIterable.assertIterableEquals(expected, output);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void arrayIterableTest1()
-    {
-        final Integer[] input = new Integer[]{1,2,3,4,5};
-        final Iterable2<Integer> expected = IterableHelper.asList(new Integer[]{1,2,3,4,5});
+    void arrayIterableTest1() {
+        final Integer[] input = new Integer[]{1, 2, 3, 4, 5};
+        final Iterable2<Integer> expected = IterableHelper.asList(1, 2, 3, 4, 5);
 
         final ArrayIterable<Integer> ait = ArrayIterable.create(input);
-        final List<Integer> output = new ArrayList<Integer>();
-        for(final Integer i:ait) output.add(i);
-        AssertIterable.assertIterableEquals(expected, output);
+        final List<Integer> output = new ArrayList<>();
+        for (final Integer i : ait) output.add(i);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
 
     @Test
-    public void seqChooseTest1()
-    {
-        final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator,5);
+    void seqChooseTest1() {
+        final Iterable2<Integer> li = IterableHelper.init(TriplingGenerator, 5);
         final Iterable2<String> output = li.choose(
-                new Function<Integer,Option<String>>()
-                {
+                i -> i % 2 == 0 ? Option.toOption(i.toString()) : Option.None());
 
-                    public Option<String> apply(Integer i)
-                    {
-                        return i%2 == 0 ? Option.toOption(i.toString()) : Option.<String>None();
-                    }
-                });
-
-        final Collection<String> expected = Arrays.asList(new String[]{"6", "12"});
-        AssertIterable.assertIterableEquals(expected, output);
+        final Collection<String> expected = Arrays.asList("6", "12");
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void FwdPipelineTest3()
-    {
+    void fwdPipelineTest3() {
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<String> output = input.in(
-                new Function<Iterable2<Integer>, Iterable2<String>>() {
+                integers -> integers.map(Functional.dStringify()));
 
-                    public Iterable2<String> apply(Iterable2<Integer> integers) {
-                        return integers.map(Functional.<Integer>dStringify());
-                    }
-                });
-
-        final Collection<String> expected = Arrays.asList(new String[] {"2", "4", "6", "8", "10"});
-        AssertIterable.assertIterableEquals(expected, output);
+        final Collection<String> expected = Arrays.asList("2", "4", "6", "8", "10");
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void FwdPipelineTest4()
-    {
+    void fwdPipelineTest4() {
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<String> output = input.in(
-                new Function<Iterable2<Integer>, Iterable2<String>>() {
-
-                    public Iterable2<String> apply(Iterable2<Integer> integers) {
-                        try {
-                            return integers.map(Functional.<Integer>dStringify());
-                        } catch (Exception e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            return null; // Argh!!!
-                        }
+                integers -> {
+                    try {
+                        return integers.map(Functional.dStringify());
+                    } catch (final Exception e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        return null; // Argh!!!
                     }
                 });
 
-        final Collection<String> expected = Arrays.asList(new String[] {"2", "4", "6", "8", "10"});
-        AssertIterable.assertIterableEquals(expected, output);
+        final Collection<String> expected = Arrays.asList("2", "4", "6", "8", "10");
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void FwdPipelineTest5()
-    {
+    void fwdPipelineTest5() {
         final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> oddElems = l.in(
-                new Function<Iterable2<Integer>, Iterable2<Integer>>() {
+                ints -> ints.filter(Functional.isOdd));
 
-                    public Iterable2<Integer> apply(Iterable2<Integer> ints) {
-                        return ints.filter(Functional.isOdd);
-                    }
-                });
-
-        Assert.assertFalse(oddElems.iterator().hasNext());
+        assertThat(oddElems.iterator().hasNext()).isFalse();
     }
     /*
     private class Test1
     {
         public readonly int i;
 
-        public Test1(int j)
-        {
+        public Test1(int j) {
             i = j;
         }
     }
 
-    private static Function<object, string> fn1()
-    {
-        return delegate(object o)
-        {
+    private static Function<object, string> fn1() {
+        return delegate(object o) {
             if (o.GetType() == typeof (Test1))
                 return fn2(o as Test1);
             if (o.GetType() == typeof (string))
@@ -953,19 +704,16 @@ public class Iterable2Test
         };
     }
 
-    private static string fn2(Test1 i)
-    {
+    private static string fn2(Test1 i) {
         return i.i.ToString();
     }
 
-    private static string fn3(string s)
-    {
+    private static string fn3(string s) {
         return s;
     }
 
     [Test]
-    public void FwdPipelineTest6()
-    {
+    public void fwdPipelineTest6() {
         Function<object, string> fn = fn1();
         var i = new Test1(10);
         const string s = "test";
@@ -974,26 +722,23 @@ public class Iterable2Test
     } */
 
     @Test
-    public void seqInitTest2()
-    {
+    void seqInitTest2() {
         final Iterable2<Integer> output = IterableHelper.init(DoublingGenerator);
-        AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2,4,6,8,10,12,14,16,18,20,22}),output.take(11));
+        assertThat(output.take(11)).containsExactly(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22);
     }
 
     @Test
-    public void ConstantInitialiserTest1()
-    {
+    void constantInitialiserTest1() {
         final int howMany = 6;
         final int initValue = -1;
         final Iterable2<Integer> l = IterableHelper.init(Functional.constant(initValue), howMany);
-        Assert.assertEquals(howMany, l.toList().size());
-        for(final int i : IterableHelper.init(Functional.constant(initValue), howMany))
-            Assert.assertEquals(initValue, i);
+        assertThat(l.toList().size()).isEqualTo(howMany);
+        for (final int i : IterableHelper.init(Functional.constant(initValue), howMany))
+            assertThat(i).isEqualTo(initValue);
     }
 
     /*[Test]
-    public void SwitchTest1()
-    {
+    public void switchTest1() {
         Assert.AreEqual(1,
                 Iterable2.Switch(10,
                         new[]
@@ -1004,20 +749,17 @@ public class Iterable2Test
     } */
 
     /*[Test]
-    public void TryTest1()
-    {
+    public void tryTest1() {
         int zero = 0;
         int results = Iterable2.Try<int,int,DivideByZeroException>(10, a => a/zero, a => a);
         Assert.AreEqual(10, results);
     }*/
-    private class A
-    {
+    private class A {
         public String name;
         public int id;
     }
     /*[Test]
-    public void CaseTest2()
-    {
+    public void caseTest2() {
         var c1 = new List<Function<A, object>> {(A a) => (object) a.name, (A a) => (object) a.id};
 
         Function<A, IEnumerable<Function<int, object>>> c2 =
@@ -1035,8 +777,7 @@ public class Iterable2Test
     }*/
 
     /*[Test]
-    public void IgnoreTest1()
-    {
+    public void ignoreTest1() {
         var input = new[] {1, 2, 3, 4, 5};
         var output = new List<string>();
         Function<int, string> format = i => string.Format("Discarding {0}", i);
@@ -1050,57 +791,38 @@ public class Iterable2Test
         CollectionAssert.AreEquivalent(expected, output);
     }*/
     @Test
-    public void ChooseTest1() throws OptionNoValueAccessException
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[] {1, 2, 3, 4, 5});
-        final Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
+    void chooseTest1() throws OptionNoValueAccessException {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Collection<Integer> expected = Arrays.asList(1, 3, 5);
         final Iterable2<Integer> output =
                 input.choose(
-                        new Function<Integer, Option<Integer>>() {
-
-                            public Option<Integer> apply(Integer i) {
-                                return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
-                            }
-                        });
-        AssertIterable.assertIterableEquals(expected, output);
+                        i -> i % 2 != 0 ? Option.toOption(i) : Option.None());
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void ChooseTest2() throws OptionNoValueAccessException
-    {
-        final Iterable2<String> input = IterableHelper.asList(new String[] {"abc", "def"});
-        final Collection<Character> expected = Arrays.asList(new Character[]{'a'});
+    void chooseTest2() throws OptionNoValueAccessException {
+        final Iterable2<String> input = IterableHelper.asList("abc", "def");
+        final Collection<Character> expected = Arrays.asList('a');
         final Iterable2<Character> output =
                 input.choose(
-                        new Function<String, Option<Character>>() {
-
-                            public Option<Character> apply(String str) {
-                                return str.startsWith("a") ? Option.toOption('a') : Option.<Character>None();
-                            }
-                        }
+                        str -> str.startsWith("a") ? Option.toOption('a') : Option.None()
                 );
-        AssertIterable.assertIterableEquals(expected, output);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void ChooseTest3() throws OptionNoValueAccessException
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[] {1, 2, 3, 4, 5});
-        final Collection<Integer> expected = Arrays.asList(new Integer[] {1, 3, 5});
+    void chooseTest3() throws OptionNoValueAccessException {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Collection<Integer> expected = Arrays.asList(1, 3, 5);
         final Iterable2<Integer> output = input.choose(
-                new Function<Integer, Option<Integer>>() {
+                i -> i % 2 != 0 ? Option.toOption(i) : Option.None());
 
-                    public Option<Integer> apply(Integer i) {
-                        return i%2 != 0 ? Option.toOption(i) : Option.<Integer>None();
-                    }
-                })  ;
-
-        AssertIterable.assertIterableEquals(expected, output);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     /*[Test]
-    public void CurryTest1()
-    {
+    public void curryTest1() {
         Function<int, int, bool> f = (i, j) => i > j;
         Function<int, Function<int, bool>> g = i => j => f(i, j);
         bool t = 10.in(g(5));
@@ -1108,8 +830,7 @@ public class Iterable2Test
     }*/
 
     /*[Test]
-    public void CurryTest2()
-    {
+    public void curryTest2() {
         Function<int, int, bool> f = (i, j) => i < j;
         Function<int, Function<int, bool>> g = i => j => f(i, j);
         bool t = 10.in(g(5));
@@ -1117,8 +838,7 @@ public class Iterable2Test
     }*/
 
     /*[Test]
-    public void CompositionTest1()
-    {
+    public void compositionTest1() {
         Function<int, int, int> add = (x, y) => x + y;
         Function<int, Function<int, int>> add1 = y => x => add(x, y);
         Function<int, int, int> mult = (x, y) => x*y;
@@ -1129,65 +849,61 @@ public class Iterable2Test
     }*/
 
     @Test
-    public void UnzipTest1()
-    {
-        final Collection<Pair<String,Integer>> input =
-                new ArrayList<Pair<String,Integer>>();
+    void unzipTest1() {
+        final Collection<Pair<String, Integer>> input =
+                new ArrayList<>();
         input.add(Pair.of("1", 1));
         input.add(Pair.of("2", 2));
 
-        final Pair<Collection<String>,Collection<Integer>> expected =
+        final Pair<Collection<String>, Collection<Integer>> expected =
                 Pair.of(
-                        Arrays.asList(new String[]{"1", "2"}),
-                        Arrays.asList(new Integer[]{1,2}));
+                        Arrays.asList("1", "2"),
+                        Arrays.asList(1, 2));
 
-        final Pair<List<String>,List<Integer>> output = Functional.unzip(input);
+        final Pair<List<String>, List<Integer>> output = Functional.unzip(input);
 
-        AssertIterable.assertIterableEquals(expected.getLeft(), output.getLeft());
-        AssertIterable.assertIterableEquals(expected.getRight(), output.getRight());
+        assertThat(output.getLeft()).containsExactlyElementsOf(expected.getLeft());
+        assertThat(output.getRight()).containsExactlyElementsOf(expected.getRight());
     }
 
     @Test
-    public void ZipTest1()
-    {
-        final Iterable2<Integer> input1 = IterableHelper.asList(new Integer[] {1, 2, 3, 4, 5});
-        final Iterable2<Character> input2 = IterableHelper.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
+    void zipTest1() {
+        final Iterable2<Integer> input1 = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Iterable2<Character> input2 = IterableHelper.asList('a', 'b', 'c', 'd', 'e');
 
-        final Collection<Pair<Integer,Character>> expected = new ArrayList<Pair<Integer, Character>>();
+        final Collection<Pair<Integer, Character>> expected = new ArrayList<>();
         expected.add(Pair.of(1, 'a'));
         expected.add(Pair.of(2, 'b'));
         expected.add(Pair.of(3, 'c'));
         expected.add(Pair.of(4, 'd'));
         expected.add(Pair.of(5, 'e'));
 
-        final Iterable2<Pair<Integer,Character>> output = input1.zip(input2);
+        final Iterable2<Pair<Integer, Character>> output = input1.zip(input2);
 
-        AssertIterable.assertIterableEquals(expected, output);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void Zip3Test1()
-    {
-        final Collection<Integer> input1 = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
-        final Collection<Character> input2 = Arrays.asList(new Character[] {'a', 'b', 'c', 'd', 'e'});
-        final Collection<Double> input3 = Arrays.asList(new Double[] {1.0, 2.0, 2.5, 3.0, 3.5});
+    void zip3Test1() {
+        final Collection<Integer> input1 = Arrays.asList(1, 2, 3, 4, 5);
+        final Collection<Character> input2 = Arrays.asList('a', 'b', 'c', 'd', 'e');
+        final Collection<Double> input3 = Arrays.asList(1.0, 2.0, 2.5, 3.0, 3.5);
 
-        final Collection<Triple<Integer,Character,Double>> expected = new ArrayList<Triple<Integer, Character, Double>>();
+        final Collection<Triple<Integer, Character, Double>> expected = new ArrayList<>();
         expected.add(Triple.of(1, 'a', 1.0));
         expected.add(Triple.of(2, 'b', 2.0));
         expected.add(Triple.of(3, 'c', 2.5));
         expected.add(Triple.of(4, 'd', 3.0));
         expected.add(Triple.of(5, 'e', 3.5));
 
-        final Iterable2<Triple<Integer,Character,Double>> output = IterableHelper.create(input1).zip3(input2, input3);
+        final Iterable2<Triple<Integer, Character, Double>> output = IterableHelper.create(input1).zip3(input2, input3);
 
-        AssertIterable.assertIterableEquals(expected, output);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     /*[ExpectedException(typeof(ArgumentException))]
         [Test]
-    public void Zip3Test2()
-    {
+    public void zip3Test2() {
         var input1 = new[] { 1, 2, 3, 4, 5 };
         var input2 = new[] { 'a', 'b', 'd', 'e' };
         var input3 = new[] { 1.0, 2.0, 2.5, 3.0, 3.5 };
@@ -1204,8 +920,7 @@ public class Iterable2Test
 
     /*[ExpectedException(typeof(ArgumentException))]
         [Test]
-    public void Zip3Test3()
-    {
+    public void zip3Test3() {
         var input1 = new[] { 1, 2, 3, 4, 5 };
         var input2 = new[] { 'a', 'b', 'c', 'd', 'e' };
         var input3 = new[] { 1.0, 2.0, 2.5, 3.5 };
@@ -1221,565 +936,403 @@ public class Iterable2Test
     }*/
 
     @Test
-    public void findTest1()
-    {
+    void findTest1() {
         final String trueMatch = "6";
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
-        Assert.assertEquals(trueMatch,
-                ls.find(
-                        new Function<String, Boolean>() {
-
-                            public Boolean apply(String s) {
-                                return s.equals(trueMatch);
-                            }
-                        }));
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void findTest2()
-    {
-        final String falseMatch = "7";
-        final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
-        ls.find(
-                new Function<String, Boolean>() {
-
-                    public Boolean apply(String s) {
-                        return s.equals(falseMatch);
-                    }
-                });
+        final Iterable2<String> ls = li.map(Functional.dStringify());
+        assertThat(ls.find(s -> s.equals(trueMatch))).isEqualTo(trueMatch);
     }
 
     @Test
-    public void findIndexTest1()
-    {
-        final String trueMatch = "6";
-        final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
-        Assert.assertEquals(2,
-                ls.findIndex(
-                        new Function<String, Boolean>() {
-
-                            public Boolean apply(String s) {
-                                return s.equals(trueMatch);
-                            }
-                        }));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void findIndexTest2()
-    {
+    void findTest2() {
         final String falseMatch = "7";
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        final Iterable2<String> ls = li.map(Functional.<Integer>dStringify());
-        ls.findIndex(
-                new Function<String, Boolean>() {
-
-                    public Boolean apply(String s) {
-                        return s.equals(falseMatch);
-                    }
-                });
+        final Iterable2<String> ls = li.map(Functional.dStringify());
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> ls.find(s -> s.equals(falseMatch)));
     }
 
     @Test
-    public void pickTest1()
-    {
+    void findIndexTest1() {
+        final String trueMatch = "6";
+        final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
+        final Iterable2<String> ls = li.map(Functional.dStringify());
+        assertThat(ls.findIndex(s -> s.equals(trueMatch))).isEqualTo(2);
+    }
+
+    @Test
+    void findIndexTest2() {
+        final String falseMatch = "7";
+        final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
+        final Iterable2<String> ls = li.map(Functional.dStringify());
+        assertThatIllegalArgumentException().isThrownBy(() -> ls.findIndex(s -> s.equals(falseMatch)));
+    }
+
+    @Test
+    void pickTest1() {
         final int trueMatch = 6;
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        Assert.assertEquals(((Integer) trueMatch).toString(),
-                li.pick(
-                        new Function<Integer, Option<String>>() {
-
-                            public Option<String> apply(Integer a) {
-                                return a == trueMatch ? Option.toOption(a.toString()) : Option.<String>None();
-                            }
-                        }));
+        assertThat(li.pick((Function<Integer, Option<String>>) a -> a == trueMatch ? Option.toOption(a.toString()) : Option.None())).isEqualTo(String.valueOf(trueMatch));
     }
 
-    @Test(expected = NoSuchElementException.class)
-    public void pickTest2()
-    {
+    @Test
+    void pickTest2() {
         final int falseMatch = 7;
         final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-        li.pick(
-                new Function<Integer, Option<String>>() {
-
-                    public Option<String> apply(Integer a) {
-                        return a == falseMatch ? Option.toOption(a.toString()) : Option.<String>None();
-                    }
-                });
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> li.pick(a -> a == falseMatch ? Option.toOption(a.toString()) : Option.None()));
     }
 
     @Test
-    public void curryFnTest1()
-    {
-        final int state=0;
-        final Function<Integer,Boolean> testForPosInts = new Function<Integer, Boolean>() {
-             public Boolean apply(Integer integer) { return integer > state; }
-        };
+    void curryFnTest1() {
+        final int state = 0;
+        final Function<Integer, Boolean> testForPosInts = integer -> integer > state;
 
-        final Function<Iterable<Integer>,List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
+        final Function<Iterable<Integer>, List<Integer>> curriedTestForPosInts = Functional.filter(testForPosInts);
 
-        final Collection<Integer> l = Arrays.asList(new Integer[]{-3,-2,0,1,5});
+        final Collection<Integer> l = Arrays.asList(-3, -2, 0, 1, 5);
         final Collection<Integer> posInts = curriedTestForPosInts.apply(l);
 
-        final Collection<Integer> expected = Arrays.asList(new Integer[]{1, 5});
-        AssertIterable.assertIterableEquals(expected, posInts);
+        final Collection<Integer> expected = Arrays.asList(1, 5);
+        assertThat(posInts).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void MapDictTest1()
-    {
-        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        final Map<String,String> output = Functional.map_dict(
-                new Function<Integer, Map.Entry<String, String>>() {
+    void mapDictTest1() {
+        final Collection<Integer> input = Arrays.asList(1, 2, 3, 4, 5);
+        final Map<String, String> output = Functional.map_dict(
+                i -> new Map.Entry<String, String>() {
+                    public String setValue(final String v) {
+                        throw new UnsupportedOperationException();
+                    }
 
-                    public Map.Entry<String, String> apply(final Integer i) {
-                        return new Map.Entry<String,String>(){
-                            public String setValue(String v){throw new UnsupportedOperationException(); }
-                            public String getValue() { return Functional.<Integer>dStringify().apply(i); }
-                            public String getKey() { return Functional.<Integer>dStringify().apply(i); }
-                        };
+                    public String getValue() {
+                        return Functional.<Integer>dStringify().apply(i);
+                    }
+
+                    public String getKey() {
+                        return Functional.<Integer>dStringify().apply(i);
                     }
                 }, input);
 
-        final List<String> keys = new ArrayList<String>(output.keySet());
+        final List<String> keys = new ArrayList<>(output.keySet());
         Collections.sort(keys);
-        AssertIterable.assertIterableEquals(Arrays.asList(new String[]{"1", "2", "3", "4", "5"}), keys);
+        assertThat(keys).containsExactly("1", "2", "3", "4", "5");
     }
 
     @Test
-    public void ToListTest1()
-    {
+    void toListTest1() {
         final Iterable2<Integer> output = IterableHelper.init(DoublingGenerator, 5);
         final List<Integer> output_ints = output.toList();
-        AssertIterable.assertIterableEquals(Arrays.asList(new Integer[]{2, 4, 6, 8, 10}), output_ints);
+        assertThat(output_ints).containsExactly(2, 4, 6, 8, 10);
     }
 
-    public static Function<Integer,Iterable<Integer>> intToList(final int howMany)
-    {
-        return new Function<Integer, Iterable<Integer>>() {
-
-            public Iterable<Integer> apply(final Integer integer) {
-                return IterableHelper.init(
-                        new Function<Integer, Integer>() {
-
-                            public Integer apply(Integer counter) {
-                                return integer;
-                            }
-                        }, howMany);
-            }
-        };
+    public static Function<Integer, Iterable<Integer>> intToList(final int howMany) {
+        return integer -> IterableHelper.init(counter -> integer, howMany);
     }
 
     @Test
-    public void CollectTest1()
-    {
+    void collectTest1() {
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> output = input.collect(intToList(3));
-        final List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
-        AssertIterable.assertIterableEquals(expected, output);
+        final List<Integer> expected = Arrays.asList(2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8, 10, 10, 10);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void seqCollectTest1()
-    {
+    void seqCollectTest1() {
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
         final Iterable2<Integer> output = input.collect(intToList(3));
-        final List<Integer> expected = Arrays.asList(2,2,2,4,4,4,6,6,6,8,8,8,10,10,10);
-        AssertIterable.assertIterableEquals(expected, output);
+        final List<Integer> expected = Arrays.asList(2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8, 10, 10, 10);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void takeNandYieldTest1()
-    {
+    void takeNandYieldTest1() {
         final Iterable2<Integer> input = IterableHelper.init(DoublingGenerator, 5);
-        final Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 2);
-        final List<Integer> expectedList = Arrays.asList(2,4);
-        final List<Integer> expectedRemainder = Arrays.asList(6,8,10);
-        AssertIterable.assertIterableEquals(expectedList,output.getLeft());
-        AssertIterable.assertIterableEquals(expectedRemainder,output.getRight());
+        final Pair<List<Integer>, Iterable<Integer>> output = Functional.takeNAndYield(input, 2);
+        final List<Integer> expectedList = Arrays.asList(2, 4);
+        final List<Integer> expectedRemainder = Arrays.asList(6, 8, 10);
+        assertThat(output.getLeft()).containsExactlyElementsOf(expectedList);
+        assertThat(output.getRight()).containsExactlyElementsOf(expectedRemainder);
     }
 
     @Test
-    public void takeNandYieldTest2()
-    {
+    void takeNandYieldTest2() {
         final Iterable<Integer> input = IterableHelper.init(DoublingGenerator, 5);
-        final Pair<List<Integer>,Iterable<Integer>> output = Functional.takeNAndYield(input, 0);
+        final Pair<List<Integer>, Iterable<Integer>> output = Functional.takeNAndYield(input, 0);
         final List<Integer> expectedList = Arrays.asList();
-        final List<Integer> expectedRemainder = Arrays.asList(2,4,6,8,10);
-        AssertIterable.assertIterableEquals(expectedList,output.getLeft());
-        AssertIterable.assertIterableEquals(expectedRemainder,output.getRight());
+        final List<Integer> expectedRemainder = Arrays.asList(2, 4, 6, 8, 10);
+        assertThat(output.getLeft()).containsExactlyElementsOf(expectedList);
+        assertThat(output.getRight()).containsExactlyElementsOf(expectedRemainder);
     }
 
     @Test
-    public void recFilterTest1()
-    {
-        final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator,5);
+    void recFilterTest1() {
+        final Iterable2<Integer> l = IterableHelper.init(DoublingGenerator, 5);
         final Iterable<Integer> oddElems = l.filter(Functional.isOdd);
 
-        AssertIterable.assertIterableEquals(new ArrayList<Integer>(), oddElems);
+        assertThat(oddElems).isEmpty();
     }
 
     @Test
-    public void recMapTest1()
-    {
-        final Iterable2<Integer> input = IterableHelper.asList(new Integer[]{1, 2, 3, 4, 5});
-        final Iterable<String> output = input.map(Functional.<Integer>dStringify());
-        AssertIterable.assertIterableEquals(Arrays.asList("1","2","3","4","5"),output);
+    void recMapTest1() {
+        final Iterable2<Integer> input = IterableHelper.asList(1, 2, 3, 4, 5);
+        final Iterable<String> output = input.map(Functional.dStringify());
+        assertThat(output).containsExactly("1", "2", "3", "4", "5");
     }
 
     @Test
-    public void recFoldvsMapTest1()
-    {
-        String s1, s2;
+    void recFoldvsMapTest1() {
+        final String s1;
+        final String s2;
         {
             final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-            s1 = Functional.join(",", li.map(Functional.<Integer>dStringify()));
-            Assert.assertEquals("2,4,6,8,10", s1);
+            s1 = Functional.join(",", li.map(Functional.dStringify()));
+            assertThat(s1).isEqualTo("2,4,6,8,10");
         }
         {
             final Iterable2<Integer> li = IterableHelper.init(DoublingGenerator, 5);
-            s2 = li.fold(
-                    new BiFunction<String, Integer, String>() {
-
-                        public String apply(String s1, Integer s2) {
-                            return csv(s1, s2);
-                        }
-                    }, "");
+            s2 = li.fold(Iterable2Test::csv, "");
         }
-        Assert.assertEquals(s1, s2);
+        assertThat(s2).isEqualTo(s1);
     }
 
     @Test
-    public void EmptySeqTestHasNoElements()
-    {
+    void emptySeqTestHasNoElements() {
         final Iterable2<Integer> l = IterableHelper.createEmpty();
 
-        int i=0;
+        int i = 0;
         final Iterator<Integer> it = l.iterator();
-        while(it.hasNext()) ++i;
+        while (it.hasNext()) ++i;
 
-        Assert.assertEquals(0, i);
+        assertThat(i).isEqualTo(0);
     }
 
     @Test
-    public void EmptySeqTestEquals()
-    {
+    void emptySeqTestEquals() {
         final Iterable2<Integer> l = IterableHelper.createEmpty();
         final Iterable2<Integer> ll = IterableHelper.createEmpty();
 
-        AssertIterable.assertIterableEquals(l, ll);
+        assertThat(ll).containsExactlyElementsOf(l);
     }
 
     @Test
-    public void EmptySeqTestFilter()
-    {
+    void emptySeqTestFilter() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final Iterable2<Integer> l1 = l.filter(Functional.isEven); // this filter needed to be fed from a statically-typed variable
         final Iterable2<Integer> other = IterableHelper.createEmpty();
 
-        AssertIterable.assertIterableEquals(other, l1);
+        assertThat(l1).containsExactlyElementsOf(other);
     }
 
     @Test
-    public void EmptySeqTestMap()
-    {
+    void emptySeqTestMap() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Iterable2<String> l1 = l.map(Functional.<Integer>dStringify()); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<String> l1 = l.map(Functional.dStringify()); // this filter needed to be fed from a statically-typed variable
         final Iterable2<String> other = IterableHelper.createEmpty();
 
-        AssertIterable.assertIterableEquals(other, l1);
+        assertThat(l1).containsExactlyElementsOf(other);
     }
 
     @Test
-    public void EmptySeqTestChoose()
-    {
-        final Function<Integer,Option<String>> chooser = new Function<Integer, Option<String>>() {
-
-            public Option<String> apply(Integer integer) {
-                return Option.toOption(integer.toString());
-            }
-        };
+    void emptySeqTestChoose() {
+        final Function<Integer, Option<String>> chooser = integer -> Option.toOption(integer.toString());
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final Iterable2<String> l1 = l.choose(chooser); // this filter needed to be fed from a statically-typed variable
         final Iterable2<String> other = IterableHelper.createEmpty();
 
-        AssertIterable.assertIterableEquals(other,l1);
+        assertThat(l1).containsExactlyElementsOf(other);
     }
 
     @Test
-    public void EmptySeqTestExists1()
-    {
+    void emptySeqTestExists1() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final boolean b = l.exists(Functional.isEven); // this filter needed to be fed from a statically-typed variable
 
-        Assert.assertFalse(b);
+        assertThat(b).isFalse();
     }
 
     @Test
-    public void EmptySeqTestExists2()
-    {
+    void emptySeqTestExists2() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final boolean b = l.exists(Functional.isOdd); // this filter needed to be fed from a statically-typed variable
 
-        Assert.assertFalse(b);
+        assertThat(b).isFalse();
     }
 
     @Test
-    public void EmptySeqTestForAll1()
-    {
+    void emptySeqTestForAll1() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final boolean b = l.forAll(Functional.isEven); // this filter needed to be fed from a statically-typed variable
 
-        Assert.assertFalse(b);
+        assertThat(b).isFalse();
     }
 
     @Test
-    public void EmptySeqTestForAll2()
-    {
+    void emptySeqTestForAll2() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final boolean b = l.forAll(Functional.isOdd); // this filter needed to be fed from a statically-typed variable
 
-        Assert.assertFalse(b);
+        assertThat(b).isFalse();
     }
 
     @Test
-    public void EmptySeqTestFold()
-    {
-        final BiFunction<String,Integer,String> folder = new BiFunction<String,Integer,String>() {
-
-            public String apply(String s, Integer integer) {
-                return s+integer.toString();
-            }
-        };
+    void emptySeqTestFold() {
+        final BiFunction<String, Integer, String> folder = (s, integer) -> s + integer.toString();
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final String l1 = l.fold(folder, ""); // this filter needed to be fed from a statically-typed variable
         final Iterable2<String> other = IterableHelper.createEmpty();
 
-        Assert.assertEquals("", l1);
+        assertThat(l1).isEqualTo("");
     }
 
     @Test
-    public void EmptySeqTestToList()
-    {
+    void emptySeqTestToList() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final List<Integer> l1 = l.toList(); // this filter needed to be fed from a statically-typed variable
         final Iterable2<Integer> other = IterableHelper.createEmpty();
 
-        AssertIterable.assertIterableEquals(other, l1);
+        assertThat(l1).containsExactlyElementsOf(other);
     }
 
     @Test
-    public void EmptySeqTestSortWith()
-    {
+    void emptySeqTestSortWith() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Iterable2<Integer> l1 = l.sortWith(new Comparator<Integer>() {
-
-            public int compare(Integer o1, Integer o2) {
-                return 0;
-            }
-        }); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> l1 = l.sortWith((o1, o2) -> 0); // this filter needed to be fed from a statically-typed variable
         final Iterable2<Integer> other = IterableHelper.createEmpty();
 
-        AssertIterable.assertIterableEquals(other,l1);
+        assertThat(l1).containsExactlyElementsOf(other);
     }
 
     @Test
-    public void EmptySeqTestConcat()
-    {
+    void emptySeqTestConcat() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final Iterable2<Integer> l1 = l.concat(IterableHelper.create(Arrays.asList(1, 2, 3))); // this filter needed to be fed from a statically-typed variable
         final Iterable2<Integer> other = IterableHelper.create(Arrays.asList(1, 2, 3));
 
-        AssertIterable.assertIterableEquals(other,l1);
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void EmptySeqTestFind()
-    {
-        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Integer i = l.find(new Function<Integer, Boolean>() {
-
-            public Boolean apply(Integer integer) {
-                return true;
-            }
-        }); // this filter needed to be fed from a statically-typed variable
-        final Iterable2<Integer> other = IterableHelper.createEmpty();
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void EmptySeqTestFindIndex()
-    {
-        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final int i = l.findIndex(new Function<Integer, Boolean>() {
-
-            public Boolean apply(Integer integer) {
-                return true;
-            }
-        }); // this filter needed to be fed from a statically-typed variable
-        final Iterable2<Integer> other = IterableHelper.createEmpty();
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void EmptySeqTestPick()
-    {
-        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final String i = l.pick(new Function<Integer, Option<String>>() {
-
-            public Option<String> apply(Integer integer) {
-                return Option.toOption(integer.toString());
-            }
-        }); // this filter needed to be fed from a statically-typed variable
-        final Iterable2<Integer> other = IterableHelper.createEmpty();
+        assertThat(l1).containsExactlyElementsOf(other);
     }
 
     @Test
-    public void EmptySeqTestTake()
-    {
+    void emptySeqTestFind() {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> l.find(integer -> true)); // this filter needed to be fed from a statically-typed variable
+    }
+
+    @Test
+    void emptySeqTestFindIndex() {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> l.findIndex(integer -> true)); // this filter needed to be fed from a statically-typed variable
+    }
+
+    @Test
+    void emptySeqTestPick() {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> l.pick(integer -> Option.toOption(integer.toString()))); // this filter needed to be fed from a statically-typed variable
+    }
+
+    @Test
+    void emptySeqTestTake() {
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
         final Iterable2<Integer> l1 = l.take(10); // this filter needed to be fed from a statically-typed variable
         final Iterable2<Integer> other = IterableHelper.createEmpty();
 
-        AssertIterable.assertIterableEquals(other, l1);
+        assertThat(l1).containsExactlyElementsOf(other);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void EmptySeqTestZip()
-    {
+    @Test
+    void emptySeqTestZip() {
         final Iterable2<Integer> k = IterableHelper.create(Arrays.asList(1, 2, 3));
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Iterable2<Pair<Integer,Integer>> l1 = l.zip(k); // this filter needed to be fed from a statically-typed variable
-        final Iterable2<Integer> other = IterableHelper.createEmpty();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void EmptySeqTestZip3()
-    {
-        final Iterable2<Integer> j = IterableHelper.create(Arrays.asList(1,2,3));
-        final Iterable2<Integer> k = IterableHelper.create(Arrays.asList(1,2,3));
-        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Iterable2<Triple<Integer,Integer,Integer>> l1 = l.zip3(k, j); // this filter needed to be fed from a statically-typed variable
-        final Iterable2<Integer> other = IterableHelper.createEmpty();
+        assertThatIllegalArgumentException().isThrownBy(() -> l.zip(k)); // this filter needed to be fed from a statically-typed variable
     }
 
     @Test
-    public void EmptySeqTestCollect()
-    {
+    void emptySeqTestZip3() {
+        final Iterable2<Integer> j = IterableHelper.create(Arrays.asList(1, 2, 3));
+        final Iterable2<Integer> k = IterableHelper.create(Arrays.asList(1, 2, 3));
         final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
-        final Iterable2<Integer> l1 = l.collect(new Function<Integer, Iterable<Integer>>() {
-
-            public Iterable<Integer> apply(Integer integer) {
-                return Arrays.asList(1, 2, 3, integer);
-            }
-        }); // this filter needed to be fed from a statically-typed variable
-        final Iterable2<Integer> other = IterableHelper.createEmpty();
-
-        AssertIterable.assertIterableEquals(other, l1);
+        assertThatIllegalArgumentException().isThrownBy(() -> l.zip3(k, j)); // this filter needed to be fed from a statically-typed variable
     }
 
     @Test
-    public void EmptySeqTestIn()
-    {
+    void emptySeqTestCollect() {
+        final Iterable2<Integer> l = IterableHelper.createEmpty(); // for some reason the generic type inference failed and so
+        final Iterable2<Integer> l1 = l.collect(integer -> Arrays.asList(1, 2, 3, integer)); // this filter needed to be fed from a statically-typed variable
+        final Iterable2<Integer> other = IterableHelper.createEmpty();
+
+        assertThat(l1).containsExactlyElementsOf(other);
+    }
+
+    @Test
+    void emptySeqTestIn() {
         final Iterable2<Integer> l = IterableHelper.createEmpty();
-        final String u = l.in(new Function<Iterable2<Integer>, String>() {
-
-            public String apply(Iterable2<Integer> integers) {
-                return integers.fold(new BiFunction<String, Integer, String>() {
-
-                    public String apply(String s, Integer integer) {
-                        return s + integer.toString();
-                    }
-                }, "");
-            }
-        });
-        Assert.assertEquals("", u);
+        final String u = l.in(integers -> integers.fold((s, integer) -> s + integer.toString(), ""));
+        assertThat(u).isEqualTo("");
     }
 
     @Test
-    public void groupByOddVsEvenInt()
-    {
+    void groupByOddVsEvenInt() {
         final Iterable2<Integer> input = IterableHelper.create(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-        final Map<Boolean,List<Integer>> output = input.groupBy(Functional.isEven);
-        final Map<Boolean,List<Integer>> expected = new HashMap<Boolean, List<Integer>>();
-        expected.put(false,Arrays.asList(1,3,5,7,9));
-        expected.put(true,Arrays.asList(2,4,6,8,10));
-        AssertIterable.assertIterableEquals(expected.get(true), output.get(true));
-        AssertIterable.assertIterableEquals(expected.get(false), output.get(false));
+        final Map<Boolean, List<Integer>> output = input.groupBy(Functional.isEven);
+        final Map<Boolean, List<Integer>> expected = new HashMap<>();
+        expected.put(false, Arrays.asList(1, 3, 5, 7, 9));
+        expected.put(true, Arrays.asList(2, 4, 6, 8, 10));
+        assertThat(output.get(true)).containsExactlyElementsOf(expected.get(true));
+        assertThat(output.get(false)).containsExactlyElementsOf(expected.get(false));
     }
 
     @Test
-    public void groupByStringFirstTwoChar()
-    {
-        final Iterable2<String> input = IterableHelper.create(Arrays.asList("aa","aab","aac","def"));
-        final Map<String,List<String>> output = input.groupBy(new Function<String, String>() {
-
-            public String apply(final String s) {
-                return s.substring(0,1);
-            }
-        });
-        final Map<String,List<String>> expected = new HashMap<String, List<String>>();
-        expected.put("a",Arrays.asList("aa","aab","aac"));
-        expected.put("d",Arrays.asList("def"));
-        AssertIterable.assertIterableEquals(expected.get("a"), output.get("a"));
-        AssertIterable.assertIterableEquals(expected.get("d"),output.get("d"));
-        AssertIterable.assertIterableEquals(new TreeSet<String>(expected.keySet()),new TreeSet<String>(output.keySet()));
+    void groupByStringFirstTwoChar() {
+        final Iterable2<String> input = IterableHelper.create(Arrays.asList("aa", "aab", "aac", "def"));
+        final Map<String, List<String>> output = input.groupBy(s -> s.substring(0, 1));
+        final Map<String, List<String>> expected = new HashMap<>();
+        expected.put("a", Arrays.asList("aa", "aab", "aac"));
+        expected.put("d", Arrays.asList("def"));
+        assertThat(output.get("a")).containsExactlyElementsOf(expected.get("a"));
+        assertThat(output.get("d")).containsExactlyElementsOf(expected.get("d"));
+        assertThat(new TreeSet<String>(output.keySet())).containsExactlyElementsOf(new TreeSet<String>(expected.keySet()));
     }
 
     @Test
-    public void seqMapiTest1() {
-        final Collection<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        final Iterable<Pair<Integer, String>> output = IterableHelper.create(input).mapi(new BiFunction<Integer, Integer, Pair<Integer, String>>() {
-
-            public Pair<Integer, String> apply(final Integer pos, final Integer i) {
-                return Pair.of(pos, i.toString());
-            }
-        });
-        Assert.assertArrayEquals(new String[]{"1", "2", "3", "4", "5"}, Functional.map(new Function<Pair<Integer, String>, String>() {
-
-            public String apply(final Pair<Integer, String> o) {
-                return o.getRight();
-            }
-        }, output).toArray());
+    void seqMapiTest1() {
+        final Collection<Integer> input = Arrays.asList(1, 2, 3, 4, 5);
+        final Iterable<Pair<Integer, String>> output = IterableHelper.create(input).mapi((BiFunction<Integer, Integer, Pair<Integer, String>>) (pos, i) -> Pair.of(pos, i.toString()));
+        assertThat(Functional.map(Pair::getRight, output).toArray()).containsExactly("1", "2", "3", "4", "5");
     }
 
     @Test
-    public void takeWhileTest1() {
+    void takeWhileTest1() {
         final Iterable2<Integer> l = IterableHelper.create(Arrays.asList(1, 2, 3, 4, 5));
-        final List<Integer> expected = new ArrayList<Integer>();
+        final List<Integer> expected = new ArrayList<>();
         final Iterable<Integer> output = l.takeWhile(Functional.isEven);
-        AssertIterable.assertIterableEquals(expected, output);
-   }
+        assertThat(output).containsExactlyElementsOf(expected);
+    }
 
     @Test
-    public void skipTest1() {
+    void skipTest1() {
         final Iterable2<Integer> l = IterableHelper.create(Arrays.asList(1, 2, 3, 4, 5));
 
         final List<Integer> expected = Arrays.asList(2, 3, 4, 5);
         final Iterable<Integer> output = l.skip(1);
-        AssertIterable.assertIterableEquals(expected, output);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
     @Test
-    public void skipWhileTest1()
-    {
+    void skipWhileTest1() {
         final Iterable2<Integer> l = IterableHelper.create(Arrays.asList(1, 2, 3, 4, 5));
-        final List<Integer> expected = Arrays.asList(1,2,3,4,5);
+        final List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5);
         final Iterable<Integer> output = l.skipWhile(Functional.isEven);
-        AssertIterable.assertIterableEquals(expected, output);
+        assertThat(output).containsExactlyElementsOf(expected);
     }
 
-    @Test(expected = NoSuchElementException.class)
-    public void emptyListIterator()
-    {
-        IterableHelper.createEmpty().iterator().next();
+    @Test
+    void emptyListIterator() {
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> IterableHelper.createEmpty().iterator().next());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void emptyListIteratorCantRemove()
-    {
-        IterableHelper.createEmpty().iterator().remove();
+    @Test
+    void emptyListIteratorCantRemove() {
+        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> IterableHelper.createEmpty().iterator().remove());
     }
 
     /**
@@ -1787,138 +1340,89 @@ public class Iterable2Test
      * recreatable and so it is not generally possible to determine whether the real Iterable2 is empty or not.
      */
     @Test
-    public void isEmptyListEqualToListWithNoElements()
-    {
+    void isEmptyListEqualToListWithNoElements() {
         final Iterable2<Integer> emptyList = IterableHelper.createEmpty();
-        final Iterable2<Integer> listWithNoElements = IterableHelper.create(new ArrayList<Integer>());
+        final Iterable2<Integer> listWithNoElements = IterableHelper.create(new ArrayList<>());
 
-        Assert.assertNotEquals(emptyList, listWithNoElements);
+        assertThat(listWithNoElements).isNotEqualTo(emptyList);
     }
 
     @Test
-    public void emptyListMapiTest()
-    {
-        Assert.assertEquals(IterableHelper.createEmpty(),
-                IterableHelper.createEmpty().mapi(new BiFunction<Integer, Object, Object>() {
-
-                    public Object apply(Integer integer, Object o) {
-                        return null;
-                    }
-                }));
+    void emptyListMapiTest() {
+        assertThat(IterableHelper.createEmpty().mapi((integer, o) -> null)).isEmpty();
     }
 
     @Test
-    public void forAll2EmptyListTest()
-    {
-        Assert.assertFalse(IterableHelper.createEmpty().forAll2(new BiFunction<Object, Object, Boolean>() {
-
-            public Boolean apply(Object o, Object o2) {
-                return null;
-            }
-        }, Arrays.asList(1)));
+    void forAll2EmptyListTest() {
+        assertThat(IterableHelper.createEmpty().forAll2((BiFunction<Object, Object, Boolean>) (o, o2) -> null, Arrays.asList(1))).isFalse();
     }
 
     @Test
-    public void toArrayEmptyListTest()
-    {
-        Assert.assertArrayEquals(new Integer[]{}, IterableHelper.createEmpty().toArray());
+    void toArrayEmptyListTest() {
+        assertThat(IterableHelper.createEmpty().toArray()).containsExactly(new Integer[]{});
+    }
+
+    @Test void toSetEmptyListTest() {
+        assertThat(IterableHelper.createEmpty().toSet()).isEqualTo(new HashSet<Integer>());
+    }
+
+    @Test void toDictionaryEmptyListTest() {
+        assertThat(IterableHelper.<Integer>createEmpty().toDictionary((Function<Integer, Integer>) integer -> null, (Function<Integer, String>) integer -> null)).isEmpty();
     }
 
     @Test
-    public void toSetEmptyListTest()
-    {
-        Assert.assertEquals(new HashSet<Integer>(), IterableHelper.createEmpty().toSet());
+    void lastOfEmptyListTest() {
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> IterableHelper.createEmpty().last());
     }
 
     @Test
-    public void toDictionaryEmptyListTest()
-    {
-        Assert.assertEquals(new HashMap<Integer, String>(), IterableHelper.<Integer>createEmpty().toDictionary(new Function<Integer, Integer>() {
-
-            public Integer apply(Integer integer) {
-                return null;
-            }
-        }, new Function<Integer, String>() {
-
-            public String apply(Integer integer) {
-                return null;
-            }
-        }));
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void lastOfEmptyListTest()
-    {
-        IterableHelper.createEmpty().last();
+    void emptyListTakeWhileTest() {
+        assertThat(IterableHelper.<Integer>createEmpty().takeWhile(Functional.isOdd)).isEqualTo(IterableHelper.createEmpty());
     }
 
     @Test
-    public void emptyListTakeWhileTest()
-    {
-        Assert.assertEquals(IterableHelper.createEmpty(), IterableHelper.<Integer>createEmpty().takeWhile(Functional.isOdd));
+    void emptyListSkipTest() {
+        assertThat(IterableHelper.<Integer>createEmpty().skip(1)).isEqualTo(IterableHelper.createEmpty());
     }
 
     @Test
-    public void emptyListSkipTest()
-    {
-        Assert.assertEquals(IterableHelper.createEmpty(),IterableHelper.<Integer>createEmpty().skip(1));
+    void emptyListSkipWhileTest() {
+        assertThat(IterableHelper.<Integer>createEmpty().skipWhile(Functional.isOdd)).isEqualTo(IterableHelper.createEmpty());
     }
 
     @Test
-    public void emptyListSkipWhileTest()
-    {
-        Assert.assertEquals(IterableHelper.createEmpty(),IterableHelper.<Integer>createEmpty().skipWhile(Functional.isOdd));
+    void emptyListJoinTest() {
+        assertThat(IterableHelper.createEmpty().join("a")).isEqualTo("");
     }
 
     @Test
-    public void emptyListJoinTest()
-    {
-        Assert.assertEquals("", IterableHelper.createEmpty().join("a"));
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void emptyListFindLastTest()
-    {
-        IterableHelper.<Integer>createEmpty().findLast(Functional.isOdd);
+    void emptyListFindLastTest() {
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> IterableHelper.<Integer>createEmpty().findLast(Functional.isOdd));
     }
 
     @Test
-    public void emptyListPartitionTest()
-    {
-        final Pair<List<Object>, List<Object>> pair = IterableHelper.createEmpty().partition(new Function<Object, Boolean>() {
-
-            public Boolean apply(Object o) {
-                return null;
-            }
-        });
-        Assert.assertTrue(pair.getLeft().isEmpty());
-        Assert.assertTrue(pair.getRight().isEmpty());
+    void emptyListPartitionTest() {
+        final Pair<List<Object>, List<Object>> pair = IterableHelper.createEmpty().partition(o -> null);
+        assertThat(pair.getLeft().isEmpty()).isTrue();
+        assertThat(pair.getRight().isEmpty()).isTrue();
     }
 
     @Test
-    public void emptyListGroupByTest()
-    {
-        final Map<Object, List<Object>> grp = IterableHelper.createEmpty().groupBy(new Function<Object, Object>() {
+    void emptyListGroupByTest() {
+        final Map<Object, List<Object>> grp = IterableHelper.createEmpty().groupBy(o -> null);
 
-            public Object apply(Object o) {
-                return null;
-            }
-        });
-
-        Assert.assertTrue(grp.isEmpty());
+        assertThat(grp.isEmpty()).isTrue();
     }
 
     @Test
-    public void emptyListInACollection()
-    {
-        final Map<Iterable2<Integer>,Integer> map = new HashMap<Iterable2<Integer>, Integer>();
-        map.put(IterableHelper.<Integer>createEmpty(), 0);
-        Assert.assertEquals(Integer.valueOf(0), map.get(IterableHelper.createEmpty()));
+    void emptyListInACollection() {
+        final Map<Iterable2<Integer>, Integer> map = new HashMap<>();
+        map.put(IterableHelper.createEmpty(), 0);
+        assertThat(map.get(IterableHelper.createEmpty())).isEqualTo(Integer.valueOf(0));
     }
 
     @Test
-    public void emptyListToString()
-    {
-        Assert.assertEquals("()",IterableHelper.createEmpty().toString());
+    void emptyListToString() {
+        assertThat(IterableHelper.createEmpty().toString()).isEqualTo("()");
     }
 }

@@ -1,212 +1,166 @@
 package me.shaftesbury.utils.functional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import me.shaftesbury.utils.functional.LispList.EmptyListHasNoHead;
+import me.shaftesbury.utils.functional.LispList.EmptyListHasNoTail;
+import me.shaftesbury.utils.functional.LispList.List;
+import org.junit.jupiter.api.Test;
 
-import java.util.function.Function;
+import static me.shaftesbury.utils.functional.LispList.cadr;
+import static me.shaftesbury.utils.functional.LispList.car;
+import static me.shaftesbury.utils.functional.LispList.cdr;
+import static me.shaftesbury.utils.functional.LispList.compose;
+import static me.shaftesbury.utils.functional.LispList.cons;
+import static me.shaftesbury.utils.functional.LispList.filter;
+import static me.shaftesbury.utils.functional.LispList.fold;
+import static me.shaftesbury.utils.functional.LispList.foldRight;
+import static me.shaftesbury.utils.functional.LispList.list;
+import static me.shaftesbury.utils.functional.LispList.map;
+import static me.shaftesbury.utils.functional.LispList.reverse;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import static me.shaftesbury.utils.functional.LispList.*;
-
-/**
- * Created with IntelliJ IDEA.
- * User: Bob
- * Date: 26/11/13
- * Time: 22:10
- * To change this template use File | Settings | File Templates.
- */
-public class LispListTest
-{
-    @Test
-    public void headTest1()
-    {
-        final List<Integer> l = list(1, LispList.<Integer>nil());
-        Assert.assertEquals(new Integer(1), l.head());
+public class LispListTest {
+    @Test void headTest1() {
+        final List<Integer> l = list(1, LispList.nil());
+        assertThat(l.head()).isEqualTo(Integer.valueOf(1));
     }
 
-    @Test
-    public void tailTest1()
-    {
-        final List<Integer> l = list(1,list(2, LispList.<Integer>nil()));
-        Assert.assertEquals(new Integer(2), l.tail().head());
+    @Test void tailTest1() {
+        final List<Integer> l = list(1, list(2, LispList.nil()));
+        assertThat(l.tail().head()).isEqualTo(Integer.valueOf(2));
     }
 
-    @Test
-    public void equalsTest1()
-    {
-        final List<Integer> l = list(1,list(2, LispList.<Integer>nil()));
-        Assert.assertEquals(list(2,LispList.nil()), l.tail());
+    @Test void equalsTest1() {
+        final List<Integer> l = list(1, list(2, LispList.nil()));
+        assertThat(l.tail()).isEqualTo(list(2, LispList.nil()));
     }
 
-    @Test
-    public void mapTest1()
-    {
-        final List<Integer> input = list(1, list(2, list(3, list(4, list(5, LispList.<Integer>nil())))));
-        final List<String> output = map(Functional.<Integer>dStringify(), input);
-        Assert.assertEquals("1",output.head());
-        Assert.assertEquals("2",output.tail().head());
-        Assert.assertEquals("3",output.tail().tail().head());
-        Assert.assertEquals("4",output.tail().tail().tail().head());
-        Assert.assertEquals("5",output.tail().tail().tail().tail().head());
+    @Test void mapTest1() {
+        final List<Integer> input = list(1, list(2, list(3, list(4, list(5, LispList.nil())))));
+        final List<String> output = map(Functional.dStringify(), input);
+        assertThat(output.head()).isEqualTo("1");
+        assertThat(output.tail().head()).isEqualTo("2");
+        assertThat(output.tail().tail().head()).isEqualTo("3");
+        assertThat(output.tail().tail().tail().head()).isEqualTo("4");
+        assertThat(output.tail().tail().tail().tail().head()).isEqualTo("5");
     }
 
-    @Test
-    public void equalsTest2()
-    {
-        final List<Integer> input = list(1, list(2, list(3, list(4, list(5, LispList.<Integer>nil())))));
-        final List<String> output = map(Functional.<Integer>dStringify(), input);
-        Assert.assertEquals(list("1",list("2",list("3",list("4",list("5",LispList.nil()))))),output);
+    @Test void equalsTest2() {
+        final List<Integer> input = list(1, list(2, list(3, list(4, list(5, LispList.nil())))));
+        final List<String> output = map(Functional.dStringify(), input);
+        assertThat(output).isEqualTo(list("1", list("2", list("3", list("4", list("5", LispList.nil()))))));
     }
 
-    @Test
-    public void filterTest1()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
+    @Test void filterTest1() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.nil())))));
         final List<Integer> oddElems = filter(Functional.isOdd, input);
-        Assert.assertEquals(LispList.<Integer>nil(), oddElems);
+        assertThat(oddElems).isEqualTo(LispList.<Integer>nil());
     }
 
-    @Test
-    public void filterTest2()
-    {
-        final List<Integer> input = list(2,list(5,list(7,list(8,list(10,LispList.<Integer>nil())))));
+    @Test void filterTest2() {
+        final List<Integer> input = list(2, list(5, list(7, list(8, list(10, LispList.nil())))));
         final List<Integer> evenElems = filter(Functional.isEven, input);
 
-        Assert.assertEquals(new Integer(2), evenElems.head());
-        Assert.assertEquals(new Integer(8), evenElems.tail().head());
-        Assert.assertEquals(new Integer(10), evenElems.tail().tail().head());
+        assertThat(evenElems.head()).isEqualTo(Integer.valueOf(2));
+        assertThat(evenElems.tail().head()).isEqualTo(Integer.valueOf(8));
+        assertThat(evenElems.tail().tail().head()).isEqualTo(Integer.valueOf(10));
     }
 
-    @Test
-    public void equalsTest3()
-    {
-        final List<Integer> input = list(2,list(5,list(7,list(8,list(10,LispList.<Integer>nil())))));
+    @Test void equalsTest3() {
+        final List<Integer> input = list(2, list(5, list(7, list(8, list(10, LispList.nil())))));
         final List<Integer> evenElems = filter(Functional.isEven, input);
 
-        final List<Integer> expected = list(2,list(8,list(10,LispList.<Integer>nil())));
-        Assert.assertEquals(expected, evenElems);
+        final List<Integer> expected = list(2, list(8, list(10, LispList.nil())));
+        assertThat(evenElems).isEqualTo(expected);
     }
 
-    @Test
-    public void filterTest3()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
+    @Test void filterTest3() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.nil())))));
         final Integer limit = 5;
         final List<Integer> highElems = filter(
-                new Function<Integer,Boolean>()
-                {
+                a -> a > limit, input);
 
-                    public Boolean apply(Integer a) { return a > limit;}
-                }, input);
-
-        final List<Integer> expected = list(6,list(8,list(10,LispList.<Integer>nil())));
-        Assert.assertEquals(expected, highElems);
+        final List<Integer> expected = list(6, list(8, list(10, LispList.nil())));
+        assertThat(highElems).isEqualTo(expected);
     }
 
-    @Test
-    public void filterTest4()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
+    @Test void filterTest4() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.nil())))));
         final Integer limit = 10;
         final List<Integer> output = filter(
-                new Function<Integer,Boolean>()
-                {
-                     public Boolean apply(Integer a) {return a > limit;}
-                }, input);
+                a -> a > limit, input);
 
-        Assert.assertTrue(output.isEmpty());
+        assertThat(output.isEmpty()).isTrue();
     }
 
-    @Test
-    public void filterTest5()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,list(10,list(12, list(14, list(16, list(18, list(20, LispList.<Integer>nil()))))))))));
-        final List<Integer> expected = list(4,list(8,list(12,list(16,list(20,LispList.<Integer>nil())))));
+    @Test void filterTest5() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, list(12, list(14, list(16, list(18, list(20, LispList.nil()))))))))));
+        final List<Integer> expected = list(4, list(8, list(12, list(16, list(20, LispList.nil())))));
         final List<Integer> output = filter(
-                new Function<Integer,Boolean>()
-                {
-                     public Boolean apply(Integer a) {return a % 4 ==0;}
-                }, input);
+                a -> a % 4 == 0, input);
 
-        Assert.assertEquals(expected, output);
+        assertThat(output).isEqualTo(expected);
     }
 
-    @Test
-    public void consTest1()
-    {
+    @Test void consTest1() {
         final List<Integer> input = cons(2, cons(4, cons(6, compose(8, 10))));
-        Assert.assertEquals(new Integer(2), input.head());
-        Assert.assertEquals(new Integer(4), input.tail().head());
-        Assert.assertEquals(new Integer(6), input.tail().tail().head());
-        Assert.assertEquals(new Integer(8), input.tail().tail().tail().head());
-        Assert.assertEquals(new Integer(10), input.tail().tail().tail().tail().head());
+        assertThat(input.head()).isEqualTo(Integer.valueOf(2));
+        assertThat(input.tail().head()).isEqualTo(Integer.valueOf(4));
+        assertThat(input.tail().tail().head()).isEqualTo(Integer.valueOf(6));
+        assertThat(input.tail().tail().tail().head()).isEqualTo(Integer.valueOf(8));
+        assertThat(input.tail().tail().tail().tail().head()).isEqualTo(Integer.valueOf(10));
     }
 
-    @Test
-    public void carTest1()
-    {
-        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.<Integer>nil())))));
-        Assert.assertEquals(new Integer(2), car(input));
+    @Test void carTest1() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.nil())))));
+        assertThat(car(input)).isEqualTo(Integer.valueOf(2));
     }
 
-    @Test
-    public void cdrTest1()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
-        Assert.assertEquals(list(4,list(6,list(8,list(10,LispList.<Integer>nil())))),cdr(input));
+    @Test void cdrTest1() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.nil())))));
+        assertThat(cdr(input)).isEqualTo(list(4, list(6, list(8, list(10, LispList.nil())))));
     }
 
-    @Test
-    public void cadrTest1()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
-        Assert.assertEquals(new Integer(4),cadr(input));
+    @Test void cadrTest1() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.nil())))));
+        assertThat(cadr(input)).isEqualTo(Integer.valueOf(4));
     }
 
-    @Test
-    public void reverseTest1()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
-        final List<Integer> expected = list(10,list(8,list(6,compose(4,2))));
+    @Test void reverseTest1() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.nil())))));
+        final List<Integer> expected = list(10, list(8, list(6, compose(4, 2))));
         final List<Integer> output = reverse(input);
-        Assert.assertEquals(expected,output);
+        assertThat(output).isEqualTo(expected);
     }
 
-    @Test
-    public void foldTest1()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,list(10,LispList.<Integer>nil())))));
+    @Test void foldTest1() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, list(10, LispList.nil())))));
         final Integer expected = 30;
-        final Integer output = fold((state, o) -> state+o,new Integer(0),input);
-        Assert.assertEquals(expected,output);
+        final Integer output = fold(Integer::sum, 0, input);
+        assertThat(output).isEqualTo(expected);
     }
 
-    @Test
-    public void foldTest2()
-    {
-        final List<String> input = list("2",list("4",list("6",list("8",LispList.<String>nil()))));
+    @Test void foldTest2() {
+        final List<String> input = list("2", list("4", list("6", list("8", LispList.nil()))));
         final String expected = "2468";
-        final String output = fold((state, o) -> state+o,"",input);
-        Assert.assertEquals(expected,output);
+        final String output = fold((state, o) -> state + o, "", input);
+        assertThat(output).isEqualTo(expected);
     }
 
-    @Test
-    public void foldRightTest1()
-    {
-        final List<Integer> input = list(2,list(4,list(6,list(8,LispList.<Integer>nil()))));
+    @Test void foldRightTest1() {
+        final List<Integer> input = list(2, list(4, list(6, list(8, LispList.nil()))));
         final String expected = "8642";
         final String output = foldRight((o, state) -> state + o, "", input);
-        Assert.assertEquals(expected,output);
+        assertThat(output).isEqualTo(expected);
     }
 
-    @Test(expected = EmptyListHasNoHead.class)
-    public void EmptyListHasNoHeadTest1()
-    {
-        LispList.<Integer>nil().head();
+    @Test
+    void emptyListHasNoHeadTest1() {
+        assertThatExceptionOfType(EmptyListHasNoHead.class).isThrownBy(() -> LispList.<Integer>nil().head());
     }
 
-    @Test(expected = EmptyListHasNoTail.class)
-    public void EmptyListHasNoTailTest1()
-    {
-        LispList.<Integer>nil().tail();
+    @Test
+    void emptyListHasNoTailTest1() {
+        assertThatExceptionOfType(EmptyListHasNoTail.class).isThrownBy(() -> LispList.<Integer>nil().tail());
     }
 }

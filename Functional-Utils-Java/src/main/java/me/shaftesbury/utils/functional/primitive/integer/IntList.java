@@ -44,7 +44,7 @@ public class IntList implements IntIterable
     }
 
     @SuppressWarnings("unchecked")
-    public <T>T[] toArray(T[] a) {
+    public <T>T[] toArray(final T[] a) {
         if (a.length < backingStore.length) {
             // Make a new array of a's runtime type, but my contents:
             final Integer[] temp = new Integer[backingStore.length];
@@ -65,23 +65,23 @@ public class IntList implements IntIterable
 //        return false;
 //    }
 
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(final Collection<?> c) {
         return false;
     }
 
-    public boolean addAll(Collection<? extends Integer> c) {
+    public boolean addAll(final Collection<? extends Integer> c) {
         return false;
     }
 
-    public boolean addAll(int index, Collection<? extends Integer> c) {
+    public boolean addAll(final int index, final Collection<? extends Integer> c) {
         return false;
     }
 
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(final Collection<?> c) {
         throw new UnsupportedOperationException();
     }
 
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(final Collection<?> c) {
         return false;
     }
 
@@ -97,19 +97,19 @@ public class IntList implements IntIterable
         throw new UnsupportedOperationException();
     }
 
-    public void add(int index, Integer element) {
+    public void add(final int index, final Integer element) {
 
     }
 
-    public Integer remove(int index) {
+    public Integer remove(final int index) {
         throw new UnsupportedOperationException();
     }
 
-    public int indexOf(Object o) {
+    public int indexOf(final Object o) {
         return 0;
     }
 
-    public int lastIndexOf(Object o) {
+    public int lastIndexOf(final Object o) {
         return 0;
     }
 
@@ -117,11 +117,11 @@ public class IntList implements IntIterable
         return null;
     }
 
-    public ListIterator<Integer> listIterator(int index) {
+    public ListIterator<Integer> listIterator(final int index) {
         return null;
     }
 
-    public List<Integer> subList(int fromIndex, int toIndex) {
+    public List<Integer> subList(final int fromIndex, final int toIndex) {
         return null;
     }
 }

@@ -1,12 +1,5 @@
 package me.shaftesbury.utils.functional;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Bob
@@ -16,93 +9,93 @@ import java.util.List;
  */
 public final class AssertIterableTest
 {
-    @Test
-    public void assertEqualsTest1()
-    {
-        final List<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        AssertIterable.assertIterableEquals(input,input);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void assertUnequalTest1()
-    {
-        final List<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        final List<Integer> input2 = Arrays.asList(new Integer[]{1,2,3});
-        AssertIterable.assertIterableEquals(input1,input2);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void assertUnequalTest2()
-    {
-        final List<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        final List<Integer> input2 = Arrays.asList(new Integer[]{1,2,3});
-        AssertIterable.assertIterableEquals(input2,input1);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void assertUnequalTest3()
-    {
-        final List<Integer> input1 = null;
-        final List<Integer> input2 = Arrays.asList(new Integer[]{1,2,3});
-        AssertIterable.assertIterableEquals(input2,input1);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void assertUnequalTest4()
-    {
-        final List<Integer> input1 = Arrays.asList(new Integer[]{1,2,3});
-        final List<Integer> input2 = null;
-        AssertIterable.assertIterableEquals(input2,input1);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void assertUnequalTest5()
-    {
-        final List<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-        final List<Integer> input2 = Arrays.asList(new Integer[]{1,2,3,5,4});
-        AssertIterable.assertIterableEquals(input1,input2);
-    }
-
-    @Test
-    public void assertEqualTest2()
-    {
-        final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
-        input1.add(Pair.of(1,1));
-        input1.add(Pair.of(2,1));
-        input1.add(Pair.of(5,1));
-
-        AssertIterable.assertIterableEquals(input1,input1);
-    }
-
-    @Test
-    public void assertEqualTest3()
-    {
-        final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
-        input1.add(Pair.of(1,1));
-        input1.add(Pair.of(2,1));
-        input1.add(Pair.of(5,1));
-
-        final List<Pair<Integer,Integer>> input2 = new ArrayList<Pair<Integer, Integer>>();
-        input2.add(Pair.of(1,1));
-        input2.add(Pair.of(2,1));
-        input2.add(Pair.of(5,1));
-
-        AssertIterable.assertIterableEquals(input1,input2);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void assertUnequalTest6()
-    {
-        final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
-        input1.add(Pair.of(1,1));
-        input1.add(Pair.of(2,1));
-        input1.add(Pair.of(5,1));
-
-        final List<Pair<Integer,Integer>> input2 = new ArrayList<Pair<Integer, Integer>>();
-        input2.add(Pair.of(1,2));
-        input2.add(Pair.of(2,1));
-        input2.add(Pair.of(5,1));
-
-        AssertIterable.assertIterableEquals(input1,input2);
-    }
+//    @Test
+//    public void assertEqualsTest1()
+//    {
+//        final List<Integer> input = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+//        AssertIterable.assertIterableEquals(input,input);
+//    }
+//
+//    @Test(expected = AssertionError.class)
+//    public void assertUnequalTest1()
+//    {
+//        final List<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+//        final List<Integer> input2 = Arrays.asList(new Integer[]{1,2,3});
+//        AssertIterable.assertIterableEquals(input1,input2);
+//    }
+//
+//    @Test(expected = AssertionError.class)
+//    public void assertUnequalTest2()
+//    {
+//        final List<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+//        final List<Integer> input2 = Arrays.asList(new Integer[]{1,2,3});
+//        AssertIterable.assertIterableEquals(input2,input1);
+//    }
+//
+//    @Test(expected = AssertionError.class)
+//    public void assertUnequalTest3()
+//    {
+//        final List<Integer> input1 = null;
+//        final List<Integer> input2 = Arrays.asList(new Integer[]{1,2,3});
+//        AssertIterable.assertIterableEquals(input2,input1);
+//    }
+//
+//    @Test(expected = AssertionError.class)
+//    public void assertUnequalTest4()
+//    {
+//        final List<Integer> input1 = Arrays.asList(new Integer[]{1,2,3});
+//        final List<Integer> input2 = null;
+//        AssertIterable.assertIterableEquals(input2,input1);
+//    }
+//
+//    @Test(expected = AssertionError.class)
+//    public void assertUnequalTest5()
+//    {
+//        final List<Integer> input1 = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+//        final List<Integer> input2 = Arrays.asList(new Integer[]{1,2,3,5,4});
+//        AssertIterable.assertIterableEquals(input1,input2);
+//    }
+//
+//    @Test
+//    public void assertEqualTest2()
+//    {
+//        final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
+//        input1.add(Pair.of(1,1));
+//        input1.add(Pair.of(2,1));
+//        input1.add(Pair.of(5,1));
+//
+//        AssertIterable.assertIterableEquals(input1,input1);
+//    }
+//
+//    @Test
+//    public void assertEqualTest3()
+//    {
+//        final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
+//        input1.add(Pair.of(1,1));
+//        input1.add(Pair.of(2,1));
+//        input1.add(Pair.of(5,1));
+//
+//        final List<Pair<Integer,Integer>> input2 = new ArrayList<Pair<Integer, Integer>>();
+//        input2.add(Pair.of(1,1));
+//        input2.add(Pair.of(2,1));
+//        input2.add(Pair.of(5,1));
+//
+//        AssertIterable.assertIterableEquals(input1,input2);
+//    }
+//
+//    @Test(expected = AssertionError.class)
+//    public void assertUnequalTest6()
+//    {
+//        final List<Pair<Integer,Integer>> input1 = new ArrayList<Pair<Integer, Integer>>();
+//        input1.add(Pair.of(1,1));
+//        input1.add(Pair.of(2,1));
+//        input1.add(Pair.of(5,1));
+//
+//        final List<Pair<Integer,Integer>> input2 = new ArrayList<Pair<Integer, Integer>>();
+//        input2.add(Pair.of(1,2));
+//        input2.add(Pair.of(2,1));
+//        input2.add(Pair.of(5,1));
+//
+//        AssertIterable.assertIterableEquals(input1,input2);
+//    }
 }

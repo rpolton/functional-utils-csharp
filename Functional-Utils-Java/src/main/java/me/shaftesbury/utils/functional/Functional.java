@@ -389,7 +389,7 @@ public final class Functional {
     /**
      * <tt>sum</tt> a function that accepts two integers and returns the sum of them
      */
-    public static BiFunction<Integer, Integer, Integer> sum = (state, b) -> state + b;
+    public static BiFunction<Integer, Integer, Integer> sum = Integer::sum;
 
     /**
      * @param <T> the type of <tt>that</tt>, the input argument
@@ -552,7 +552,7 @@ public final class Functional {
     /**
      * A Comparator that encapsulates <tt>Sorter</tt> above
      */
-    public static Comparator<Integer> dSorter = (i, j) -> Sorter(i, j);
+    public static Comparator<Integer> dSorter = Functional::Sorter;
 
     /**
      * A wrapper around <tt>toString()</tt>
@@ -572,7 +572,7 @@ public final class Functional {
      * @return a function that calls <tt>Stringify</tt>
      */
     public static <T> Function<T, String> dStringify() {
-        return i -> Stringify(i);
+        return Functional::Stringify;
     }
 
     /**
@@ -1044,7 +1044,7 @@ public final class Functional {
         if (list1 == null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list1 is null");
         if (list2 == null) throw new IllegalArgumentException("Functional.concat(List<T>,List<T>): list2 is null");
 
-        final List<T> newList = new ArrayList<T>(toList(list1));
+        final List<T> newList = new ArrayList<>(toList(list1));
         final boolean didItChange = newList.addAll(toList(list2));
         return Collections.unmodifiableList(newList);
     }
@@ -1183,7 +1183,7 @@ public final class Functional {
             if (!predicate.apply(list.get(counter)))
                 return Collections.unmodifiableList(list.subList(counter, list.size()));
 
-        return Collections.unmodifiableList(new ArrayList<T>(0));
+        return Collections.unmodifiableList(new ArrayList<>(0));
     }
 
     /**
@@ -2743,7 +2743,7 @@ public final class Functional {
 
         private static <A> Iterable<A> filter(final Function<? super A, Boolean> f, final Iterator<A> input, final Collection<A> accumulator) {
             if (input.hasNext()) {
-                A next = input.next();
+                final A next = input.next();
                 if (f.apply(next)) accumulator.add(next);
                 return filter(f, input, accumulator);
             } else return accumulator;
@@ -2790,7 +2790,7 @@ public final class Functional {
 
         private static <A, B> A fold(final BiFunction<? super A, ? super B, ? extends A> f, final A initialValue, final Iterator<B> input) {
             if (input.hasNext()) {
-                B next = input.next();
+                final B next = input.next();
                 return fold(f, f.apply(initialValue, next), input);
             } else return initialValue;
         }
@@ -2900,7 +2900,7 @@ public final class Functional {
          * @return a set of type U containing the concatenated sequences of transformed values.
          */
         public static <T, U> Set<U> collect(final Function<? super T, ? extends Iterable<U>> f, final Iterable<T> input) {
-            Set<U> output = input instanceof Collection<?> ? new HashSet<>(((Collection) input).size()) : new HashSet<>();
+            final Set<U> output = input instanceof Collection<?> ? new HashSet<>(((Collection) input).size()) : new HashSet<>();
             for (final T element : input)
                 output.addAll(Functional.toSet(f.apply(element)));
             return Collections.unmodifiableSet(output);
@@ -2966,7 +2966,7 @@ public final class Functional {
          * @return a set containing those elements which are contained within both sets 'e1' and 'e2'
          */
         public static <E> Set<E> intersection(final Set<? extends E> e1, final Set<? extends E> e2) {
-            Set<E> i = new HashSet<>(e1);
+            final Set<E> i = new HashSet<>(e1);
             i.retainAll(e2);
             return Collections.unmodifiableSet(i);
         }
@@ -2980,7 +2980,7 @@ public final class Functional {
          * @return a set of those elements which are in 'inSet' and not in 'notInSet'
          */
         public static <E> Set<E> asymmetricDifference(final Set<? extends E> inSet, final Set<? extends E> notInSet) {
-            Set<E> i = new HashSet<>(inSet);
+            final Set<E> i = new HashSet<>(inSet);
             i.removeAll(notInSet);
             return Collections.unmodifiableSet(i);
         }
@@ -3048,7 +3048,7 @@ public final class Functional {
          * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Fold</a>
          */
         public static <A> List<A> init(final Function<Integer, ? extends A> f, final int howMany) {
-            return Functional.unfold(a -> a <= howMany ? Option.toOption(Pair.of(f.apply(a), a + 1)) : Option.<Pair<A, Integer>>None(), 1);
+            return Functional.unfold(a -> a <= howMany ? Option.toOption(Pair.of(f.apply(a), a + 1)) : Option.None(), 1);
         }
     }
 
@@ -3401,7 +3401,7 @@ public final class Functional {
      * @return a function that returns the first element in a Pair
      */
     public static <A, B> Function<Pair<A, B>, A> first() {
-        return pair -> pair.getLeft();
+        return Pair::getLeft;
     }
 
     /**
@@ -3412,7 +3412,7 @@ public final class Functional {
      * @return a function that returns the second element in a Pair
      */
     public static <A, B> Function<Pair<A, B>, B> second() {
-        return pair -> pair.getRight();
+        return Pair::getRight;
     }
 
 

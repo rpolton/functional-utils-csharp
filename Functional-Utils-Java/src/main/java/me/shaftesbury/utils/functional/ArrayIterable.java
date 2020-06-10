@@ -35,5 +35,5 @@ public final class ArrayIterable<T> implements  Iterable<T>
      * @param <T> the type of the elements in the input array
      * @return an ArrayIterable object which wraps the input array
      */
-    public final static <T>ArrayIterable<T> create(final T[] array) { return new ArrayIterable<T>(array); }
+    public final static <T>ArrayIterable<T> create(final T[] array) { return new ArrayIterable<>(array); }
 }

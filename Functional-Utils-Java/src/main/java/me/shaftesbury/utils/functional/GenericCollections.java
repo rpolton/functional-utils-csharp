@@ -13,7 +13,7 @@ public final class GenericCollections
         Collection<A> createUnmodifiableContainer(Collection<A> c);
     }
 
-    public static <A>Generator<A> createArrayListGenerator() { return new GenericCollections().new ArrayListGenerator<A>(); }
+    public static <A>Generator<A> createArrayListGenerator() { return new GenericCollections().new ArrayListGenerator<>(); }
 
     public class ArrayListGenerator<A> implements Generator<A>
     {
@@ -23,7 +23,7 @@ public final class GenericCollections
         }
 
 
-        public Collection<A> createUnmodifiableContainer(Collection<A> c) {
+        public Collection<A> createUnmodifiableContainer(final Collection<A> c) {
             return java.util.Collections.unmodifiableList(Functional.toList(c));
         }
     }
@@ -38,7 +38,7 @@ public final class GenericCollections
         }
 
 
-        public Collection<A> createUnmodifiableContainer(Collection<A> c) {
+        public Collection<A> createUnmodifiableContainer(final Collection<A> c) {
             return java.util.Collections.unmodifiableSet(Functional.toSet(c));
         }
     }

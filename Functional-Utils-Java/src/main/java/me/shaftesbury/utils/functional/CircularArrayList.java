@@ -1,6 +1,11 @@
 package me.shaftesbury.utils.functional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 public class CircularArrayList<T> implements List<T>
 {
@@ -9,7 +14,7 @@ public class CircularArrayList<T> implements List<T>
     public CircularArrayList(final Iterable<T> input, final int howMany)
     {
         this.bufferSize = howMany;
-        this.buffer = new ArrayList<T>(howMany);
+        this.buffer = new ArrayList<>(howMany);
         int counter=0;
         final Iterator<T> iterator = input.iterator();
         while(counter<howMany && iterator.hasNext())
@@ -39,7 +44,7 @@ public class CircularArrayList<T> implements List<T>
     }
 
 
-    public boolean contains(Object o) {
+    public boolean contains(final Object o) {
         return buffer.contains(o);
     }
 
@@ -55,7 +60,7 @@ public class CircularArrayList<T> implements List<T>
 
     @SuppressWarnings("unchecked")
 
-    public <T1>T1[] toArray(T1[] a) {
+    public <T1>T1[] toArray(final T1[] a) {
         if (a.length < bufferSize)
             // Make a new array of a's runtime type, but my contents:
             return (T1[]) Arrays.copyOf(buffer.toArray(), bufferSize, a.getClass());
@@ -66,37 +71,37 @@ public class CircularArrayList<T> implements List<T>
     }
 
 
-    public boolean add(T t) {
+    public boolean add(final T t) {
         return false;
     }
 
 
-    public boolean remove(Object o) {
+    public boolean remove(final Object o) {
         return false;
     }
 
 
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(final Collection<?> c) {
         return buffer.containsAll(c);
     }
 
 
-    public boolean addAll(Collection<? extends T> c) {
+    public boolean addAll(final Collection<? extends T> c) {
         return false;
     }
 
 
-    public boolean addAll(int index, Collection<? extends T> c) {
+    public boolean addAll(final int index, final Collection<? extends T> c) {
         return false;
     }
 
 
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(final Collection<?> c) {
         return false;
     }
 
 
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(final Collection<?> c) {
         return false;
     }
 
@@ -106,32 +111,32 @@ public class CircularArrayList<T> implements List<T>
     }
 
 
-    public T get(int index) {
+    public T get(final int index) {
         return buffer.get(index);
     }
 
 
-    public T set(int index, T element) {
+    public T set(final int index, final T element) {
         return null;
     }
 
 
-    public void add(int index, T element) {
+    public void add(final int index, final T element) {
 
     }
 
 
-    public T remove(int index) {
+    public T remove(final int index) {
         return null;
     }
 
 
-    public int indexOf(Object o) {
+    public int indexOf(final Object o) {
         return buffer.indexOf(o);
     }
 
 
-    public int lastIndexOf(Object o) {
+    public int lastIndexOf(final Object o) {
         return 0; // TODO implement this remembering that this is a circular list
     }
 
@@ -141,12 +146,12 @@ public class CircularArrayList<T> implements List<T>
     }
 
 
-    public ListIterator<T> listIterator(int index) {
+    public ListIterator<T> listIterator(final int index) {
         return null;
     }
 
 
-    public List<T> subList(int fromIndex, int toIndex) {
+    public List<T> subList(final int fromIndex, final int toIndex) {
         return null;
     }
 }

@@ -17,5 +17,5 @@ public interface Func2_int_int_int extends IntBinaryOperator {
      */
     int apply(int a, int b);
 
-    default int applyAsInt(int a, int b) { return applyAsInt(a, b);}
+    default int applyAsInt(final int a, final int b) { return applyAsInt(a, b);}
 }
